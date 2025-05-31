@@ -1,4 +1,4 @@
-import { useOIDC } from '../contexts/OIDCContext';
+import { useOIDC } from '@/contexts/OIDCContext';
 
 export function LoginButton() {
   const { user, isLoading, error, login, logout } = useOIDC();

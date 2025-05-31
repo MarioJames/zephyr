@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { userManager } from '../../config/oidc';
+import { userManager } from '@/config/oidc';
 
 export default function CallbackPage() {
   const router = useRouter();

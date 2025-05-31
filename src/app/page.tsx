@@ -1,8 +1,8 @@
 'use client';
 
-import { LoginButton } from './components/LoginButton';
-import { TokenInfo } from './components/TokenInfo';
-import { useOIDC } from './contexts/OIDCContext';
+import { LoginButton } from '@/components/LoginButton';
+import { TokenInfo } from '@/components/TokenInfo';
+import { useOIDC } from '@/contexts/OIDCContext';
 
 export default function Home() {
   const { user } = useOIDC();
