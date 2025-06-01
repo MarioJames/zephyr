@@ -25,10 +25,10 @@
     "pg": "^8.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "ws": "^8.18.2",
-    "zustand": "^5.0.5",
     "zustand-utils": "^2.1.0",
-    "react-layout-kit": "^1.9.1"
+    "react-layout-kit": "^1.9.1",
+    "ws": "^8.18.2",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
