@@ -5,21 +5,9 @@ import { useRouter } from 'next/navigation';
 import { userManager } from '@/config/oidc';
 
 export default function CallbackPage() {
-  const router = useRouter();
-
   useEffect(() => {
-    const handleCallback = async () => {
-      try {
-        await userManager!.signinRedirectCallback();
-        router.push('/');
-      } catch (error) {
-        console.error('Error handling callback:', error);
-        router.push('/?error=callback_failed');
-      }
-    };
 
-    handleCallback();
-  }, [router]);
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
