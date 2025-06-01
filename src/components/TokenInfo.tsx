@@ -1,10 +1,10 @@
 'use client';
 
-import { useOIDC } from '@/contexts/OIDCContext';
+import { useOIDCStore } from '@/store/oidc';
 
 export function TokenInfo() {
   const { accessToken, refreshToken, refreshAccessToken, isLoading } =
-    useOIDC();
+    useOIDCStore();
 
   if (!accessToken && !refreshToken) {
     return null;

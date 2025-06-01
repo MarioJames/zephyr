@@ -1,7 +1,7 @@
-import { useOIDC } from '@/contexts/OIDCContext';
+import { useOIDCStore } from '@/store/oidc';
 
 export function LoginButton() {
-  const { user, isLoading, error, login, logout } = useOIDC();
+  const { user, isLoading, error, login, logout } = useOIDCStore();
 
   if (isLoading) {
     return (
