@@ -6,6 +6,5 @@ export default async function Layout({
   params: Promise<{ variants: string }>;
 }) {
   const { variants } = await params;
-
-  return <div>{variants}</div>;
+  return <div>{children}</div>;
 }
