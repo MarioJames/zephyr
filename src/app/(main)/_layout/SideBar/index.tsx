@@ -8,9 +8,10 @@ import { electronStylish } from "@/styles/electron";
 import Avatar from "./Avatar";
 // import PinList from "./PinList";
 import TopActions from "./TopActions";
+import { SidebarTabKey } from "@/store/global/initialState";
 
 const Top = () => {
-  return <TopActions isPinned={true} tab={1} />;
+  return <TopActions isPinned={true} tab={SidebarTabKey.Chat} />;
 };
 
 const Nav = memo(() => {
@@ -39,6 +40,7 @@ const Nav = memo(() => {
           </div>
         </Suspense>
       }
+      bottomActions={<></>}
     />
   );
 });

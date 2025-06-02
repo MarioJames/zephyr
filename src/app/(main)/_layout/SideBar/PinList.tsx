@@ -5,7 +5,9 @@ import isEqual from 'fast-deep-equal';
 import { parseAsBoolean, useQueryState } from 'nuqs';
 import { Flexbox } from 'react-layout-kit';
 import { useSwitchSession } from '@/hooks/useSwitchSession';
-import { useSessionStore,sessionHelpers,sessionSelectors } from '@/store/session';
+import { useSessionStore } from '@/store/session';
+import { sessionHelpers } from '@/store/session/helpers';
+import { sessionSelectors } from '@/store/session/selectors';
 
 const HANDLER_WIDTH = 4;
 

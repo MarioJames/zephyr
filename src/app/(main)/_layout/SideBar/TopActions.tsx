@@ -3,7 +3,8 @@ import { UsersRound, BookUser, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { useGlobalStore,SidebarTabKey } from '@/store/global';
+import { useGlobalStore } from '@/store/global';
+import { SidebarTabKey } from '@/store/global/initialState';
 import { useSessionStore } from '@/store/session';
 
 const ICON_SIZE: ActionIconProps['size'] = {
@@ -57,7 +58,7 @@ const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
         }}
       >
         <ActionIcon
-          active={isChatActive}
+          active={isCustomerManagementActive}
           icon={BookUser}
           size={ICON_SIZE}
           title={"客户管理"}
@@ -76,7 +77,7 @@ const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
         }}
       >
         <ActionIcon
-          active={isChatActive}
+          active={isEmployeeManagementActive}
           icon={UsersRound}
           size={ICON_SIZE}
           title={"员工管理"}
