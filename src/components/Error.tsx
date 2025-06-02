@@ -3,31 +3,17 @@
 import { Button, FluentEmoji } from '@lobehub/ui';
 import Link from 'next/link';
 import { memo, useLayoutEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { MAX_WIDTH } from '@/const/layoutTokens';
 
-import { appEnv } from '@/config/app';
-
 type ErrorType = Error & { digest?: string };
-
-const sentryCaptureException = async (error: Error & { digest?: string }) => {
-  const { captureException } = await import('@sentry/nextjs');
-  return captureException(error);
-};
-
-
 interface ErrorCaptureProps {
   error: ErrorType;
   reset: () => void;
 }
 
 const ErrorCapture = memo<ErrorCaptureProps>(({ reset, error }) => {
-
-  useLayoutEffect(() => {
-    sentryCaptureException(error);
-  }, [error]);
 
   return (
     <Flexbox align={'center'} justify={'center'} style={{ minHeight: '100%', width: '100%' }}>
