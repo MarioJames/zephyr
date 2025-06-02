@@ -1,16 +1,17 @@
 import { useCallback } from 'react';
+
+import { useChatStore } from '@/store/chat';
 import { useSessionStore } from '@/store/session';
 
-// 自定义 hook 用于切换会话
-const useSwitchSession = () => {
-  const { setActiveSession } = useSessionStore();
+export const useSwitchSession = () => {
+  const switchSession = useSessionStore((s) => s.switchSession);
+  const togglePortal = useChatStore((s) => s.togglePortal);
 
-  // 切换会话的回调函数
-  const switchSession = useCallback((sessionId: string) => {
-    setActiveSession(sessionId);
-  }, [setActiveSession]);
-
-  return switchSession;
+  return useCallback(
+    (id: string) => {
+      switchSession(id);
+      togglePortal(false);
+    },
+    [],
+  );
 };
-
-export default useSwitchSession;
