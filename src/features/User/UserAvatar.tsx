@@ -5,7 +5,8 @@ import { createStyles } from 'antd-style';
 import { forwardRef } from 'react';
 
 import { BRANDING_NAME,DEFAULT_USER_AVATAR_URL } from '@/const/base';
-import { useUserStore,authSelectors, userProfileSelectors } from '@/store/user';
+import { useUserStore } from '@/store/user';
+import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   clickable: css`
