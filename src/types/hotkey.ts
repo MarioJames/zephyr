@@ -94,7 +94,6 @@ export interface HotkeyItem {
   // 快捷键分组用于展示
   group: HotkeyGroupId;
   id: HotkeyId;
-  isDesktop?: boolean;
   // 是否是桌面端专用的快捷键
   keys: string;
   // 是否为不可编辑的快捷键

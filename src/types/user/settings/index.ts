@@ -25,11 +25,8 @@ export * from './tts';
 export interface UserSettings {
   defaultAgent: UserDefaultAgent;
   general: UserGeneralConfig;
-  hotkey: UserHotkeyConfig;
   keyVaults: UserKeyVaults;
-  languageModel: UserModelProviderConfig;
   sync?: UserSyncSettings;
   systemAgent: UserSystemAgentConfig;
   tool: UserToolConfig;
-  tts: UserTTSConfig;
 }
