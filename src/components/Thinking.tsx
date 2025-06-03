@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AtomIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { rgba } from 'polished';
 import { CSSProperties, memo, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { CitationItem } from '@/types/message';
@@ -80,7 +79,6 @@ interface ThinkingProps {
 }
 
 const Thinking = memo<ThinkingProps>(({ content, duration, thinking, style, citations }) => {
-  const { t } = useTranslation(['components', 'common']);
   const { styles, cx, theme } = useStyles();
 
   const [showDetail, setShowDetail] = useState(false);
@@ -111,7 +109,7 @@ const Thinking = memo<ThinkingProps>(({ content, duration, thinking, style, cita
           <Flexbox align={'center'} gap={8} horizontal width={'100%'}>
             <Icon color={theme.purple} icon={AtomIcon} />
             <Flexbox className={styles.shinyText} horizontal>
-              {t('Thinking.thinking')}
+              {'深度思考中...'}
             </Flexbox>
           </Flexbox>
         ) : (
@@ -119,8 +117,8 @@ const Thinking = memo<ThinkingProps>(({ content, duration, thinking, style, cita
             <Icon color={showDetail ? theme.purple : undefined} icon={AtomIcon} />
             <Flexbox>
               {!duration
-                ? t('Thinking.thoughtWithDuration')
-                : t('Thinking.thought', { duration: ((duration || 0) / 1000).toFixed(1) })}
+                ? '已深度思考'
+                : `已深度思考（用时 ${(duration || 0) / 1000} 秒）`}
             </Flexbox>
           </Flexbox>
         )}
@@ -131,7 +129,7 @@ const Thinking = memo<ThinkingProps>(({ content, duration, thinking, style, cita
                 event.stopPropagation();
               }}
             >
-              <CopyButton content={content} size={'small'} title={t('copy', { ns: 'common' })} />
+              <CopyButton content={content} size={'small'} title={'复制'} />
             </div>
           )}
           <ActionIcon icon={showDetail ? ChevronDown : ChevronRight} size={'small'} />
