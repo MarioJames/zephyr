@@ -1,5 +1,3 @@
-import { t } from 'i18next';
-
 import { ChatTopic, ChatTopicSummary, GroupedTopic } from '@/types/topic';
 import { groupTopicsByTime } from '@/utils/client/topic';
 
@@ -55,7 +53,7 @@ const groupedTopicsSelector = (s: ChatStoreState): GroupedTopic[] => {
         {
           children: favTopics,
           id: 'favorite',
-          title: t('favorite', { ns: 'topic' }),
+          title: '收藏',
         },
         ...groupTopicsByTime(unfavTopics),
       ]

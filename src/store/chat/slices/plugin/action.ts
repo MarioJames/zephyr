@@ -1,7 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix, typescript-sort-keys/interface */
 import { PluginErrorType } from '@lobehub/chat-plugin-sdk';
 import isEqual from 'fast-deep-equal';
-import { t } from 'i18next';
 import { Md5 } from 'ts-md5';
 import { StateCreator } from 'zustand/vanilla';
 
@@ -191,7 +190,7 @@ export const chatPlugin: StateCreator<
           error: result.errors,
           message: '[plugin] your settings is invalid with plugin manifest setting schema',
         },
-        message: t('response.PluginSettingsInvalid', { ns: 'error' }),
+        message: '插件设置无效',
         type: PluginErrorType.PluginSettingsInvalid as any,
       });
 

@@ -2,7 +2,6 @@
 // Note: To make the code more logic and readable, we just disable the auto sort key eslint rule
 // DON'T REMOVE THE FIRST LINE
 import isEqual from 'fast-deep-equal';
-import { t } from 'i18next';
 import useSWR, { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
@@ -84,7 +83,7 @@ export const chatTopic: StateCreator<
     set({ creatingTopic: true }, false, n('creatingTopic/start'));
     const topicId = await internal_createTopic({
       sessionId: activeId,
-      title: t('defaultTitle', { ns: 'topic' }),
+      title: '新对话主题',
       messages: messages.map((m) => m.id),
     });
     set({ creatingTopic: false }, false, n('creatingTopic/end'));
@@ -102,7 +101,7 @@ export const chatTopic: StateCreator<
     // 1. create topic and bind these messages
     const topicId = await internal_createTopic({
       sessionId: activeId,
-      title: t('defaultTitle', { ns: 'topic' }),
+      title: '新对话主题',
       messages: messages.map((m) => m.id),
     });
 
@@ -119,10 +118,10 @@ export const chatTopic: StateCreator<
     const topic = topicSelectors.getTopicById(id)(get());
     if (!topic) return;
 
-    const newTitle = t('duplicateTitle', { ns: 'chat', title: topic?.title });
+    const newTitle = `${topic?.title}（副本）`;
 
     message.loading({
-      content: t('duplicateLoading', { ns: 'topic' }),
+      content: '正在复制对话主题...',
       key: 'duplicateTopic',
       duration: 0,
     });
@@ -130,7 +129,7 @@ export const chatTopic: StateCreator<
     const newTopicId = await topicService.cloneTopic(id, newTitle);
     await refreshTopic();
     message.destroy('duplicateTopic');
-    message.success(t('duplicateSuccess', { ns: 'topic' }));
+    message.success('复制成功');
 
     await switchTopic(newTopicId);
   },

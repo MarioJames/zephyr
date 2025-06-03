@@ -1,5 +1,4 @@
 import isEqual from 'fast-deep-equal';
-import { t } from 'i18next';
 import useSWR, { SWRResponse, mutate } from 'swr';
 import { DeepPartial } from 'utility-types';
 import { StateCreator } from 'zustand/vanilla';
@@ -126,12 +125,12 @@ export const createSessionSlice: StateCreator<
     if (!session) return;
     const title = sessionMetaSelectors.getTitle(session.meta);
 
-    const newTitle = t('duplicateSession.title', { ns: 'chat', title: title });
+    const newTitle = `${title}（副本）`;
 
     const messageLoadingKey = 'duplicateSession.loading';
 
     message.loading({
-      content: t('duplicateSession.loading', { ns: 'chat' }),
+      content: '正在复制会话...',
       duration: 0,
       key: messageLoadingKey,
     });
@@ -141,13 +140,13 @@ export const createSessionSlice: StateCreator<
     // duplicate Session Error
     if (!newId) {
       message.destroy(messageLoadingKey);
-      message.error(t('copyFail', { ns: 'common' }));
+      message.error('复制失败');
       return;
     }
 
     await refreshSessions();
     message.destroy(messageLoadingKey);
-    message.success(t('duplicateSession.success', { ns: 'chat' }));
+    message.success('复制成功');
 
     switchSession(newId);
   },

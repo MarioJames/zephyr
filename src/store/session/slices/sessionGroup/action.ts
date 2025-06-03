@@ -1,4 +1,3 @@
-import { t } from 'i18next';
 import { StateCreator } from 'zustand/vanilla';
 
 import { message } from '@/components/AntdStaticMethods';
@@ -53,14 +52,14 @@ export const createSessionGroupSlice: StateCreator<
     get().internal_dispatchSessionGroups({ sortMap, type: 'updateSessionGroupOrder' });
 
     message.loading({
-      content: t('sessionGroup.sorting', { ns: 'chat' }),
+      content: '正在排序分组...',
       duration: 0,
       key: 'updateSessionGroupSort',
     });
 
     await sessionService.updateSessionGroupOrder(sortMap);
     message.destroy('updateSessionGroupSort');
-    message.success(t('sessionGroup.sortSuccess', { ns: 'chat' }));
+    message.success('分组排序成功');
 
     await get().refreshSessions();
   },

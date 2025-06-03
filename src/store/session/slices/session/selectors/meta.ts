@@ -1,5 +1,3 @@
-import { t } from 'i18next';
-
 import { DEFAULT_AVATAR, DEFAULT_BACKGROUND_COLOR, DEFAULT_INBOX_AVATAR } from '@/const/meta';
 import { SessionStore } from '@/store/session';
 import { MetaData } from '@/types/meta';
@@ -14,8 +12,8 @@ const currentAgentMeta = (s: SessionStore): MetaData => {
   const defaultMeta = {
     avatar: isInbox ? DEFAULT_INBOX_AVATAR : DEFAULT_AVATAR,
     backgroundColor: DEFAULT_BACKGROUND_COLOR,
-    description: isInbox ? t('inbox.desc', { ns: 'chat' }) : undefined,
-    title: isInbox ? t('inbox.title', { ns: 'chat' }) : t('defaultSession'),
+    description: isInbox ? '收件箱会话' : undefined,
+    title: isInbox ? '收件箱' : '新会话',
   };
 
   const session = sessionSelectors.currentSession(s);
@@ -29,7 +27,7 @@ const currentAgentAvatar = (s: SessionStore) => currentAgentMeta(s).avatar;
 const currentAgentBackgroundColor = (s: SessionStore) => currentAgentMeta(s).backgroundColor;
 
 const getAvatar = (s: MetaData) => s.avatar || DEFAULT_AVATAR;
-const getTitle = (s: MetaData) => s.title || t('defaultSession', { ns: 'common' });
+const getTitle = (s: MetaData) => s.title || '新会话';
 // New session do not show 'noDescription'
 export const getDescription = (s: MetaData) => s.description;
 

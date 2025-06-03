@@ -1,5 +1,3 @@
-import { t } from 'i18next';
-
 import { enableAuth, enableClerk, enableNextAuth } from '@/const/auth';
 import { BRANDING_NAME } from '@/const/base';
 import { UserStore } from '@/store/user';
@@ -10,12 +8,12 @@ const DEFAULT_USERNAME = BRANDING_NAME;
 const nickName = (s: UserStore) => {
   const defaultNickName = s.user?.fullName || s.user?.username;
   if (!enableAuth) {
-    return t('userPanel.defaultNickname', { ns: 'common' });
+    return '未登录用户';
   }
 
   if (s.isSignedIn) return defaultNickName;
 
-  return t('userPanel.anonymousNickName', { ns: 'common' });
+  return '匿名用户';
 };
 
 const username = (s: UserStore) => {
