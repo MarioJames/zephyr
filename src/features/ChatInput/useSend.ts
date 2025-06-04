@@ -48,14 +48,6 @@ export const useSendMessage = () => {
 
     updateInputMessage('');
     clearChatUploadFileList();
-
-    // const hasSystemRole = agentSelectors.hasSystemRole(useAgentStore.getState());
-    // const agentSetting = useAgentStore.getState().agentSettingInstance;
-
-    // // if there is a system role, then we need to use agent setting instance to autocomplete agent meta
-    // if (hasSystemRole && !!agentSetting) {
-    //   agentSetting.autocompleteAllMeta();
-    // }
   }, []);
 
   return useMemo(() => ({ canSend, send }), [canSend]);
