@@ -5,7 +5,6 @@ import {
   DEFAULT_PROVIDER,
   DEFAUTT_AGENT_TTS_CONFIG,
 } from '@/const/settings';
-import { DEFAULT_OPENING_QUESTIONS } from '@/features/AgentSetting/store/selectors';
 import { AgentStoreState } from '@/store/agent/initialState';
 import { LobeAgentConfig, LobeAgentTTSConfig } from '@/types/agent';
 import { KnowledgeItem, KnowledgeType } from '@/types/knowledgeBase';
@@ -137,7 +136,7 @@ const currentKnowledgeIds = (s: AgentStoreState) => {
 const isAgentConfigLoading = (s: AgentStoreState) => !s.agentConfigInitMap[s.activeId];
 
 const openingQuestions = (s: AgentStoreState) =>
-  currentAgentConfig(s).openingQuestions || DEFAULT_OPENING_QUESTIONS;
+  currentAgentConfig(s).openingQuestions;
 const openingMessage = (s: AgentStoreState) => currentAgentConfig(s).openingMessage || '';
 
 export const agentSelectors = {
