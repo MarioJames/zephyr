@@ -23,13 +23,10 @@ import { LobeLMStudioAI } from './lmstudio';
 import { LobeMinimaxAI } from './minimax';
 import { LobeMistralAI } from './mistral';
 import { LobeMoonshotAI } from './moonshot';
-import { LobeNovitaAI } from './novita';
 import { LobeNvidiaAI } from './nvidia';
 import LobeOllamaAI from './ollama';
 import { LobeOpenAI } from './openai';
 import { LobeOpenRouterAI } from './openrouter';
-import { LobePerplexityAI } from './perplexity';
-import { LobePPIOAI } from './ppio';
 import { LobeQiniuAI } from './qiniu';
 import { LobeQwenAI } from './qwen';
 import { LobeSambaNovaAI } from './sambanova';
@@ -76,13 +73,10 @@ export const providerRuntimeMap = {
   minimax: LobeMinimaxAI,
   mistral: LobeMistralAI,
   moonshot: LobeMoonshotAI,
-  novita: LobeNovitaAI,
   nvidia: LobeNvidiaAI,
   ollama: LobeOllamaAI,
   openai: LobeOpenAI,
   openrouter: LobeOpenRouterAI,
-  perplexity: LobePerplexityAI,
-  ppio: LobePPIOAI,
   qiniu: LobeQiniuAI,
   qwen: LobeQwenAI,
   sambanova: LobeSambaNovaAI,
