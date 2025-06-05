@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react';
 
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { fileChatSelectors, useFileStore } from '@/store/file';
 import { SendMessageParams } from '@/types/message';
 
 export type UseSendMessageParams = Pick<
@@ -16,38 +15,31 @@ export const useSendMessage = () => {
     s.updateInputMessage,
   ]);
 
-  const clearChatUploadFileList = useFileStore((s) => s.clearChatUploadFileList);
-
-  const isUploadingFiles = useFileStore(fileChatSelectors.isUploadingFiles);
   const isSendButtonDisabledByMessage = useChatStore(chatSelectors.isSendButtonDisabledByMessage);
 
-  const canSend = !isUploadingFiles && !isSendButtonDisabledByMessage;
+  const canSend = !isSendButtonDisabledByMessage;
 
   const send = useCallback((params: UseSendMessageParams = {}) => {
     const store = useChatStore.getState();
     if (chatSelectors.isAIGenerating(store)) return;
 
     // if uploading file or send button is disabled by message, then we should not send the message
-    const isUploadingFiles = fileChatSelectors.isUploadingFiles(useFileStore.getState());
     const isSendButtonDisabledByMessage = chatSelectors.isSendButtonDisabledByMessage(
       useChatStore.getState(),
     );
 
-    const canSend = !isUploadingFiles && !isSendButtonDisabledByMessage;
+    const canSend = !isSendButtonDisabledByMessage;
     if (!canSend) return;
 
-    const fileList = fileChatSelectors.chatUploadFileList(useFileStore.getState());
     // if there is no message and no image, then we should not send the message
-    if (!store.inputMessage && fileList.length === 0) return;
+    if (!store.inputMessage) return;
 
     sendMessage({
-      files: fileList,
       message: store.inputMessage,
       ...params,
     });
 
     updateInputMessage('');
-    clearChatUploadFileList();
   }, []);
 
   return useMemo(() => ({ canSend, send }), [canSend]);
