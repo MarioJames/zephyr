@@ -1,16 +1,7 @@
 import { DEFAULT_AGENT_META } from '@/const/meta';
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from '@/const/settings/llm';
-import { LobeAgentChatConfig, LobeAgentConfig, LobeAgentTTSConfig } from '@/types/agent';
+import { LobeAgentChatConfig, LobeAgentConfig } from '@/types/agent';
 import { UserDefaultAgent } from '@/types/user/settings';
-
-export const DEFAUTT_AGENT_TTS_CONFIG: LobeAgentTTSConfig = {
-  showAllLocaleVoice: false,
-  sttLocale: 'auto',
-  ttsService: 'openai',
-  voice: {
-    openai: 'alloy',
-  },
-};
 
 export const DEFAULT_AGENT_SEARCH_FC_MODEL = {
   model: DEFAULT_MODEL,
@@ -43,7 +34,6 @@ export const DEFAULT_AGENT_CONFIG: LobeAgentConfig = {
   plugins: [],
   provider: DEFAULT_PROVIDER,
   systemRole: '',
-  tts: DEFAUTT_AGENT_TTS_CONFIG,
 };
 
 export const DEFAULT_AGENT: UserDefaultAgent = {

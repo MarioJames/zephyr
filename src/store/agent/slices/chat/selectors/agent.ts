@@ -3,7 +3,6 @@ import {
   DEFAULT_AGENT_CONFIG,
   DEFAULT_MODEL,
   DEFAULT_PROVIDER,
-  DEFAUTT_AGENT_TTS_CONFIG,
 } from '@/const/settings';
 import { AgentStoreState } from '@/store/agent/initialState';
 import { LobeAgentConfig, LobeAgentTTSConfig } from '@/types/agent';
@@ -59,34 +58,6 @@ const currentAgentFiles = (s: AgentStoreState) => {
 
   return config?.files || [];
 };
-
-const currentAgentTTS = (s: AgentStoreState): LobeAgentTTSConfig => {
-  const config = currentAgentConfig(s);
-
-  return config?.tts || DEFAUTT_AGENT_TTS_CONFIG;
-};
-
-const currentAgentTTSVoice =
-  (lang: string) =>
-  (s: AgentStoreState): string => {
-    const { voice, ttsService } = currentAgentTTS(s);
-    let currentVoice;
-    switch (ttsService) {
-      case 'openai': {
-        currentVoice = voice.openai;
-        break;
-      }
-      case 'edge': {
-        currentVoice = voice.edge;
-        break;
-      }
-      case 'microsoft': {
-        currentVoice = voice.microsoft;
-        break;
-      }
-    }
-    return currentVoice || 'alloy';
-  };
 
 const currentEnabledKnowledge = (s: AgentStoreState) => {
   const knowledgeBases = currentAgentKnowledgeBases(s);
@@ -147,8 +118,6 @@ export const agentSelectors = {
   currentAgentModelProvider,
   currentAgentPlugins,
   currentAgentSystemRole,
-  currentAgentTTS,
-  currentAgentTTSVoice,
   currentEnabledKnowledge,
   currentKnowledgeIds,
   getAgentConfigById,

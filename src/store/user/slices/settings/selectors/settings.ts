@@ -3,9 +3,7 @@ import {
   DEFAULT_AGENT,
   DEFAULT_AGENT_CONFIG,
   DEFAULT_SYSTEM_AGENT_CONFIG,
-  DEFAULT_TTS_CONFIG,
 } from '@/const/settings';
-import { HotkeyId } from '@/types/hotkey';
 import {
   GlobalLLMProviderKey,
   ProviderConfig,
@@ -24,8 +22,6 @@ export const currentLLMSettings = (s: UserStore): UserModelProviderConfig =>
 export const getProviderConfigById = (provider: string) => (s: UserStore) =>
   currentLLMSettings(s)[provider as GlobalLLMProviderKey] as ProviderConfig | undefined;
 
-const currentTTS = (s: UserStore) => merge(DEFAULT_TTS_CONFIG, currentSettings(s).tts);
-
 const defaultAgent = (s: UserStore) => merge(DEFAULT_AGENT, currentSettings(s).defaultAgent);
 const defaultAgentConfig = (s: UserStore) => merge(DEFAULT_AGENT_CONFIG, defaultAgent(s).config);
 
@@ -42,7 +38,6 @@ const currentSystemAgent = (s: UserStore) =>
 export const settingsSelectors = {
   currentSettings,
   currentSystemAgent,
-  currentTTS,
   dalleConfig,
   defaultAgent,
   defaultAgentConfig,

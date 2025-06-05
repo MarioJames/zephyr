@@ -4,6 +4,7 @@ import { UserGeneralConfig } from './general';
 import { UserKeyVaults } from './keyVaults';
 import { UserSyncSettings } from './sync';
 import { UserSystemAgentConfig } from './systemAgent';
+import { UserModelProviderConfig } from './modelProvider';
 import { UserToolConfig } from './tool';
 
 export type UserDefaultAgent = LobeAgentSettings;
@@ -22,6 +23,7 @@ export interface UserSettings {
   general: UserGeneralConfig;
   keyVaults: UserKeyVaults;
   sync?: UserSyncSettings;
+  languageModel: UserModelProviderConfig;
   systemAgent: UserSystemAgentConfig;
   tool: UserToolConfig;
 }
