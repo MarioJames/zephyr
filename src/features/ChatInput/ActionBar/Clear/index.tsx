@@ -3,9 +3,6 @@ import { Eraser } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 
 import { useChatStore } from '@/store/chat';
-import { useUserStore } from '@/store/user';
-import { settingsSelectors } from '@/store/user/selectors';
-import { HotkeyEnum } from '@/types/hotkey';
 
 import Action from '../components/Action';
 
@@ -18,8 +15,6 @@ export const useClearCurrentMessages = () => {
 };
 
 const Clear = memo(() => {
-  const hotkey = useUserStore(settingsSelectors.getHotkeyById(HotkeyEnum.ClearCurrentMessages));
-
   const clearCurrentMessages = useClearCurrentMessages();
   const [confirmOpened, updateConfirmOpened] = useState(false);
 
@@ -45,7 +40,6 @@ const Clear = memo(() => {
         icon={Eraser}
         title={actionTitle}
         tooltipProps={{
-          hotkey,
           placement: 'bottom',
           styles: {
             root: { maxWidth: 'none' },

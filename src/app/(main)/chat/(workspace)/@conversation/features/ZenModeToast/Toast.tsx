@@ -1,13 +1,8 @@
 'use client';
 
-import { Hotkey } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
-
-import { useUserStore } from '@/store/user';
-import { settingsSelectors } from '@/store/user/selectors';
-import { HotkeyEnum } from '@/types/hotkey';
 
 const useStyles = createStyles(({ css, token }) => ({
   closeButton: css`
@@ -63,7 +58,6 @@ const useStyles = createStyles(({ css, token }) => ({
 const Toast = () => {
   const { styles } = useStyles();
   const [isVisible, setIsVisible] = useState(true);
-  const hotkey = useUserStore(settingsSelectors.getHotkeyById(HotkeyEnum.ToggleZenMode));
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,7 +73,7 @@ const Toast = () => {
     <div className={styles.container}>
       <div className={styles.toast}>
         <Flexbox align={'center'} className={styles.text} gap={8} horizontal>
-          {'专注模式'} <Hotkey inverseTheme keys={hotkey} />
+          {'专注模式'}
         </Flexbox>
       </div>
     </div>

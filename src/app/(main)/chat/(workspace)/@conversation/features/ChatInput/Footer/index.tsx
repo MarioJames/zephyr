@@ -6,7 +6,6 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import StopLoadingIcon from '@/components/StopLoading';
-import LocalFiles from '@/features/ChatInput/Desktop/FilePreview';
 import SaveTopic from '@/features/ChatInput/Topic';
 import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
@@ -79,9 +78,6 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         horizontal
         paddingInline={16}
       >
-        <Flexbox align={'center'} gap={8} horizontal style={{ overflow: 'hidden' }}>
-          {expand && <LocalFiles />}
-        </Flexbox>
         <Flexbox align={'center'} flex={'none'} gap={8} horizontal>
           <ShortcutHint />
           <SaveTopic />

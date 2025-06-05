@@ -2,7 +2,6 @@ import { DEFAULT_AGENT_META } from '@/const/meta';
 import {
   DEFAULT_AGENT,
   DEFAULT_AGENT_CONFIG,
-  DEFAULT_HOTKEY_CONFIG,
   DEFAULT_SYSTEM_AGENT_CONFIG,
   DEFAULT_TTS_CONFIG,
 } from '@/const/settings';
@@ -40,9 +39,6 @@ const isDalleAutoGenerating = (s: UserStore) => currentSettings(s).tool?.dalle?.
 const currentSystemAgent = (s: UserStore) =>
   merge(DEFAULT_SYSTEM_AGENT_CONFIG, currentSettings(s).systemAgent);
 
-const getHotkeyById = (id: HotkeyId) => (s: UserStore) =>
-  merge(DEFAULT_HOTKEY_CONFIG, currentSettings(s).hotkey)[id];
-
 export const settingsSelectors = {
   currentSettings,
   currentSystemAgent,
@@ -52,7 +48,6 @@ export const settingsSelectors = {
   defaultAgentConfig,
   defaultAgentMeta,
   exportSettings,
-  getHotkeyById,
   isDalleAutoGenerating,
   providerConfig: getProviderConfigById,
 };

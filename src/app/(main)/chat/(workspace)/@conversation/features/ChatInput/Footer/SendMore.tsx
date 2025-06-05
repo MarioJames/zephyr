@@ -1,4 +1,4 @@
-import { Button, Dropdown, Hotkey, Icon } from '@lobehub/ui';
+import { Button, Dropdown, Icon } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { BotMessageSquare, LucideCheck, LucideChevronDown, MessageSquarePlus } from 'lucide-react';
 import { memo } from 'react';
@@ -7,8 +7,7 @@ import { Flexbox } from 'react-layout-kit';
 import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
 import { useUserStore } from '@/store/user';
-import { preferenceSelectors, settingsSelectors } from '@/store/user/selectors';
-import { HotkeyEnum } from '@/types/hotkey';
+import { preferenceSelectors } from '@/store/user/selectors';
 
 const useStyles = createStyles(({ css, prefixCls }) => {
   return {
@@ -26,7 +25,6 @@ interface SendMoreProps {
 }
 
 const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
-  const hotkey = useUserStore(settingsSelectors.getHotkeyById(HotkeyEnum.AddUserMessage));
   const { styles } = useStyles();
 
   const [useCmdEnterToSend, updatePreference] = useUserStore((s) => [
@@ -73,7 +71,6 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
             label: (
               <Flexbox align={'center'} gap={24} horizontal>
                 {'添加一条用户消息'}
-                <Hotkey keys={hotkey} />
               </Flexbox>
             ),
             onClick: () => {
