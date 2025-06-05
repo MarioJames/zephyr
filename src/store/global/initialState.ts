@@ -55,8 +55,6 @@ export interface SystemStatus {
   isShowCredit?: boolean;
   language?: LocaleMode;
   latestChangelogId?: string;
-  mobileShowPortal?: boolean;
-  mobileShowTopic?: boolean;
   portalWidth: number;
   sessionsWidth: number;
   showChatSideBar?: boolean;
@@ -87,7 +85,6 @@ export interface GlobalState {
    * 启动时为 Idle，完成为 Ready，报错为 Error
    */
   initClientDBStage: DatabaseLoadingState;
-  isMobile?: boolean;
   isStatusInit?: boolean;
   latestVersion?: string;
   router?: AppRouterInstance;
@@ -102,7 +99,6 @@ export const INITIAL_STATUS = {
   hidePWAInstaller: false,
   hideThreadLimitAlert: false,
   inputHeight: 200,
-  mobileShowTopic: false,
   portalWidth: 400,
   sessionsWidth: 320,
   showChatSideBar: true,
@@ -118,7 +114,6 @@ export const INITIAL_STATUS = {
 
 export const initialState: GlobalState = {
   initClientDBStage: DatabaseLoadingState.Idle,
-  isMobile: false,
   isStatusInit: false,
   sidebarKey: SidebarTabKey.Chat,
   status: INITIAL_STATUS,

@@ -9,8 +9,6 @@ const sessionGroupKeys = (s: GlobalState): string[] =>
   s.status.expandSessionGroupKeys || INITIAL_STATUS.expandSessionGroupKeys;
 
 const showSystemRole = (s: GlobalState) => s.status.showSystemRole;
-const mobileShowTopic = (s: GlobalState) => s.status.mobileShowTopic;
-const mobileShowPortal = (s: GlobalState) => s.status.mobileShowPortal;
 const showChatSideBar = (s: GlobalState) => !s.status.zenMode && s.status.showChatSideBar;
 const showSessionPanel = (s: GlobalState) => !s.status.zenMode && s.status.showSessionPanel;
 const showFilePanel = (s: GlobalState) => s.status.showFilePanel;
@@ -70,8 +68,6 @@ export const systemStatusSelectors = {
   isPgliteNotInited,
   isShowCredit,
   language,
-  mobileShowPortal,
-  mobileShowTopic,
   portalWidth,
   sessionGroupKeys,
   sessionWidth,

@@ -13,8 +13,6 @@ export interface GlobalWorkspacePaneAction {
   toggleAgentSystemRoleExpand: (agentId: string, expanded?: boolean) => void;
   toggleChatSideBar: (visible?: boolean) => void;
   toggleExpandSessionGroup: (id: string, expand: boolean) => void;
-  toggleMobilePortal: (visible?: boolean) => void;
-  toggleMobileTopic: (visible?: boolean) => void;
   toggleSystemRole: (visible?: boolean) => void;
   toggleZenMode: () => void;
 }
@@ -63,20 +61,8 @@ export const globalWorkspaceSlice: StateCreator<
     });
     get().updateSystemStatus({ expandSessionGroupKeys: nextExpandSessionGroup });
   },
-  toggleMobilePortal: (newValue) => {
-    const mobileShowPortal =
-      typeof newValue === 'boolean' ? newValue : !get().status.mobileShowPortal;
-
-    get().updateSystemStatus({ mobileShowPortal }, n('toggleMobilePortal', newValue));
-  },
-  toggleMobileTopic: (newValue) => {
-    const mobileShowTopic =
-      typeof newValue === 'boolean' ? newValue : !get().status.mobileShowTopic;
-
-    get().updateSystemStatus({ mobileShowTopic }, n('toggleMobileTopic', newValue));
-  },
   toggleSystemRole: (newValue) => {
-    const showSystemRole = typeof newValue === 'boolean' ? newValue : !get().status.mobileShowTopic;
+    const showSystemRole = newValue;
 
     get().updateSystemStatus({ showSystemRole }, n('toggleMobileTopic', newValue));
   },

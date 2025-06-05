@@ -21,40 +21,13 @@ export const useContainerStyles = createStyles(({ css, token, stylish, cx, respo
           height: 0 !important;
         }
       }
-
-      ${responsive.mobile} {
-        max-height: 40dvh;
-      }
     `,
   ),
 }));
 
-export const useStyles = createStyles(({ responsive, token, css }) => ({
-  body: css`
-    ${responsive.mobile} {
-      padding-block-end: 68px;
-    }
-  `,
-  footer: css`
-    ${responsive.mobile} {
-      position: absolute;
-      inset-block-end: 0;
-      inset-inline: 0;
-
-      width: 100%;
-      margin: 0;
-      padding: 16px;
-
-      background: ${token.colorBgContainer};
-    }
-  `,
+export const useStyles = createStyles(({ css }) => ({
   sidebar: css`
     flex: none;
     width: max(240px, 25%);
-    ${responsive.mobile} {
-      flex: 1;
-      width: unset;
-      margin-inline: -16px;
-    }
   `,
 }));

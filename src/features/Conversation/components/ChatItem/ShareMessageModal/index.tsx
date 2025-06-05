@@ -2,10 +2,8 @@ import { Modal, Segmented, type SegmentedProps } from '@lobehub/ui';
 import { memo, useMemo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useIsMobile } from '@/hooks/useIsMobile';
 import { ChatMessage } from '@/types/message';
 
-import ShareImage from './ShareImage';
 import ShareText from './ShareText';
 
 enum Tab {
@@ -25,10 +23,6 @@ const ShareModal = memo<ShareModalProps>(({ onCancel, open, message }) => {
   const options: SegmentedProps['options'] = useMemo(
     () => [
       {
-        label: '截图',
-        value: Tab.Screenshot,
-      },
-      {
         label: '文本',
         value: Tab.Text,
       },
@@ -36,7 +30,6 @@ const ShareModal = memo<ShareModalProps>(({ onCancel, open, message }) => {
     [],
   );
 
-  const isMobile = useIsMobile();
   return (
     <Modal
       allowFullscreen
@@ -47,7 +40,7 @@ const ShareModal = memo<ShareModalProps>(({ onCancel, open, message }) => {
       title={'分享'}
       width={1440}
     >
-      <Flexbox gap={isMobile ? 8 : 24}>
+      <Flexbox gap={24}>
         <Segmented
           block
           onChange={(value) => setTab(value as Tab)}
@@ -56,7 +49,6 @@ const ShareModal = memo<ShareModalProps>(({ onCancel, open, message }) => {
           value={tab}
           variant={'filled'}
         />
-        {tab === Tab.Screenshot && <ShareImage message={message} mobile={isMobile} />}
         {tab === Tab.Text && <ShareText item={message} />}
       </Flexbox>
     </Modal>

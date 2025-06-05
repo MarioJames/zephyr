@@ -18,10 +18,9 @@ import { VirtuosoContext } from './VirtuosoContext';
 interface VirtualizedListProps {
   dataSource: string[];
   itemContent: (index: number, data: any, context: any) => ReactNode;
-  mobile?: boolean;
 }
 
-const VirtualizedList = memo<VirtualizedListProps>(({ mobile, dataSource, itemContent }) => {
+const VirtualizedList = memo<VirtualizedListProps>(({ dataSource, itemContent }) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -51,12 +50,12 @@ const VirtualizedList = memo<VirtualizedListProps>(({ mobile, dataSource, itemCo
   const overscan = typeof window !== 'undefined' ? window.innerHeight * 3 : 0;
 
   // first time loading or not loaded
-  if (isFirstLoading) return <SkeletonList mobile={mobile} />;
+  if (isFirstLoading) return <SkeletonList />;
 
   if (!isCurrentChatLoaded)
     // use skeleton list when not loaded in server mode due to the loading duration is much longer than client mode
     return isServerMode ? (
-      <SkeletonList mobile={mobile} />
+      <SkeletonList />
     ) : (
       // in client mode and switch page, using the center loading for smooth transition
       <Center height={'100%'} width={'100%'}>
@@ -69,7 +68,7 @@ const VirtualizedList = memo<VirtualizedListProps>(({ mobile, dataSource, itemCo
       <Flexbox height={'100%'}>
         <Virtuoso
           atBottomStateChange={setAtBottom}
-          atBottomThreshold={50 * (mobile ? 2 : 1)}
+          atBottomThreshold={50}
           computeItemKey={(_, item) => item}
           data={dataSource}
           followOutput={getFollowOutput}

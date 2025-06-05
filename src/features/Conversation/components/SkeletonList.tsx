@@ -23,26 +23,24 @@ const useStyles = createStyles(({ css, prefixCls }) => ({
     }
   `,
 }));
-interface SkeletonListProps {
-  mobile?: boolean;
-}
-const SkeletonList = memo<SkeletonListProps>(({ mobile }) => {
+
+const SkeletonList = memo(() => {
   const { cx, styles } = useStyles();
 
   return (
-    <Flexbox gap={24} padding={mobile ? 8 : 12} style={{ marginTop: 24 }}>
+    <Flexbox gap={24} padding={12} style={{ marginTop: 24 }}>
       <Skeleton
         active
-        avatar={{ size: mobile ? 32 : 40 }}
+        avatar={{ size: 40 }}
         className={cx(styles.message, styles.user)}
-        paragraph={{ width: mobile ? ['80%', '40%'] : ['50%', '30%'] }}
+        paragraph={{ width: ['50%', '30%'] }}
         title={false}
       />
       <Skeleton
         active
-        avatar={{ size: mobile ? 32 : 40 }}
+        avatar={{ size: 40 }}
         className={styles.message}
-        paragraph={{ width: mobile ? ['80%', '40%'] : ['50%', '30%'] }}
+        paragraph={{ width: ['50%', '30%'] }}
         title={false}
       />
     </Flexbox>
