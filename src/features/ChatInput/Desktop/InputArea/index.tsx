@@ -2,12 +2,9 @@ import { TextArea } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { TextAreaRef } from 'antd/es/input/TextArea';
 import { RefObject, memo, useEffect, useRef } from 'react';
-import { useHotkeysContext } from 'react-hotkeys-hook';
 
 import { useUserStore } from '@/store/user';
 import { preferenceSelectors } from '@/store/user/selectors';
-import { HotkeyEnum } from '@/types/hotkey';
-import { isCommandPressed } from '@/utils/keyboard';
 
 import { useAutoFocus } from '../useAutoFocus';
 
@@ -39,7 +36,6 @@ interface InputAreaProps {
 }
 
 const InputArea = memo<InputAreaProps>(({ onSend, value, loading, onChange }) => {
-  const { enableScope, disableScope } = useHotkeysContext();
   const { styles } = useStyles();
 
   const ref = useRef<TextAreaRef>(null);
@@ -73,7 +69,6 @@ const InputArea = memo<InputAreaProps>(({ onSend, value, loading, onChange }) =>
         className={styles.textarea}
         onBlur={(e) => {
           onChange?.(e.target.value);
-          disableScope(HotkeyEnum.AddUserMessage);
         }}
         onChange={(e) => {
           onChange?.(e.target.value);
@@ -83,9 +78,6 @@ const InputArea = memo<InputAreaProps>(({ onSend, value, loading, onChange }) =>
         }}
         onCompositionStart={() => {
           isChineseInput.current = true;
-        }}
-        onFocus={() => {
-          enableScope(HotkeyEnum.AddUserMessage);
         }}
         onPressEnter={(e) => {
           if (loading || e.altKey || e.shiftKey || isChineseInput.current) return;
@@ -98,18 +90,10 @@ const InputArea = memo<InputAreaProps>(({ onSend, value, loading, onChange }) =>
 
             onSend();
           };
-          const commandKey = isCommandPressed(e);
 
           // when user like cmd + enter to send message
           if (useCmdEnterToSend) {
-            if (commandKey) send();
           } else {
-            // cmd + enter to wrap
-            if (commandKey) {
-              onChange?.((e.target as any).value + '\n');
-              return;
-            }
-
             send();
           }
         }}
