@@ -32,13 +32,6 @@ const ChunkItem = memo<ChunkItemProps>(({ id, fileId, similarity, text, filename
       <FileIcon fileName={filename} fileType={fileType} size={20} variant={'raw'} />
       <Flexbox gap={12} horizontal justify={'space-between'} style={{ maxWidth: 200 }}>
         <Typography.Text ellipsis={{ tooltip: false }}>{filename}</Typography.Text>
-        {/*<Typography.Text*/}
-        {/*  ellipsis={{ suffix: '...' }}*/}
-        {/*  style={{ fontSize: 12, lineHeight: 1 }}*/}
-        {/*  type={'secondary'}*/}
-        {/*>*/}
-        {/*  {text}*/}
-        {/*</Typography.Text>*/}
         {similarity && (
           <Tooltip title={similarity}>
             <Center className={styles.badge}>{similarity.toFixed(1)}</Center>

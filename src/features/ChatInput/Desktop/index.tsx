@@ -7,7 +7,6 @@ import { Flexbox } from 'react-layout-kit';
 import { CHAT_TEXTAREA_HEIGHT, CHAT_TEXTAREA_MAX_HEIGHT } from '@/const/layoutTokens';
 
 import { ActionKeys } from '../ActionBar/config';
-import LocalFiles from './FilePreview';
 import Head from './Header';
 
 export type FooterRender = (params: {
@@ -40,7 +39,6 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
 
     return (
       <>
-        {!expand && leftActions.includes('fileUpload') && <LocalFiles />}
         <DraggablePanel
           fullscreen={expand}
           maxHeight={CHAT_TEXTAREA_MAX_HEIGHT}
