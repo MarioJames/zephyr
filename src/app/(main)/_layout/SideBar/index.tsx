@@ -3,8 +3,6 @@
 import { SideNav } from "@lobehub/ui";
 import { Suspense, memo } from "react";
 
-import { electronStylish } from "@/styles/electron";
-
 import Avatar from "./Avatar";
 // import PinList from "./PinList";
 import TopActions from "./TopActions";
@@ -20,11 +18,8 @@ const Nav = memo(() => {
   return (
     <SideNav
       avatar={
-        <div className={electronStylish.nodrag}>
           <Avatar />
-        </div>
       }
-      className={electronStylish.draggable}
       style={{
         height: "100%",
         zIndex: 100,
@@ -34,10 +29,8 @@ const Nav = memo(() => {
       }}
       topActions={
         <Suspense>
-          <div className={electronStylish.nodrag}>
             <Top />
             {/* {showPinList && <PinList />} */}
-          </div>
         </Suspense>
       }
       bottomActions={<></>}

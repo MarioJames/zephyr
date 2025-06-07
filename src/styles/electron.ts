@@ -7,8 +7,3 @@ export const draggable = cx(css`
 export const nodrag = cx(css`
   -webkit-app-region: no-drag;
 `);
-
-export const electronStylish = {
-  draggable,
-  nodrag,
-};
