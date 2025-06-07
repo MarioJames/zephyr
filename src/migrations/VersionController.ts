@@ -1,5 +1,3 @@
-import { t } from 'i18next';
-
 /**
  * 迁移接口
  * @template T - 状态类型
@@ -49,12 +47,12 @@ export class VersionController<T> {
     let nextData = data;
     const targetVersion = this.targetVersion || this.migrations.length;
     if (data.version === undefined)
-      throw new Error(t('migrateError.missVersion', { ns: 'migration' }));
+      throw new Error('缺少版本号，无法进行数据迁移');
     const currentVersion = data.version;
 
     for (let i = currentVersion || 0; i < targetVersion; i++) {
       const migration = this.migrations.find((m) => m.version === i);
-      if (!migration) throw new Error(t('migrateError.noMigration', { ns: 'migration' }));
+      if (!migration) throw new Error('未找到对应的迁移器，无法进行数据迁移');
 
       nextData = migration.migrate(nextData);
 

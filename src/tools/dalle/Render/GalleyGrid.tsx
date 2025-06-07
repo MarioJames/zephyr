@@ -1,11 +1,9 @@
-import { useResponsive } from 'antd-style';
 import { ReactNode, memo, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import Grid from '@/components/GalleyGrid/Grid';
 
 const MAX_SIZE_DESKTOP = 640;
-const MAX_SIZE_MOBILE = 280;
 
 interface GalleyGridProps<T = any> {
   items: T[];
@@ -13,7 +11,6 @@ interface GalleyGridProps<T = any> {
 }
 
 const GalleyGrid = memo<GalleyGridProps>(({ items, renderItem: Render }) => {
-  const { mobile } = useResponsive();
 
   const { firstRow, lastRow } = useMemo(() => {
     if (items.length === 4) {
@@ -33,10 +30,10 @@ const GalleyGrid = memo<GalleyGridProps>(({ items, renderItem: Render }) => {
 
   const { gap, max } = useMemo(
     () => ({
-      gap: mobile ? 4 : 6,
-      max: (mobile ? MAX_SIZE_MOBILE : MAX_SIZE_DESKTOP) * firstRow.length,
+      gap: 6,
+      max: (MAX_SIZE_DESKTOP) * firstRow.length,
     }),
-    [mobile],
+    [],
   );
 
   return (
