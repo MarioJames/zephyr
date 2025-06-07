@@ -63,7 +63,7 @@ const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
         ref={ref}
         size={size}
         style={{ flex: 'none', ...style }}
-        unoptimized={true}
+        unoptimized
         {...rest}
       />
     );
