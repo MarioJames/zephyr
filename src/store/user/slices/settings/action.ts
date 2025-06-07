@@ -3,7 +3,6 @@ import { DeepPartial } from 'utility-types';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { shareService } from '@/services/share';
 import { userService } from '@/services/user';
 import type { UserStore } from '@/store/user';
 import { LobeAgentSettings } from '@/types/session';
@@ -19,7 +18,6 @@ import { merge } from '@/utils/merge';
 
 export interface UserSettingsAction {
   importAppSettings: (settings: UserSettings) => Promise<void>;
-  importUrlShareSettings: (settingsParams: string | null) => Promise<void>;
   internal_createSignal: () => AbortController;
   resetSettings: () => Promise<void>;
   setSettings: (settings: DeepPartial<UserSettings>) => Promise<void>;
@@ -43,21 +41,6 @@ export const createSettingsSlice: StateCreator<
     const { setSettings } = get();
 
     await setSettings(importAppSettings);
-  },
-
-  /**
-   * Import settings from a string in json format
-   */
-  importUrlShareSettings: async (settingsParams: string | null) => {
-    if (settingsParams) {
-      const importSettings = shareService.decodeShareSettings(settingsParams);
-      if (importSettings?.message || !importSettings?.data) {
-        // handle some error
-        return;
-      }
-
-      await get().setSettings(importSettings.data);
-    }
   },
 
   internal_createSignal: () => {

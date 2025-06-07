@@ -6,7 +6,6 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { LOADING_FLAT } from '@/const/message';
 import { chatService } from '@/services/chat';
-import { mcpService } from '@/services/mcp';
 import { messageService } from '@/services/message';
 import { ChatStore } from '@/store/chat/store';
 import { useToolStore } from '@/store/tool';
@@ -43,7 +42,6 @@ export interface ChatPluginAction {
   invokeBuiltinTool: (id: string, payload: ChatToolPayload) => Promise<void>;
   invokeDefaultTypePlugin: (id: string, payload: any) => Promise<string | undefined>;
   invokeMarkdownTypePlugin: (id: string, payload: ChatToolPayload) => Promise<void>;
-  invokeMCPTypePlugin: (id: string, payload: ChatToolPayload) => Promise<string | undefined>;
 
   invokeStandaloneTypePlugin: (id: string, payload: ChatToolPayload) => Promise<void>;
 
@@ -453,42 +451,6 @@ export const chatPlugin: StateCreator<
       }
     }
   },
-  invokeMCPTypePlugin: async (id, payload) => {
-    const { internal_updateMessageContent, refreshMessages, internal_togglePluginApiCalling } =
-      get();
-    let data: string = '';
-
-    try {
-      const abortController = internal_togglePluginApiCalling(
-        true,
-        id,
-        n('fetchPlugin/start') as string,
-      );
-
-      const result = await mcpService.invokeMcpToolCall(payload, {
-        signal: abortController?.signal,
-      });
-      if (!!result) data = result;
-    } catch (error) {
-      console.log(error);
-      const err = error as Error;
-
-      // ignore the aborted request error
-      if (!err.message.includes('The user aborted a request.')) {
-        await messageService.updateMessageError(id, error as any);
-        await refreshMessages();
-      }
-    }
-
-    internal_togglePluginApiCalling(false, id, n('fetchPlugin/end') as string);
-    // 如果报错则结束了
-    if (!data) return;
-
-    await internal_updateMessageContent(id, data);
-
-    return data;
-  },
-
   internal_togglePluginApiCalling: (loading, id, action) => {
     return get().internal_toggleLoadingArrays('pluginApiLoadingIds', loading, id, action);
   },
