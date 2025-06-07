@@ -4,7 +4,6 @@ import { fileEnv } from '@/config/file';
 import { knowledgeEnv } from '@/config/knowledge';
 import { langfuseEnv } from '@/config/langfuse';
 import { enableNextAuth } from '@/const/auth';
-import { isDesktop } from '@/const/version';
 import { parseSystemAgent } from '@/server/globalConfig/parseSystemAgent';
 import { GlobalServerConfig } from '@/types/serverConfig';
 
@@ -31,14 +30,14 @@ export const getServerGlobalConfig = async () => {
         modelListKey: 'GITEE_AI_MODEL_LIST',
       },
       lmstudio: {
-        fetchOnClient: isDesktop ? false : undefined,
+        fetchOnClient: undefined,
       },
       /* ↓ cloud slot ↓ */
 
       /* ↑ cloud slot ↑ */
       ollama: {
-        enabled: isDesktop ? true : undefined,
-        fetchOnClient: isDesktop ? false : !process.env.OLLAMA_PROXY_URL,
+        enabled: undefined,
+        fetchOnClient: !process.env.OLLAMA_PROXY_URL,
       },
       tencentcloud: {
         enabledKey: 'ENABLED_TENCENT_CLOUD',
