@@ -1,4 +1,4 @@
-import { Locales } from '@/locales/resources';
+import { Locales } from '@/config/translate';
 
 export type * from '@/locales/resources';
 

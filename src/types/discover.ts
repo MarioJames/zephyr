@@ -1,7 +1,7 @@
 import { LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
 import { LobeChatPluginMeta, Meta } from '@lobehub/chat-plugin-sdk/lib/types/market';
 
-import { Locales } from '@/locales/resources';
+import { Locales } from '@/config/translate';
 import { ChatModelCard, ModelProviderCard } from '@/types/llm';
 import { MetaData } from '@/types/meta';
 import { PageProps } from '@/types/next';
