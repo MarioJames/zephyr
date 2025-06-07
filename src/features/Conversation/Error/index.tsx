@@ -1,11 +1,8 @@
 import { IPluginErrorType } from '@lobehub/chat-plugin-sdk';
 import type { AlertProps } from '@lobehub/ui';
 import { Skeleton } from 'antd';
-import dynamic from 'next/dynamic';
 import { Suspense, memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { useProviderName } from '@/hooks/useProviderName';
 import { AgentRuntimeErrorType, ILobeAgentRuntimeErrorType } from '@/libs/model-runtime';
 import { ChatErrorType, ErrorType } from '@/types/fetch';
 import { ChatMessage, ChatMessageError } from '@/types/message';
@@ -17,13 +14,6 @@ import InvalidAccessCode from './InvalidAccessCode';
 import { ErrorActionContainer } from './style';
 
 const loading = () => <Skeleton active />;
-
-const OllamaBizError = dynamic(() => import('./OllamaBizError'), { loading, ssr: false });
-
-const OllamaSetupGuide = dynamic(() => import('@/features/OllamaSetupGuide'), {
-  loading,
-  ssr: false,
-});
 
 // Config for the errorMessage display
 const getErrorAlertConfig = (
@@ -70,17 +60,12 @@ const getErrorAlertConfig = (
 };
 
 export const useErrorContent = (error: any) => {
-  const { t } = useTranslation('error');
-  const providerName = useProviderName(error?.body?.provider || '');
-
   return useMemo<AlertProps | undefined>(() => {
     if (!error) return;
     const messageError = error;
-
     const alertConfig = getErrorAlertConfig(messageError.type);
-
     return {
-      message: t(`response.${messageError.type}` as any, { provider: providerName }),
+      message: '发生错误',
       ...alertConfig,
     };
   }, [error]);
@@ -91,13 +76,6 @@ const ErrorMessageExtra = memo<{ data: ChatMessage }>(({ data }) => {
   if (!error?.type) return;
 
   switch (error.type) {
-    case AgentRuntimeErrorType.OllamaServiceUnavailable: {
-      return <OllamaSetupGuide id={data.id} />;
-    }
-
-    case AgentRuntimeErrorType.OllamaBizError: {
-      return <OllamaBizError {...data} />;
-    }
 
     /* ↓ cloud slot ↓ */
 

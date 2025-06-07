@@ -3,7 +3,6 @@ import { Button, Icon, InputPassword, Select } from '@lobehub/ui';
 import { useTheme } from 'antd-style';
 import { Network, ShieldPlus } from 'lucide-react';
 import { memo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { ModelProvider } from '@/libs/model-runtime';
 import { useUserStore } from '@/store/user';
@@ -12,7 +11,6 @@ import { keyVaultsConfigSelectors } from '@/store/user/selectors';
 import { FormAction } from '../style';
 
 const BedrockForm = memo(() => {
-  const { t } = useTranslation('modelProvider');
   const [showRegion, setShow] = useState(false);
   const [showSessionToken, setShowSessionToken] = useState(false);
 
@@ -28,8 +26,8 @@ const BedrockForm = memo(() => {
   return (
     <FormAction
       avatar={<Aws.Color color={theme.colorText} size={56} />}
-      description={t('bedrock.unlock.description')}
-      title={t('bedrock.unlock.title')}
+      description={'Unlock your model with custom API key'}
+      title={'Unlock with API Key'}
     >
       <InputPassword
         autoComplete={'new-password'}
@@ -68,7 +66,7 @@ const BedrockForm = memo(() => {
           }}
           type={'text'}
         >
-          {t('bedrock.unlock.customSessionToken')}
+          {'自定义 Session Token'}
         </Button>
       )}
       {showRegion ? (
@@ -93,7 +91,7 @@ const BedrockForm = memo(() => {
           }}
           type={'text'}
         >
-          {t('bedrock.unlock.customRegion')}
+          {'自定义 Region'}
         </Button>
       )}
     </FormAction>

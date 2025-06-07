@@ -1,7 +1,6 @@
 import { ProviderIcon } from '@lobehub/icons';
 import { Button } from '@lobehub/ui';
 import { memo, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { ModelProvider } from '@/libs/model-runtime';
@@ -18,7 +17,6 @@ interface APIKeyFormProps {
 }
 
 const APIKeyForm = memo<APIKeyFormProps>(({ id, provider }) => {
-  const { t } = useTranslation('error');
   const [loading, setLoading] = useState(false);
 
   const [resend, deleteMessage] = useChatStore((s) => [s.regenerateMessage, s.deleteMessage]);
@@ -87,14 +85,14 @@ const APIKeyForm = memo<APIKeyFormProps>(({ id, provider }) => {
             style={{ marginTop: 8 }}
             type={'primary'}
           >
-            {t('unlock.confirm')}
+            {'确认'}
           </Button>
           <Button
             onClick={() => {
               deleteMessage(id);
             }}
           >
-            {t('unlock.closeMessage')}
+            {'关闭消息'}
           </Button>
         </Flexbox>
       </Center>

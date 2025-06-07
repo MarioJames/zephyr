@@ -5,7 +5,6 @@ import { parse } from 'partial-json';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import PluginRender from '@/features/PluginsUI/Render';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatMessage } from '@/types/message';
@@ -80,19 +79,7 @@ const CustomRender = memo<CustomRenderProps>(
 
     return (
       <Flexbox gap={12} id={id} width={'100%'}>
-        {showPluginRender ? (
-          <PluginRender
-            arguments={plugin?.arguments}
-            content={content}
-            id={id}
-            identifier={plugin?.identifier}
-            loading={loading}
-            payload={plugin}
-            pluginError={pluginError}
-            pluginState={pluginState}
-            type={plugin?.type}
-          />
-        ) : isEditing ? (
+      {isEditing ? (
           <KeyValueEditor
             initialValue={safeParseJson(requestArgs || '')}
             onCancel={handleCancel}

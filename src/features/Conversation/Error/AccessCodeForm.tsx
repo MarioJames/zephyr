@@ -1,6 +1,5 @@
 import { Button, InputPassword } from '@lobehub/ui';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { useChatStore } from '@/store/chat';
@@ -14,7 +13,6 @@ interface AccessCodeFormProps {
 }
 
 const AccessCodeForm = memo<AccessCodeFormProps>(({ id }) => {
-  const { t } = useTranslation('error');
   const [password, updateKeyVaults] = useUserStore((s) => [
     keyVaultsConfigSelectors.password(s),
     s.updateKeyVaults,
@@ -25,15 +23,15 @@ const AccessCodeForm = memo<AccessCodeFormProps>(({ id }) => {
     <>
       <FormAction
         avatar={'🗳'}
-        description={t('unlock.password.description')}
-        title={t('unlock.password.title')}
+        description={'请输入访问密码'}
+        title={'密码登录'}
       >
         <InputPassword
           autoComplete={'new-password'}
           onChange={(e) => {
             updateKeyVaults({ password: e.target.value });
           }}
-          placeholder={t('unlock.password.placeholder')}
+          placeholder={'请输入密码'}
           value={password}
           variant={'filled'}
         />
@@ -46,14 +44,14 @@ const AccessCodeForm = memo<AccessCodeFormProps>(({ id }) => {
           }}
           type={'primary'}
         >
-          {t('unlock.confirm')}
+          {'确认'}
         </Button>
         <Button
           onClick={() => {
             deleteMessage(id);
           }}
         >
-          {t('unlock.closeMessage')}
+          {'关闭消息'}
         </Button>
       </Flexbox>
     </>

@@ -1,7 +1,6 @@
 import { Button, Icon } from '@lobehub/ui';
 import { Loader2Icon, Network } from 'lucide-react';
 import { ReactNode, memo, useContext, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { FormInput, FormPassword } from '@/components/FormInput';
 import { LoadingContext } from '@/features/Conversation/Error/APIKeyForm/LoadingContext';
@@ -21,8 +20,6 @@ interface ProviderApiKeyFormProps {
 
 const ProviderApiKeyForm = memo<ProviderApiKeyFormProps>(
   ({ provider, avatar, showEndpoint = false, apiKeyPlaceholder }) => {
-    const { t } = useTranslation(['modelProvider', 'error']);
-    const { t: errorT } = useTranslation('error');
     const [showProxy, setShow] = useState(false);
 
     const { apiKey, baseURL, setConfig } = useApiKey(provider);
@@ -33,8 +30,8 @@ const ProviderApiKeyForm = memo<ProviderApiKeyFormProps>(
     return (
       <FormAction
         avatar={avatar}
-        description={t(`unlock.apiKey.description`, { name: providerName, ns: 'error' })}
-        title={t(`unlock.apiKey.title`, { name: providerName, ns: 'error' })}
+        description={`请输入 ${providerName} 的 API Key`}
+        title={`API Key 设置 - ${providerName}`}
       >
         <FormPassword
           autoComplete={'new-password'}
@@ -65,7 +62,7 @@ const ProviderApiKeyForm = memo<ProviderApiKeyFormProps>(
               }}
               type={'text'}
             >
-              {errorT('unlock.addProxyUrl')}
+              {'添加代理地址'}
             </Button>
           ))}
       </FormAction>

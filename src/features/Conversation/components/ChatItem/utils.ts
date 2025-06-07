@@ -1,4 +1,7 @@
-import { ARTIFACT_TAG_REGEX, ARTIFACT_THINKING_TAG_REGEX } from '@/const/plugin';
+export const ARTIFACT_TAG_REGEX = /<lobeArtifact\b[^>]*>(?<content>[\S\s]*?)(?:<\/lobeArtifact>|$)/;
+
+// https://regex101.com/r/AvPA2g/1
+export const ARTIFACT_THINKING_TAG_REGEX = /<lobeThinking\b[^>]*>([\S\s]*?)(?:<\/lobeThinking>|$)/;
 
 /**
  * Replace all line breaks in the matched `lobeArtifact` tag with an empty string

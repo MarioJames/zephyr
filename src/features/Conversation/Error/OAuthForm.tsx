@@ -2,7 +2,6 @@ import { Button, Icon } from '@lobehub/ui';
 import { App } from 'antd';
 import { ScanFace } from 'lucide-react';
 import { memo, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useChatStore } from '@/store/chat';
@@ -12,8 +11,6 @@ import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
 import { FormAction } from './style';
 
 const OAuthForm = memo<{ id: string }>(({ id }) => {
-  const { t } = useTranslation('error');
-
   const [signIn, signOut] = useUserStore((s) => [s.openLogin, s.logout]);
   const user = useUserStore(userProfileSelectors.userProfile);
   const isOAuthLoggedIn = useUserStore(authSelectors.isLoginWithAuth);
@@ -28,9 +25,9 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
       okButtonProps: { danger: true },
       onOk: () => {
         signOut();
-        message.success(t('settingSystem.oauth.signout.success', { ns: 'setting' }));
+        message.success('退出登录成功');
       },
-      title: t('settingSystem.oauth.signout.confirm', { ns: 'setting' }),
+      title: '确定要退出登录吗？',
     });
   }, []);
 
@@ -40,10 +37,10 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
         avatar={isOAuthLoggedIn ? '✅' : '🕵️‍♂️'}
         description={
           isOAuthLoggedIn
-            ? `${t('unlock.oauth.welcome')} ${user?.fullName || ''}`
-            : t('unlock.oauth.description')
+            ? `欢迎，${user?.fullName || ''}`
+            : '请使用 OAuth 登录以继续操作'
         }
-        title={isOAuthLoggedIn ? t('unlock.oauth.success') : t('unlock.oauth.title')}
+        title={isOAuthLoggedIn ? '登录成功' : 'OAuth 登录'}
       >
         {isOAuthLoggedIn ? (
           <Button
@@ -52,7 +49,7 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
             onClick={handleSignOut}
             style={{ marginTop: 8 }}
           >
-            {t('settingSystem.oauth.signout.action', { ns: 'setting' })}
+            {'退出登录'}
           </Button>
         ) : (
           <Button
@@ -63,7 +60,7 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
             style={{ marginTop: 8 }}
             type={'primary'}
           >
-            {t('oauth', { ns: 'common' })}
+            {'OAuth 登录'}
           </Button>
         )}
       </FormAction>
@@ -78,7 +75,7 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
             style={{ marginTop: 8 }}
             type={'primary'}
           >
-            {t('unlock.confirm')}
+            {'确认'}
           </Button>
         ) : (
           <Button
@@ -86,7 +83,7 @@ const OAuthForm = memo<{ id: string }>(({ id }) => {
               deleteMessage(id);
             }}
           >
-            {t('unlock.closeMessage')}
+            {'关闭消息'}
           </Button>
         )}
       </Flexbox>

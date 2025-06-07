@@ -2,7 +2,6 @@ import { Icon, Segmented } from '@lobehub/ui';
 import { SegmentedLabeledOption } from 'antd/es/segmented';
 import { AsteriskSquare, KeySquare, ScanFace } from 'lucide-react';
 import { memo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { useServerConfigStore } from '@/store/serverConfig';
@@ -25,7 +24,6 @@ interface InvalidAccessCodeProps {
 }
 
 const InvalidAccessCode = memo<InvalidAccessCodeProps>(({ id, provider }) => {
-  const { t } = useTranslation('error');
   const isEnabledOAuth = useServerConfigStore(serverConfigSelectors.enabledOAuthSSO);
   const defaultTab = isEnabledOAuth ? Tab.Oauth : Tab.Password;
   const [mode, setMode] = useState<Tab>(defaultTab);
@@ -43,19 +41,19 @@ const InvalidAccessCode = memo<InvalidAccessCodeProps>(({ id, provider }) => {
               isEnabledOAuth
                 ? {
                     icon: <Icon icon={ScanFace} />,
-                    label: t('oauth', { ns: 'common' }),
+                    label: 'OAuth 登录',
                     value: Tab.Oauth,
                   }
                 : undefined,
               {
                 icon: <Icon icon={AsteriskSquare} />,
-                label: t('unlock.tabs.password'),
+                label: '密码登录',
                 value: Tab.Password,
               },
               showOpenAIApiKey
                 ? {
                     icon: <Icon icon={KeySquare} />,
-                    label: t('unlock.tabs.apiKey'),
+                    label: 'API Key',
                     value: Tab.Api,
                   }
                 : undefined,

@@ -1,9 +1,7 @@
 import { Button } from '@lobehub/ui';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import UserLoginOrSignup from '@/features/User/UserLoginOrSignup';
-import { useGreeting } from '@/hooks/useGreeting';
 import { useChatStore } from '@/store/chat';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -11,9 +9,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { ErrorActionContainer, FormAction } from '../style';
 
 const ClerkLogin = memo<{ id: string }>(({ id }) => {
-  const { t } = useTranslation('error');
   const [openSignIn, isSignedIn] = useUserStore((s) => [s.openLogin, s.isSignedIn]);
-  const greeting = useGreeting();
   const nickName = useUserStore(userProfileSelectors.nickName);
   const [resend, deleteMessage] = useChatStore((s) => [s.regenerateMessage, s.deleteMessage]);
 
@@ -22,8 +18,8 @@ const ClerkLogin = memo<{ id: string }>(({ id }) => {
       {isSignedIn ? (
         <FormAction
           avatar={'🌟'}
-          description={t('clerkAuth.loginSuccess.desc', { greeting })}
-          title={t('clerkAuth.loginSuccess.title', { nickName })}
+          description={`欢迎回来`}
+          title={`登录成功，${nickName}`}
         >
           <Button
             block
@@ -34,7 +30,7 @@ const ClerkLogin = memo<{ id: string }>(({ id }) => {
             size={'large'}
             type={'primary'}
           >
-            {t('clerkAuth.loginSuccess.action')}
+            {'继续'}
           </Button>
         </FormAction>
       ) : (
