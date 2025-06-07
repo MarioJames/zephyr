@@ -4,11 +4,10 @@ import { merge } from 'lodash-es';
 
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
 import { enableAuth } from '@/const/auth';
-import { INBOX_GUIDE_SYSTEMROLE } from '@/const/guide';
 import { INBOX_SESSION_ID } from '@/const/session';
 import { DEFAULT_AGENT_CONFIG } from '@/const/settings';
 import { TracePayload, TraceTagMap } from '@/const/trace';
-import { isDeprecatedEdition, isDesktop, isServerMode } from '@/const/version';
+import { isDeprecatedEdition, isServerMode } from '@/const/version';
 import {
   AgentRuntime,
   AgentRuntimeError,
@@ -489,7 +488,7 @@ class ChatService {
       const imageList = m.imageList || [];
 
       const filesContext = isServerMode
-        ? filesPrompts({ addUrl: !isDesktop, fileList: m.fileList, imageList })
+        ? filesPrompts({ addUrl: true, fileList: m.fileList, imageList })
         : '';
       return [
         { text: (m.content + '\n\n' + filesContext).trim(), type: 'text' },
@@ -580,8 +579,7 @@ class ChatService {
       // if it's a welcome question, inject InboxGuide SystemRole
       const inboxGuideSystemRole =
         options?.isWelcomeQuestion &&
-        options?.trace?.sessionId === INBOX_SESSION_ID &&
-        INBOX_GUIDE_SYSTEMROLE;
+        options?.trace?.sessionId === INBOX_SESSION_ID;
 
       // Inject Tool SystemRole
       const hasTools = tools && tools?.length > 0;
@@ -592,7 +590,7 @@ class ChatService {
       const injectSystemRoles = BuiltinSystemRolePrompts({
         historySummary: options?.historySummary,
         plugins: toolsSystemRoles as string,
-        welcome: inboxGuideSystemRole as string,
+        welcome: inboxGuideSystemRole as any,
       });
 
       if (!injectSystemRoles) return;

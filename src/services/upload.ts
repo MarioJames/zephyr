@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { sha256 } from 'js-sha256';
 
 import { fileEnv } from '@/config/file';
-import { isDesktop, isServerMode } from '@/const/version';
+import { isServerMode } from '@/const/version';
 import { parseDataUri } from '@/libs/model-runtime/utils/uriParser';
 import { edgeClient } from '@/libs/trpc/client';
 import { API_ENDPOINTS } from '@/services/_url';
@@ -30,17 +30,6 @@ class UploadService {
     file: File,
     { onProgress, directory, skipCheckFileType, onNotSupported, pathname }: UploadFileToS3Options,
   ): Promise<{ data: FileMetadata; success: boolean }> => {
-    const { getElectronStoreState } = await import('@/store/electron');
-    const { electronSyncSelectors } = await import('@/store/electron/selectors');
-    // only if not enable sync
-    const state = getElectronStoreState();
-    const isSyncActive = electronSyncSelectors.isSyncActive(state);
-
-    // 桌面端上传逻辑（并且没开启 sync 同步）
-    if (isDesktop && !isSyncActive) {
-      const data = await this.uploadToDesktopS3(file);
-      return { data, success: true };
-    }
 
     // 服务端上传逻辑
     if (isServerMode) {
@@ -180,15 +169,6 @@ class UploadService {
     });
 
     return result;
-  };
-
-  private uploadToDesktopS3 = async (file: File) => {
-    const fileArrayBuffer = await file.arrayBuffer();
-    const hash = sha256(fileArrayBuffer);
-
-    const { desktopFileAPI } = await import('@/services/electron/file');
-    const { metadata } = await desktopFileAPI.uploadFile(file, hash);
-    return metadata;
   };
 
   private uploadToClientS3 = async (hash: string, file: File): Promise<FileMetadata> => {
