@@ -1,5 +1,3 @@
-import React from "react";
+import Desktop from './_layout';
 
-export default function layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
-}
+export default Desktop;
