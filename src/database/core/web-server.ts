@@ -1,8 +1,5 @@
-import { Pool as NeonPool, neonConfig } from '@neondatabase/serverless';
-import { drizzle as neonDrizzle } from 'drizzle-orm/neon-serverless';
 import { drizzle as nodeDrizzle } from 'drizzle-orm/node-postgres';
 import { Pool as NodePool } from 'pg';
-import ws from 'ws';
 
 import { serverDBEnv } from '@/config/db';
 import { isServerMode } from '@/const/version';
@@ -30,16 +27,6 @@ If you don't have it, please run \`openssl rand -base64 32\` to create one.
     );
   }
 
-  if (serverDBEnv.DATABASE_DRIVER === 'node') {
-    const client = new NodePool({ connectionString });
-    return nodeDrizzle(client, { schema });
-  }
-
-  if (process.env.MIGRATION_DB === '1') {
-    // https://github.com/neondatabase/serverless/blob/main/CONFIG.md#websocketconstructor-typeof-websocket--undefined
-    neonConfig.webSocketConstructor = ws;
-  }
-
-  const client = new NeonPool({ connectionString });
-  return neonDrizzle(client, { schema });
+  const client = new NodePool({ connectionString });
+  return nodeDrizzle(client, { schema });
 };

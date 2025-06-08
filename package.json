@@ -53,6 +53,7 @@
     "debug": "4.4.1",
     "dexie": "^4.0.11",
     "diff": "^8.0.2",
+    "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.41.0",
     "drizzle-zod": "^0.8.2",
     "fast-deep-equal": "^3.1.3",

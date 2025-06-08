@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar } from '@lobehub/ui';
+// import { Avatar } from '@lobehub/ui';
 import { Skeleton } from 'antd';
 import { createStyles } from 'antd-style';
 import { parseAsBoolean, useQueryState } from 'nuqs';
@@ -11,8 +11,6 @@ import { useInitAgentConfig } from '@/hooks/useInitAgentConfig';
 import { useOpenChatSettings } from '@/hooks/useInterceptingRoutes';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
-import { useSessionStore } from '@/store/session';
-import { sessionMetaSelectors, sessionSelectors } from '@/store/session/selectors';
 
 import TogglePanelButton from '@/app/(main)/chat/features/TogglePanelButton';
 import Tags from './Tags';
@@ -44,44 +42,22 @@ const Main = memo<{ className?: string }>(({ className }) => {
   useInitAgentConfig();
   const [isPinned] = useQueryState('pinned', parseAsBoolean);
 
-  const [init, isInbox, title, avatar, backgroundColor] = useSessionStore((s) => [
-    sessionSelectors.isSomeSessionActive(s),
-    sessionSelectors.isInboxSession(s),
-    sessionMetaSelectors.currentAgentTitle(s),
-    sessionMetaSelectors.currentAgentAvatar(s),
-    sessionMetaSelectors.currentAgentBackgroundColor(s),
-  ]);
-
-  const openChatSettings = useOpenChatSettings();
-
-  const displayTitle = isInbox ? '收件箱' : title;
-  const showSessionPanel = useGlobalStore(systemStatusSelectors.showSessionPanel);
-
-  if (!init)
-    return (
-      <Flexbox align={'center'} className={className} gap={8} horizontal>
-        {!isPinned && !showSessionPanel && <TogglePanelButton />}
-        <Skeleton
-          active
-          avatar={{ shape: 'circle', size: 28 }}
-          paragraph={false}
-          title={{ style: { margin: 0, marginTop: 4 }, width: 200 }}
-        />
-      </Flexbox>
-    );
+  const showSessionPanel = useGlobalStore(
+    systemStatusSelectors.showSessionPanel
+  );
 
   return (
     <Flexbox align={'center'} className={className} gap={12} horizontal>
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
-      <Avatar
+      {/* <Avatar
         avatar={avatar}
         background={backgroundColor}
         onClick={() => openChatSettings()}
         size={32}
         title={title}
-      />
+      /> */}
       <Flexbox align={'center'} className={styles.container} gap={8} horizontal>
-        <div className={styles.title}>{displayTitle}</div>
+        <div className={styles.title}>客户名称</div>
         <Tags />
       </Flexbox>
     </Flexbox>

@@ -8,7 +8,13 @@ import ChatHeader from './ChatHeader';
 import Portal from './Portal';
 import TopicPanel from './TopicPanel';
 
-const Layout = ({ children, topic, conversation, portal }: LayoutProps) => {
+const Layout = ({
+  children,
+  topic,
+  conversation,
+  portal,
+  history,
+}: LayoutProps) => {
   return (
     <>
       <ChatHeader />
@@ -29,7 +35,7 @@ const Layout = ({ children, topic, conversation, portal }: LayoutProps) => {
         <Portal>
           <Suspense fallback={<BrandTextLoading />}>{portal}</Suspense>
         </Portal>
-        <TopicPanel>{topic}</TopicPanel>
+        <TopicPanel>{topic || history}</TopicPanel>
       </Flexbox>
     </>
   );

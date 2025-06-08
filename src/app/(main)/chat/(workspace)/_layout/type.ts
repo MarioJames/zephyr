@@ -5,4 +5,5 @@ export interface LayoutProps {
   conversation: ReactNode;
   portal: ReactNode;
   topic: ReactNode;
+  history: ReactNode;
 }
