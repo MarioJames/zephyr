@@ -9,7 +9,6 @@ import Github from './github';
 import Keycloak from './keycloak';
 import Logto from './logto';
 import MicrosoftEntraID from './microsoft-entra-id';
-import WeChat from './wechat';
 import Zitadel from './zitadel';
 
 export const ssoProviders = [
@@ -24,6 +23,5 @@ export const ssoProviders = [
   CloudflareZeroTrust,
   Casdoor,
   MicrosoftEntraID,
-  WeChat,
   Keycloak,
 ];
