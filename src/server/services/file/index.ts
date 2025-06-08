@@ -4,7 +4,7 @@ import { serverDBEnv } from '@/config/db';
 import { FileModel } from '@/database/models/file';
 import { FileItem } from '@/database/schemas';
 import { LobeChatDatabase } from '@/database/type';
-import { TempFileManager } from '@/server/utils/tempFileManager';
+import { TempFileManager } from '@/utils/server/tempFileManager';
 import { nanoid } from '@/utils/uuid';
 
 import { FileServiceImpl, createFileServiceModule } from './impls';
