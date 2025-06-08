@@ -1,4 +1,3 @@
-import { loadFile } from '@lobechat/file-loaders';
 import debug from 'debug';
 
 import { DocumentModel } from '@/database/models/document';
@@ -35,11 +34,11 @@ export class DocumentService {
 
     try {
       // 使用loadFile加载文件内容
-      const fileDocument = await loadFile(filePath);
+      const fileDocument = {} as any;
 
       log(`${logPrefix} 文件解析成功 %O`, {
         fileType: fileDocument.fileType,
-        size: fileDocument.content.length,
+        size: fileDocument?.content.length,
       });
 
       const document = await this.documentModel.create({
