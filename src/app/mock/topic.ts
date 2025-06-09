@@ -1,0 +1,15 @@
+export default {
+  '/topic/createTopic': () => ({ id: 'topic-001', title: 'mock topic' }),
+  '/topic/batchCreateTopics': () => ({ success: true }),
+  '/topic/cloneTopic': () => ({ id: 'topic-002', title: 'mock cloned topic' }),
+  '/topic/getTopics': () => [{ id: 'topic-001', title: 'mock topic' }],
+  '/topic/searchTopics': () => [{ id: 'topic-001', title: 'mock topic' }],
+  '/topic/getAllTopics': () => [{ id: 'topic-001', title: 'mock topic' }],
+  '/topic/countTopics': () => 1,
+  '/topic/rankTopics': () => [{ id: 'topic-001', title: 'mock topic', rank: 1 }],
+  '/topic/updateTopic': () => ({ success: true }),
+  '/topic/removeTopic': () => ({ success: true }),
+  '/topic/removeTopics': () => ({ success: true }),
+  '/topic/batchRemoveTopics': () => ({ success: true }),
+  '/topic/removeAllTopic': () => ({ success: true }),
+}; 
