@@ -1,7 +1,6 @@
 import { LobeChatPluginManifest, pluginManifestSchema } from '@lobehub/chat-plugin-sdk';
 import { uniqBy } from 'lodash-es';
 
-import { API_ENDPOINTS } from '@/services/_url';
 import { ChatCompletionTool } from '@/types/openai/chat';
 import { OpenAIPluginManifest } from '@/types/openai/plugin';
 import { genToolCallingName } from '@/utils/toolCall';
@@ -10,7 +9,7 @@ const fetchJSON = async <T = any>(url: string, proxy = false): Promise<T> => {
   // 2. 发送请求
   let res: Response;
   try {
-    res = await (proxy ? fetch(API_ENDPOINTS.proxy, { body: url, method: 'POST' }) : fetch(url));
+    res = await (proxy ? fetch('/webapi/proxy', { body: url, method: 'POST' }) : fetch(url));
   } catch {
     throw new TypeError('fetchError');
   }
