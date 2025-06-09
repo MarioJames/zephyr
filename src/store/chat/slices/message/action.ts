@@ -7,9 +7,9 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { TraceEventType } from '@/const/trace';
 import { useClientDataSWR } from '@/libs/swr';
-import { messageService } from '@/services/message';
-import { topicService } from '@/services/topic';
-import { traceService } from '@/services/trace';
+import { messageApi } from '@/app/api/message';
+import { topicApi } from '@/app/api/topic';
+import { traceApi } from '@/app/api/trace';
 import { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 import { ChatErrorType } from '@/types/fetch';
@@ -159,7 +159,7 @@ export const chatMessage: StateCreator<
     }
 
     get().internal_dispatchMessage({ type: 'deleteMessages', ids });
-    await messageService.removeMessages(ids);
+    await messageApi.removeMessages(ids);
     await get().refreshMessages();
   },
 
@@ -183,10 +183,10 @@ export const chatMessage: StateCreator<
   clearMessage: async () => {
     const { activeId, activeTopicId, refreshMessages, refreshTopic, switchTopic } = get();
 
-    await messageService.removeMessagesByAssistant(activeId, activeTopicId);
+    await messageApi.removeMessagesByAssistant(activeId, activeTopicId);
 
     if (activeTopicId) {
-      await topicService.removeTopic(activeTopicId);
+      await topicApi.removeTopic(activeTopicId);
     }
     await refreshTopic();
     await refreshMessages();
@@ -196,7 +196,7 @@ export const chatMessage: StateCreator<
   },
   clearAllMessages: async () => {
     const { refreshMessages } = get();
-    await messageService.removeAllMessages();
+    await messageApi.removeAllMessages();
     await refreshMessages();
   },
   addAIMessage: async () => {
@@ -246,7 +246,7 @@ export const chatMessage: StateCreator<
     useClientDataSWR<ChatMessage[]>(
       enable ? [SWR_USE_FETCH_MESSAGES, sessionId, activeTopicId] : null,
       async ([, sessionId, topicId]: [string, string, string | undefined]) =>
-        messageService.getMessages(sessionId, topicId),
+        messageApi.getMessages(sessionId, topicId),
       {
         onSuccess: (messages, key) => {
           const nextMap = {
@@ -285,12 +285,12 @@ export const chatMessage: StateCreator<
 
   internal_updateMessageError: async (id, error) => {
     get().internal_dispatchMessage({ id, type: 'updateMessage', value: { error } });
-    await messageService.updateMessage(id, { error });
+    await messageApi.updateMessage(id, { error });
     await get().refreshMessages();
   },
 
   internal_updateMessagePluginError: async (id, error) => {
-    await messageService.updateMessagePluginError(id, error);
+    await messageApi.updateMessagePluginError(id, error);
     await get().refreshMessages();
   },
 
@@ -314,7 +314,7 @@ export const chatMessage: StateCreator<
       });
     }
 
-    await messageService.updateMessage(id, {
+    await messageApi.updateMessage(id, {
       content,
       tools: extra?.toolCalls ? internal_transformToolCalls(extra?.toolCalls) : undefined,
       reasoning: extra?.reasoning,
@@ -343,7 +343,7 @@ export const chatMessage: StateCreator<
     }
 
     try {
-      const id = await messageService.createMessage(message);
+      const id = await messageApi.createMessage(message);
       if (!context?.skipRefresh) {
         internal_toggleMessageLoading(true, tempId);
         await refreshMessages();
@@ -364,7 +364,7 @@ export const chatMessage: StateCreator<
   },
 
   internal_fetchMessages: async () => {
-    const messages = await messageService.getMessages(get().activeId, get().activeTopicId);
+    const messages = await messageApi.getMessages(get().activeId, get().activeTopicId);
     const nextMap = { ...get().messagesMap, [chatSelectors.currentChatKey(get())]: messages };
     // no need to update map if the messages have been init and the map is the same
     if (get().messagesInit && isEqual(nextMap, get().messagesMap)) return;
@@ -386,7 +386,7 @@ export const chatMessage: StateCreator<
   },
   internal_deleteMessage: async (id: string) => {
     get().internal_dispatchMessage({ type: 'deleteMessage', id });
-    await messageService.removeMessage(id);
+    await messageApi.removeMessage(id);
     await get().refreshMessages();
   },
   internal_traceMessage: async (id, payload) => {
@@ -398,7 +398,7 @@ export const chatMessage: StateCreator<
     const observationId = message?.observationId;
 
     if (traceId && message?.role === 'assistant') {
-      traceService
+      traceApi
         .traceEvent({ traceId, observationId, content: message.content, ...payload })
         .catch();
     }

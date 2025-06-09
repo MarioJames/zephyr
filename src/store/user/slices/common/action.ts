@@ -4,7 +4,7 @@ import type { StateCreator } from 'zustand/vanilla';
 
 import { DEFAULT_PREFERENCE } from '@/const/base';
 import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import { userService } from '@/services/user';
+import { userApi } from '@/app/api/user';
 import type { UserStore } from '@/store/user';
 import type { GlobalServerConfig } from '@/types/serverConfig';
 import { LobeUser, UserInitializationState } from '@/types/user';
@@ -45,7 +45,7 @@ export const createCommonSlice: StateCreator<
   },
   updateAvatar: async (avatar) => {
     // 1. 更新服务端/数据库中的头像
-    await userService.updateAvatar(avatar);
+    await userApi.updateAvatar(avatar);
 
     await get().refreshUserState();
   },
@@ -69,7 +69,7 @@ export const createCommonSlice: StateCreator<
   useInitUserState: (isLogin, serverConfig, options) =>
     useOnlyFetchOnceSWR<UserInitializationState>(
       !!isLogin ? GET_USER_STATE_KEY : null,
-      () => userService.getUserState(),
+      () => userApi.getUserState(),
       {
         onSuccess: (data) => {
           options?.onSuccess?.(data);

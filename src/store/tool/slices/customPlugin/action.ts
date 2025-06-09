@@ -3,8 +3,8 @@ import { merge } from 'lodash-es';
 import { StateCreator } from 'zustand/vanilla';
 
 import { notification } from '@/components/AntdStaticMethods';
-import { pluginService } from '@/services/plugin';
-import { toolService } from '@/services/tool';
+import { pluginApi } from '@/app/api/plugin';
+import { toolApi } from '@/app/api/tool';
 import { pluginHelpers } from '@/store/tool/helpers';
 import { LobeToolCustomPlugin, PluginInstallError } from '@/types/tool/plugin';
 import { setNamespace } from '@/utils/storeDebug';
@@ -30,7 +30,7 @@ export const createCustomPluginSlice: StateCreator<
   CustomPluginAction
 > = (set, get) => ({
   installCustomPlugin: async (value) => {
-    await pluginService.createCustomPlugin(value);
+    await pluginApi.createCustomPlugin(value);
 
     await get().refreshPlugins();
     set({ newCustomPlugin: defaultCustomPlugin }, false, n('saveToCustomPluginList'));
@@ -44,13 +44,13 @@ export const createCustomPluginSlice: StateCreator<
     try {
       updateInstallLoadingState(id, true);
       let manifest: LobeChatPluginManifest;
-        manifest = await toolService.getToolManifest(
+        manifest = await toolApi.getToolManifest(
           plugin.customParams?.manifestUrl,
           plugin.customParams?.useProxy,
         );
       updateInstallLoadingState(id, false);
 
-      await pluginService.updatePluginManifest(id, manifest);
+      await pluginApi.updatePluginManifest(id, manifest);
       await refreshPlugins();
     } catch (error) {
       updateInstallLoadingState(id, false);
@@ -68,14 +68,14 @@ export const createCustomPluginSlice: StateCreator<
     }
   },
   uninstallCustomPlugin: async (id) => {
-    await pluginService.uninstallPlugin(id);
+    await pluginApi.uninstallPlugin(id);
     await get().refreshPlugins();
   },
 
   updateCustomPlugin: async (id, value) => {
     const { reinstallCustomPlugin } = get();
     // 1. 更新 list 项信息
-    await pluginService.updatePlugin(id, value);
+    await pluginApi.updatePlugin(id, value);
 
     // 2. 重新安装插件
     await reinstallCustomPlugin(id);

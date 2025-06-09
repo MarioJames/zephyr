@@ -2,8 +2,8 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { chainSummaryHistory } from '@/chains/summaryHistory';
 import { TraceNameMap } from '@/const/trace';
-import { chatService } from '@/services/chat';
-import { topicService } from '@/services/topic';
+import { chatApi } from '@/app/api/chat';
+import { topicApi } from '@/app/api/topic';
 import { ChatStore } from '@/store/chat';
 import { useUserStore } from '@/store/user';
 import { systemAgentSelectors } from '@/store/user/selectors';
@@ -26,7 +26,7 @@ export const chatMemory: StateCreator<
     const { model, provider } = systemAgentSelectors.historyCompress(useUserStore.getState());
 
     let historySummary = '';
-    await chatService.fetchPresetTaskResult({
+    await chatApi.fetchPresetTaskResult({
       onFinish: async (text) => {
         historySummary = text;
       },
@@ -38,7 +38,7 @@ export const chatMemory: StateCreator<
       },
     });
 
-    await topicService.updateTopic(topicId, {
+    await topicApi.updateTopic(topicId, {
       historySummary,
       metadata: { model, provider },
     });

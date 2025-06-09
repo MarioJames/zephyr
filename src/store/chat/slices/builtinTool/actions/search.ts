@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand/vanilla';
 
-import { searchService } from '@/services/search';
+import { searchApi } from '@/app/api/search';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatStore } from '@/store/chat/store';
 import { CRAWL_CONTENT_LIMITED_COUNT } from '@/tools/web-browsing/const';
@@ -49,7 +49,7 @@ export const searchSlice: StateCreator<
     const { internal_updateMessageContent } = get();
     get().toggleSearchLoading(id, true);
     try {
-      const response = await searchService.crawlPages(params.urls);
+      const response = await searchApi.crawlPages(params.urls);
 
       await get().updatePluginState(id, response);
       get().toggleSearchLoading(id, false);
@@ -133,7 +133,7 @@ export const searchSlice: StateCreator<
     let data: UniformSearchResponse | undefined;
     try {
       // 首次查询
-      data = await searchService.search(query, params);
+      data = await searchApi.search(query, params);
 
       // 如果没有搜索到结果，则执行第一次重试（移除搜索引擎限制）
       if (
@@ -145,13 +145,13 @@ export const searchSlice: StateCreator<
           ...params,
           searchEngines: undefined,
         };
-        data = await searchService.search(query, paramsExcludeSearchEngines);
+        data = await searchApi.search(query, paramsExcludeSearchEngines);
         get().updatePluginArguments(id, paramsExcludeSearchEngines);
       }
 
       // 如果仍然没有搜索到结果，则执行第二次重试（移除所有限制）
       if (data?.results.length === 0) {
-        data = await searchService.search(query);
+        data = await searchApi.search(query);
         get().updatePluginArguments(id, { query });
       }
 

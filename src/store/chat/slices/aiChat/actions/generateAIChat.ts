@@ -8,8 +8,8 @@ import { LOADING_FLAT, MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { TraceEventType, TraceNameMap } from '@/const/trace';
 import { isServerMode } from '@/const/version';
 import { knowledgeBaseQAPrompts } from '@/prompts/knowledgeBaseQA';
-import { chatService } from '@/services/chat';
-import { messageService } from '@/services/message';
+import { chatApi } from '@/app/api/chat';
+import { messageApi } from '@/app/api/message';
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
 import { getAgentStoreState } from '@/store/agent/store';
@@ -373,7 +373,7 @@ export const generateAIChat: StateCreator<
       );
 
       get().internal_toggleSearchWorkflow(true, assistantId);
-      await chatService.fetchPresetTaskResult({
+      await chatApi.fetchPresetTaskResult({
         params: { messages, model, provider, plugins: [WebBrowsingManifest.identifier] },
         onFinish: async (_, { toolCalls, usage }) => {
           if (toolCalls && toolCalls.length > 0) {
@@ -412,7 +412,7 @@ export const generateAIChat: StateCreator<
         },
         onErrorHandle: async (error) => {
           isError = true;
-          await messageService.updateMessageError(assistantId, error);
+          await messageApi.updateMessageError(assistantId, error);
           await refreshMessages();
         },
       });
@@ -554,7 +554,7 @@ export const generateAIChat: StateCreator<
     const historySummary = chatConfig.enableCompressHistory
       ? topicSelectors.currentActiveTopicSummary(get())
       : undefined;
-    await chatService.createAssistantMessageStream({
+    await chatApi.createAssistantMessageStream({
       abortController,
       params: {
         messages: preprocessMsgs,
@@ -572,7 +572,7 @@ export const generateAIChat: StateCreator<
       },
       isWelcomeQuestion: params?.isWelcomeQuestion,
       onErrorHandle: async (error) => {
-        await messageService.updateMessageError(messageId, error);
+        await messageApi.updateMessageError(messageId, error);
         await refreshMessages();
       },
       onFinish: async (
@@ -582,7 +582,7 @@ export const generateAIChat: StateCreator<
         // if there is traceId, update it
         if (traceId) {
           msgTraceId = traceId;
-          await messageService.updateMessage(messageId, {
+          await messageApi.updateMessage(messageId, {
             traceId,
             observationId: observationId ?? undefined,
           });

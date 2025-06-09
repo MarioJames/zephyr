@@ -3,7 +3,7 @@ import { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
 import { useClientDataSWR } from '@/libs/swr';
-import { aiModelService } from '@/services/aiModel';
+import { aiModelApi } from '@/app/api/aiModel';
 import { AiInfraStore } from '@/store/aiInfra/store';
 import {
   AiModelSortMap,
@@ -46,32 +46,32 @@ export const createAiModelSlice: StateCreator<
     const { activeAiProvider } = get();
     if (!activeAiProvider) return;
 
-    await aiModelService.batchToggleAiModels(activeAiProvider, ids, enabled);
+    await aiModelApi.batchToggleAiModels(activeAiProvider, ids, enabled);
     await get().refreshAiModelList();
   },
   batchUpdateAiModels: async (models) => {
     const { activeAiProvider: id } = get();
     if (!id) return;
 
-    await aiModelService.batchUpdateAiModels(id, models);
+    await aiModelApi.batchUpdateAiModels(id, models);
     await get().refreshAiModelList();
   },
   clearModelsByProvider: async (provider) => {
-    await aiModelService.clearModelsByProvider(provider);
+    await aiModelApi.clearModelsByProvider(provider);
     await get().refreshAiModelList();
   },
   clearRemoteModels: async (provider) => {
-    await aiModelService.clearRemoteModels(provider);
+    await aiModelApi.clearRemoteModels(provider);
     await get().refreshAiModelList();
   },
   createNewAiModel: async (data) => {
-    await aiModelService.createAiModel(data);
+    await aiModelApi.createAiModel(data);
     await get().refreshAiModelList();
   },
   fetchRemoteModelList: async (providerId) => {
-    const { modelsService } = await import('@/services/models');
+    const { modelsApi } = await import('@/app/api/models');
 
-    const data = await modelsService.getModels(providerId);
+    const data = await modelsApi.getModels(providerId);
     if (data) {
       await get().batchUpdateAiModels(
         data.map((model) => ({
@@ -108,7 +108,7 @@ export const createAiModelSlice: StateCreator<
     get().refreshAiProviderRuntimeState();
   },
   removeAiModel: async (id, providerId) => {
-    await aiModelService.deleteAiModel({ id, providerId });
+    await aiModelApi.deleteAiModel({ id, providerId });
     await get().refreshAiModelList();
   },
   toggleModelEnabled: async (params) => {
@@ -117,25 +117,25 @@ export const createAiModelSlice: StateCreator<
 
     get().internal_toggleAiModelLoading(params.id, true);
 
-    await aiModelService.toggleModelEnabled({ ...params, providerId: activeAiProvider });
+    await aiModelApi.toggleModelEnabled({ ...params, providerId: activeAiProvider });
     await get().refreshAiModelList();
 
     get().internal_toggleAiModelLoading(params.id, false);
   },
 
   updateAiModelsConfig: async (id, providerId, data) => {
-    await aiModelService.updateAiModel(id, providerId, data);
+    await aiModelApi.updateAiModel(id, providerId, data);
     await get().refreshAiModelList();
   },
   updateAiModelsSort: async (id, items) => {
-    await aiModelService.updateAiModelOrder(id, items);
+    await aiModelApi.updateAiModelOrder(id, items);
     await get().refreshAiModelList();
   },
 
   useFetchAiProviderModels: (id) =>
     useClientDataSWR<AiProviderModelListItem[]>(
       [FETCH_AI_PROVIDER_MODEL_LIST_KEY, id],
-      ([, id]) => aiModelService.getAiProviderModelList(id as string),
+      ([, id]) => aiModelApi.getAiProviderModelList(id as string),
       {
         onSuccess: (data) => {
           // no need to update list if the list have been init and data is the same

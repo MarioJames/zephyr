@@ -2,7 +2,7 @@ import { SWRResponse } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
 import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import { globalService } from '@/services/global';
+import { globalApi } from '@/app/api/global';
 import { GlobalRuntimeConfig } from '@/types/serverConfig';
 
 import type { ServerConfigStore } from './store';
@@ -21,7 +21,7 @@ export const createServerConfigSlice: StateCreator<
   useInitServerConfig: () => {
     return useOnlyFetchOnceSWR<GlobalRuntimeConfig>(
       FETCH_SERVER_CONFIG_KEY,
-      () => globalService.getGlobalConfig(),
+      () => globalApi.getGlobalConfig(),
       {
         onSuccess: (data) => {
           set(

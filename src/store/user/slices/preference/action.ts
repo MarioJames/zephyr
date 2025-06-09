@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand/vanilla';
 
-import { userService } from '@/services/user';
+import { userApi } from '@/app/api/user';
 import type { UserStore } from '@/store/user';
 import { UserGuide, UserPreference } from '@/types/user';
 import { merge } from '@/utils/merge';
@@ -30,6 +30,6 @@ export const createPreferenceSlice: StateCreator<
 
     set({ preference: nextPreference }, false, action || n('updatePreference'));
 
-    await userService.updatePreference(nextPreference);
+    await userApi.updatePreference(nextPreference);
   },
 });

@@ -5,8 +5,8 @@ import { chainLangDetect } from '@/chains/langDetect';
 import { chainTranslate } from '@/chains/translate';
 import { TraceNameMap, TracePayload } from '@/const/trace';
 import { localeOptions } from '@/config/translate';
-import { chatService } from '@/services/chat';
-import { messageService } from '@/services/message';
+import { chatApi } from '@/app/api/chat';
+import { messageApi } from '@/app/api/message';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatStore } from '@/store/chat/store';
 import { useUserStore } from '@/store/user';
@@ -60,7 +60,7 @@ export const chatTranslate: StateCreator<
     let from = '';
 
     // detect from language
-    chatService.fetchPresetTaskResult({
+    chatApi.fetchPresetTaskResult({
       onFinish: async (data) => {
         if (data && localeOptions.includes(data)) from = data;
 
@@ -71,7 +71,7 @@ export const chatTranslate: StateCreator<
     });
 
     // translate to target language
-    await chatService.fetchPresetTaskResult({
+    await chatApi.fetchPresetTaskResult({
       onFinish: async (content) => {
         await updateMessageTranslate(id, { content, from, to: targetLang });
         internal_toggleChatLoading(false, id);
@@ -98,7 +98,7 @@ export const chatTranslate: StateCreator<
   },
 
   updateMessageTranslate: async (id, data) => {
-    await messageService.updateMessageTranslate(id, data);
+    await messageApi.updateMessageTranslate(id, data);
 
     await get().refreshMessages();
   },

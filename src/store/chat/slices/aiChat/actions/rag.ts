@@ -1,8 +1,8 @@
 import { StateCreator } from 'zustand/vanilla';
 
 import { chainRewriteQuery } from '@/chains/rewriteQuery';
-import { chatService } from '@/services/chat';
-import { ragService } from '@/services/rag';
+import { chatApi } from '@/app/api/chat';
+import { ragApi } from '@/app/api/rag';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
 import { ChatStore } from '@/store/chat';
@@ -54,7 +54,7 @@ export const chatRag: StateCreator<ChatStore, [['zustand/devtools', never]], [],
       value: { ragQuery: null },
     });
 
-    await ragService.deleteMessageRagQuery(message.ragQueryId);
+    await ragApi.deleteMessageRagQuery(message.ragQueryId);
     await get().refreshMessages();
   },
 
@@ -75,7 +75,7 @@ export const chatRag: StateCreator<ChatStore, [['zustand/devtools', never]], [],
     // 2. retrieve chunks from semantic search
     const files = chatSelectors.currentUserFiles(get()).map((f) => f.id);
     try {
-      const { chunks, queryId } = await ragService.semanticSearchForChat({
+      const { chunks, queryId } = await ragApi.semanticSearchForChat({
         fileIds: knowledgeIds().fileIds.concat(files),
         knowledgeIds: knowledgeIds().knowledgeBaseIds,
         messageId: id,
@@ -109,7 +109,7 @@ export const chatRag: StateCreator<ChatStore, [['zustand/devtools', never]], [],
     };
 
     let ragQuery = '';
-    await chatService.fetchPresetTaskResult({
+    await chatApi.fetchPresetTaskResult({
       onFinish: async (text) => {
         rewriteQuery = text;
       },

@@ -3,7 +3,7 @@ import { DeepPartial } from 'utility-types';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { userService } from '@/services/user';
+import { userApi } from '@/app/api/user';
 import type { UserStore } from '@/store/user';
 import { LobeAgentSettings } from '@/types/session';
 import {
@@ -56,7 +56,7 @@ export const createSettingsSlice: StateCreator<
   },
 
   resetSettings: async () => {
-    await userService.resetUserSettings();
+    await userApi.resetUserSettings();
     await get().refreshUserState();
   },
   setSettings: async (settings) => {
@@ -70,7 +70,7 @@ export const createSettingsSlice: StateCreator<
     set({ settings: diffs }, false, 'optimistic_updateSettings');
 
     const abortController = get().internal_createSignal();
-    await userService.updateUserSettings(diffs, abortController.signal);
+    await userApi.updateUserSettings(diffs, abortController.signal);
     await get().refreshUserState();
   },
   updateDefaultAgent: async (defaultAgent) => {

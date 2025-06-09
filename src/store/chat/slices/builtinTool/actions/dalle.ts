@@ -3,7 +3,7 @@ import { SWRResponse } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
 import { useClientDataSWR } from '@/libs/swr';
-import { fileService } from '@/services/file';
+import { fileApi } from '@/app/api/file';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatStore } from '@/store/chat/store';
 import { DallEImageItem } from '@/types/tool/dalle';
@@ -57,7 +57,7 @@ export const dalleSlice: StateCreator<
 
   useFetchDalleImageItem: (id) =>
     useClientDataSWR([SWR_FETCH_KEY, id], async () => {
-      const item = await fileService.getFile(id);
+      const item = await fileApi.getFile(id);
 
       set(
         produce((draft) => {

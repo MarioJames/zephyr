@@ -5,7 +5,7 @@ import { StateCreator } from 'zustand/vanilla';
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
 import { isDeprecatedEdition, isUsePgliteDB } from '@/const/version';
 import { useClientDataSWR } from '@/libs/swr';
-import { aiProviderService } from '@/services/aiProvider';
+import { aiProviderApi } from '@/app/api/aiProvider';
 import { AiInfraStore } from '@/store/aiInfra/store';
 import { ModelAbilities } from '@/types/aiModel';
 import {
@@ -57,11 +57,11 @@ export const createAiProviderSlice: StateCreator<
   AiProviderAction
 > = (set, get) => ({
   createNewAiProvider: async (params) => {
-    await aiProviderService.createAiProvider({ ...params, source: AiProviderSourceEnum.Custom });
+    await aiProviderApi.createAiProvider({ ...params, source: AiProviderSourceEnum.Custom });
     await get().refreshAiProviderList();
   },
   deleteAiProvider: async (id: string) => {
-    await aiProviderService.deleteAiProvider(id);
+    await aiProviderApi.deleteAiProvider(id);
 
     await get().refreshAiProviderList();
   },
@@ -102,13 +102,13 @@ export const createAiProviderSlice: StateCreator<
     await mutate([AiProviderSwrKey.fetchAiProviderRuntimeState, true]);
   },
   removeAiProvider: async (id) => {
-    await aiProviderService.deleteAiProvider(id);
+    await aiProviderApi.deleteAiProvider(id);
     await get().refreshAiProviderList();
   },
 
   toggleProviderEnabled: async (id: string, enabled: boolean) => {
     get().internal_toggleAiProviderLoading(id, true);
-    await aiProviderService.toggleProviderEnabled(id, enabled);
+    await aiProviderApi.toggleProviderEnabled(id, enabled);
     await get().refreshAiProviderList();
 
     get().internal_toggleAiProviderLoading(id, false);
@@ -116,7 +116,7 @@ export const createAiProviderSlice: StateCreator<
 
   updateAiProvider: async (id, value) => {
     get().internal_toggleAiProviderLoading(id, true);
-    await aiProviderService.updateAiProvider(id, value);
+    await aiProviderApi.updateAiProvider(id, value);
     await get().refreshAiProviderList();
     await get().refreshAiProviderDetail();
 
@@ -125,20 +125,20 @@ export const createAiProviderSlice: StateCreator<
 
   updateAiProviderConfig: async (id, value) => {
     get().internal_toggleAiProviderConfigUpdating(id, true);
-    await aiProviderService.updateAiProviderConfig(id, value);
+    await aiProviderApi.updateAiProviderConfig(id, value);
     await get().refreshAiProviderDetail();
 
     get().internal_toggleAiProviderConfigUpdating(id, false);
   },
 
   updateAiProviderSort: async (items) => {
-    await aiProviderService.updateAiProviderOrder(items);
+    await aiProviderApi.updateAiProviderOrder(items);
     await get().refreshAiProviderList();
   },
   useFetchAiProviderItem: (id) =>
     useClientDataSWR<AiProviderDetailItem | undefined>(
       [AiProviderSwrKey.fetchAiProviderItem, id],
-      () => aiProviderService.getAiProviderById(id),
+      () => aiProviderApi.getAiProviderById(id),
       {
         onSuccess: (data) => {
           if (!data) return;
@@ -150,7 +150,7 @@ export const createAiProviderSlice: StateCreator<
   useFetchAiProviderList: () =>
     useClientDataSWR<AiProviderListItem[]>(
       AiProviderSwrKey.fetchAiProviderList,
-      () => aiProviderService.getAiProviderList(),
+      () => aiProviderApi.getAiProviderList(),
       {
         fallbackData: [],
         onSuccess: (data) => {
@@ -172,7 +172,7 @@ export const createAiProviderSlice: StateCreator<
     useClientDataSWR<AiProviderRuntimeState | undefined>(
       !isDeprecatedEdition ? [AiProviderSwrKey.fetchAiProviderRuntimeState, isLogin] : null,
       async ([, isLogin]) => {
-        if (isLogin) return aiProviderService.getAiProviderRuntimeState();
+        if (isLogin) return aiProviderApi.getAiProviderRuntimeState();
 
         const { LOBE_DEFAULT_MODEL_LIST } = await import('@/config/aiModels');
         return {

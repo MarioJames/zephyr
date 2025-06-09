@@ -7,7 +7,7 @@ import { message } from '@/components/AntdStaticMethods';
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { DEFAULT_AGENT_LOBE_SESSION, INBOX_SESSION_ID } from '@/const/session';
 import { useClientDataSWR } from '@/libs/swr';
-import { sessionService } from '@/services/session';
+import { sessionApi } from '@/app/api/session';
 import { SessionStore } from '@/store/session';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors } from '@/store/user/selectors';
@@ -95,7 +95,7 @@ export const createSessionSlice: StateCreator<
   SessionAction
 > = (set, get) => ({
   clearSessions: async () => {
-    await sessionService.removeAllSessions();
+    await sessionApi.removeAllSessions();
     await get().refreshSessions();
   },
 
@@ -110,7 +110,7 @@ export const createSessionSlice: StateCreator<
 
     const newSession: LobeAgentSession = merge(defaultAgent, agent);
 
-    const id = await sessionService.createSession(LobeSessionType.Agent, newSession);
+    const id = await sessionApi.createSession(LobeSessionType.Agent, newSession);
     await refreshSessions();
 
     // Whether to goto  to the new session after creation, the default is to switch to
@@ -135,7 +135,7 @@ export const createSessionSlice: StateCreator<
       key: messageLoadingKey,
     });
 
-    const newId = await sessionService.cloneSession(id, newTitle);
+    const newId = await sessionApi.cloneSession(id, newTitle);
 
     // duplicate Session Error
     if (!newId) {
@@ -154,7 +154,7 @@ export const createSessionSlice: StateCreator<
     await get().internal_updateSession(id, { pinned });
   },
   removeSession: async (sessionId) => {
-    await sessionService.removeSession(sessionId);
+    await sessionApi.removeSession(sessionId);
     await get().refreshSessions();
 
     // If the active session deleted, switch to the inbox session
@@ -195,14 +195,14 @@ export const createSessionSlice: StateCreator<
     const controller = new AbortController();
     set({ signalSessionMeta: controller }, false, 'updateSessionMetaSignal');
 
-    await sessionService.updateSessionMeta(activeId, meta, controller.signal);
+    await sessionApi.updateSessionMeta(activeId, meta, controller.signal);
     await refreshSessions();
   },
 
   useFetchSessions: (enabled, isLogin) =>
     useClientDataSWR<ChatSessionList>(
       enabled ? [FETCH_SESSIONS_KEY, isLogin] : null,
-      () => sessionService.getGroupedSessions(),
+      () => sessionApi.getGroupedSessions(),
       {
         fallbackData: {
           sessionGroups: [],
@@ -232,7 +232,7 @@ export const createSessionSlice: StateCreator<
       async () => {
         if (!keyword) return [];
 
-        return sessionService.searchSessions(keyword);
+        return sessionApi.searchSessions(keyword);
       },
       { revalidateOnFocus: false, revalidateOnMount: false },
     ),
@@ -245,7 +245,7 @@ export const createSessionSlice: StateCreator<
   internal_updateSession: async (id, data) => {
     get().internal_dispatchSessions({ type: 'updateSession', id, value: data });
 
-    await sessionService.updateSession(id, data);
+    await sessionApi.updateSession(id, data);
     await get().refreshSessions();
   },
   internal_processSessions: (sessions, sessionGroups) => {

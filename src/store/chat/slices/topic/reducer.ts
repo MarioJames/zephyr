@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 
-import { CreateTopicParams } from '@/services/topic/type';
+import { CreateTopicParams } from '@/app/api/topic';
 import { ChatTopic } from '@/types/topic';
 
 interface AddChatTopicAction {

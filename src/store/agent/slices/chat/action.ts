@@ -7,8 +7,8 @@ import { StateCreator } from 'zustand/vanilla';
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { INBOX_SESSION_ID } from '@/const/session';
 import { useClientDataSWR, useOnlyFetchOnceSWR } from '@/libs/swr';
-import { agentService } from '@/services/agent';
-import { sessionService } from '@/services/session';
+import { agentApi } from '@/app/api/agent';
+import { sessionApi } from '@/app/api/session';
 import { AgentState } from '@/store/agent/slices/chat/initialState';
 import { useSessionStore } from '@/store/session';
 import { LobeAgentChatConfig, LobeAgentConfig } from '@/types/agent';
@@ -70,7 +70,7 @@ export const createChatSlice: StateCreator<
     if (!activeAgentId) return;
     if (fileIds.length === 0) return;
 
-    await agentService.createAgentFiles(activeAgentId, fileIds, enabled);
+    await agentApi.createAgentFiles(activeAgentId, fileIds, enabled);
     await internal_refreshAgentConfig(get().activeId);
     await internal_refreshAgentKnowledge();
   },
@@ -78,7 +78,7 @@ export const createChatSlice: StateCreator<
     const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } = get();
     if (!activeAgentId) return;
 
-    await agentService.createAgentKnowledgeBase(activeAgentId, knowledgeBaseId, true);
+    await agentApi.createAgentKnowledgeBase(activeAgentId, knowledgeBaseId, true);
     await internal_refreshAgentConfig(get().activeId);
     await internal_refreshAgentKnowledge();
   },
@@ -86,7 +86,7 @@ export const createChatSlice: StateCreator<
     const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } = get();
     if (!activeAgentId) return;
 
-    await agentService.deleteAgentFile(activeAgentId, fileId);
+    await agentApi.deleteAgentFile(activeAgentId, fileId);
     await internal_refreshAgentConfig(get().activeId);
     await internal_refreshAgentKnowledge();
   },
@@ -94,7 +94,7 @@ export const createChatSlice: StateCreator<
     const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } = get();
     if (!activeAgentId) return;
 
-    await agentService.deleteAgentKnowledgeBase(activeAgentId, knowledgeBaseId);
+    await agentApi.deleteAgentKnowledgeBase(activeAgentId, knowledgeBaseId);
     await internal_refreshAgentConfig(get().activeId);
     await internal_refreshAgentKnowledge();
   },
@@ -106,7 +106,7 @@ export const createChatSlice: StateCreator<
     const { activeAgentId, internal_refreshAgentConfig } = get();
     if (!activeAgentId) return;
 
-    await agentService.toggleFile(activeAgentId, id, open);
+    await agentApi.toggleFile(activeAgentId, id, open);
 
     await internal_refreshAgentConfig(get().activeId);
   },
@@ -114,7 +114,7 @@ export const createChatSlice: StateCreator<
     const { activeAgentId, internal_refreshAgentConfig } = get();
     if (!activeAgentId) return;
 
-    await agentService.toggleKnowledgeBase(activeAgentId, id, open);
+    await agentApi.toggleKnowledgeBase(activeAgentId, id, open);
 
     await internal_refreshAgentConfig(get().activeId);
   },
@@ -161,7 +161,7 @@ export const createChatSlice: StateCreator<
   useFetchAgentConfig: (isLogin, sessionId) =>
     useClientDataSWR<LobeAgentConfig>(
       isLogin ? [FETCH_AGENT_CONFIG_KEY, sessionId] : null,
-      ([, id]: string[]) => sessionService.getSessionConfig(id),
+      ([, id]: string[]) => sessionApi.getSessionConfig(id),
       {
         onSuccess: (data) => {
           get().internal_dispatchAgentMap(sessionId, data, 'fetch');
@@ -180,7 +180,7 @@ export const createChatSlice: StateCreator<
   useFetchFilesAndKnowledgeBases: () => {
     return useClientDataSWR<KnowledgeItem[]>(
       [FETCH_AGENT_KNOWLEDGE_KEY, get().activeAgentId],
-      ([, id]: string[]) => agentService.getFilesAndKnowledgeBases(id),
+      ([, id]: string[]) => agentApi.getFilesAndKnowledgeBases(id),
       {
         fallbackData: [],
         suspense: true,
@@ -191,7 +191,7 @@ export const createChatSlice: StateCreator<
   useInitInboxAgentStore: (isLogin, defaultAgentConfig) =>
     useOnlyFetchOnceSWR<DeepPartial<LobeAgentConfig>>(
       !!isLogin ? 'fetchInboxAgentConfig' : null,
-      () => sessionService.getSessionConfig(INBOX_SESSION_ID),
+      () => sessionApi.getSessionConfig(INBOX_SESSION_ID),
       {
         onSuccess: (data) => {
           set(
@@ -230,7 +230,7 @@ export const createChatSlice: StateCreator<
     // optimistic update at frontend
     get().internal_dispatchAgentMap(id, data, 'optimistic_updateAgentConfig');
 
-    await sessionService.updateSessionConfig(id, data, signal);
+    await sessionApi.updateSessionConfig(id, data, signal);
     await get().internal_refreshAgentConfig(id);
 
     // refresh sessions to update the agent config if the model has changed

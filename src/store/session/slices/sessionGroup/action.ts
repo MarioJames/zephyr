@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand/vanilla';
 
 import { message } from '@/components/AntdStaticMethods';
-import { sessionService } from '@/services/session';
+import { sessionApi } from '@/app/api/session';
 import { SessionStore } from '@/store/session';
 import { SessionGroupItem } from '@/types/session';
 
@@ -25,7 +25,7 @@ export const createSessionGroupSlice: StateCreator<
   SessionGroupAction
 > = (set, get) => ({
   addSessionGroup: async (name) => {
-    const id = await sessionService.createSessionGroup(name);
+    const id = await sessionApi.createSessionGroup(name);
 
     await get().refreshSessions();
 
@@ -33,17 +33,17 @@ export const createSessionGroupSlice: StateCreator<
   },
 
   clearSessionGroups: async () => {
-    await sessionService.removeSessionGroups();
+    await sessionApi.removeSessionGroups();
     await get().refreshSessions();
   },
 
   removeSessionGroup: async (id) => {
-    await sessionService.removeSessionGroup(id);
+    await sessionApi.removeSessionGroup(id);
     await get().refreshSessions();
   },
 
   updateSessionGroupName: async (id, name) => {
-    await sessionService.updateSessionGroup(id, { name });
+    await sessionApi.updateSessionGroup(id, { name });
     await get().refreshSessions();
   },
   updateSessionGroupSort: async (items) => {
@@ -57,7 +57,7 @@ export const createSessionGroupSlice: StateCreator<
       key: 'updateSessionGroupSort',
     });
 
-    await sessionService.updateSessionGroupOrder(sortMap);
+    await sessionApi.updateSessionGroupOrder(sortMap);
     message.destroy('updateSessionGroupSort');
     message.success('分组排序成功');
 

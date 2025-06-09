@@ -200,9 +200,9 @@ export const createModelListSlice: StateCreator<
     useSWR<ChatModelCard[] | undefined>(
       [provider, enabledAutoFetch],
       async ([p]) => {
-        const { modelsService } = await import('@/services/models');
+        const { modelsApi } = await import('@/app/api/models');
 
-        return modelsService.getModels(p);
+        return modelsApi.getModels(p);
       },
       {
         onSuccess: async (data) => {

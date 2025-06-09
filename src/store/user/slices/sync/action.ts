@@ -52,9 +52,9 @@ export const createSyncSlice: StateCreator<
     const defaultUserName = `My ${browserInfo.browser} (${browserInfo.os})`;
 
     set({ syncStatus: PeerSyncStatus.Connecting });
-    const { syncService } = await import('@/services/sync');
+    const { syncApi } = await import('@/app/api/sync');
 
-    return syncService.enabledSync({
+    return syncApi.enabledSync({
       channel: {
         name: sync.channelName,
         password: sync.channelPassword,
@@ -85,8 +85,8 @@ export const createSyncSlice: StateCreator<
 
         // if user don't enable sync, stop sync
         if (!userEnableSync) {
-          const { syncService } = await import('@/services/sync');
-          return syncService.disableSync();
+          const { syncApi } = await import('@/app/api/sync');
+          return syncApi.disableSync();
         }
 
         return get().triggerEnableSync(userId, onEvent);

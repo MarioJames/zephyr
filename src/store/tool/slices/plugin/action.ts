@@ -4,7 +4,7 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { useClientDataSWR } from '@/libs/swr';
-import { pluginService } from '@/services/plugin';
+import { pluginApi } from '@/app/api/plugin';
 import { merge } from '@/utils/merge';
 
 import { ToolStore } from '../../store';
@@ -43,7 +43,7 @@ export const createPluginSlice: StateCreator<
     await installPlugins(plugins);
   },
   removeAllPlugins: async () => {
-    await pluginService.removeAllPlugins();
+    await pluginApi.removeAllPlugins();
     await get().refreshPlugins();
   },
   updatePluginSettings: async (id, settings) => {
@@ -56,7 +56,7 @@ export const createPluginSlice: StateCreator<
     const nextSettings = merge(previousSettings, settings);
 
     set({ updatePluginSettingsSignal: newSignal }, false, 'create new Signal');
-    await pluginService.updatePluginSettings(id, nextSettings, newSignal.signal);
+    await pluginApi.updatePluginSettings(id, nextSettings, newSignal.signal);
 
     await get().refreshPlugins();
   },

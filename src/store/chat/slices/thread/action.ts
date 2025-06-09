@@ -8,8 +8,8 @@ import { chainSummaryTitle } from '@/chains/summaryTitle';
 import { LOADING_FLAT, THREAD_DRAFT_ID } from '@/const/message';
 import { isDeprecatedEdition } from '@/const/version';
 import { useClientDataSWR } from '@/libs/swr';
-import { chatService } from '@/services/chat';
-import { threadService } from '@/services/thread';
+import { chatApi } from '@/app/api/chat';
+import { threadApi } from '@/app/api/thread';
 import { threadSelectors } from '@/store/chat/selectors';
 import { ChatStore } from '@/store/chat/store';
 import { useSessionStore } from '@/store/session';
@@ -199,7 +199,7 @@ export const chatThreadMessage: StateCreator<
   createThread: async ({ message, sourceMessageId, topicId, type }) => {
     set({ isCreatingThread: true }, false, n('creatingThread/start'));
 
-    const data = await threadService.createThreadWithMessage({
+    const data = await threadApi.createThreadWithMessage({
       topicId,
       sourceMessageId,
       type,
@@ -213,7 +213,7 @@ export const chatThreadMessage: StateCreator<
   useFetchThreads: (enable, topicId) =>
     useClientDataSWR<ThreadItem[]>(
       enable && !!topicId && !isDeprecatedEdition ? [SWR_USE_FETCH_THREADS, topicId] : null,
-      async ([, topicId]: [string, string]) => threadService.getThreads(topicId),
+      async ([, topicId]: [string, string]) => threadApi.getThreads(topicId),
       {
         onSuccess: (threads) => {
           const nextMap = { ...get().threadMaps, [topicId!]: threads };
@@ -237,7 +237,7 @@ export const chatThreadMessage: StateCreator<
     return mutate([SWR_USE_FETCH_THREADS, topicId]);
   },
   removeThread: async (id) => {
-    await threadService.removeThread(id);
+    await threadApi.removeThread(id);
     await get().refreshThreads();
 
     if (get().activeThreadId === id) {
@@ -261,7 +261,7 @@ export const chatThreadMessage: StateCreator<
     let output = '';
     const threadConfig = systemAgentSelectors.thread(useUserStore.getState());
 
-    await chatService.fetchPresetTaskResult({
+    await chatApi.fetchPresetTaskResult({
       onError: () => {
         internal_updateThreadTitleInSummary(threadId, portalThread.title);
       },
@@ -308,7 +308,7 @@ export const chatThreadMessage: StateCreator<
     get().internal_dispatchThread({ type: 'updateThread', id, value: data });
 
     get().internal_updateThreadLoading(id, true);
-    await threadService.updateThread(id, data);
+    await threadApi.updateThread(id, data);
     await get().refreshThreads();
     get().internal_updateThreadLoading(id, false);
   },

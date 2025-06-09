@@ -5,8 +5,8 @@ import { Md5 } from 'ts-md5';
 import { StateCreator } from 'zustand/vanilla';
 
 import { LOADING_FLAT } from '@/const/message';
-import { chatService } from '@/services/chat';
-import { messageService } from '@/services/message';
+import { chatApi } from '@/app/api/chat';
+import { messageApi } from '@/app/api/message';
 import { ChatStore } from '@/store/chat/store';
 import { useToolStore } from '@/store/tool';
 import { pluginSelectors } from '@/store/tool/selectors';
@@ -95,7 +95,7 @@ export const chatPlugin: StateCreator<
       topicId: get().activeTopicId, // if there is activeTopicId，then add it to topicId
     };
 
-    await messageService.createMessage(newMessage);
+    await messageApi.createMessage(newMessage);
     await get().refreshMessages();
   },
 
@@ -183,7 +183,7 @@ export const chatPlugin: StateCreator<
 
     // if the plugin settings is not valid, then set the message with error type
     if (!result.valid) {
-      await messageService.updateMessageError(id, {
+      await messageApi.updateMessageError(id, {
         body: {
           error: result.errors,
           message: '[plugin] your settings is invalid with plugin manifest setting schema',
@@ -293,7 +293,7 @@ export const chatPlugin: StateCreator<
     // optimistic update
     get().internal_dispatchMessage({ id, type: 'updateMessage', value: { pluginState: value } });
 
-    await messageService.updateMessagePluginState(id, value);
+    await messageApi.updateMessagePluginState(id, value);
     await refreshMessages();
   },
 
@@ -329,13 +329,13 @@ export const chatPlugin: StateCreator<
 
     const updateAssistantMessage = async () => {
       if (!assistantMessage) return;
-      await messageService.updateMessage(assistantMessage!.id, {
+      await messageApi.updateMessage(assistantMessage!.id, {
         tools: assistantMessage?.tools,
       });
     };
 
     await Promise.all([
-      messageService.updateMessagePluginArguments(id, nextValue),
+      messageApi.updateMessagePluginArguments(id, nextValue),
       updateAssistantMessage(),
     ]);
 
@@ -375,7 +375,7 @@ export const chatPlugin: StateCreator<
     const { internal_toggleMessageLoading, refreshMessages } = get();
 
     internal_toggleMessageLoading(true, id);
-    await messageService.updateMessage(id, { tools: message.tools });
+    await messageApi.updateMessage(id, { tools: message.tools });
     internal_toggleMessageLoading(false, id);
 
     await refreshMessages();
@@ -395,7 +395,7 @@ export const chatPlugin: StateCreator<
 
       const message = chatSelectors.getMessageById(id)(get());
 
-      const res = await chatService.runPluginApi(payload, {
+      const res = await chatApi.runPluginApi(payload, {
         signal: abortController?.signal,
         trace: { observationId: message?.observationId, traceId: message?.traceId },
       });
@@ -403,7 +403,7 @@ export const chatPlugin: StateCreator<
 
       // save traceId
       if (res.traceId) {
-        await messageService.updateMessage(id, { traceId: res.traceId });
+        await messageApi.updateMessage(id, { traceId: res.traceId });
       }
     } catch (error) {
       console.log(error);
@@ -411,7 +411,7 @@ export const chatPlugin: StateCreator<
 
       // ignore the aborted request error
       if (!err.message.includes('The user aborted a request.')) {
-        await messageService.updateMessageError(id, error as any);
+        await messageApi.updateMessageError(id, error as any);
         await refreshMessages();
       }
 
@@ -491,7 +491,7 @@ export const chatPlugin: StateCreator<
     const { refreshMessages } = get();
 
     get().internal_dispatchMessage({ id, type: 'updateMessage', value: { error } });
-    await messageService.updateMessage(id, { error });
+    await messageApi.updateMessage(id, { error });
     await refreshMessages();
   },
 });

@@ -10,10 +10,9 @@ import { message } from '@/components/AntdStaticMethods';
 import { LOADING_FLAT } from '@/const/message';
 import { TraceNameMap } from '@/const/trace';
 import { useClientDataSWR } from '@/libs/swr';
-import { chatService } from '@/services/chat';
-import { messageService } from '@/services/message';
-import { topicService } from '@/services/topic';
-import { CreateTopicParams } from '@/services/topic/type';
+import { chatApi } from '@/app/api/chat';
+import { messageApi } from '@/app/api/message';
+import { topicApi,CreateTopicParams } from '@/app/api/topic';
 import type { ChatStore } from '@/store/chat';
 import { useUserStore } from '@/store/user';
 import { systemAgentSelectors } from '@/store/user/selectors';
@@ -126,7 +125,7 @@ export const chatTopic: StateCreator<
       duration: 0,
     });
 
-    const newTopicId = await topicService.cloneTopic(id, newTitle);
+    const newTopicId = await topicApi.cloneTopic(id, newTitle);
     await refreshTopic();
     message.destroy('duplicateTopic');
     message.success('复制成功');
@@ -147,7 +146,7 @@ export const chatTopic: StateCreator<
     const topicConfig = systemAgentSelectors.topic(useUserStore.getState());
 
     // Automatically summarize the topic title
-    await chatService.fetchPresetTaskResult({
+    await chatApi.fetchPresetTaskResult({
       onError: () => {
         internal_updateTopicTitleInSummary(topicId, topic.title);
       },
@@ -182,7 +181,7 @@ export const chatTopic: StateCreator<
     const { activeId: sessionId, summaryTopicTitle, internal_updateTopicLoading } = get();
 
     internal_updateTopicLoading(id, true);
-    const messages = await messageService.getMessages(sessionId, id);
+    const messages = await messageApi.getMessages(sessionId, id);
 
     await summaryTopicTitle(id, messages);
     internal_updateTopicLoading(id, false);
@@ -192,7 +191,7 @@ export const chatTopic: StateCreator<
   useFetchTopics: (enable, sessionId) =>
     useClientDataSWR<ChatTopic[]>(
       enable ? [SWR_USE_FETCH_TOPIC, sessionId] : null,
-      async ([, sessionId]: [string, string]) => topicService.getTopics({ sessionId }),
+      async ([, sessionId]: [string, string]) => topicApi.getTopics({ sessionId }),
       {
         suspense: true,
         fallbackData: [],
@@ -214,7 +213,7 @@ export const chatTopic: StateCreator<
     useSWR<ChatTopic[]>(
       [SWR_USE_SEARCH_TOPIC, keywords, sessionId],
       ([, keywords, sessionId]: [string, string, string]) =>
-        topicService.searchTopics(keywords, sessionId),
+        topicApi.searchTopics(keywords, sessionId),
       {
         onSuccess: (data) => {
           set(
@@ -239,7 +238,7 @@ export const chatTopic: StateCreator<
   removeSessionTopics: async () => {
     const { switchTopic, activeId, refreshTopic } = get();
 
-    await topicService.removeTopics(activeId);
+    await topicApi.removeTopics(activeId);
     await refreshTopic();
 
     // switch to default topic
@@ -248,7 +247,7 @@ export const chatTopic: StateCreator<
   removeAllTopics: async () => {
     const { refreshTopic } = get();
 
-    await topicService.removeAllTopic();
+    await topicApi.removeAllTopic();
     await refreshTopic();
   },
   removeTopic: async (id) => {
@@ -256,10 +255,10 @@ export const chatTopic: StateCreator<
 
     // remove messages in the topic
     // TODO: Need to remove because server service don't need to call it
-    await messageService.removeMessagesByAssistant(activeId, id);
+    await messageApi.removeMessagesByAssistant(activeId, id);
 
     // remove topic
-    await topicService.removeTopic(id);
+    await topicApi.removeTopic(id);
     await refreshTopic();
 
     // switch bach to default topic
@@ -269,7 +268,7 @@ export const chatTopic: StateCreator<
     const { refreshTopic, switchTopic } = get();
     const topics = topicSelectors.currentUnFavTopics(get());
 
-    await topicService.batchRemoveTopics(topics.map((t) => t.id));
+    await topicApi.batchRemoveTopics(topics.map((t) => t.id));
     await refreshTopic();
 
     // 切换到默认 topic
@@ -303,7 +302,7 @@ export const chatTopic: StateCreator<
     get().internal_dispatchTopic({ type: 'updateTopic', id, value: data });
 
     get().internal_updateTopicLoading(id, true);
-    await topicService.updateTopic(id, data);
+    await topicApi.updateTopic(id, data);
     await get().refreshTopic();
     get().internal_updateTopicLoading(id, false);
   },
@@ -315,7 +314,7 @@ export const chatTopic: StateCreator<
     );
 
     get().internal_updateTopicLoading(tmpId, true);
-    const topicId = await topicService.createTopic(params);
+    const topicId = await topicApi.createTopic(params);
     get().internal_updateTopicLoading(tmpId, false);
 
     get().internal_updateTopicLoading(topicId, true);

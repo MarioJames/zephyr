@@ -4,8 +4,8 @@ import useSWR, { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
 import { notification } from '@/components/AntdStaticMethods';
-import { pluginService } from '@/services/plugin';
-import { toolService } from '@/services/tool';
+import { pluginApi } from '@/app/api/plugin';
+import { toolApi } from '@/app/api/tool';
 import { pluginStoreSelectors } from '@/store/tool/selectors';
 import { LobeTool } from '@/types/tool';
 import { PluginInstallError } from '@/types/tool/plugin';
@@ -43,10 +43,10 @@ export const createPluginStoreSlice: StateCreator<
     const { updateInstallLoadingState, refreshPlugins } = get();
     try {
       updateInstallLoadingState(name, true);
-      const data = await toolService.getToolManifest(plugin.manifest);
+      const data = await toolApi.getToolManifest(plugin.manifest);
 
       // 4. 存储 manifest 信息
-      await pluginService.installPlugin({ identifier: plugin.identifier, manifest: data, type });
+      await pluginApi.installPlugin({ identifier: plugin.identifier, manifest: data, type });
       await refreshPlugins();
 
       updateInstallLoadingState(name, undefined);
@@ -67,7 +67,7 @@ export const createPluginStoreSlice: StateCreator<
     await Promise.all(plugins.map((identifier) => installPlugin(identifier)));
   },
   loadPluginStore: async () => {
-    const pluginMarketIndex = await toolService.getToolList();
+    const pluginMarketIndex = await toolApi.getToolList();
 
     set({ pluginStoreList: pluginMarketIndex || [] }, false, n('loadPluginList'));
 
@@ -77,7 +77,7 @@ export const createPluginStoreSlice: StateCreator<
     await mutate(INSTALLED_PLUGINS);
   },
   uninstallPlugin: async (identifier) => {
-    await pluginService.uninstallPlugin(identifier);
+    await pluginApi.uninstallPlugin(identifier);
     await get().refreshPlugins();
   },
   updateInstallLoadingState: (key, value) => {
@@ -91,7 +91,7 @@ export const createPluginStoreSlice: StateCreator<
   },
 
   useFetchInstalledPlugins: (enabled: boolean) =>
-    useSWR<LobeTool[]>(enabled ? INSTALLED_PLUGINS : null, pluginService.getInstalledPlugins, {
+    useSWR<LobeTool[]>(enabled ? INSTALLED_PLUGINS : null, pluginApi.getInstalledPlugins, {
       fallbackData: [],
       onSuccess: (data) => {
         set(
