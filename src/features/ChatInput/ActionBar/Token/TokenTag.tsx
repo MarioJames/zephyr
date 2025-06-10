@@ -6,14 +6,11 @@ import { memo, useMemo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useModelContextWindowTokens } from '@/hooks/useModelContextWindowTokens';
-import { useModelSupportToolUse } from '@/hooks/useModelSupportToolUse';
 import { useTokenCount } from '@/hooks/useTokenCount';
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors, topicSelectors } from '@/store/chat/selectors';
-import { useToolStore } from '@/store/tool';
-import { toolSelectors } from '@/store/tool/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
@@ -34,7 +31,6 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
       agentSelectors.currentAgentSystemRole(s),
       agentSelectors.currentAgentModel(s) as string,
       agentSelectors.currentAgentModelProvider(s) as string,
-      // add these two params to enable the component to re-render
       agentChatConfigSelectors.historyCount(s),
       agentChatConfigSelectors.enableHistoryCount(s),
     ];
@@ -46,20 +42,7 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
   ]);
 
   const maxTokens = useModelContextWindowTokens(model, provider);
-
-  // Tool usage token
-  const canUseTool = useModelSupportToolUse(model, provider);
-  const plugins = useAgentStore(agentSelectors.currentAgentPlugins);
-  const toolsString = useToolStore((s) => {
-    const pluginSystemRoles = toolSelectors.enabledSystemRoles(plugins)(s);
-    const schemaNumber = toolSelectors
-      .enabledSchema(plugins)(s)
-      .map((i) => JSON.stringify(i))
-      .join('');
-
-    return pluginSystemRoles + schemaNumber;
-  });
-  const toolsToken = useTokenCount(canUseTool ? toolsString : '');
+  const toolsToken = 0;
 
   // Chat usage token
   const inputTokenCount = useTokenCount(input);

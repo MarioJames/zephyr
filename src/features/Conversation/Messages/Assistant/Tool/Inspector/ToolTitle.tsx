@@ -1,12 +1,9 @@
 import { createStyles } from 'antd-style';
-import isEqual from 'fast-deep-equal';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { pluginHelpers, useToolStore } from '@/store/tool';
-import { toolSelectors } from '@/store/tool/selectors';
 import { shinyTextStylish } from '@/styles/loading';
 
 export const useStyles = createStyles(({ css, token }) => ({
@@ -44,8 +41,7 @@ const ToolTitle = memo<ToolTitleProps>(({ identifier, messageId, index, apiName,
     return isToolCallStreaming || isPluginApiInvoking;
   });
 
-  const pluginMeta = useToolStore(toolSelectors.getMetaById(identifier), isEqual);
-  const pluginTitle = pluginHelpers.getPluginTitle(pluginMeta) ?? '未知插件';
+  const pluginTitle = '未知插件';
 
   return (
     <Flexbox align={'center'} className={isLoading ? styles.shinyText : ''} gap={4} horizontal>

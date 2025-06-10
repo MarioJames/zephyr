@@ -4,17 +4,12 @@ import { Flexbox } from 'react-layout-kit';
 
 import { ChatMessageError, ChatPluginPayload } from '@/types/message';
 
-import PluginSettings from './PluginSettings';
-
 interface ErrorResponseProps extends ChatMessageError {
   id: string;
   plugin?: ChatPluginPayload;
 }
 
 const ErrorResponse = memo<ErrorResponseProps>(({ id, type, body, message, plugin }) => {
-  if (type === 'PluginSettingsInvalid') {
-    return <PluginSettings id={id} plugin={plugin} />;
-  }
 
   return (
     <Alert
