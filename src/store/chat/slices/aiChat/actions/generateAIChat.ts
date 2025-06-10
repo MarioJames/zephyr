@@ -19,7 +19,6 @@ import { chatHelpers } from '@/store/chat/helpers';
 import { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 import { useSessionStore } from '@/store/session';
-import { WebBrowsingManifest } from '@/tools/web-browsing';
 import { ChatMessage, CreateMessageParams, SendMessageParams } from '@/types/message';
 import { ChatImageItem } from '@/types/message/image';
 import { MessageSemanticSearchChunk } from '@/types/rag';
@@ -374,7 +373,7 @@ export const generateAIChat: StateCreator<
 
       get().internal_toggleSearchWorkflow(true, assistantId);
       await chatApi.fetchPresetTaskResult({
-        params: { messages, model, provider, plugins: [WebBrowsingManifest.identifier] },
+        params: { messages, model, provider, plugins: [] },
         onFinish: async (_, { toolCalls, usage }) => {
           if (toolCalls && toolCalls.length > 0) {
             get().internal_toggleToolCallingStreaming(assistantId, undefined);

@@ -10,7 +10,6 @@ import { ChatBuiltinToolAction, chatToolSlice } from './slices/builtinTool/actio
 import { ChatPortalAction, chatPortalSlice } from './slices/portal/action';
 import { ChatTranslateAction, chatTranslate } from './slices/translate/action';
 import { ChatMessageAction, chatMessage } from './slices/message/action';
-import { ChatPluginAction, chatPlugin } from './slices/plugin/action';
 import { ShareAction, chatShare } from './slices/share/action';
 import { ChatTopicAction, chatTopic } from './slices/topic/action';
 import { ChatAIChatAction, chatAiChat } from './slices/aiChat/actions';
@@ -23,7 +22,6 @@ export interface ChatStoreAction
     ChatTopicAction,
     ShareAction,
     ChatTranslateAction,
-    ChatPluginAction,
     ChatBuiltinToolAction,
     ChatPortalAction {}
 
@@ -41,7 +39,6 @@ const createStore: StateCreator<ChatStore, [['zustand/devtools', never]]> = (...
   ...chatShare(...params),
   ...chatTranslate(...params),
   ...chatToolSlice(...params),
-  ...chatPlugin(...params),
   ...chatPortalSlice(...params),
 
   // cloud
