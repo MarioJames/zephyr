@@ -79,21 +79,21 @@ instance.interceptors.response.use(
       }
     }
     // 其他错误处理
-    if (error.response) {
-      switch (error.response.status) {
-        case 403:
-          window.location.href = '/403';
-          break;
-        case 404:
-          window.location.href = '/404';
-          break;
-        case 500:
-          window.location.href = '/500';
-          break;
-        default:
-          break;
-      }
-    }
+    // if (error.response) {
+    //   switch (error.response.status) {
+    //     case 403:
+    //       window.location.href = '/403';
+    //       break;
+    //     case 404:
+    //       window.location.href = '/404';
+    //       break;
+    //     case 500:
+    //       window.location.href = '/500';
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
     return Promise.reject(error);
   }
 );
