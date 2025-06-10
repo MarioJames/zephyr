@@ -1,4 +1,5 @@
 import { request } from './index';
+import ragMock from '../mock/rag';
 
 export const ragApi = {
   /**
@@ -6,11 +7,13 @@ export const ragApi = {
    * @param id string 查询ID
    * @returns Promise<any>
    */
-  deleteMessageRagQuery: (id: string) => request('/rag/deleteMessageRagQuery', { id }),
+  deleteMessageRagQuery: (data: any) =>
+    ragMock['/rag/deleteMessageRagQuery']?.(data) || request('/rag/deleteMessageRagQuery', data),
   /**
    * 聊天语义检索
    * @param params any 检索参数
    * @returns Promise<{chunks: any[], queryId: string}> 检索结果
    */
-  semanticSearchForChat: (params: any) => request('/rag/semanticSearchForChat', params),
+  semanticSearchForChat: (data: any) =>
+    ragMock['/rag/semanticSearchForChat']?.(data) || request('/rag/semanticSearchForChat', data),
 }; 

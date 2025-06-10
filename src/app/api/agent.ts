@@ -1,5 +1,6 @@
 import { request } from './index';
 import { LobeAgentConfig } from '@/types/agent';
+import agentMock from '../mock/agent';
 
 export const agentApi = {
   /**
@@ -9,8 +10,8 @@ export const agentApi = {
    * @param enabled boolean 是否启用
    * @returns Promise<any>
    */
-  createAgentKnowledgeBase: (agentId: string, knowledgeBaseId: string, enabled?: boolean) =>
-    request('/agent/createAgentKnowledgeBase', { agentId, knowledgeBaseId, enabled }),
+  createAgentKnowledgeBase: (data: any) =>
+    agentMock['/agent/createAgentKnowledgeBase']?.(data) || request('/agent/createAgentKnowledgeBase', data),
 
   /**
    * 删除 Agent 知识库关联
@@ -18,8 +19,8 @@ export const agentApi = {
    * @param knowledgeBaseId string 知识库ID
    * @returns Promise<any>
    */
-  deleteAgentKnowledgeBase: (agentId: string, knowledgeBaseId: string) =>
-    request('/agent/deleteAgentKnowledgeBase', { agentId, knowledgeBaseId }),
+  deleteAgentKnowledgeBase: (data: any) =>
+    agentMock['/agent/deleteAgentKnowledgeBase']?.(data) || request('/agent/deleteAgentKnowledgeBase', data),
 
   /**
    * 切换 Agent 知识库启用状态
@@ -28,8 +29,8 @@ export const agentApi = {
    * @param enabled boolean 是否启用
    * @returns Promise<any>
    */
-  toggleKnowledgeBase: (agentId: string, knowledgeBaseId: string, enabled?: boolean) =>
-    request('/agent/toggleKnowledgeBase', { agentId, knowledgeBaseId, enabled }),
+  toggleKnowledgeBase: (data: any) =>
+    agentMock['/agent/toggleKnowledgeBase']?.(data) || request('/agent/toggleKnowledgeBase', data),
 
   /**
    * 创建 Agent 文件关联
@@ -38,8 +39,8 @@ export const agentApi = {
    * @param enabled boolean 是否启用
    * @returns Promise<any>
    */
-  createAgentFiles: (agentId: string, fileIds: string[], enabled?: boolean) =>
-    request('/agent/createAgentFiles', { agentId, fileIds, enabled }),
+  createAgentFiles: (data: any) =>
+    agentMock['/agent/createAgentFiles']?.(data) || request('/agent/createAgentFiles', data),
 
   /**
    * 删除 Agent 文件关联
@@ -47,8 +48,8 @@ export const agentApi = {
    * @param fileId string 文件ID
    * @returns Promise<any>
    */
-  deleteAgentFile: (agentId: string, fileId: string) =>
-    request('/agent/deleteAgentFile', { agentId, fileId }),
+  deleteAgentFile: (data: any) =>
+    agentMock['/agent/deleteAgentFile']?.(data) || request('/agent/deleteAgentFile', data),
 
   /**
    * 切换 Agent 文件启用状态
@@ -57,14 +58,14 @@ export const agentApi = {
    * @param enabled boolean 是否启用
    * @returns Promise<any>
    */
-  toggleFile: (agentId: string, fileId: string, enabled?: boolean) =>
-    request('/agent/toggleFile', { agentId, fileId, enabled }),
+  toggleFile: (data: any) =>
+    agentMock['/agent/toggleFile']?.(data) || request('/agent/toggleFile', data),
 
   /**
    * 获取 Agent 的文件和知识库信息
    * @param agentId string Agent ID
    * @returns Promise<LobeAgentConfig>
    */
-  getFilesAndKnowledgeBases: (agentId: string): Promise<LobeAgentConfig> =>
-    request('/agent/getFilesAndKnowledgeBases', { agentId }),
+  getFilesAndKnowledgeBases: (data: any) =>
+    agentMock['/agent/getFilesAndKnowledgeBases']?.(data) || request('/agent/getFilesAndKnowledgeBases', data),
 }; 

@@ -1,4 +1,5 @@
 import { request } from './index';
+import traceMock from '../mock/trace';
 
 export const traceApi = {
   /**
@@ -6,5 +7,6 @@ export const traceApi = {
    * @param data any 事件数据
    * @returns Promise<any>
    */
-  traceEvent: (data: any) => request('/trace/traceEvent', data),
+  traceEvent: (data: any) =>
+    traceMock['/trace/traceEvent']?.(data) || request('/trace/traceEvent', data),
 }; 

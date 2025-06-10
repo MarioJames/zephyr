@@ -1,6 +1,13 @@
 export default {
   '/user/getUserRegistrationDuration': () => 100,
-  '/user/getUserState': () => ({ id: 'user-001', username: 'mockuser', avatar: '', isOnboard: true }),
+  '/user/getUserState': () => ({
+    id: 'mock-user',
+    username: 'mock',
+    avatar: '',
+    isOnboard: true,
+    email: 'mock@mock.com',
+    roles: ['user'],
+  }),
   '/user/getUserSSOProviders': () => [],
   '/user/unlinkSSOProvider': () => ({ success: true }),
   '/user/updateUserSettings': () => ({ success: true }),

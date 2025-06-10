@@ -1,24 +1,25 @@
 import { request } from './index';
+import aiModelMock from '../mock/aiModel';
 
 export const aiModelApi = {
   batchToggleAiModels: (providerId: string, ids: string[], enabled: boolean) =>
-    request('/aiModel/batchToggleAiModels', { providerId, ids, enabled }),
+    aiModelMock['/aiModel/batchToggleAiModels']?.({ providerId, ids, enabled }) || request('/aiModel/batchToggleAiModels', { providerId, ids, enabled }),
   batchUpdateAiModels: (providerId: string, models: any[]) =>
-    request('/aiModel/batchUpdateAiModels', { providerId, models }),
+    aiModelMock['/aiModel/batchUpdateAiModels']?.({ providerId, models }) || request('/aiModel/batchUpdateAiModels', { providerId, models }),
   clearModelsByProvider: (provider: string) =>
-    request('/aiModel/clearModelsByProvider', { provider }),
+    aiModelMock['/aiModel/clearModelsByProvider']?.({ provider }) || request('/aiModel/clearModelsByProvider', { provider }),
   clearRemoteModels: (provider: string) =>
-    request('/aiModel/clearRemoteModels', { provider }),
+    aiModelMock['/aiModel/clearRemoteModels']?.({ provider }) || request('/aiModel/clearRemoteModels', { provider }),
   createAiModel: (data: any) =>
-    request('/aiModel/createAiModel', data),
+    aiModelMock['/aiModel/createAiModel']?.(data) || request('/aiModel/createAiModel', data),
   deleteAiModel: ({ id, providerId }: { id: string; providerId: string }) =>
-    request('/aiModel/deleteAiModel', { id, providerId }),
+    aiModelMock['/aiModel/deleteAiModel']?.({ id, providerId }) || request('/aiModel/deleteAiModel', { id, providerId }),
   toggleModelEnabled: (params: any) =>
-    request('/aiModel/toggleModelEnabled', params),
+    aiModelMock['/aiModel/toggleModelEnabled']?.(params) || request('/aiModel/toggleModelEnabled', params),
   updateAiModel: (id: string, providerId: string, data: any) =>
-    request('/aiModel/updateAiModel', { id, providerId, data }),
+    aiModelMock['/aiModel/updateAiModel']?.({ id, providerId, data }) || request('/aiModel/updateAiModel', { id, providerId, data }),
   updateAiModelOrder: (providerId: string, items: any[]) =>
-    request('/aiModel/updateAiModelOrder', { providerId, items }),
+    aiModelMock['/aiModel/updateAiModelOrder']?.({ providerId, items }) || request('/aiModel/updateAiModelOrder', { providerId, items }),
   getAiProviderModelList: (providerId: string) =>
-    request('/aiModel/getAiProviderModelList', { providerId }),
+    aiModelMock['/aiModel/getAiProviderModelList']?.({ providerId }) || request('/aiModel/getAiProviderModelList', { providerId }),
 }; 

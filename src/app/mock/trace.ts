@@ -1,3 +1,3 @@
 export default {
-  '/trace/traceEvent': () => ({ success: true }),
+  '/trace/traceEvent': (data) => ({ success: true, event: data?.event || 'mock-event', timestamp: Date.now() }),
 }; 

@@ -1,6 +1,9 @@
 import { request } from './index';
+import globalMock from '../mock/global';
 
 export const globalApi = {
-  getGlobalConfig: () => request('/global/getGlobalConfig', {}),
-  getLatestVersion: () => request('/global/getLatestVersion', {}),
+  getGlobalConfig: () =>
+    globalMock['/global/getGlobalConfig']?.({}) || request('/global/getGlobalConfig', {}),
+  getLatestVersion: () =>
+    globalMock['/global/getLatestVersion']?.({}) || request('/global/getLatestVersion', {}),
 }; 

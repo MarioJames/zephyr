@@ -1,7 +1,20 @@
 export default {
   '/message/createMessage': () => ({ id: 'msg-001', content: 'mock message' }),
   '/message/batchCreateMessages': () => ({ success: true }),
-  '/message/getMessages': () => [{ id: 'msg-001', content: 'mock message' }],
+  '/message/getMessages': () => ([
+    {
+      id: 'msg-1',
+      content: 'Hello, this is a mock message.',
+      role: 'user',
+      createdAt: Date.now(),
+    },
+    {
+      id: 'msg-2',
+      content: 'Hi, this is a mock assistant reply.',
+      role: 'assistant',
+      createdAt: Date.now(),
+    },
+  ]),
   '/message/getAllMessages': () => [{ id: 'msg-001', content: 'mock message' }],
   '/message/countMessages': () => 1,
   '/message/countWords': () => 10,

@@ -1,4 +1,14 @@
 export default {
-  '/global/getGlobalConfig': () => ({ siteName: 'Mock Site', version: '1.0.0' }),
+  '/global/getGlobalConfig': () => ({
+    config: {
+      themeMode: 'auto',
+      showChatSideBar: true,
+      showFilePanel: true,
+      showHotkeyHelper: false,
+      showSessionPanel: true,
+      showSystemRole: false,
+      zenMode: false,
+    },
+  }),
   '/global/getLatestVersion': () => ({ version: '1.0.0', changelog: 'Initial release' }),
 }; 

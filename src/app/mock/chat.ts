@@ -1,7 +1,7 @@
 export default {
-  '/chat/createAssistantMessage': () => ({ id: 'msg-001', content: 'mock assistant message' }),
-  '/chat/createAssistantMessageStream': () => ({ id: 'msg-002', content: 'mock stream message' }),
-  '/chat/getChatCompletion': () => ({ result: 'mock chat completion' }),
-  '/chat/runPluginApi': () => ({ result: 'mock plugin api result' }),
-  '/chat/fetchPresetTaskResult': () => ({ result: 'mock preset task result' }),
+  '/chat/createAssistantMessage': (data) => ({ id: 'msg-001', content: data?.content || 'mock assistant message', role: 'assistant', createdAt: Date.now() }),
+  '/chat/createAssistantMessageStream': (data) => ({ id: 'msg-002', content: data?.content || 'mock stream message', role: 'assistant', createdAt: Date.now(), stream: true }),
+  '/chat/getChatCompletion': (data) => ({ result: `mock chat completion for ${data?.prompt || ''}`, choices: [{ text: 'This is a mock completion.' }] }),
+  '/chat/runPluginApi': (data) => ({ result: `mock plugin api result for ${data?.plugin || ''}` }),
+  '/chat/fetchPresetTaskResult': (data) => ({ result: `mock preset task result for ${data?.task || ''}` }),
 }; 

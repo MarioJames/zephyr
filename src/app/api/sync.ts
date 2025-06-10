@@ -1,4 +1,5 @@
 import { request } from './index';
+import syncMock from '../mock/sync';
 
 export const syncApi = {
   /**
@@ -6,10 +7,12 @@ export const syncApi = {
    * @param params any 同步参数
    * @returns Promise<boolean>
    */
-  enabledSync: (params: any) => request('/sync/enabledSync', params),
+  enabledSync: (data: any) =>
+    syncMock['/sync/enabledSync']?.(data) || request('/sync/enabledSync', data),
   /**
    * 禁用同步
    * @returns Promise<boolean>
    */
-  disableSync: () => request('/sync/disableSync', {}),
+  disableSync: (data: any) =>
+    syncMock['/sync/disableSync']?.(data) || request('/sync/disableSync', data),
 }; 

@@ -1,4 +1,5 @@
 import { request } from './index';
+import threadMock from '../mock/thread';
 
 export const threadApi = {
   /**

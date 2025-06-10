@@ -1,5 +1,6 @@
 import { request } from './index';
 import { LobeAgentConfig } from '@/types/agent';
+import sessionMock from '../mock/session';
 
 export const sessionApi = {
   /**
@@ -8,7 +9,7 @@ export const sessionApi = {
    * @returns Promise<LobeAgentConfig> 会话配置
    */
   getSessionConfig: (id: string): Promise<LobeAgentConfig> =>
-    request('/session/getSessionConfig', { id }),
+    sessionMock['/session/getSessionConfig']?.({ id }) || request('/session/getSessionConfig', { id }),
   /**
    * 更新会话配置
    * @param id string 会话ID
@@ -17,5 +18,5 @@ export const sessionApi = {
    * @returns Promise<any>
    */
   updateSessionConfig: (id: string, data: Partial<LobeAgentConfig>, signal?: AbortSignal) =>
-    request('/session/updateSessionConfig', { id, data }, { signal }),
+    sessionMock['/session/updateSessionConfig']?.(data) || request('/session/updateSessionConfig', { id, data }, { signal }),
 }; 
