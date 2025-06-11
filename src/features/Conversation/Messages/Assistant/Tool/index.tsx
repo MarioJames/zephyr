@@ -3,7 +3,6 @@ import { Flexbox } from 'react-layout-kit';
 
 import AnimatedCollapsed from '@/components/AnimatedCollapsed';
 
-import Inspectors from './Inspector';
 import Render from './Render';
 
 export interface InspectorProps {
@@ -24,19 +23,6 @@ const Tool = memo<InspectorProps>(
 
     return (
       <Flexbox gap={8} style={style}>
-        <Inspectors
-          apiName={apiName}
-          arguments={requestArgs}
-          id={id}
-          identifier={identifier}
-          index={index}
-          messageId={messageId}
-          payload={payload}
-          setShowPluginRender={setShowPluginRender}
-          setShowRender={setShowRender}
-          showPluginRender={showPluginRender}
-          showRender={showRender}
-        />
         <AnimatedCollapsed open={showRender}>
           <Render
             messageId={messageId}
