@@ -11,7 +11,8 @@ import {
   Popover, 
   List, 
   Modal, 
-  message 
+  message, 
+  ConfigProvider 
 } from 'antd';
 import { 
   SearchOutlined, 
@@ -22,6 +23,7 @@ import {
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
+import zhCN from 'antd/locale/zh_CN';
 
 const { Title, Text } = Typography;
 
@@ -31,6 +33,9 @@ const useStyles = createStyles(({ css, token }) => ({
     padding: 24px;
     background-color: #f0f2f5;
     min-height: 100vh;
+    width: 100%;
+    flex: 1;
+    overflow: auto;
   `,
   header: css`
     height: 56px;
@@ -314,8 +319,8 @@ export default function Customer() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type="link" icon={<EditOutlined />} onClick={() => handleEditCustomer(record)}>编辑</Button>
-          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>
+          <Button type="text" onClick={() => handleEditCustomer(record)}>编辑</Button>
+          <Button type="text" onClick={() => handleDelete(record)}>删除</Button>
         </Space>
       ),
     },
@@ -333,69 +338,83 @@ export default function Customer() {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      {/* 顶部区域 */}
-      <div className={styles.header}>
-        <Title level={4} style={{ margin: 0 }}>客户管理</Title>
-        <Space>
-          <Input 
-            placeholder="搜索客户" 
-            prefix={<SearchOutlined />} 
-            className={styles.searchBox}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+    <ConfigProvider locale={zhCN}>
+      <div className={styles.pageContainer}>
+        {/* 顶部区域 */}
+        <div className={styles.header}>
+          <Title level={4} style={{ margin: 0 }}>客户管理</Title>
+          <Space>
+            <Input 
+              placeholder="搜索客户" 
+              prefix={<SearchOutlined />} 
+              className={styles.searchBox}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Button className={styles.actionButton}>客户模版配置</Button>
+            <Button type="primary" className={styles.actionButton} onClick={handleAddCustomer}>添加客户</Button>
+          </Space>
+        </div>
+
+        {/* 统计区域 */}
+        <div className={styles.statsContainer}>
+          <div className={styles.statsBox}>
+            <div className={styles.statsTitle}>当前A类客户总数</div>
+            <div className={styles.statsValue}>200</div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statsTitle}>当前B类客户总数</div>
+            <div className={styles.statsValue}>150</div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statsTitle}>当前C类客户总数</div>
+            <div className={styles.statsValue}>100</div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statsTitle}>客户总数</div>
+            <div className={styles.statsValue}>450</div>
+          </div>
+        </div>
+
+        {/* 表格区域 */}
+        <div className={styles.tableContainer}>
+          <Table 
+            columns={columns} 
+            dataSource={mockCustomers}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: 100, // 假设总数为100
+              showSizeChanger: true,
+              showQuickJumper: false,
+              showTotal: (total) => `共 ${total} 条记录`,
+              locale: {
+                items_per_page: '条/页',
+                jump_to: '跳至',
+                page: '页'
+              }
+            }}
+            onChange={handleTableChange}
+            locale={{
+              triggerDesc: '点击降序排列',
+              triggerAsc: '点击升序排列',
+              cancelSort: '取消排序'
+            }}
           />
-          <Button className={styles.actionButton}>客户模版配置</Button>
-          <Button type="primary" className={styles.actionButton} onClick={handleAddCustomer}>添加客户</Button>
-        </Space>
-      </div>
+        </div>
 
-      {/* 统计区域 */}
-      <div className={styles.statsContainer}>
-        <div className={styles.statsBox}>
-          <div className={styles.statsTitle}>当前A类客户总数</div>
-          <div className={styles.statsValue}>200</div>
-        </div>
-        <div className={styles.statsBox}>
-          <div className={styles.statsTitle}>当前B类客户总数</div>
-          <div className={styles.statsValue}>150</div>
-        </div>
-        <div className={styles.statsBox}>
-          <div className={styles.statsTitle}>当前C类客户总数</div>
-          <div className={styles.statsValue}>100</div>
-        </div>
-        <div className={styles.statsBox}>
-          <div className={styles.statsTitle}>客户总数</div>
-          <div className={styles.statsValue}>450</div>
-        </div>
+        {/* 删除确认弹窗 */}
+        <Modal
+          title="确认删除"
+          open={deleteModalVisible}
+          onOk={confirmDelete}
+          onCancel={() => setDeleteModalVisible(false)}
+          okText="确认"
+          cancelText="取消"
+        >
+          <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
+        </Modal>
       </div>
-
-      {/* 表格区域 */}
-      <div className={styles.tableContainer}>
-        <Table 
-          columns={columns} 
-          dataSource={mockCustomers}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: 100, // 假设总数为100
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
-          }}
-          onChange={handleTableChange}
-        />
-      </div>
-
-      {/* 删除确认弹窗 */}
-      <Modal
-        title="确认删除"
-        open={deleteModalVisible}
-        onOk={confirmDelete}
-        onCancel={() => setDeleteModalVisible(false)}
-      >
-        <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
-      </Modal>
-    </div>
+    </ConfigProvider>
   );
 }

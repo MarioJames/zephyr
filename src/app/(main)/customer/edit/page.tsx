@@ -13,7 +13,8 @@ import {
   message,
   Row,
   Col,
-  Cascader
+  Cascader,
+  ConfigProvider
 } from 'antd';
 import { 
   ArrowLeftOutlined, 
@@ -23,6 +24,7 @@ import {
 import { createStyles } from 'antd-style';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import zhCN from 'antd/locale/zh_CN';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -34,6 +36,9 @@ const useStyles = createStyles(({ css, token }) => ({
     padding: 24px;
     background-color: #f0f2f5;
     min-height: 100vh;
+    width: 100%;
+    flex: 1;
+    overflow: auto;
   `,
   header: css`
     height: 56px;
@@ -333,236 +338,239 @@ export default function CustomerEdit() {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      {/* 顶部返回导航 */}
-      <div className={styles.header}>
-        <div className={styles.backButton} onClick={handleBack}>
-          <ArrowLeftOutlined style={{ marginRight: 8 }} />
-          <span>返回客户管理</span>
+    <ConfigProvider locale={zhCN}>
+      <div className={styles.pageContainer}>
+        {/* 顶部返回导航 */}
+        <div className={styles.header}>
+          <div className={styles.backButton} onClick={handleBack}>
+            <ArrowLeftOutlined style={{ marginRight: 8 }} />
+            <span>返回客户管理</span>
+          </div>
+        </div>
+        
+        {/* 客户类型选择 */}
+        <Title level={5}>选择客户类型</Title>
+        <div className={styles.typeContainer}>
+          {['A', 'B', 'C'].map((type) => (
+            <div
+              key={type}
+              className={`${styles.typeBox} ${
+                customerType === type ? styles.typeBoxSelected : styles.typeBoxUnselected
+              }`}
+              onClick={() => setCustomerType(type)}
+            >
+              <div className={styles.typeTitle}>{type}类客户</div>
+              <div className={styles.typeDesc}>{customerTypeDesc[type]}</div>
+              {customerType === type && <CheckCircleFilled className={styles.checkIcon} />}
+            </div>
+          ))}
+        </div>
+        
+        <Divider />
+        
+        {/* 表单区域 */}
+        <div className={styles.formContainer}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            disabled={loading}
+            requiredMark={true}
+          >
+            {/* 头像上传 */}
+            <Title level={5}>头像</Title>
+            <div className={styles.avatarContainer}>
+              <div className={styles.avatarCircle}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ color: '#999' }}>头像</div>
+                )}
+              </div>
+              <Upload
+                name="avatar"
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  const isImage = file.type.startsWith('image/');
+                  if (!isImage) {
+                    message.error('只能上传图片文件！');
+                  }
+                  return isImage || Upload.LIST_IGNORE;
+                }}
+                onChange={handleAvatarChange}
+                customRequest={({ onSuccess }) => {
+                  // 模拟上传成功
+                  setTimeout(() => {
+                    onSuccess("ok", null);
+                  }, 500);
+                }}
+              >
+                <Button>上传头像</Button>
+              </Upload>
+            </div>
+            
+            <Divider />
+            
+            {/* 基本信息 */}
+            <div className={styles.sectionTitle}>基本信息</div>
+            <Row gutter={24}>
+              <Col span={6}>
+                <Form.Item
+                  name="name"
+                  label="姓名"
+                  rules={[{ required: true, message: '请输入姓名' }]}
+                >
+                  <Input placeholder="请输入姓名" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  name="gender"
+                  label="性别"
+                >
+                  <Select placeholder="请选择性别">
+                    {genderOptions.map(option => (
+                      <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  name="age"
+                  label="年龄"
+                >
+                  <Select placeholder="请选择年龄">
+                    {ageOptions.map(option => (
+                      <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item
+                  name="position"
+                  label="职位"
+                >
+                  <Input placeholder="请输入职位" />
+                </Form.Item>
+              </Col>
+            </Row>
+            
+            {/* 联系方式 */}
+            <div className={styles.sectionTitle}>联系方式</div>
+            <Row gutter={24}>
+              <Col span={8}>
+                <Form.Item
+                  name="phone"
+                  label="手机号"
+                  rules={[
+                    { required: true, message: '请输入手机号' },
+                    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
+                  ]}
+                >
+                  <Input placeholder="请输入手机号" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="email"
+                  label="邮箱"
+                  rules={[
+                    { type: 'email', message: '请输入正确的邮箱格式' }
+                  ]}
+                >
+                  <Input placeholder="请输入邮箱" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="wechat"
+                  label="微信号"
+                >
+                  <Input placeholder="请输入微信号" />
+                </Form.Item>
+              </Col>
+            </Row>
+            
+            {/* 公司信息 */}
+            <div className={styles.sectionTitle}>公司信息</div>
+            <Row gutter={24}>
+              <Col span={8}>
+                <Form.Item
+                  name="company"
+                  label="公司名称"
+                >
+                  <Input placeholder="请输入公司名称" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="industry"
+                  label="行业"
+                >
+                  <Select placeholder="请选择行业">
+                    {industryOptions.map(option => (
+                      <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="scale"
+                  label="规模"
+                >
+                  <Select placeholder="请选择公司规模">
+                    {scaleOptions.map(option => (
+                      <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            
+            {/* 地址信息 */}
+            <div className={styles.sectionTitle}>地址信息</div>
+            <Row gutter={24}>
+              <Col span={12}>
+                <Form.Item
+                  name="region"
+                  label="省市区"
+                >
+                  <Cascader options={provinceOptions} placeholder="请选择省市区" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="address"
+                  label="详细地址"
+                >
+                  <Input placeholder="请输入详细地址" />
+                </Form.Item>
+              </Col>
+            </Row>
+            
+            <Divider />
+            
+            {/* 备注 */}
+            <Form.Item
+              name="notes"
+              label="备注"
+            >
+              <TextArea rows={2} placeholder="请输入备注信息" />
+            </Form.Item>
+            
+            {/* 提交按钮 */}
+            <div className={styles.buttonsContainer}>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                {isEdit ? '更新客户' : '添加客户'}
+              </Button>
+              <Button onClick={handleBack}>取消</Button>
+            </div>
+          </Form>
         </div>
       </div>
-      
-      {/* 客户类型选择 */}
-      <Title level={5}>选择客户类型</Title>
-      <div className={styles.typeContainer}>
-        {['A', 'B', 'C'].map((type) => (
-          <div
-            key={type}
-            className={`${styles.typeBox} ${
-              customerType === type ? styles.typeBoxSelected : styles.typeBoxUnselected
-            }`}
-            onClick={() => setCustomerType(type)}
-          >
-            <div className={styles.typeTitle}>{type}类客户</div>
-            <div className={styles.typeDesc}>{customerTypeDesc[type]}</div>
-            {customerType === type && <CheckCircleFilled className={styles.checkIcon} />}
-          </div>
-        ))}
-      </div>
-      
-      <Divider />
-      
-      {/* 表单区域 */}
-      <div className={styles.formContainer}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          disabled={loading}
-        >
-          {/* 头像上传 */}
-          <Title level={5}>头像</Title>
-          <div className={styles.avatarContainer}>
-            <div className={styles.avatarCircle}>
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <div style={{ color: '#999' }}>头像</div>
-              )}
-            </div>
-            <Upload
-              name="avatar"
-              showUploadList={false}
-              beforeUpload={(file) => {
-                const isImage = file.type.startsWith('image/');
-                if (!isImage) {
-                  message.error('只能上传图片文件！');
-                }
-                return isImage || Upload.LIST_IGNORE;
-              }}
-              onChange={handleAvatarChange}
-              customRequest={({ onSuccess }) => {
-                // 模拟上传成功
-                setTimeout(() => {
-                  onSuccess("ok", null);
-                }, 500);
-              }}
-            >
-              <Button icon={<UploadOutlined />}>上传头像</Button>
-            </Upload>
-          </div>
-          
-          <Divider />
-          
-          {/* 基本信息 */}
-          <div className={styles.sectionTitle}>基本信息</div>
-          <Row gutter={24}>
-            <Col span={6}>
-              <Form.Item
-                name="name"
-                label={<span className={styles.requiredLabel}>姓名:</span>}
-                rules={[{ required: true, message: '请输入姓名' }]}
-              >
-                <Input placeholder="请输入姓名" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                name="gender"
-                label="性别:"
-              >
-                <Select placeholder="请选择性别">
-                  {genderOptions.map(option => (
-                    <Option key={option.value} value={option.value}>{option.label}</Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                name="age"
-                label="年龄:"
-              >
-                <Select placeholder="请选择年龄">
-                  {ageOptions.map(option => (
-                    <Option key={option.value} value={option.value}>{option.label}</Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                name="position"
-                label="职位:"
-              >
-                <Input placeholder="请输入职位" />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          {/* 联系方式 */}
-          <div className={styles.sectionTitle}>联系方式</div>
-          <Row gutter={24}>
-            <Col span={8}>
-              <Form.Item
-                name="phone"
-                label={<span className={styles.requiredLabel}>手机号:</span>}
-                rules={[
-                  { required: true, message: '请输入手机号' },
-                  { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
-                ]}
-              >
-                <Input placeholder="请输入手机号" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="email"
-                label="邮箱:"
-                rules={[
-                  { type: 'email', message: '请输入正确的邮箱格式' }
-                ]}
-              >
-                <Input placeholder="请输入邮箱" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="wechat"
-                label="微信号:"
-              >
-                <Input placeholder="请输入微信号" />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          {/* 公司信息 */}
-          <div className={styles.sectionTitle}>公司信息</div>
-          <Row gutter={24}>
-            <Col span={8}>
-              <Form.Item
-                name="company"
-                label="公司名称:"
-              >
-                <Input placeholder="请输入公司名称" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="industry"
-                label="行业:"
-              >
-                <Select placeholder="请选择行业">
-                  {industryOptions.map(option => (
-                    <Option key={option.value} value={option.value}>{option.label}</Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="scale"
-                label="规模:"
-              >
-                <Select placeholder="请选择公司规模">
-                  {scaleOptions.map(option => (
-                    <Option key={option.value} value={option.value}>{option.label}</Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          {/* 地址信息 */}
-          <div className={styles.sectionTitle}>地址信息</div>
-          <Row gutter={24}>
-            <Col span={12}>
-              <Form.Item
-                name="region"
-                label="省市区:"
-              >
-                <Cascader options={provinceOptions} placeholder="请选择省市区" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="address"
-                label="详细地址:"
-              >
-                <Input placeholder="请输入详细地址" />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Divider />
-          
-          {/* 备注 */}
-          <Form.Item
-            name="notes"
-            label="备注:"
-          >
-            <TextArea rows={2} placeholder="请输入备注信息" />
-          </Form.Item>
-          
-          {/* 提交按钮 */}
-          <div className={styles.buttonsContainer}>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              {isEdit ? '更新客户' : '添加客户'}
-            </Button>
-            <Button onClick={handleBack}>取消</Button>
-          </div>
-        </Form>
-      </div>
-    </div>
+    </ConfigProvider>
   );
 } 

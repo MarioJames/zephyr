@@ -14,7 +14,8 @@ import {
   List,
   Row,
   Col,
-  message
+  message,
+  ConfigProvider
 } from 'antd';
 import { 
   ArrowLeftOutlined, 
@@ -25,6 +26,7 @@ import {
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter, useSearchParams } from 'next/navigation';
+import zhCN from 'antd/locale/zh_CN';
 
 const { Title, Text } = Typography;
 
@@ -34,6 +36,9 @@ const useStyles = createStyles(({ css, token }) => ({
     padding: 24px;
     background-color: #f0f2f5;
     min-height: 100vh;
+    width: 100%;
+    flex: 1;
+    overflow: auto;
   `,
   header: css`
     height: 56px;
@@ -223,8 +228,8 @@ export default function CustomerDetail() {
   const id = searchParams.get('id');
   
   // 状态管理
-  const [customer, setCustomer] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [customer, setCustomer] = useState(mockCustomerData);
+  const [loading, setLoading] = useState(false);
   const [employeeSearchText, setEmployeeSearchText] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortOrder, setSortOrder] = useState('');
@@ -300,7 +305,7 @@ export default function CustomerDetail() {
       title: '操作',
       key: 'action',
       render: (_, record) => (
-        <Button type="link">查看</Button>
+        <Button type="text">查看</Button>
       ),
     },
   ];
@@ -314,162 +319,180 @@ export default function CustomerDetail() {
   };
 
   if (loading || !customer) {
-    return <div className={styles.pageContainer}>加载中...</div>;
+    console.log('loading', loading,customer);
+    return (
+      <ConfigProvider locale={zhCN}>
+        <div className={styles.pageContainer}>加载中...</div>
+      </ConfigProvider>
+    );
   }
 
   return (
-    <div className={styles.pageContainer}>
-      {/* 顶部导航 */}
-      <div className={styles.header}>
-        <div className={styles.backButton} onClick={handleBack}>
-          <ArrowLeftOutlined style={{ marginRight: 8 }} />
-          <span>返回客户管理</span>
+    <ConfigProvider locale={zhCN}>
+      <div className={styles.pageContainer}>
+        {/* 顶部导航 */}
+        <div className={styles.header}>
+          <div className={styles.backButton} onClick={handleBack}>
+            <ArrowLeftOutlined style={{ marginRight: 8 }} />
+            <span>返回客户管理</span>
+          </div>
+          <Space>
+            <Button 
+              className={styles.actionButton}
+              onClick={handleDelete}
+            >
+              删除
+            </Button>
+            <Button 
+              type="primary" 
+              className={styles.actionButton}
+              onClick={handleEdit}
+            >
+              编辑
+            </Button>
+          </Space>
         </div>
-        <Space>
-          <Button 
-            icon={<DeleteOutlined />} 
-            className={styles.actionButton}
-            onClick={handleDelete}
-          >
-            删除
-          </Button>
-          <Button 
-            type="primary" 
-            icon={<EditOutlined />} 
-            className={styles.actionButton}
-            onClick={handleEdit}
-          >
-            编辑
-          </Button>
-        </Space>
-      </div>
-      
-      {/* 客户信息卡片 */}
-      <Card className={styles.customerCard}>
-        <Row>
-          <Col span={18}>
-            <div className={styles.customerInfo}>
-              <div className={styles.customerAvatar}>
-                <Avatar size={64} style={{ backgroundColor: '#1890ff' }}>
-                  {customer.name.charAt(0)}
-                </Avatar>
-              </div>
-              <div>
-                <div className={styles.customerName}>{customer.name}</div>
-                <div className={styles.customerMeta}>创建时间：{customer.createTime}</div>
-                <div className={styles.customerNotes}>备注：{customer.notes || '-'}</div>
-              </div>
-            </div>
-          </Col>
-          <Col span={6}>
-            <div className={styles.assigneeContainer}>
-              <div className={styles.assigneeTitle}>对接人</div>
-              <Popover
-                trigger="click"
-                placement="bottom"
-                title="选择对接人"
-                content={
-                  <div className={styles.popoverContent}>
-                    <Input
-                      placeholder="搜索员工"
-                      className={styles.popoverSearch}
-                      value={employeeSearchText}
-                      onChange={(e) => setEmployeeSearchText(e.target.value)}
-                      prefix={<SearchOutlined />}
-                    />
-                    <List
-                      size="small"
-                      dataSource={filteredEmployees}
-                      renderItem={item => (
-                        <List.Item 
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleAssignEmployee(item)}
-                        >
-                          {item.name}
-                        </List.Item>
-                      )}
-                      style={{ height: '150px', overflow: 'auto' }}
-                    />
-                  </div>
-                }
-              >
-                <div className={styles.assigneeValue}>
-                  {customer.assignee} <DownOutlined style={{ fontSize: '12px', marginLeft: '4px' }} />
+        
+        {/* 客户信息卡片 */}
+        <Card className={styles.customerCard}>
+          <Row>
+            <Col span={18}>
+              <div className={styles.customerInfo}>
+                <div className={styles.customerAvatar}>
+                  <Avatar size={64} style={{ backgroundColor: '#1890ff' }}>
+                    {customer.name.charAt(0)}
+                  </Avatar>
                 </div>
-              </Popover>
+                <div>
+                  <div className={styles.customerName}>{customer.name}</div>
+                  <div className={styles.customerMeta}>创建时间：{customer.createTime}</div>
+                  <div className={styles.customerNotes}>备注：{customer.notes || '-'}</div>
+                </div>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div className={styles.assigneeContainer}>
+                <div className={styles.assigneeTitle}>对接人</div>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  title="选择对接人"
+                  content={
+                    <div className={styles.popoverContent}>
+                      <Input
+                        placeholder="搜索员工"
+                        className={styles.popoverSearch}
+                        value={employeeSearchText}
+                        onChange={(e) => setEmployeeSearchText(e.target.value)}
+                        prefix={<SearchOutlined />}
+                      />
+                      <List
+                        size="small"
+                        dataSource={filteredEmployees}
+                        renderItem={item => (
+                          <List.Item 
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleAssignEmployee(item)}
+                          >
+                            {item.name}
+                          </List.Item>
+                        )}
+                        style={{ height: '150px', overflow: 'auto' }}
+                      />
+                    </div>
+                  }
+                >
+                  <div className={styles.assigneeValue}>
+                    {customer.assignee} <DownOutlined style={{ fontSize: '12px', marginLeft: '4px' }} />
+                  </div>
+                </Popover>
+              </div>
+            </Col>
+          </Row>
+        </Card>
+        
+        {/* 详细信息区域 */}
+        <div className={styles.infoContainer}>
+          {/* 联系方式 */}
+          <div className={styles.infoBox}>
+            <div className={styles.infoTitle}>联系方式</div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>手机号：</div>
+              <div className={styles.infoValue}>{customer.phone || '-'}</div>
             </div>
-          </Col>
-        </Row>
-      </Card>
-      
-      {/* 详细信息区域 */}
-      <div className={styles.infoContainer}>
-        {/* 联系方式 */}
-        <div className={styles.infoBox}>
-          <div className={styles.infoTitle}>联系方式</div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>手机号：</div>
-            <div className={styles.infoValue}>{customer.phone || '-'}</div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>邮箱：</div>
+              <div className={styles.infoValue}>{customer.email || '-'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>微信号：</div>
+              <div className={styles.infoValue}>{customer.wechat || '-'}</div>
+            </div>
           </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>邮箱：</div>
-            <div className={styles.infoValue}>{customer.email || '-'}</div>
+          
+          {/* 公司信息 */}
+          <div className={styles.infoBox}>
+            <div className={styles.infoTitle}>公司信息</div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>公司名称：</div>
+              <div className={styles.infoValue}>{customer.company || '-'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>行业：</div>
+              <div className={styles.infoValue}>{customer.industry || '-'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>规模：</div>
+              <div className={styles.infoValue}>{customer.scale || '-'}</div>
+            </div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>职位：</div>
+              <div className={styles.infoValue}>{customer.position || '-'}</div>
+            </div>
           </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>微信号：</div>
-            <div className={styles.infoValue}>{customer.wechat || '-'}</div>
+          
+          {/* 地址信息 */}
+          <div className={styles.infoBox}>
+            <div className={styles.infoTitle}>地址信息</div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>省市区：</div>
+              <div className={styles.infoValue}>
+                {customer.province && customer.city && customer.district
+                  ? `${customer.province} ${customer.city} ${customer.district}`
+                  : '-'}
+              </div>
+            </div>
+            <div className={styles.infoItem}>
+              <div className={styles.infoLabel}>详细地址：</div>
+              <div className={styles.infoValue}>{customer.address || '-'}</div>
+            </div>
           </div>
         </div>
         
-        {/* 公司信息 */}
-        <div className={styles.infoBox}>
-          <div className={styles.infoTitle}>公司信息</div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>公司名称：</div>
-            <div className={styles.infoValue}>{customer.company || '-'}</div>
-          </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>行业：</div>
-            <div className={styles.infoValue}>{customer.industry || '-'}</div>
-          </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>规模：</div>
-            <div className={styles.infoValue}>{customer.scale || '-'}</div>
-          </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>职位：</div>
-            <div className={styles.infoValue}>{customer.position || '-'}</div>
-          </div>
-        </div>
-        
-        {/* 地址信息 */}
-        <div className={styles.infoBox}>
-          <div className={styles.infoTitle}>地址信息</div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>省市区：</div>
-            <div className={styles.infoValue}>
-              {customer.province && customer.city && customer.district
-                ? `${customer.province} ${customer.city} ${customer.district}`
-                : '-'}
-            </div>
-          </div>
-          <div className={styles.infoItem}>
-            <div className={styles.infoLabel}>详细地址：</div>
-            <div className={styles.infoValue}>{customer.address || '-'}</div>
-          </div>
+        {/* 消息记录 */}
+        <div className={styles.messagesTitle}>消息记录</div>
+        <div className={styles.messagesTable}>
+          <Table 
+            columns={columns} 
+            dataSource={mockMessages}
+            pagination={{ 
+              pageSize: 5,
+              showTotal: (total) => `共 ${total} 条记录`,
+              locale: {
+                items_per_page: '条/页',
+                jump_to: '跳至',
+                page: '页'
+              }
+            }}
+            onChange={handleTableChange}
+            locale={{
+              triggerDesc: '点击降序排列',
+              triggerAsc: '点击升序排列',
+              cancelSort: '取消排序'
+            }}
+          />
         </div>
       </div>
-      
-      {/* 消息记录 */}
-      <div className={styles.messagesTitle}>消息记录</div>
-      <div className={styles.messagesTable}>
-        <Table 
-          columns={columns} 
-          dataSource={mockMessages}
-          pagination={{ pageSize: 5 }}
-          onChange={handleTableChange}
-        />
-      </div>
-    </div>
+    </ConfigProvider>
   );
 } 
