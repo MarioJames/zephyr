@@ -4,9 +4,6 @@ import { AsteriskSquare, KeySquare, ScanFace } from 'lucide-react';
 import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useServerConfigStore } from '@/store/serverConfig';
-import { featureFlagsSelectors, serverConfigSelectors } from '@/store/serverConfig/selectors';
-
 import APIKeyForm from './APIKeyForm';
 import AccessCodeForm from './AccessCodeForm';
 import OAuthForm from './OAuthForm';
@@ -24,10 +21,12 @@ interface InvalidAccessCodeProps {
 }
 
 const InvalidAccessCode = memo<InvalidAccessCodeProps>(({ id, provider }) => {
-  const isEnabledOAuth = useServerConfigStore(serverConfigSelectors.enabledOAuthSSO);
+  // 挽歌TODO
+  const isEnabledOAuth = true;
   const defaultTab = isEnabledOAuth ? Tab.Oauth : Tab.Password;
   const [mode, setMode] = useState<Tab>(defaultTab);
-  const { showOpenAIApiKey } = useServerConfigStore(featureFlagsSelectors);
+  // 挽歌TODO
+  const showOpenAIApiKey = true;
   const isEnabledTab = showOpenAIApiKey || isEnabledOAuth;
 
   return (

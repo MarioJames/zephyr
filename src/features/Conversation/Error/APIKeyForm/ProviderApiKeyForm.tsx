@@ -5,7 +5,6 @@ import { ReactNode, memo, useContext, useState } from 'react';
 import { FormInput, FormPassword } from '@/components/FormInput';
 import { LoadingContext } from '@/features/Conversation/Error/APIKeyForm/LoadingContext';
 import { useProviderName } from '@/hooks/useProviderName';
-import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { GlobalLLMProviderKey } from '@/types/user/settings';
 
 import { FormAction } from '../style';
@@ -23,7 +22,8 @@ const ProviderApiKeyForm = memo<ProviderApiKeyFormProps>(
     const [showProxy, setShow] = useState(false);
 
     const { apiKey, baseURL, setConfig } = useApiKey(provider);
-    const { showOpenAIProxyUrl } = useServerConfigStore(featureFlagsSelectors);
+    // 挽歌TODO
+    const showOpenAIProxyUrl = true;
     const providerName = useProviderName(provider);
     const { loading } = useContext(LoadingContext);
 

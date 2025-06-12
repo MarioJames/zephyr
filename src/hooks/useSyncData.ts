@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 
 import { useChatStore } from '@/store/chat';
-import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { useSessionStore } from '@/store/session';
 import { useUserStore } from '@/store/user';
 import { syncSettingsSelectors, userProfileSelectors } from '@/store/user/selectors';
@@ -42,7 +41,8 @@ export const useEnabledDataSync = () => {
     s.useEnabledSync,
   ]);
 
-  const { enableWebrtc } = useServerConfigStore(featureFlagsSelectors);
+  // 挽歌TODO
+  const enableWebrtc = true;
   const syncEvent = useSyncEvent();
 
   useEnabledSync(enableWebrtc, { onEvent: syncEvent, userEnableSync, userId });

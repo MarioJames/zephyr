@@ -13,7 +13,6 @@ import ActionDropdown from '@/features/ChatInput/ActionBar/components/ActionDrop
 import { useEnabledChatModels } from '@/hooks/useEnabledChatModels';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/slices/chat';
-import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { EnabledProviderWithModels } from '@/types/aiProvider';
 
 const useStyles = createStyles(({ css, prefixCls }) => ({
@@ -54,7 +53,8 @@ const ModelSwitchPanel = memo<IProps>(({ children, setUpdating, onOpenChange, op
     agentSelectors.currentAgentModelProvider(s),
     s.updateAgentConfig,
   ]);
-  const { showLLM } = useServerConfigStore(featureFlagsSelectors);
+  // 挽歌TODO
+  const showLLM = true;
   const router = useRouter();
   const enabledList = useEnabledChatModels();
 

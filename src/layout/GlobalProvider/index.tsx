@@ -1,14 +1,11 @@
 import { ReactNode, Suspense } from 'react';
 
 import { appEnv } from '@/config/app';
-import { getServerFeatureFlagsValue } from '@/config/featureFlags';
-import { ServerConfigStoreProvider } from '@/store/serverConfig/Provider';
 
 import AntdV5MonkeyPatch from './AntdV5MonkeyPatch';
 import AppTheme from './AppTheme';
 import QueryProvider from './Query';
 import ReactScan from './ReactScan';
-import StoreInitialization from './StoreInitialization';
 import StyleRegistry from './StyleRegistry';
 
 interface GlobalLayoutProps {
@@ -26,8 +23,6 @@ const GlobalLayout = async ({
   locale: userLocale,
   appearance,
 }: GlobalLayoutProps) => {
-  // get default feature flags to use with ssr
-  const serverFeatureFlags = getServerFeatureFlagsValue();
   return (
     <StyleRegistry>
       <AppTheme
@@ -38,15 +33,10 @@ const GlobalLayout = async ({
         defaultPrimaryColor={primaryColor as any}
         globalCDN={appEnv.CDN_USE_GLOBAL}
       >
-          <ServerConfigStoreProvider
-            featureFlags={serverFeatureFlags}
-          >
             <QueryProvider>{children}</QueryProvider>
-            <StoreInitialization />
             <Suspense>
               <ReactScan />
             </Suspense>
-          </ServerConfigStoreProvider>
       </AppTheme>
       <AntdV5MonkeyPatch />
     </StyleRegistry>
