@@ -2,14 +2,22 @@
 
 import { SideNav } from "@lobehub/ui";
 import { Suspense, memo } from "react";
-
 import Avatar from "./Avatar";
 // import PinList from "./PinList";
 import TopActions from "./TopActions";
 import { SidebarTabKey } from "@/store/global/initialState";
+import { usePathname } from 'next/navigation';
+
+const pathToTab = (pathname: string) => {
+  if (pathname.startsWith('/customer')) return SidebarTabKey.CustomerManagement;
+  if (pathname.startsWith('/employee')) return SidebarTabKey.EmployeeManagement;
+  if (pathname.startsWith('/chat')) return SidebarTabKey.Chat;
+  return SidebarTabKey.Chat;
+};
 
 const Top = () => {
-  return <TopActions isPinned={true} tab={SidebarTabKey.Chat} />;
+  const pathname = usePathname();
+  return <TopActions isPinned={true} tab={pathToTab(pathname)} />;
 };
 
 const Nav = memo(() => {

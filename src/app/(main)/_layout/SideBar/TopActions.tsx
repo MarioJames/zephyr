@@ -3,9 +3,7 @@ import { UsersRound, BookUser, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { useGlobalStore } from '@/store/global';
 import { SidebarTabKey } from '@/store/global/initialState';
-import { useSessionStore } from '@/store/session';
 
 const ICON_SIZE: ActionIconProps['size'] = {
   blockSize: 40,
@@ -19,25 +17,13 @@ export interface TopActionProps {
 }
 
 const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
-  const switchBackToChat = useGlobalStore((s) => s.switchBackToChat);
-
   const isChatActive = tab === SidebarTabKey.Chat && !isPinned;
   const isCustomerManagementActive = tab === SidebarTabKey.CustomerManagement;
   const isEmployeeManagementActive = tab === SidebarTabKey.EmployeeManagement;
 
   return (
     <Flexbox gap={8}>
-      <Link
-        aria-label={"会话"}
-        href={'/chat'}
-        onClick={(e) => {
-          if (e.metaKey || e.ctrlKey) {
-            return;
-          }
-          e.preventDefault();
-          switchBackToChat(useSessionStore.getState().activeId);
-        }}
-      >
+      <Link aria-label={"会话"} href={'/chat'}>
         <ActionIcon
           active={isChatActive}
           icon={MessageSquare}
@@ -46,17 +32,7 @@ const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
           tooltipProps={{ placement: 'right' }}
         />
       </Link>
-      <Link
-        aria-label={"客户管理"}
-        href={'/customer'}
-        onClick={(e) => {
-          if (e.metaKey || e.ctrlKey) {
-            return;
-          }
-          e.preventDefault();
-          switchBackToChat(useSessionStore.getState().activeId);
-        }}
-      >
+      <Link aria-label={"客户管理"} href={'/customer'}>
         <ActionIcon
           active={isCustomerManagementActive}
           icon={BookUser}
@@ -65,17 +41,7 @@ const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
           tooltipProps={{ placement: 'right' }}
         />
       </Link>
-      <Link
-        aria-label={"员工管理"}
-        href={'/employee'}
-        onClick={(e) => {
-          if (e.metaKey || e.ctrlKey) {
-            return;
-          }
-          e.preventDefault();
-          switchBackToChat(useSessionStore.getState().activeId);
-        }}
-      >
+      <Link aria-label={"员工管理"} href={'/employee'}>
         <ActionIcon
           active={isEmployeeManagementActive}
           icon={UsersRound}
