@@ -493,27 +493,36 @@ export default function EmployeePage() {
       render: (role: string, record: Employee) => {
         const roleText = role === 'admin' ? '管理员' : '员工';
         
-        const roleMenu = (
-          <div className={styles.roleDropdown}>
-            <div 
-              className={styles.roleItem} 
-              onClick={() => handleRoleChange(record.id, 'admin')}
-            >
-              <span>管理员</span>
-              {record.role === 'admin' && <CheckCircleFilled />}
-            </div>
-            <div 
-              className={styles.roleItem} 
-              onClick={() => handleRoleChange(record.id, 'employee')}
-            >
-              <span>员工</span>
-              {record.role === 'employee' && <CheckCircleFilled />}
-            </div>
-          </div>
-        );
+        const roleMenuItems = [
+          {
+            key: 'admin',
+            label: (
+              <div className={styles.roleItem}>
+                <span>管理员</span>
+                {record.role === 'admin' && <CheckCircleFilled />}
+              </div>
+            ),
+          },
+          {
+            key: 'employee',
+            label: (
+              <div className={styles.roleItem}>
+                <span>员工</span>
+                {record.role === 'employee' && <CheckCircleFilled />}
+              </div>
+            ),
+          },
+        ];
 
         return (
-          <Dropdown overlay={roleMenu} trigger={['click']}>
+          <Dropdown
+            menu={{
+              items: roleMenuItems,
+              onClick: ({ key }) => handleRoleChange(record.id, key as 'admin' | 'employee'),
+              className: styles.roleDropdown,
+            }}
+            trigger={['click']}
+          >
             <a onClick={e => e.preventDefault()} className={styles.blackText}>
               {roleText} <DownOutlined />
             </a>
@@ -731,7 +740,9 @@ export default function EmployeePage() {
         onCancel={() => setCustomerModalVisible(false)}
         width={680}
         style={{ top: 60 }}
-        bodyStyle={{ borderRadius: 8, background: '#F4F4F4', padding: 24, height: 500, display: 'flex', flexDirection: 'column' }}
+        styles={{
+          body:{ borderRadius: 8, background: '#F4F4F4', padding: 24, height: 500, display: 'flex', flexDirection: 'column' }
+        }}
         closable={false}
       >
         <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 24 }}>员工对接客户管理</div>

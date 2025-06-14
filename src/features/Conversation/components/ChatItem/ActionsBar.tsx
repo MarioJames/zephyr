@@ -1,7 +1,7 @@
 import { ActionIconGroup, type ActionIconGroupEvent, type ActionIconGroupProps } from '@lobehub/ui';
 import { App } from 'antd';
 import isEqual from 'fast-deep-equal';
-import { memo, use, useCallback, useState } from 'react';
+import { memo, use, useCallback } from 'react';
 
 import { VirtuosoContext } from '@/features/Conversation/components/VirtualizedList/VirtuosoContext';
 import { useChatStore } from '@/store/chat';
@@ -39,7 +39,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
     deleteMessage,
     regenerateMessage,
     translateMessage,
-    ttsMessage,
     delAndRegenerateMessage,
     copyMessage,
     openThreadCreator,
@@ -50,7 +49,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
     s.deleteMessage,
     s.regenerateMessage,
     s.translateMessage,
-    s.ttsMessage,
     s.delAndRegenerateMessage,
     s.copyMessage,
     s.openThreadCreator,
@@ -60,8 +58,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
   ]);
   const { message } = App.useApp();
   const virtuosoRef = use(VirtuosoContext);
-
-  const [showShareModal, setShareModal] = useState(false);
 
   const handleActionClick = useCallback(
     async (action: ActionIconGroupEvent) => {
@@ -108,21 +104,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
           }
           break;
         }
-
-        case 'tts': {
-          ttsMessage(id);
-          break;
-        }
-
-        // case 'export': {
-        //   setModal(true);
-        //   break;
-        // }
-
-        case 'share': {
-          setShareModal(true);
-          break;
-        }
       }
 
       if (action.keyPath.at(-1) === 'translate') {
@@ -143,16 +124,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
   return (
     <>
       <RenderFunction {...item} onActionClick={handleActionClick} />
-      {/*{showModal && (*/}
-      {/*  <ExportPreview content={item.content} onClose={() => setModal(false)} open={showModal} />*/}
-      {/*)}*/}
-      <ShareMessageModal
-        message={item}
-        onCancel={() => {
-          setShareModal(false);
-        }}
-        open={showShareModal}
-      />
     </>
   );
 });

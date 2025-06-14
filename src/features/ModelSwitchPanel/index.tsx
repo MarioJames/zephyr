@@ -36,7 +36,7 @@ const useStyles = createStyles(({ css, prefixCls }) => ({
   `,
 }));
 
-const menuKey = (provider: string, model: string) => `${provider}-${model}`;
+const menuKey = (provider: string, model: string, idx: number) => `${provider}-${model}-${idx}`;
 
 interface IProps {
   children?: ReactNode;
@@ -60,8 +60,8 @@ const ModelSwitchPanel = memo<IProps>(({ children, setUpdating, onOpenChange, op
 
   const items = useMemo<ItemType[]>(() => {
     const getModelItems = (provider: EnabledProviderWithModels) => {
-      const items = provider.children.map((model) => ({
-        key: menuKey(provider.id, model.id),
+      const items = provider.children.map((model, idx) => ({
+        key: menuKey(provider.id, model.id, idx),
         label: <ModelItemRender {...model} {...model.abilities} />,
         onClick: async () => {
           setUpdating?.(true);
@@ -142,7 +142,7 @@ const ModelSwitchPanel = memo<IProps>(({ children, setUpdating, onOpenChange, op
   return (
     <ActionDropdown
       menu={{
-        activeKey: menuKey(provider, model),
+        activeKey: menuKey(provider, model, 0),
         className: styles.menu,
         items,
         // 不加限高就会导致面板超长，顶部的内容会被隐藏
