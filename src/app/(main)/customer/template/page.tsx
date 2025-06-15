@@ -16,45 +16,45 @@ interface CustomerTemplate {
 const customerTemplates: CustomerTemplate[] = [
     {
       id: '1',
-      title: '企业客户',
+      title: 'A类客户',
       description: '适用于大型企业客户的模版，包含企业级服务支持和定制化解决方案',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '2',
-      title: '个人客户',
+      title: 'A类客户',
       description: '适用于个人用户的基础模版，提供标准化服务和支持',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '3',
-      title: '中小企业',
+      title: 'A类客户',
       description: '为中小型企业设计的模版，平衡了成本和服务质量',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '4',
-      title: '政府机构',
+      title: 'A类客户',
       description: '针对政府部门的特殊需求定制的模版，符合相关规定和要求',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '5',
-      title: '教育机构',
+      title: 'A类客户',
       description: '为学校、培训机构等教育单位设计的模版，包含教育资源管理和学生服务',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '6',
-      title: '医疗机构',
+      title: 'A类客户',
       description: '适用于医院、诊所等医疗机构的模版，包含患者管理和医疗服务支持',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
     {
       id: '7',
-      title: '非营利组织',
+      title: 'A类客户',
       description: '为非营利组织和慈善机构设计的模版，支持公益活动和志愿者管理',
-      imageUrl: 'https://via.placeholder.com/300x132',
+      imageUrl: '/test.png',
     },
   ]; 
 
@@ -192,8 +192,8 @@ export default function CustomerTemplatePage() {
             <div className={styles.card}>
               <div className={styles.cardContent}>
                 <img 
-                  src={template.imageUrl} 
-                  alt={template.title} 
+                  src={template.imageUrl}
+                  alt={template.title}
                   className={styles.cardImage} 
                 />
                 <div className={styles.cardTitle}>{template.title}</div>
