@@ -17,18 +17,19 @@ const Layout = ({
 }: LayoutProps) => {
   return (
     <>
-      <ChatHeader />
       <Flexbox
         height={'100%'}
         horizontal
         style={{ overflow: 'hidden', position: 'relative' }}
         width={'100%'}
       >
+        <TopicPanel>{topic || history}</TopicPanel>
         <Flexbox
           height={'100%'}
           style={{ overflow: 'hidden', position: 'relative' }}
           width={'100%'}
         >
+          <ChatHeader />
           {conversation}
         </Flexbox>
         {children}
