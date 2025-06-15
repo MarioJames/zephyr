@@ -23,7 +23,7 @@ const Layout = ({
         style={{ overflow: 'hidden', position: 'relative' }}
         width={'100%'}
       >
-        <TopicPanel>{topic || history}</TopicPanel>
+        <TopicPanel>{topic}</TopicPanel>
         <Flexbox
           height={'100%'}
           style={{ overflow: 'hidden', position: 'relative' }}
@@ -36,7 +36,7 @@ const Layout = ({
         <Portal>
           <Suspense fallback={<BrandTextLoading />}>{portal}</Suspense>
         </Portal>
-        <TopicPanel>{topic || history}</TopicPanel>
+        {history} //这里也需要个HistoryPanel
       </Flexbox>
     </>
   );

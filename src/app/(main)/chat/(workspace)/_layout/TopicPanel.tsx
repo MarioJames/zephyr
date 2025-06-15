@@ -58,7 +58,7 @@ const TopicPanel = memo(({ children }: PropsWithChildren) => {
       minWidth={CHAT_SIDEBAR_WIDTH}
       mode={md ? 'fixed' : 'float'}
       onExpandChange={handleExpand}
-      placement={'right'}
+      placement={'left'}
       showHandleWideArea={false}
     >
       <DraggablePanelContainer
