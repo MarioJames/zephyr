@@ -92,6 +92,7 @@
     "react-dom": "^19.0.0",
     "react-layout-kit": "^1.9.1",
     "react-virtuoso": "^4.12.8",
+    "react-wrap-balancer": "^1.1.1",
     "semver": "^7.7.2",
     "superjson": "^2.2.2",
     "swr": "^2.3.3",
