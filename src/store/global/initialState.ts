@@ -69,6 +69,10 @@ export interface SystemStatus {
   themeMode?: ThemeMode;
   threadInputHeight: number;
   zenMode?: boolean;
+  /**
+   * SlotPanel 当前展示类型
+   */
+  slotPanelType?: 'aiHint' | 'history';
 }
 
 export interface GlobalState {
@@ -110,6 +114,7 @@ export const INITIAL_STATUS = {
   themeMode: 'auto',
   threadInputHeight: 200,
   zenMode: false,
+  slotPanelType: 'aiHint',
 } satisfies SystemStatus;
 
 export const initialState: GlobalState = {

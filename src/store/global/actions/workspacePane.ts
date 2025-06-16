@@ -15,6 +15,7 @@ export interface GlobalWorkspacePaneAction {
   toggleExpandSessionGroup: (id: string, expand: boolean) => void;
   toggleSystemRole: (visible?: boolean) => void;
   toggleZenMode: () => void;
+  setSlotPanelType: (type: 'aiHint' | 'history') => void;
 }
 
 export const globalWorkspaceSlice: StateCreator<
@@ -71,5 +72,8 @@ export const globalWorkspaceSlice: StateCreator<
     const nextZenMode = !status.zenMode;
 
     get().updateSystemStatus({ zenMode: nextZenMode }, n('toggleZenMode'));
+  },
+  setSlotPanelType: (type) => {
+    get().updateSystemStatus({ slotPanelType: type }, n('setSlotPanelType', type));
   },
 });
