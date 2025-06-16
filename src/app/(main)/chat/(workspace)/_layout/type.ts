@@ -1,9 +1,8 @@
 import { ReactNode } from 'react';
 
 export interface LayoutProps {
-  children: ReactNode;
-  conversation: ReactNode;
-  portal: ReactNode;
-  topic: ReactNode;
-  history: ReactNode;
+  children?: React.ReactNode;
+  topic?: React.ReactNode;
+  conversation?: React.ReactNode;
+  portal?: React.ReactNode;
 }

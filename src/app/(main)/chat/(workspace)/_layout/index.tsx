@@ -7,13 +7,13 @@ import { LayoutProps } from './type';
 import ChatHeader from './ChatHeader';
 import Portal from './Portal';
 import TopicPanel from './TopicPanel';
+import SlotPanel from './SlotPanel';
 
 const Layout = ({
   children,
   topic,
   conversation,
   portal,
-  history,
 }: LayoutProps) => {
   return (
     <>
@@ -36,7 +36,7 @@ const Layout = ({
         <Portal>
           <Suspense fallback={<BrandTextLoading />}>{portal}</Suspense>
         </Portal>
-        {history} //这里也需要个HistoryPanel
+        <SlotPanel />
       </Flexbox>
     </>
   );
