@@ -4,6 +4,7 @@ export const HEADER_HEIGHT = 64;
 export const CHAT_TEXTAREA_MAX_HEIGHT = 800;
 export const CHAT_TEXTAREA_HEIGHT = 160;
 export const CHAT_SIDEBAR_WIDTH = 280;
+export const CHAT_SLOT_SIDEBAR_WIDTH = 380;
 
 export const CHAT_PORTAL_WIDTH = 400;
 export const CHAT_PORTAL_MAX_WIDTH = 1280;
