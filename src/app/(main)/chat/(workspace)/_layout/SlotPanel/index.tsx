@@ -5,7 +5,7 @@ import { createStyles, useResponsive } from 'antd-style';
 import isEqual from 'fast-deep-equal';
 import { PropsWithChildren, memo, useEffect, useState } from 'react';
 
-import { CHAT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
+import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useChatStore } from '@/store/chat';
 import { chatPortalSelectors } from '@/store/chat/slices/portal/selectors';
 import { useGlobalStore } from '@/store/global';
@@ -58,7 +58,7 @@ const SlotPanel = memo(() => {
         content: styles.content,
       }}
       expand={showTopic && !showPortal}
-      minWidth={CHAT_SIDEBAR_WIDTH}
+      minWidth={CHAT_SLOT_SIDEBAR_WIDTH}
       mode={md ? 'fixed' : 'float'}
       onExpandChange={handleExpand}
       placement={'right'}
@@ -69,10 +69,10 @@ const SlotPanel = memo(() => {
           flex: 'none',
           height: '100%',
           maxHeight: '100vh',
-          minWidth: CHAT_SIDEBAR_WIDTH,
+          minWidth: CHAT_SLOT_SIDEBAR_WIDTH,
         }}
       >
-        {slotPanelType === 'history' ? <HistoryPanel /> : <AIHintPanel />}
+        {slotPanelType === 'history' ? <HistoryPanel /> : <AIHintPanel /> }
       </DraggablePanelContainer>
     </DraggablePanel>
   );

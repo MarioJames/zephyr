@@ -2,6 +2,7 @@ import React from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { FileClock, X } from 'lucide-react';
 import { useGlobalStore } from '@/store/global';
+import { useHistoryStyles } from './style';
 
 const mockData = [
   {
@@ -29,42 +30,44 @@ const mockData = [
 
 const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
+  const { styles } = useHistoryStyles();
   return (
-    <Flexbox height="100%" style={{ background: '#fff' }}>
+    <Flexbox height="100%" className={styles.panelBg}>
       {/* Header */}
       <Flexbox
         horizontal
         align="center"
         distribution="space-between"
-        style={{ height: 56, padding: '0 20px', borderBottom: '1px solid #F0F0F0' }}
+        className={styles.header}
       >
         <Flexbox horizontal align="center" gap={8}>
           <FileClock size={20} />
-          <span style={{ fontWeight: 500, fontSize: 16 }}>历史会话</span>
+          <span className={styles.headerTitle}>历史会话</span>
         </Flexbox>
         <X
-          size={20}
-          style={{ cursor: 'pointer' }}
+          size={16}
+          color='rgba(0, 0, 0, 0.45)'
+          className={styles.closeBtn}
           onClick={() => setSlotPanelType('aiHint')}
         />
       </Flexbox>
       {/* List */}
-      <Flexbox flex={1} style={{ overflowY: 'auto', padding: 16, gap: 12 }}>
+      <Flexbox flex={1} className={styles.listWrap}>
         {mockData.map((item) => (
           <Flexbox
             key={item.id}
             horizontal
             distribution="space-between"
             align="center"
-            style={{ background: '#F7F8FA', borderRadius: 8, padding: '12px 16px' }}
+            className={styles.historyItem}
           >
-            <Flexbox gap={4}>
-              <div style={{ fontWeight: 500, fontSize: 15 }}>{item.title}</div>
-              <div style={{ color: '#888', fontSize: 13 }}>
+            <Flexbox>
+              <div className={styles.historyTitle}>{item.title}</div>
+              <div className={styles.historyMeta}>
                 @{item.staff} | {item.date}
               </div>
             </Flexbox>
-            <div style={{ fontWeight: 600, fontSize: 16 }}>{item.count}</div>
+            <div className={styles.historyCount}>{item.count}</div>
           </Flexbox>
         ))}
       </Flexbox>

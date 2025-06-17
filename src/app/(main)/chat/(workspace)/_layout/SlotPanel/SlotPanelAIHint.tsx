@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from 'antd';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { useAIHintStyles } from './style';
 
 const mockData = [
   {
@@ -36,105 +37,34 @@ const mockData = [
 
 function AIHintItem({ item }: { item: typeof mockData[0] }) {
   const [expand, setExpand] = useState(false);
+  const { styles } = useAIHintStyles();
 
   return (
     <Flexbox style={{ marginBottom: 24 }}>
       {/* 分割线日期 */}
-      <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0' }}>
-        <div style={{ flex: 1, height: 1, background: '#E5E6EB' }} />
-        <span style={{ margin: '0 16px', color: '#888', fontSize: 13 }}>
-          {item.date}
-        </span>
-        <div style={{ flex: 1, height: 1, background: '#E5E6EB' }} />
+      <div className={styles.dividerDate}>
+        <div className={styles.dividerLine} />
+        <span className={styles.dividerText}>{item.date}</span>
+        <div className={styles.dividerLine} />
       </div>
       {/* 上方提示语 */}
-      <div style={{ fontWeight: 400, fontSize: 14, margin:'8px 8px 12px 8px', color: 'rgba(0, 0, 0, 0.65)', lineHeight: '22px' }}>{item.hint}</div>
+      <div className={styles.hint}>{item.hint}</div>
       {/* 2*2 栅格卡片 */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 164px)',
-          gridTemplateRows: 'repeat(2, 84px)',
-          gap: 8,
-        }}
-      >
+      <div className={styles.cardGrid}>
         {item.cards.map((card, idx) => (
-          <div
-            key={idx}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 6,
-              border: '1px solid rgba(0,0,0,0.06)',
-              background: '#fff',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              width: 164,
-              height: 84,
-            }}
-          >
-            <div style={{ fontWeight: 500, fontSize: 12, marginBottom: 4 }}>{card.title}</div>
-            <div
-              style={{
-                color: 'rgba(0, 0, 0, 0.65)',
-                fontSize: 12,
-                fontWeight: 400,
-                lineHeight: '20px',
-                overflow: 'hidden',
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {card.desc}
-            </div>
+          <div key={idx} className={styles.cardItem}>
+            <div className={styles.cardTitle}>{card.title}</div>
+            <div className={styles.cardDesc}>{card.desc}</div>
           </div>
         ))}
       </div>
-      <div style={{ fontWeight: 400, fontSize: 14, lineHeight: '22px', margin: '12px 0',padding:'0 8px' }}>建议这样回复：</div>
+      <div className={styles.suggestTitle}>建议这样回复：</div>
       {/* 推荐话术大卡片 */}
-      <div style={{ fontWeight: 500, fontSize: 14, lineHeight: '22px', marginBottom: 4,padding:'0 8px'}}>{item.sectionTitle}</div>
-      <div
-        style={{
-          padding: 10,
-          width: '100%',
-          height: 98,
-          borderRadius: 6,
-          background: '#E9E9E9',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div
-          style={{
-            color: 'rgba(0, 0, 0, 0.65)',
-            fontSize: 13,
-            lineHeight: '22px',
-            fontWeight: 400,
-            overflow: 'hidden',
-            display: '-webkit-box',
-            WebkitLineClamp: expand ? 10 : 3,
-            WebkitBoxOrient: 'vertical',
-            textOverflow: 'ellipsis',
-            marginBottom: 10,
-          }}
-        >
-          {item.sectionDesc}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span
-            style={{
-              color: 'rgba(0, 0, 0, 0.45)',
-              fontSize: 12,
-              fontWeight: 400,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onClick={() => setExpand((v) => !v)}
-          >
+      <div className={styles.sectionTitle}>{item.sectionTitle}</div>
+      <div className={styles.sectionCard}>
+        <div className={expand ? styles.sectionDescExpand : styles.sectionDesc}>{item.sectionDesc}</div>
+        <div className={styles.sectionFooter}>
+          <span className={styles.expandBtn} onClick={() => setExpand((v) => !v)}>
             {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             {expand ? '收起' : '展开'}
           </span>
@@ -146,21 +76,22 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
 }
 
 const AIHintPanel = () => {
+  const { styles } = useAIHintStyles();
   return (
-    <Flexbox height="100%" style={{ background: '#fff' }}>
+    <Flexbox height="100%" className={styles.panelBg}>
       {/* Header */}
       <Flexbox
         horizontal
         align="center"
-        style={{ height: 56, padding: '0 24px' }}
+        className={styles.header}
       >
         <Flexbox horizontal align="center" gap={8}>
           <Bot size={20} />
-          <span style={{ fontWeight: 500, fontSize: 14 }}>AI提示</span>
+          <span className={styles.headerTitle}>AI提示</span>
         </Flexbox>
       </Flexbox>
       {/* List */}
-      <Flexbox flex={1} style={{ overflowY: 'auto', padding: '8px 24px' }}>
+      <Flexbox flex={1} className={styles.listWrap}>
         {mockData.map((item) => (
           <AIHintItem key={item.id} item={item} />
         ))}
