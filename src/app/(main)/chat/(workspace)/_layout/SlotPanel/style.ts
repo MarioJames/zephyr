@@ -57,20 +57,20 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   `,
     listWrap: css`
     overflow-y: auto;
-    padding: 8px 24px;
+    padding: 0px 24px;
   `,
   dividerDate: css`
     display: flex;
     align-items: center;
-    margin: 16px 0;
+    margin: 8px 0;
   `,
   dividerLine: css`
     flex: 1;
     height: 1px;
-    background: #E5E6EB;
+    background: rgba(0, 0, 0, 0.06);
   `,
   dividerText: css`
-    margin: 0 16px;
+    margin: 0 10px;
     color: #000;
     font-size: 12px;
     font-weight: 400;
@@ -79,7 +79,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   hint: css`
     font-weight: 400;
     font-size: 14px;
-    margin: 8px 8px 12px 8px;
+    margin: 0px 8px 12px 8px;
     color: rgba(0, 0, 0, 0.65);
     line-height: 22px;
   `,
@@ -176,5 +176,17 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     cursor: pointer;
     display: flex;
     align-items: center;
+  `,
+  adoptBtn: css`
+    color: #fff;
+    height: 22px;
+    background-color: ${token.colorPrimary};
+    border: none;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 22px;
+    padding: 0 8px;
+    border-radius: 6px;
+    cursor: pointer;
   `,
 })); 

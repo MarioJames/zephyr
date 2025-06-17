@@ -40,7 +40,7 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
   const { styles } = useAIHintStyles();
 
   return (
-    <Flexbox style={{ marginBottom: 24 }}>
+    <Flexbox>
       {/* 分割线日期 */}
       <div className={styles.dividerDate}>
         <div className={styles.dividerLine} />
@@ -68,7 +68,7 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
             {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             {expand ? '收起' : '展开'}
           </span>
-          <Button type="primary">采用</Button>
+          <Button className={styles.adoptBtn} type="primary">采用</Button>
         </div>
       </div>
     </Flexbox>
