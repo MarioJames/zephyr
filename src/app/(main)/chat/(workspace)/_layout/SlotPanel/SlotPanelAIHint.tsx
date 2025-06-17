@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from 'antd';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -35,26 +36,26 @@ const mockData = [
 
 function AIHintItem({ item }: { item: typeof mockData[0] }) {
   const [expand, setExpand] = useState(false);
+
   return (
     <Flexbox style={{ marginBottom: 24 }}>
       {/* 分割线日期 */}
       <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0' }}>
         <div style={{ flex: 1, height: 1, background: '#E5E6EB' }} />
         <span style={{ margin: '0 16px', color: '#888', fontSize: 13 }}>
-          ——{item.date}——
+          {item.date}
         </span>
         <div style={{ flex: 1, height: 1, background: '#E5E6EB' }} />
       </div>
       {/* 上方提示语 */}
-      <div style={{ fontWeight: 500, fontSize: 15, marginBottom: 12 }}>{item.hint}</div>
+      <div style={{ fontWeight: 400, fontSize: 14, margin:'8px 8px 12px 8px', color: 'rgba(0, 0, 0, 0.65)', lineHeight: '22px' }}>{item.hint}</div>
       {/* 2*2 栅格卡片 */}
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 164px)',
           gridTemplateRows: 'repeat(2, 84px)',
-          gap: 12,
-          marginBottom: 18,
+          gap: 8,
         }}
       >
         {item.cards.map((card, idx) => (
@@ -72,12 +73,13 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
               height: 84,
             }}
           >
-            <div style={{ fontWeight: 500, fontSize: 14, marginBottom: 4 }}>{card.title}</div>
+            <div style={{ fontWeight: 500, fontSize: 12, marginBottom: 4 }}>{card.title}</div>
             <div
               style={{
-                color: '#666',
-                fontSize: 13,
-                lineHeight: '18px',
+                color: 'rgba(0, 0, 0, 0.65)',
+                fontSize: 12,
+                fontWeight: 400,
+                lineHeight: '20px',
                 overflow: 'hidden',
                 display: '-webkit-box',
                 WebkitLineClamp: 3,
@@ -90,12 +92,13 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
           </div>
         ))}
       </div>
+      <div style={{ fontWeight: 400, fontSize: 14, lineHeight: '22px', margin: '12px 0',padding:'0 8px' }}>建议这样回复：</div>
       {/* 推荐话术大卡片 */}
-      <div style={{ fontWeight: 500, fontSize: 15, marginBottom: 8 }}>{item.sectionTitle}</div>
+      <div style={{ fontWeight: 500, fontSize: 14, lineHeight: '22px', marginBottom: 4,padding:'0 8px'}}>{item.sectionTitle}</div>
       <div
         style={{
           padding: 10,
-          width: 300,
+          width: '100%',
           height: 98,
           borderRadius: 6,
           background: '#E9E9E9',
@@ -106,15 +109,16 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
       >
         <div
           style={{
-            color: '#333',
-            fontSize: 14,
-            lineHeight: '20px',
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 13,
+            lineHeight: '22px',
+            fontWeight: 400,
             overflow: 'hidden',
             display: '-webkit-box',
             WebkitLineClamp: expand ? 10 : 3,
             WebkitBoxOrient: 'vertical',
             textOverflow: 'ellipsis',
-            marginBottom: 8,
+            marginBottom: 10,
           }}
         >
           {item.sectionDesc}
@@ -122,31 +126,19 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span
             style={{
-              color: '#333',
-              fontSize: 13,
+              color: 'rgba(0, 0, 0, 0.45)',
+              fontSize: 12,
+              fontWeight: 400,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              userSelect: 'none',
             }}
             onClick={() => setExpand((v) => !v)}
           >
             {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             {expand ? '收起' : '展开'}
           </span>
-          <button
-            style={{
-              background: '#222',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 4,
-              padding: '4px 16px',
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
-          >
-            采用
-          </button>
+          <Button type="primary">采用</Button>
         </div>
       </div>
     </Flexbox>
@@ -160,15 +152,15 @@ const AIHintPanel = () => {
       <Flexbox
         horizontal
         align="center"
-        style={{ height: 56, padding: '0 20px', borderBottom: '1px solid #F0F0F0' }}
+        style={{ height: 56, padding: '0 24px' }}
       >
         <Flexbox horizontal align="center" gap={8}>
           <Bot size={20} />
-          <span style={{ fontWeight: 500, fontSize: 16 }}>AI提示</span>
+          <span style={{ fontWeight: 500, fontSize: 14 }}>AI提示</span>
         </Flexbox>
       </Flexbox>
       {/* List */}
-      <Flexbox flex={1} style={{ overflowY: 'auto', padding: 16 }}>
+      <Flexbox flex={1} style={{ overflowY: 'auto', padding: '8px 24px' }}>
         {mockData.map((item) => (
           <AIHintItem key={item.id} item={item} />
         ))}
