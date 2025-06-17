@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
+import { Button, Row, Col } from 'antd';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAIHintStyles } from './style';
@@ -17,7 +17,7 @@ const mockData = [
     ],
     sectionTitle: 'AI推荐话术',
     sectionDesc:
-      '您好，关于开票流程，您可以按照以下步骤操作：1.准备资料 2.系统申请 3.审核 4.下载发票。如有疑问请随时联系。',
+      '您好，关于开票流程，您可以按照以下步骤操作：1.准备资料 2.系统申请 3.审核 4.下载发票。如有疑问请随时联系。您好，关于开票流程，您可以按照以下步骤操作：1.准备资料 2.系统申请 3.审核 4.下载发票。如有疑问请随时联系。',
   },
   {
     id: 2,
@@ -50,19 +50,25 @@ function AIHintItem({ item }: { item: typeof mockData[0] }) {
       {/* 上方提示语 */}
       <div className={styles.hint}>{item.hint}</div>
       {/* 2*2 栅格卡片 */}
-      <div className={styles.cardGrid}>
+      <Row gutter={[8, 8]} className={styles.cardGrid}>
         {item.cards.map((card, idx) => (
-          <div key={idx} className={styles.cardItem}>
-            <div className={styles.cardTitle}>{card.title}</div>
-            <div className={styles.cardDesc}>{card.desc}</div>
-          </div>
+          <Col span={12} key={idx}>
+            <div className={styles.cardItem} style={{ height: '100%', width: '100%' }}>
+              <div className={styles.cardTitle}>{card.title}</div>
+              <div className={styles.cardDesc} style={{ WebkitLineClamp: 3 }}>{card.desc}</div>
+            </div>
+          </Col>
         ))}
-      </div>
+      </Row>
       <div className={styles.suggestTitle}>建议这样回复：</div>
       {/* 推荐话术大卡片 */}
       <div className={styles.sectionTitle}>{item.sectionTitle}</div>
       <div className={styles.sectionCard}>
-        <div className={expand ? styles.sectionDescExpand : styles.sectionDesc}>{item.sectionDesc}</div>
+        <div
+          className={expand ? styles.sectionDescExpand : styles.sectionDesc}
+        >
+          {item.sectionDesc}
+        </div>
         <div className={styles.sectionFooter}>
           <span className={styles.expandBtn} onClick={() => setExpand((v) => !v)}>
             {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

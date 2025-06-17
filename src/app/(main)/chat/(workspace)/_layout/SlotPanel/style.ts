@@ -84,10 +84,8 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     line-height: 22px;
   `,
   cardGrid: css`
-    display: grid;
-    grid-template-columns: repeat(2, 164px);
-    grid-template-rows: repeat(2, 84px);
-    gap: 8px;
+    width: 100%;
+    margin-bottom: 8px;
   `,
   cardItem: css`
     padding: 6px 12px;
@@ -96,9 +94,11 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     background: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    width: 164px;
-    height: 84px;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    min-height: 70px;
+    min-width: 0;
   `,
   cardTitle: css`
     font-weight: 500;
@@ -115,6 +115,8 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
+    word-break: break-all;
+    min-width: 0;
   `,
   suggestTitle: css`
     font-weight: 400;
@@ -133,7 +135,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   sectionCard: css`
     padding: 10px;
     width: 100%;
-    height: 98px;
+    height: auto;
     border-radius: 6px;
     background: #E9E9E9;
     display: flex;
