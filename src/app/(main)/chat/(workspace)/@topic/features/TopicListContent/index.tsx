@@ -10,12 +10,9 @@ import { useFetchTopics } from '@/hooks/useFetchTopics';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 import { useUserStore } from '@/store/user';
-import { preferenceSelectors } from '@/store/user/selectors';
-import { TopicDisplayMode } from '@/types/topic';
 
 import { SkeletonList } from '../SkeletonList';
-import ByTimeMode from './ByTimeMode';
-import FlatMode from './FlatMode';
+import ShowMode from './ShowMode';
 import SearchResult from './SearchResult';
 
 const TopicListContent = memo(() => {
@@ -29,10 +26,9 @@ const TopicListContent = memo(() => {
     topicSelectors.isInSearchMode(s),
   ]);
 
-  const [visible, updateGuideState, topicDisplayMode] = useUserStore((s) => [
+  const [visible, updateGuideState] = useUserStore((s) => [
     s.preference.guide?.topic,
     s.updateGuideState,
-    preferenceSelectors.topicDisplayMode(s),
   ]);
 
   useFetchTopics();
@@ -64,7 +60,7 @@ const TopicListContent = memo(() => {
           />
         </Flexbox>
       )}
-      {topicDisplayMode === TopicDisplayMode.ByTime ? <ByTimeMode /> : <FlatMode />}
+      {<ShowMode />}
     </>
   );
 });

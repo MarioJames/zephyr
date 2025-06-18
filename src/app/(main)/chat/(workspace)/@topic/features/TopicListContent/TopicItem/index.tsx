@@ -6,7 +6,6 @@ import { Flexbox } from 'react-layout-kit';
 import { useChatStore } from '@/store/chat';
 
 import ThreadList from '../ThreadList';
-import DefaultContent from './DefaultContent';
 import TopicContent from './TopicContent';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -41,13 +40,12 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 
 export interface ConfigCellProps {
   active?: boolean;
-  fav?: boolean;
-  id?: string;
+  id: string;
   threadId?: string;
   title: string;
 }
 
-const TopicItem = memo<ConfigCellProps>(({ title, active, id, fav, threadId }) => {
+const TopicItem = memo<ConfigCellProps>(({ title, active, id, threadId }) => {
   const { styles, cx } = useStyles();
   const [toggleTopic] = useChatStore((s) => [s.switchTopic]);
   const [isHover, setHovering] = useState(false);
@@ -69,11 +67,7 @@ const TopicItem = memo<ConfigCellProps>(({ title, active, id, fav, threadId }) =
           setHovering(false);
         }}
       >
-        {!id ? (
-          <DefaultContent />
-        ) : (
-          <TopicContent fav={fav} id={id} showMore={isHover} title={title} />
-        )}
+          <TopicContent id={id} showMore={isHover} title={title} />
       </Flexbox>
       {active && (
         <Suspense

@@ -40,16 +40,25 @@ const groupedTopicsSelector = (s: ChatStoreState): GroupedTopic[] => {
 
   if (!topics) return [];
 
-  return topics.length > 0
-    ? [
-        {
-          children: topics,
-          id: 'default',
-          title: '默认',
-        },
-        ...groupTopicsByTime(topics),
-      ]
-    : groupTopicsByTime(topics);
+  if (!topics.length) return [];
+
+  // 最近对话: 7天内
+  const now = Date.now();
+  const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const recentTopics = topics.filter((t) => t.createdAt >= sevenDaysAgo);
+
+  return [
+    {
+      id: 'recent',
+      title: '最近对话',
+      children: recentTopics,
+    },
+    {
+      id: 'all',
+      title: '全部客户',
+      children: topics,
+    },
+  ];
 };
 
 export const topicSelectors = {
