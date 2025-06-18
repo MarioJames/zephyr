@@ -56,9 +56,11 @@ interface TopicContentProps {
   id: string;
   showMore?: boolean;
   title: string;
+  employeeName?: string;
 }
 
-const TopicContent = memo<TopicContentProps>(({ id, title, showMore }) => {
+const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeName }) => {
+  console.log('employeeName', employeeName);
   const [
     editing,
     updateTopicTitle,
@@ -167,35 +169,42 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore }) => {
       >
         {title?.[0] || ''}
       </div>
-      {!editing ? (
-        title === LOADING_FLAT ? (
-          <Flexbox flex={1} height={28} justify={"center"}>
-            <BubblesLoading />
-          </Flexbox>
+      <Flexbox flex={1} style={{ minWidth: 0 }} direction="vertical" justify="center">
+        {!editing ? (
+          title === LOADING_FLAT ? (
+            <Flexbox flex={1} height={28} justify={"center"}>
+              <BubblesLoading />
+            </Flexbox>
+          ) : (
+            <Typography.Paragraph
+              className={styles.title}
+              ellipsis={{ rows: 1, tooltip: { placement: "left", title } }}
+              style={{ margin: 0 }}
+            >
+              {title}
+            </Typography.Paragraph>
+          )
         ) : (
-          <Paragraph
-            className={styles.title}
-            ellipsis={{ rows: 1, tooltip: { placement: "left", title } }}
-            style={{ margin: 0 }}
-          >
-            {title}
-          </Paragraph>
-        )
-      ) : (
-        <EditableText
-          editing={editing}
-          onChangeEnd={(v) => {
-            if (title !== v) {
-              updateTopicTitle(id, v);
-            }
-            toggleEditing(false);
-          }}
-          onEditingChange={toggleEditing}
-          showEditIcon={false}
-          style={{ height: 28 }}
-          value={title}
-        />
-      )}
+          <EditableText
+            editing={editing}
+            onChangeEnd={(v) => {
+              if (title !== v) {
+                updateTopicTitle(id, v);
+              }
+              toggleEditing(false);
+            }}
+            onEditingChange={toggleEditing}
+            showEditIcon={false}
+            style={{ height: 28 }}
+            value={title}
+          />
+        )}
+        {!editing && employeeName && (
+          <Typography.Text type="secondary" style={{ fontSize: 12 }} ellipsis={{ rows: 1 }}>
+            {employeeName}
+          </Typography.Text>
+        )}
+      </Flexbox>
       {showMore && !editing && (
         <Dropdown
           arrow={false}

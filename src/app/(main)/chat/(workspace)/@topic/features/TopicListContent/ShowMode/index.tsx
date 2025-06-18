@@ -30,7 +30,7 @@ const ShowMode = memo(() => {
 
   const itemContent = useCallback(
     (index: number) => {
-      const { id, title } = topics[index];
+      const { id, title, employeeName } = topics[index];
 
       return (
         <TopicItem
@@ -39,6 +39,7 @@ const ShowMode = memo(() => {
           key={id}
           threadId={activeThreadId}
           title={title}
+          employeeName={employeeName}
         />
       );
     },
@@ -48,7 +49,8 @@ const ShowMode = memo(() => {
   const groupContent = useCallback(
     (index: number) => {
       const topicGroup = groups[index];
-      return <TopicGroupItem {...topicGroup} />;
+      const showCount = topicGroup.id === 'all';
+      return <TopicGroupItem {...topicGroup} count={showCount ? topicGroup.children.length : undefined} />;
     },
     [groups]
   );

@@ -40,6 +40,7 @@ export interface ChatTopic extends Omit<BaseDataModel, 'meta'> {
   metadata?: ChatTopicMetadata;
   sessionId?: string;
   title: string;
+  employeeName?: string;
 }
 
 export type ChatTopicMap = Record<string, ChatTopic>;
