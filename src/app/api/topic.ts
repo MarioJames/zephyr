@@ -103,7 +103,6 @@ import { BatchTaskResult } from '@/types/service';
 import { ChatTopic, TopicRankItem } from '@/types/topic';
 
 export interface CreateTopicParams {
-  favorite?: boolean;
   messages?: string[];
   sessionId?: string | null;
   title: string;

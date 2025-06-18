@@ -72,7 +72,6 @@ export interface ImportSessionGroup {
 }
 export interface ImportTopic {
   createdAt: number;
-  favorite?: boolean;
   historySummary?: string;
   id: string;
   metadata?: {

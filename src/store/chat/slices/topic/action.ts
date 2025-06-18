@@ -31,13 +31,11 @@ const SWR_USE_FETCH_TOPIC = 'SWR_USE_FETCH_TOPIC';
 const SWR_USE_SEARCH_TOPIC = 'SWR_USE_SEARCH_TOPIC';
 
 export interface ChatTopicAction {
-  favoriteTopic: (id: string, favState: boolean) => Promise<void>;
   openNewTopicOrSaveTopic: () => Promise<void>;
   refreshTopic: () => Promise<void>;
   removeAllTopics: () => Promise<void>;
   removeSessionTopics: () => Promise<void>;
   removeTopic: (id: string) => Promise<void>;
-  removeUnstarredTopic: () => Promise<void>;
   saveToTopic: () => Promise<string | undefined>;
   createTopic: () => Promise<string | undefined>;
 
@@ -169,9 +167,6 @@ export const chatTopic: StateCreator<
       trace: get().getCurrentTracePayload({ traceName: TraceNameMap.SummaryTopicTitle, topicId }),
     });
   },
-  favoriteTopic: async (id, favorite) => {
-    await get().internal_updateTopic(id, { favorite });
-  },
 
   updateTopicTitle: async (id, title) => {
     await get().internal_updateTopic(id, { title });
@@ -263,16 +258,6 @@ export const chatTopic: StateCreator<
 
     // switch bach to default topic
     if (activeTopicId === id) switchTopic();
-  },
-  removeUnstarredTopic: async () => {
-    const { refreshTopic, switchTopic } = get();
-    const topics = topicSelectors.currentUnFavTopics(get());
-
-    await topicApi.batchRemoveTopics(topics.map((t) => t.id));
-    await refreshTopic();
-
-    // 切换到默认 topic
-    switchTopic();
   },
 
   // Internal process method of the topics

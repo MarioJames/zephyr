@@ -12,12 +12,6 @@ const searchTopics = (s: ChatStoreState): ChatTopic[] => s.searchTopics;
 
 const displayTopics = (s: ChatStoreState): ChatTopic[] | undefined => currentTopics(s);
 
-const currentFavTopics = (s: ChatStoreState): ChatTopic[] =>
-  currentTopics(s)?.filter((s) => s.favorite) || [];
-
-const currentUnFavTopics = (s: ChatStoreState): ChatTopic[] =>
-  currentTopics(s)?.filter((s) => !s.favorite) || [];
-
 const currentTopicLength = (s: ChatStoreState): number => currentTopics(s)?.length || 0;
 
 const getTopicById =
@@ -45,17 +39,15 @@ const groupedTopicsSelector = (s: ChatStoreState): GroupedTopic[] => {
   const topics = displayTopics(s);
 
   if (!topics) return [];
-  const favTopics = currentFavTopics(s);
-  const unfavTopics = currentUnFavTopics(s);
 
-  return favTopics.length > 0
+  return topics.length > 0
     ? [
         {
-          children: favTopics,
-          id: 'favorite',
-          title: '收藏',
+          children: topics,
+          id: 'default',
+          title: '默认',
         },
-        ...groupTopicsByTime(unfavTopics),
+        ...groupTopicsByTime(topics),
       ]
     : groupTopicsByTime(topics);
 };
@@ -65,7 +57,6 @@ export const topicSelectors = {
   currentActiveTopicSummary,
   currentTopicLength,
   currentTopics,
-  currentUnFavTopics,
   displayTopics,
   getTopicById,
   groupedTopicsSelector,

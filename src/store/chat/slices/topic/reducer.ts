@@ -28,13 +28,12 @@ export const topicReducer = (state: ChatTopic[] = [], payload: ChatTopicDispatch
         draftState.unshift({
           ...payload.value,
           createdAt: Date.now(),
-          favorite: false,
           id: payload.value.id ?? Date.now().toString(),
           sessionId: payload.value.sessionId ? payload.value.sessionId : undefined,
           updatedAt: Date.now(),
         });
 
-        return draftState.sort((a, b) => Number(b.favorite) - Number(a.favorite));
+        return draftState;
       });
     }
 

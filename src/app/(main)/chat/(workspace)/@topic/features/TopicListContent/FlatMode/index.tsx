@@ -17,18 +17,18 @@ const FlatMode = memo(() => {
 
   const topics = useMemo(
     () => [
-      { favorite: false, id: 'default', title: '默认话题' } as ChatTopic,
+      { id: 'default', title: '默认话题' } as ChatTopic,
       ...(activeTopicList || []),
     ],
     [activeTopicList],
   );
 
   const itemContent = useCallback(
-    (index: number, { id, favorite, title }: ChatTopic) =>
+    (index: number, { id, title }: ChatTopic) =>
       index === 0 ? (
-        <TopicItem active={!activeTopicId} fav={favorite} title={title} />
+        <TopicItem active={!activeTopicId} title={title} />
       ) : (
-        <TopicItem active={activeTopicId === id} fav={favorite} id={id} key={id} title={title} />
+        <TopicItem active={activeTopicId === id} id={id} key={id} title={title} />
       ),
     [activeTopicId],
   );

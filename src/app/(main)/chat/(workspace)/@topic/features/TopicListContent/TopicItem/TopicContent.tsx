@@ -43,7 +43,6 @@ const TopicContent = memo<TopicContentProps>(({ id, title, fav, showMore }) => {
 
   const [
     editing,
-    favoriteTopic,
     updateTopicTitle,
     removeTopic,
     autoRenameTopicTitle,
@@ -51,7 +50,6 @@ const TopicContent = memo<TopicContentProps>(({ id, title, fav, showMore }) => {
     isLoading,
   ] = useChatStore((s) => [
     s.topicRenamingId === id,
-    s.favoriteTopic,
     s.updateTopicTitle,
     s.removeTopic,
     s.autoRenameTopicTitle,
@@ -151,7 +149,6 @@ const TopicContent = memo<TopicContentProps>(({ id, title, fav, showMore }) => {
         onClick={(e) => {
           e.stopPropagation();
           if (!id) return;
-          favoriteTopic(id, !fav);
         }}
         size={'small'}
         spin={isLoading}

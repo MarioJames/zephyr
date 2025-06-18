@@ -9,7 +9,6 @@ export default {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       messages: ['msg-1', 'msg-2'],
-      favorite: false,
       summary: 'This is a summary for topic 1',
     },
     {
@@ -18,7 +17,6 @@ export default {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       messages: [],
-      favorite: true,
       summary: 'This is a summary for topic 2',
     },
   ]),

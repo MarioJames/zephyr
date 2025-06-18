@@ -24,7 +24,7 @@ const ByTimeMode = memo(() => {
         ...groupTopics.map((group) => ({ id: group.id, title: group.title })),
       ],
       topics: [
-        { favorite: false, id: 'default', title: '默认话题' } as ChatTopic,
+        { id: 'default', title: '默认话题' } as ChatTopic,
         ...groupTopics.flatMap((group) => group.children),
       ],
     };
@@ -32,14 +32,13 @@ const ByTimeMode = memo(() => {
 
   const itemContent = useCallback(
     (index: number) => {
-      const { id, favorite, title } = topics[index];
+      const { id, title } = topics[index];
 
       return index === 0 ? (
-        <TopicItem active={!activeTopicId} fav={favorite} title={title} />
+        <TopicItem active={!activeTopicId} title={title} />
       ) : (
         <TopicItem
           active={activeTopicId === id}
-          fav={favorite}
           id={id}
           key={id}
           threadId={activeThreadId}

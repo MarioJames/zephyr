@@ -64,7 +64,6 @@ export interface MessageItem {
   content: string | null;
   createdAt: Date;
   error: any | null;
-  favorite: boolean | null;
   id: string;
   metadata?: MessageMetadata | null;
   model: string | null;
@@ -92,7 +91,6 @@ export interface NewMessage {
   createdAt?: Date;
   // optional because it has a default value
   error?: any | null;
-  favorite?: boolean;
   id?: string;
   model?: string | null;
   observationId?: string | null;
