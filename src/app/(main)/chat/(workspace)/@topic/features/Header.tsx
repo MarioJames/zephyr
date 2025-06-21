@@ -23,7 +23,8 @@ const Header = memo(() => {
           <ActionIcon
             icon={Search}
             onClick={() => setShowSearch(true)}
-            size={"small"}
+            size={"middle"}
+            color="#000"
           />
         </>
       }
