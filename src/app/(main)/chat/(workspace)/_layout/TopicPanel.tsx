@@ -37,6 +37,10 @@ const TopicPanel = memo(({ children }: PropsWithChildren) => {
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showTopic));
 
+  useEffect(() => {
+    setCacheExpand(Boolean(showTopic));
+  }, [showTopic]);
+
   const handleExpand = (expand: boolean) => {
     if (isEqual(expand, Boolean(showTopic))) return;
     toggleConfig(expand);
@@ -46,7 +50,7 @@ const TopicPanel = memo(({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (lg && cacheExpand) toggleConfig(true);
     if (!lg) toggleConfig(false);
-  }, [lg, cacheExpand]);
+  }, [lg, cacheExpand, toggleConfig]);
 
   return (
     <DraggablePanel

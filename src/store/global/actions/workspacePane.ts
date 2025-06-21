@@ -16,6 +16,7 @@ export interface GlobalWorkspacePaneAction {
   toggleSystemRole: (visible?: boolean) => void;
   toggleZenMode: () => void;
   setSlotPanelType: (type: 'aiHint' | 'history') => void;
+  toggleSlotPanel: (visible?: boolean) => void;
 }
 
 export const globalWorkspaceSlice: StateCreator<
@@ -47,6 +48,11 @@ export const globalWorkspaceSlice: StateCreator<
     const showChatSideBar =
       typeof newValue === 'boolean' ? newValue : !get().status.showChatSideBar;
 
+    if (!get().isStatusInit) {
+      set({ status: { ...get().status, showChatSideBar } }, false, n('toggleAgentPanel', newValue));
+      return;
+    }
+
     get().updateSystemStatus({ showChatSideBar }, n('toggleAgentPanel', newValue));
   },
   toggleExpandSessionGroup: (id, expand) => {
@@ -75,5 +81,16 @@ export const globalWorkspaceSlice: StateCreator<
   },
   setSlotPanelType: (type) => {
     get().updateSystemStatus({ slotPanelType: type }, n('setSlotPanelType', type));
+  },
+  toggleSlotPanel: (newValue) => {
+    const showSlotPanel =
+      typeof newValue === 'boolean' ? newValue : !get().status.showSlotPanel;
+
+    if (!get().isStatusInit) {
+      set({ status: { ...get().status, showSlotPanel } }, false, n('toggleSlotPanel', newValue));
+      return;
+    }
+
+    get().updateSystemStatus({ showSlotPanel }, n('toggleSlotPanel', newValue));
   },
 });

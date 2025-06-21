@@ -61,6 +61,7 @@ export interface SystemStatus {
   showFilePanel?: boolean;
   showHotkeyHelper?: boolean;
   showSessionPanel?: boolean;
+  showSlotPanel?: boolean;
   showSystemRole?: boolean;
   systemRoleExpandedMap: Record<string, boolean>;
   /**
@@ -109,6 +110,7 @@ export const INITIAL_STATUS = {
   showFilePanel: true,
   showHotkeyHelper: false,
   showSessionPanel: true,
+  showSlotPanel: true,
   showSystemRole: false,
   systemRoleExpandedMap: {},
   themeMode: 'auto',

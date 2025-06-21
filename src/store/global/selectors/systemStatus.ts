@@ -56,6 +56,8 @@ const getAgentSystemRoleExpanded =
     return map[agentId] !== false; // 角色设定默认为展开状态
   };
 
+const showSlotPanel = (s: GlobalState) => !s.status.zenMode && s.status.showSlotPanel;
+
 export const systemStatusSelectors = {
   filePanelWidth,
   getAgentSystemRoleExpanded,
@@ -75,6 +77,7 @@ export const systemStatusSelectors = {
   showChatSideBar,
   showFilePanel,
   showSessionPanel,
+  showSlotPanel,
   showSystemRole,
   systemStatus,
   themeMode,

@@ -31,25 +31,29 @@ const useStyles = createStyles(({ css, token }) => ({
 const SlotPanel = memo(() => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
-  const [showTopic, toggleConfig] = useGlobalStore((s) => [
-    systemStatusSelectors.showChatSideBar(s),
-    s.toggleChatSideBar,
+  const [showSlotPanel, toggleSlotPanel] = useGlobalStore((s) => [
+    systemStatusSelectors.showSlotPanel(s),
+    s.toggleSlotPanel,
   ]);
   const showPortal = useChatStore(chatPortalSelectors.showPortal);
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
 
-  const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showTopic));
+  const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
+
+  useEffect(() => {
+    setCacheExpand(Boolean(showSlotPanel));
+  }, [showSlotPanel]);
 
   const handleExpand = (expand: boolean) => {
-    if (isEqual(expand, Boolean(showTopic))) return;
-    toggleConfig(expand);
+    if (isEqual(expand, Boolean(showSlotPanel))) return;
+    toggleSlotPanel(expand);
     setCacheExpand(expand);
   };
 
   useEffect(() => {
-    if (lg && cacheExpand) toggleConfig(true);
-    if (!lg) toggleConfig(false);
-  }, [lg, cacheExpand]);
+    if (lg && cacheExpand) toggleSlotPanel(true);
+    if (!lg) toggleSlotPanel(false);
+  }, [lg, cacheExpand, toggleSlotPanel]);
 
   return (
     <DraggablePanel
@@ -57,7 +61,7 @@ const SlotPanel = memo(() => {
       classNames={{
         content: styles.content,
       }}
-      expand={showTopic && !showPortal}
+      expand={showSlotPanel && !showPortal}
       minWidth={CHAT_SLOT_SIDEBAR_WIDTH}
       mode={md ? 'fixed' : 'float'}
       onExpandChange={handleExpand}

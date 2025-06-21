@@ -47,9 +47,9 @@ const useStyles = createStyles(({ css }) => ({
 
 const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
-  const [showAgentSettings, toggleConfig] = useGlobalStore((s) => [
-    systemStatusSelectors.showChatSideBar(s),
-    s.toggleChatSideBar,
+  const [showSlotPanel, toggleSlotPanel] = useGlobalStore((s) => [
+    systemStatusSelectors.showSlotPanel(s),
+    s.toggleSlotPanel,
   ]);
   const slotPanelType = useGlobalStore(
     (s) => s.status.slotPanelType || "aiHint"
@@ -82,8 +82,8 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
       </div>
       <Tooltip title={"显示/隐藏右侧面板"}>
         <ActionIcon
-          icon={showAgentSettings ? PanelRightClose : PanelRightOpen}
-          onClick={() => toggleConfig()}
+          icon={showSlotPanel ? PanelRightClose : PanelRightOpen}
+          onClick={() => toggleSlotPanel()}
           size={20}
           color="#000"
         />

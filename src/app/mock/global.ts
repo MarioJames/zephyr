@@ -6,6 +6,7 @@ export default {
       showFilePanel: true,
       showHotkeyHelper: false,
       showSessionPanel: true,
+      showSlotPanel: true,
       showSystemRole: false,
       zenMode: false,
     },
