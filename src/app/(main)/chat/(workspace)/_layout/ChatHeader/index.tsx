@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { ChatHeader } from '@lobehub/ui/chat';
+import { ChatHeader } from "@lobehub/ui/chat";
 
-import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { useGlobalStore } from "@/store/global";
+import { systemStatusSelectors } from "@/store/global/selectors";
 
-import HeaderAction from './HeaderAction';
-import Main from './Main';
+import HeaderAction from "./HeaderAction";
+import Main from "./Main";
 
 const Header = () => {
   const showHeader = useGlobalStore(systemStatusSelectors.showChatHeader);
@@ -16,7 +16,13 @@ const Header = () => {
       <ChatHeader
         left={<Main />}
         right={<HeaderAction />}
-        style={{ paddingInline: 8, position: 'initial', zIndex: 11 }}
+        style={{
+          height: 56,
+          padding: "0px 16px",
+          position: "initial",
+          zIndex: 11,
+          gap: 10,
+        }}
       />
     )
   );
