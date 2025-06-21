@@ -43,6 +43,20 @@ const useStyles = createStyles(({ css }) => ({
       background-color: rgba(0, 0, 0, 0.04) !important;
     }
   `,
+  historyButtonSelected: css`
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease;
+    background-color: #AEBBFF !important;
+    
+    &:hover {
+      background-color: #AEBBFF !important;
+    }
+  `,
 }));
 
 const HeaderAction = memo<{ className?: string }>(({ className }) => {
@@ -71,10 +85,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
         />
       </div>
       <div
-        className={styles.historyButton}
-        style={{
-          background: slotPanelType === "history" ? "#AEBBFF" : undefined,
-        }}
+        className={slotPanelType === "history" ? styles.historyButtonSelected : styles.historyButton}
         onClick={handleHistoryClick}
       >
         <FileClock size={20} />
