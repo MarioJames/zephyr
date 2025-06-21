@@ -51,7 +51,7 @@ const useStyles = createStyles(({ css }) => ({
   `
 }));
 const { Paragraph } = Typography;
-
+    
 interface TopicContentProps {
   id: string;
   showMore?: boolean;

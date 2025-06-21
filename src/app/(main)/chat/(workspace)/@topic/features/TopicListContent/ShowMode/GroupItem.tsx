@@ -1,8 +1,6 @@
 import { createStyles } from "antd-style";
 import React, { memo } from "react";
 import { Flexbox } from "react-layout-kit";
-import { Button } from "antd";
-import { ChevronDown, Plus } from "lucide-react";
 
 import { GroupedTopic } from "@/types/topic";
 
