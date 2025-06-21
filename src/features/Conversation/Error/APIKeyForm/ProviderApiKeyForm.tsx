@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Icon } from '@lobehub/ui';
 import { Loader2Icon, Network } from 'lucide-react';
 import { ReactNode, memo, useContext, useState } from 'react';

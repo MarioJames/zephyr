@@ -1,3 +1,5 @@
+"use client";
+
 import { ActionIconGroup } from '@lobehub/ui';
 import type { ActionIconGroupItemType } from '@lobehub/ui';
 import { memo, useContext, useMemo } from 'react';

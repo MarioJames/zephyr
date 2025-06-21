@@ -1,3 +1,5 @@
+"use client";
+
 import { ProviderIcon } from '@lobehub/icons';
 import { Button } from '@lobehub/ui';
 import { memo, useMemo, useState } from 'react';
