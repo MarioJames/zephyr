@@ -17,6 +17,7 @@ export interface GlobalWorkspacePaneAction {
   toggleZenMode: () => void;
   setSlotPanelType: (type: 'aiHint' | 'history') => void;
   toggleSlotPanel: (visible?: boolean) => void;
+  toggleTopicPanel: (visible?: boolean) => void;
 }
 
 export const globalWorkspaceSlice: StateCreator<
@@ -92,5 +93,16 @@ export const globalWorkspaceSlice: StateCreator<
     }
 
     get().updateSystemStatus({ showSlotPanel }, n('toggleSlotPanel', newValue));
+  },
+  toggleTopicPanel: (newValue) => {
+    const showTopicPanel =
+      typeof newValue === 'boolean' ? newValue : !get().status.showTopicPanel;
+
+    if (!get().isStatusInit) {
+      set({ status: { ...get().status, showTopicPanel } }, false, n('toggleTopicPanel', newValue));
+      return;
+    }
+
+    get().updateSystemStatus({ showTopicPanel }, n('toggleTopicPanel', newValue));
   },
 });

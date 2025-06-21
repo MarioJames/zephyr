@@ -8,6 +8,7 @@ export default {
       showSessionPanel: true,
       showSlotPanel: true,
       showSystemRole: false,
+      showTopicPanel: true,
       zenMode: false,
     },
   }),

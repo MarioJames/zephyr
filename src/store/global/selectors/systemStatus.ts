@@ -12,6 +12,7 @@ const showSystemRole = (s: GlobalState) => s.status.showSystemRole;
 const showChatSideBar = (s: GlobalState) => !s.status.zenMode && s.status.showChatSideBar;
 const showSessionPanel = (s: GlobalState) => !s.status.zenMode && s.status.showSessionPanel;
 const showFilePanel = (s: GlobalState) => s.status.showFilePanel;
+const showTopicPanel = (s: GlobalState) => !s.status.zenMode && s.status.showTopicPanel;
 const hidePWAInstaller = (s: GlobalState) => s.status.hidePWAInstaller;
 const isShowCredit = (s: GlobalState) => s.status.isShowCredit;
 const themeMode = (s: GlobalState) => s.status.themeMode || 'auto';
@@ -79,6 +80,7 @@ export const systemStatusSelectors = {
   showSessionPanel,
   showSlotPanel,
   showSystemRole,
+  showTopicPanel,
   systemStatus,
   themeMode,
   threadInputHeight,

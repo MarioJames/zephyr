@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import AuthProvider from "@/layout/AuthProvider";
 import GlobalProvider from "@/layout/GlobalProvider";
 import { OIDCInitializer } from "@/components/OIDCInitializer";
+import SystemStatusInitializer from "@/components/SystemStatusInitializer";
 import type { Metadata } from "next";
 import { DynamicLayoutProps } from "@/types/next";
 import { RouteVariants } from "@/utils/routeVariants";
@@ -34,6 +35,7 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
             neutralColor={neutralColor}
             primaryColor={primaryColor}
           >
+            <SystemStatusInitializer />
             <AuthProvider>
               {children}
               {modal}

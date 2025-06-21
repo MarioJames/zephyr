@@ -63,6 +63,10 @@ export interface SystemStatus {
   showSessionPanel?: boolean;
   showSlotPanel?: boolean;
   showSystemRole?: boolean;
+  /**
+   * TopicPanel 显示状态
+   */
+  showTopicPanel?: boolean;
   systemRoleExpandedMap: Record<string, boolean>;
   /**
    * theme mode
@@ -112,6 +116,7 @@ export const INITIAL_STATUS = {
   showSessionPanel: true,
   showSlotPanel: true,
   showSystemRole: false,
+  showTopicPanel: true,
   systemRoleExpandedMap: {},
   themeMode: 'auto',
   threadInputHeight: 200,
