@@ -8,12 +8,10 @@ import {
   MessageRoleType,
 } from '@/types/message';
 import { MetaData } from '@/types/meta';
-import { SessionGroupId } from '@/types/session';
 
 export interface ImportSession {
   config: LobeAgentConfig;
   createdAt: string;
-  group?: SessionGroupId;
   id: string;
   meta: MetaData;
   pinned?: boolean;
@@ -63,13 +61,6 @@ export interface ImportMessage {
   updatedAt: number;
 }
 
-export interface ImportSessionGroup {
-  createdAt: number;
-  id: string;
-  name: string;
-  sort?: number | null;
-  updatedAt: number;
-}
 export interface ImportTopic {
   createdAt: number;
   historySummary?: string;
@@ -85,7 +76,6 @@ export interface ImportTopic {
 
 export interface ImporterEntryData {
   messages?: ImportMessage[];
-  sessionGroups?: ImportSessionGroup[];
   sessions?: ImportSession[];
   topics?: ImportTopic[];
   version: number;
@@ -97,12 +87,15 @@ export interface ImportResult {
   skips: number;
 }
 
+/**
+ * 导入结果集合接口
+ * 定义所有导入操作的结果
+ */
 export interface ImportResults {
-  messages?: ImportResult;
-  sessionGroups?: ImportResult;
-  sessions?: ImportResult;
-  topics?: ImportResult;
-  type?: string;
+  messages?: ImportResult; // 消息导入结果
+  sessions?: ImportResult; // 会话导入结果
+  topics?: ImportResult; // 话题导入结果
+  type?: string; // 导入类型
 }
 
 export enum ImportStage {

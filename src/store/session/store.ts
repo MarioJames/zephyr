@@ -6,7 +6,6 @@ import { StateCreator } from 'zustand/vanilla';
 import { createDevtools } from '../middleware/createDevtools';
 import { SessionStoreState, initialState } from './initialState';
 import { SessionAction, createSessionSlice } from './slices/session/action';
-import { SessionGroupAction, createSessionGroupSlice } from './slices/sessionGroup/action';
 
 //  ===============  聚合 createStoreFn ============ //
 
@@ -15,10 +14,9 @@ import { SessionGroupAction, createSessionGroupSlice } from './slices/sessionGro
  * 通过交叉类型(&)将所有状态和操作组合在一起
  * 包含以下模块：
  * - SessionAction: 会话相关操作
- * - SessionGroupAction: 会话分组相关操作
  * - SessionStoreState: 会话状态数据
  */
-export interface SessionStore extends SessionAction, SessionGroupAction, SessionStoreState {}
+export interface SessionStore extends SessionAction, SessionStoreState {}
 
 /**
  * 创建会话Store的工厂函数
@@ -29,7 +27,6 @@ export interface SessionStore extends SessionAction, SessionGroupAction, Session
 const createStore: StateCreator<SessionStore, [['zustand/devtools', never]]> = (...parameters) => ({
   ...initialState,
   ...createSessionSlice(...parameters),
-  ...createSessionGroupSlice(...parameters),
 });
 
 //  ===============  implement useStore ============ //

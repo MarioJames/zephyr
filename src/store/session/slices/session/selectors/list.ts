@@ -1,13 +1,12 @@
 import { DEFAULT_AGENT_LOBE_SESSION, INBOX_SESSION_ID } from '@/const/session';
 import { sessionHelpers } from '@/store/session/slices/session/helpers';
 import { MetaData } from '@/types/meta';
-import { CustomSessionGroup, LobeAgentSession, LobeSessions } from '@/types/session';
+import { LobeAgentSession, LobeSessions } from '@/types/session';
 
 import { SessionStore } from '../../../store';
 
 const defaultSessions = (s: SessionStore): LobeSessions => s.defaultSessions;
 const pinnedSessions = (s: SessionStore): LobeSessions => s.pinnedSessions;
-const customSessionGroups = (s: SessionStore): CustomSessionGroup[] => s.customSessionGroups;
 
 const allSessions = (s: SessionStore): LobeSessions => s.sessions;
 
@@ -41,13 +40,11 @@ const isInboxSession = (s: SessionStore) => s.activeId === INBOX_SESSION_ID;
 
 const isSessionListInit = (s: SessionStore) => s.isSessionsFirstFetchFinished;
 
-// use to judge whether a session is fully activated
 const isSomeSessionActive = (s: SessionStore) => !!s.activeId && isSessionListInit(s);
 
 export const sessionSelectors = {
   currentSession,
   currentSessionSafe,
-  customSessionGroups,
   defaultSessions,
   getSessionById,
   getSessionMetaById,

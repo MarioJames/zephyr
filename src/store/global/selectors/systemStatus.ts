@@ -1,12 +1,9 @@
 import { isServerMode, isUsePgliteDB } from '@/const/version';
-import { DatabaseLoadingState } from '@/types/clientDB';
+import { DatabaseLoadingState } from '@/types/database';
 
 import { GlobalState, INITIAL_STATUS } from '../initialState';
 
 export const systemStatus = (s: GlobalState) => s.status;
-
-const sessionGroupKeys = (s: GlobalState): string[] =>
-  s.status.expandSessionGroupKeys || INITIAL_STATUS.expandSessionGroupKeys;
 
 const showSystemRole = (s: GlobalState) => s.status.showSystemRole;
 const showChatSideBar = (s: GlobalState) => !s.status.zenMode && s.status.showChatSideBar;
@@ -29,32 +26,25 @@ const threadInputHeight = (s: GlobalState) => s.status.threadInputHeight;
 const isPgliteNotEnabled = (s: GlobalState) =>
   isUsePgliteDB && !isServerMode && s.isStatusInit && !s.status.isEnablePglite;
 
-/**
- * 当且仅当 client db 模式，且 pglite 未初始化完成时返回 true
- */
 const isPgliteNotInited = (s: GlobalState) =>
   isUsePgliteDB &&
   s.isStatusInit &&
   s.status.isEnablePglite &&
   s.initClientDBStage !== DatabaseLoadingState.Ready;
 
-/**
- * 当且仅当 client db 模式，且 pglite 初始化完成时返回 true
- */
 const isPgliteInited = (s: GlobalState): boolean =>
   (s.isStatusInit &&
     s.status.isEnablePglite &&
     s.initClientDBStage === DatabaseLoadingState.Ready) ||
   false;
 
-// 这个变量控制 clientdb 是否完成初始化，正常来说，只有 pgliteDB 模式下，才会存在变化，其他时候都是 true
 const isDBInited = (s: GlobalState): boolean => (isUsePgliteDB ? isPgliteInited(s) : true);
 
 const getAgentSystemRoleExpanded =
   (agentId: string) =>
   (s: GlobalState): boolean => {
     const map = s.status.systemRoleExpandedMap || {};
-    return map[agentId] !== false; // 角色设定默认为展开状态
+    return map[agentId] !== false;
   };
 
 const showSlotPanel = (s: GlobalState) => !s.status.zenMode && s.status.showSlotPanel;
@@ -72,7 +62,6 @@ export const systemStatusSelectors = {
   isShowCredit,
   language,
   portalWidth,
-  sessionGroupKeys,
   sessionWidth,
   showChatHeader,
   showChatSideBar,

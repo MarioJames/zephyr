@@ -1,14 +1,11 @@
-import type { ThemeMode } from 'antd-style';
+import { DatabaseLoadingState, MigrationSQL, MigrationTableItem } from '@/types/database';
+import { AsyncLocalStorage } from '@/utils/storage';
+import { LocaleMode, ThemeMode } from '@/types/locale';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-
-import { DatabaseLoadingState, MigrationSQL, MigrationTableItem } from '@/types/clientDB';
-import { LocaleMode } from '@/types/locale';
-import { SessionDefaultGroup } from '@/types/session';
-import { AsyncLocalStorage } from '@/utils/localStorage';
 
 /**
  * 侧边栏标签页枚举
- * 定义应用侧边栏中可用的标签页类型
+ * 定义侧边栏中可用的标签页类型
  */
 export enum SidebarTabKey {
   Chat = 'chat',
@@ -18,7 +15,7 @@ export enum SidebarTabKey {
 
 /**
  * 聊天设置标签页枚举
- * 定义聊天设置面板中可用的标签页类型
+ * 定义聊天设置面板中的标签页类型
  */
 export enum ChatSettingsTabs {
   Chat = 'chat',
@@ -32,7 +29,7 @@ export enum ChatSettingsTabs {
 
 /**
  * 设置标签页枚举
- * 定义主设置面板中可用的标签页类型
+ * 定义主设置面板中的标签页类型
  */
 export enum SettingsTabs {
   About = 'about',
@@ -49,7 +46,7 @@ export enum SettingsTabs {
 
 /**
  * 个人资料标签页枚举
- * 定义个人资料面板中可用的标签页类型
+ * 定义个人资料面板中的标签页类型
  */
 export enum ProfileTabs {
   Profile = 'profile',
@@ -62,12 +59,6 @@ export enum ProfileTabs {
  * 定义了应用的整体系统状态，包括UI布局、功能开关等
  */
 export interface SystemStatus {
-  /**
-   * 应该展开的会话分组键列表
-   * 控制哪些会话分组在侧边栏中处于展开状态
-   */
-  expandSessionGroupKeys: string[];
-  
   /**
    * 文件面板宽度
    * 文件管理面板的宽度（像素）
@@ -285,7 +276,6 @@ export interface GlobalState {
  * 定义系统状态的默认值
  */
 export const INITIAL_STATUS = {
-  expandSessionGroupKeys: [SessionDefaultGroup.Pinned, SessionDefaultGroup.Default],
   filePanelWidth: 320,
   hidePWAInstaller: false,
   hideThreadLimitAlert: false,

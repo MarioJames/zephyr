@@ -33,13 +33,6 @@ export interface GlobalWorkspacePaneAction {
   toggleChatSideBar: (visible?: boolean) => void;
   
   /**
-   * 切换会话分组展开状态
-   * @param id 分组ID
-   * @param expand 是否展开
-   */
-  toggleExpandSessionGroup: (id: string, expand: boolean) => void;
-  
-  /**
    * 切换系统角色显示状态
    * @param visible 是否显示
    */
@@ -125,26 +118,6 @@ export const globalWorkspaceSlice: StateCreator<
 
     // 否则使用updateSystemStatus更新
     get().updateSystemStatus({ showChatSideBar }, n('toggleAgentPanel', newValue));
-  },
-  
-  /**
-   * 切换会话分组展开状态
-   * 使用immer处理数组的不可变更新
-   */
-  toggleExpandSessionGroup: (id, expand) => {
-    const { status } = get();
-    const nextExpandSessionGroup = produce(status.expandSessionGroupKeys, (draft: string[]) => {
-      if (expand) {
-        // 展开：如果已存在则不添加
-        if (draft.includes(id)) return;
-        draft.push(id);
-      } else {
-        // 折叠：移除指定ID
-        const index = draft.indexOf(id);
-        if (index !== -1) draft.splice(index, 1);
-      }
-    });
-    get().updateSystemStatus({ expandSessionGroupKeys: nextExpandSessionGroup });
   },
   
   /**
