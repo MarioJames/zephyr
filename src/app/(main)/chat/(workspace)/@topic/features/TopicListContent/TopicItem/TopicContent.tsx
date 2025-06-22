@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { memo, useMemo } from "react";
 import { Flexbox } from "react-layout-kit";
+import { useRouter } from "next/navigation";
 
 import BubblesLoading from "@/components/BubblesLoading";
 import { LOADING_FLAT } from "@/const/base";
@@ -65,9 +66,12 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
     s.removeTopic,
   ]);
   const { styles } = useStyles();
+  const router = useRouter();
 
-  const toggleEditing = (visible?: boolean) => {
-    useChatStore.setState({ topicRenamingId: visible ? id : "" });
+  const toggleEditing = () => {
+    if (id) {
+      router.push(`/customer/edit?id=${id}`);
+    }
   };
 
   const { modal } = App.useApp();
@@ -79,7 +83,7 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
         key: "edit",
         label: "编辑客户信息",
         onClick: () => {
-          toggleEditing(true);
+          toggleEditing();
         },
       },
       {
@@ -112,7 +116,7 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
       justify={"space-between"}
       onDoubleClick={(e) => {
         if (!id) return;
-        if (e.altKey) toggleEditing(true);
+        if (e.altKey) toggleEditing();
       }}
     >
       <div
@@ -146,7 +150,7 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
               if (title !== v) {
                 updateTopicTitle(id, v);
               }
-              toggleEditing(false);
+              toggleEditing();
             }}
             onEditingChange={toggleEditing}
             showEditIcon={false}

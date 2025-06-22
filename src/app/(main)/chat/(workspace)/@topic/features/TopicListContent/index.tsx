@@ -7,6 +7,7 @@ import { Flexbox } from "react-layout-kit";
 import { Button } from "antd";
 import { ChevronDown, Plus } from "lucide-react";
 import { createStyles } from "antd-style";
+import { useRouter } from "next/navigation";
 
 import { imageUrl } from "@/const/base";
 import { useFetchTopics } from "@/hooks/useFetchTopics";
@@ -55,6 +56,10 @@ const TopicListContent = memo(() => {
     s.updateGuideState,
   ]);
 
+  const handleAddCustomer = () => {
+    router.push('/customer/edit');
+  };
+
   useFetchTopics();
 
   if (isInSearchMode) return <SearchResult />;
@@ -80,6 +85,7 @@ const TopicListContent = memo(() => {
           type="default"
           icon={<Plus size={16} />}
           className={`${styles.button}`}
+          onClick={handleAddCustomer}
         >
           创建客户
         </Button>
