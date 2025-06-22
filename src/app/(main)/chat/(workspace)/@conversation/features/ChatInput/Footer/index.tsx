@@ -6,7 +6,6 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import StopLoadingIcon from '@/components/StopLoading';
-import SaveTopic from '@/features/ChatInput/Topic';
 import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
@@ -70,44 +69,38 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         <MessageFromUrl />
       </Suspense>
       <Flexbox
-        align={'end'}
+        align={'center'}
         className={styles.overrideAntdIcon}
-        distribution={'space-between'}
         flex={'none'}
         gap={8}
         horizontal
-        paddingInline={16}
+        style={{ paddingRight: 16 }}
       >
-        <Flexbox align={'center'} flex={'none'} gap={8} horizontal>
-          <ShortcutHint />
-          <SaveTopic />
-          <Flexbox style={{ minWidth: 92 }}>
-            {isAIGenerating ? (
-              <Button
-                className={styles.loadingButton}
-                icon={StopLoadingIcon}
-                onClick={stopGenerateMessage}
-              >
-                {'停止'}
-              </Button>
-            ) : (
-              <Space.Compact>
-                <Button
-                  disabled={!canSend}
-                  loading={!canSend}
-                  onClick={() => {
-                    sendMessage();
-                    onExpandChange?.(false);
-                  }}
-                  type={'primary'}
-                >
-                  {'发送'}
-                </Button>
-                <SendMore disabled={!canSend} isMac={isMac} />
-              </Space.Compact>
-            )}
-          </Flexbox>
-        </Flexbox>
+        <ShortcutHint />
+        {isAIGenerating ? (
+          <Button
+            className={styles.loadingButton}
+            icon={StopLoadingIcon}
+            onClick={stopGenerateMessage}
+          >
+            {'停止'}
+          </Button>
+        ) : (
+          <Space.Compact>
+            <Button
+              disabled={!canSend}
+              loading={!canSend}
+              onClick={() => {
+                sendMessage();
+                onExpandChange?.(false);
+              }}
+              type={'primary'}
+            >
+              {'发送'}
+            </Button>
+            <SendMore disabled={!canSend} isMac={isMac} />
+          </Space.Compact>
+        )}
       </Flexbox>
     </>
   );

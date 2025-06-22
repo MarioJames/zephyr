@@ -67,8 +67,14 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
               rightActions={rightActions}
               setExpand={setExpand}
             />
-            {renderTextArea(onSend)}
-            {renderFooter({ expand, onExpandChange: setExpand })}
+            <Flexbox horizontal gap={8} style={{ flex: 1 }}>
+              <Flexbox style={{ flex: 1 }}>
+                {renderTextArea(onSend)}
+              </Flexbox>
+              <Flexbox style={{ flex: 'none', alignSelf: 'end' }}>
+                {renderFooter({ expand, onExpandChange: setExpand })}
+              </Flexbox>
+            </Flexbox>
           </Flexbox>
         </DraggablePanel>
       </>

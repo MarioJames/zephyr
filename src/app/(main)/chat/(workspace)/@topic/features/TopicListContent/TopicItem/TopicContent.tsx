@@ -8,13 +8,9 @@ import {
 import { App, Typography } from "antd";
 import { createStyles } from "antd-style";
 import {
-  LucideCopy,
-  LucideLoader2,
   MoreVertical,
   PencilLine,
-  Star,
   Trash,
-  Wand2,
 } from "lucide-react";
 import { memo, useMemo } from "react";
 import { Flexbox } from "react-layout-kit";
@@ -50,7 +46,6 @@ const useStyles = createStyles(({ css }) => ({
     cursor: pointer;
   `
 }));
-const { Paragraph } = Typography;
     
 interface TopicContentProps {
   id: string;
@@ -60,19 +55,14 @@ interface TopicContentProps {
 }
 
 const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeName }) => {
-  console.log('employeeName', employeeName);
   const [
     editing,
     updateTopicTitle,
     removeTopic,
-    autoRenameTopicTitle,
-    duplicateTopic,
   ] = useChatStore((s) => [
     s.topicRenamingId === id,
     s.updateTopicTitle,
     s.removeTopic,
-    s.autoRenameTopicTitle,
-    s.duplicateTopic,
   ]);
   const { styles } = useStyles();
 
@@ -85,53 +75,18 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
   const items = useMemo<MenuProps["items"]>(
     () => [
       {
-        icon: <Icon icon={Wand2} />,
-        key: "autoRename",
-        label: "智能重命名",
-        onClick: () => {
-          autoRenameTopicTitle(id);
-        },
-      },
-      {
         icon: <Icon icon={PencilLine} />,
-        key: "rename",
-        label: "编辑",
+        key: "edit",
+        label: "编辑客户信息",
         onClick: () => {
           toggleEditing(true);
         },
       },
       {
-        type: "divider",
-      },
-      {
-        icon: <Icon icon={LucideCopy} />,
-        key: "duplicate",
-        label: "创建副本",
-        onClick: () => {
-          duplicateTopic(id);
-        },
-      },
-      // {
-      //   icon: <Icon icon={LucideDownload} />,
-      //   key: 'export',
-      //   label: t('topic.actions.export'),
-      //   onClick: () => {
-      //     configService.exportSingleTopic(sessionId, id);
-      //   },
-      // },
-      {
-        type: "divider",
-      },
-      // {
-      //   icon: <Icon icon={Share2} />,
-      //   key: 'share',
-      //   label: t('share'),
-      // },
-      {
         danger: true,
         icon: <Icon icon={Trash} />,
         key: "delete",
-        label: "删除",
+        label: "从最近对话中移除",
         onClick: () => {
           if (!id) return;
 
@@ -141,7 +96,7 @@ const TopicContent = memo<TopicContentProps>(({ id, title, showMore, employeeNam
             onOk: async () => {
               await removeTopic(id);
             },
-            title: "即将删除该话题，删除后将不可恢复，请谨慎操作。",
+            title: "即将从最近对话中移除该客户，请确认",
           });
         },
       },
