@@ -12,12 +12,11 @@ const ICON_SIZE: ActionIconProps['size'] = {
 };
 
 export interface TopActionProps {
-  isPinned?: boolean | null;
   tab?: SidebarTabKey;
 }
 
-const TopActions = memo<TopActionProps>(({ tab, isPinned }) => {
-  const isChatActive = tab === SidebarTabKey.Chat && !isPinned;
+const TopActions = memo<TopActionProps>(({ tab }) => {
+  const isChatActive = tab === SidebarTabKey.Chat;
   const isCustomerManagementActive = tab === SidebarTabKey.CustomerManagement;
   const isEmployeeManagementActive = tab === SidebarTabKey.EmployeeManagement;
 

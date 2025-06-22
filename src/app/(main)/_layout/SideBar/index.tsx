@@ -17,7 +17,7 @@ const pathToTab = (pathname: string) => {
 
 const Top = () => {
   const pathname = usePathname();
-  return <TopActions isPinned={true} tab={pathToTab(pathname)} />;
+  return <TopActions tab={pathToTab(pathname)} />;
 };
 
 const Nav = memo(() => {
