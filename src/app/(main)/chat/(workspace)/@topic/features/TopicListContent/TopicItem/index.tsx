@@ -1,11 +1,9 @@
-import { Skeleton } from 'antd';
 import { createStyles } from 'antd-style';
-import { Suspense, memo, useState } from 'react';
+import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { useChatStore } from '@/store/chat';
 
-import ThreadList from '../ThreadList';
 import TopicContent from './TopicContent';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -69,18 +67,6 @@ const TopicItem = memo<ConfigCellProps>(({ title, active, id, threadId }) => {
       >
           <TopicContent id={id} showMore={isHover} title={title} />
       </Flexbox>
-      {active && (
-        <Suspense
-          fallback={
-            <Flexbox gap={8} paddingBlock={8} paddingInline={24} width={'100%'}>
-              <Skeleton.Button active size={'small'} style={{ height: 18, width: '100%' }} />
-              <Skeleton.Button active size={'small'} style={{ height: 18, width: '100%' }} />
-            </Flexbox>
-          }
-        >
-          <ThreadList />
-        </Suspense>
-      )}
     </Flexbox>
   );
 });
