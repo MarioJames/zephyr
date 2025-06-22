@@ -1,8 +1,9 @@
 'use client';
 
-import { DraggablePanel } from '@lobehub/ui';
+import { DraggablePanel, DraggablePanelContainer } from '@lobehub/ui';
 import { ReactNode, memo, useCallback, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
+import { createStyles } from 'antd-style';
 
 import { CHAT_TEXTAREA_HEIGHT, CHAT_TEXTAREA_MAX_HEIGHT } from '@/const/layoutTokens';
 
@@ -23,6 +24,28 @@ interface DesktopChatInputProps {
   rightActions: ActionKeys[];
 }
 
+const useStyles = createStyles(({ css, token }) => ({
+  content: css`
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+    overflow: hidden;
+  `,
+  panel: css`
+    z-index: 10;
+    background: ${token.colorBgContainer};
+  `,
+  fullscreenPanel: css`
+    z-index: 5;
+    background: ${token.colorBgContainer};
+  `,
+  fullscreenContainer: css`
+    padding-top: 56px; /* 对话区header的高度 */
+    height: 100vh;
+    box-sizing: border-box;
+  `,
+}));
+
 const DesktopChatInput = memo<DesktopChatInputProps>(
   ({
     leftActions,
@@ -32,6 +55,7 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
     onInputHeightChange,
     renderFooter,
   }) => {
+    const { styles } = useStyles();
     const [expand, setExpand] = useState<boolean>(false);
     const onSend = useCallback(() => {
       setExpand(false);
@@ -40,6 +64,10 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
     return (
       <>
         <DraggablePanel
+          className={expand ? styles.fullscreenPanel : styles.panel}
+          classNames={{
+            content: styles.content,
+          }}
           fullscreen={expand}
           maxHeight={CHAT_TEXTAREA_MAX_HEIGHT}
           minHeight={CHAT_TEXTAREA_HEIGHT}
@@ -53,29 +81,38 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
           }}
           placement="bottom"
           size={{ height: inputHeight, width: '100%' }}
-          style={{ zIndex: 10 }}
         >
-          <Flexbox
-            gap={8}
-            height={'100%'}
-            paddingBlock={'4px 16px'}
-            style={{ minHeight: CHAT_TEXTAREA_HEIGHT, position: 'relative' }}
+          <DraggablePanelContainer
+            className={expand ? styles.fullscreenContainer : undefined}
+            style={{
+              flex: 'none',
+              height: '100%',
+              maxHeight: '100vh',
+              width: '100%',
+            }}
           >
-            <Head
-              expand={expand}
-              leftActions={leftActions}
-              rightActions={rightActions}
-              setExpand={setExpand}
-            />
-            <Flexbox horizontal gap={8} style={{ flex: 1 }}>
-              <Flexbox style={{ flex: 1 }}>
-                {renderTextArea(onSend)}
-              </Flexbox>
-              <Flexbox style={{ flex: 'none', alignSelf: 'end' }}>
-                {renderFooter({ expand, onExpandChange: setExpand })}
+            <Flexbox
+              gap={8}
+              height={'100%'}
+              paddingBlock={'4px 16px'}
+              style={{ minHeight: CHAT_TEXTAREA_HEIGHT, position: 'relative' }}
+            >
+              <Head
+                expand={expand}
+                leftActions={leftActions}
+                rightActions={rightActions}
+                setExpand={setExpand}
+              />
+              <Flexbox horizontal gap={8} style={{ flex: 1 }}>
+                <Flexbox style={{ flex: 1 }}>
+                  {renderTextArea(onSend)}
+                </Flexbox>
+                <Flexbox style={{ flex: 'none', alignSelf: 'end' }}>
+                  {renderFooter({ expand, onExpandChange: setExpand })}
+                </Flexbox>
               </Flexbox>
             </Flexbox>
-          </Flexbox>
+          </DraggablePanelContainer>
         </DraggablePanel>
       </>
     );
