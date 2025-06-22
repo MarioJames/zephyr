@@ -1,3 +1,4 @@
+import { useOIDCStore } from '@/store/oidc';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // token获取与存储工具
@@ -24,8 +25,8 @@ const instance: AxiosInstance = axios.create({
 });
 
 // 请求拦截器：自动带上accessToken
-instance.interceptors.request.use((config) => {
-  const token = getAccessToken();
+instance.interceptors.request.use(async (config) => {
+  const token = await useOIDCStore.getState().getValidAccessToken();
   if (token && config.headers) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
@@ -106,7 +107,7 @@ export async function request<T = any>(
 ): Promise<T> {
   const method = (config?.method || 'post') as AxiosRequestConfig['method'];
   const reqConfig: AxiosRequestConfig = {
-    url: api,
+    url: `http://localhost:3010${api}`,
     method,
     ...config,
   };
