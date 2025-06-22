@@ -23,7 +23,6 @@ import {
 } from '../../Messages';
 import History from '../History';
 import { markdownElements } from '../MarkdownElements';
-import { InPortalThreadContext } from './InPortalThreadContext';
 import { normalizeThinkTags, processWithArtifact } from './utils';
 
 const rehypePlugins = markdownElements.map((element) => element.rehypePlugin).filter(Boolean);
@@ -49,7 +48,6 @@ export interface ChatListItemProps {
   enableHistoryDivider?: boolean;
   endRender?: ReactNode;
   id: string;
-  inPortalThread?: boolean;
   index: number;
 }
 
@@ -61,7 +59,6 @@ const Item = memo<ChatListItemProps>(
     actionBar,
     endRender,
     disableEditing,
-    inPortalThread = false,
     index,
   }) => {
     const { styles, cx } = useStyles();
@@ -220,34 +217,31 @@ const Item = memo<ChatListItemProps>(
 
     return (
       item && (
-        <InPortalThreadContext.Provider value={inPortalThread}>
-          {enableHistoryDivider && <History />}
-          <Flexbox className={cx(styles.message, className, isMessageLoading && styles.loading)}>
-            <ChatItem
-              actions={actionBar}
-              avatar={item.meta}
-              belowMessage={belowMessage}
-              editing={editing}
-              error={error}
-              errorMessage={errorMessage}
-              loading={isProcessing}
-              markdownProps={markdownProps}
-              message={message}
-              messageExtra={messageExtra}
-              onAvatarClick={onAvatarsClick}
-              onChange={onChange}
-              onDoubleClick={onDoubleClick}
-              onEditingChange={onEditingChange}
-              placement={type === 'chat' ? (item.role === 'user' ? 'right' : 'left') : 'left'}
-              primary={item.role === 'user'}
-              renderMessage={renderMessage}
-              text={text}
-              time={item.updatedAt || item.createdAt}
-              variant={type === 'chat' ? 'bubble' : 'docs'}
-            />
-            {endRender}
-          </Flexbox>
-        </InPortalThreadContext.Provider>
+        <Flexbox className={cx(styles.message, className, isMessageLoading && styles.loading)}>
+          <ChatItem
+            actions={actionBar}
+            avatar={item.meta}
+            belowMessage={belowMessage}
+            editing={editing}
+            error={error}
+            errorMessage={errorMessage}
+            loading={isProcessing}
+            markdownProps={markdownProps}
+            message={message}
+            messageExtra={messageExtra}
+            onAvatarClick={onAvatarsClick}
+            onChange={onChange}
+            onDoubleClick={onDoubleClick}
+            onEditingChange={onEditingChange}
+            placement={type === 'chat' ? (item.role === 'user' ? 'right' : 'left') : 'left'}
+            primary={item.role === 'user'}
+            renderMessage={renderMessage}
+            text={text}
+            time={item.updatedAt || item.createdAt}
+            variant={type === 'chat' ? 'bubble' : 'docs'}
+          />
+          {endRender}
+        </Flexbox>
       )
     );
   },

@@ -36,8 +36,6 @@ interface ProcessMessageParams {
    * the RAG query content, should be embedding and used in the semantic search
    */
   ragQuery?: string;
-  threadId?: string;
-  inPortalThread?: boolean;
 }
 
 export interface AIGenerateAction {
@@ -92,8 +90,6 @@ export interface AIGenerateAction {
     params?: {
       traceId?: string;
       messages?: ChatMessage[];
-      threadId?: string;
-      inPortalThread?: boolean;
     },
   ) => Promise<void>;
   /**
@@ -143,7 +139,7 @@ export const generateAIChat: StateCreator<
   },
 
   sendMessage: async ({ message, files, onlyAddUserMessage, isWelcomeQuestion }) => {
-    const { internal_coreProcessMessage, activeTopicId, activeId, activeThreadId } = get();
+    const { internal_coreProcessMessage, activeTopicId, activeId } = get();
     if (!activeId) return;
 
     const fileIdList = files?.map((f) => f.id);
@@ -163,7 +159,6 @@ export const generateAIChat: StateCreator<
       sessionId: activeId,
       // if there is activeTopicId，then add topicId to message
       topicId: activeTopicId,
-      threadId: activeThreadId,
     };
 
     const agentConfig = agentChatConfigSelectors.currentChatConfig(getAgentStoreState());
@@ -246,7 +241,6 @@ export const generateAIChat: StateCreator<
     await internal_coreProcessMessage(messages, id, {
       isWelcomeQuestion,
       ragQuery: get().internal_shouldUseRAG() ? message : undefined,
-      threadId: activeThreadId,
     });
 
     set({ isCreatingMessage: false }, false, n('creatingMessage/stop'));
@@ -718,7 +712,7 @@ export const generateAIChat: StateCreator<
 
   internal_resendMessage: async (
     messageId,
-    { traceId, messages: outChats, threadId: outThreadId, inPortalThread } = {},
+    { traceId, messages: outChats } = {},
   ) => {
     // 1. 构造所有相关的历史记录
     const chats = outChats ?? chatSelectors.mainAIChats(get());
@@ -754,13 +748,12 @@ export const generateAIChat: StateCreator<
 
     if (!latestMsg) return;
 
-    const threadId = outThreadId ?? activeThreadId;
+    const threadId = activeThreadId;
 
     await internal_coreProcessMessage(contextMessages, latestMsg.id, {
       traceId,
       ragQuery: get().internal_shouldUseRAG() ? latestMsg.content : undefined,
       threadId,
-      inPortalThread,
     });
   },
 

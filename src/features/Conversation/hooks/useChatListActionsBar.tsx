@@ -6,7 +6,6 @@ import {
   ListRestart,
   RotateCcw,
   Share2,
-  Split,
   Trash,
 } from 'lucide-react';
 import { useMemo } from 'react';
@@ -14,7 +13,6 @@ import { useMemo } from 'react';
 import { isDeprecatedEdition } from '@/const/version';
 
 interface ChatListActionsBar {
-  branching: ActionIconGroupItemType;
   copy: ActionIconGroupItemType;
   del: ActionIconGroupItemType;
   delAndRegenerate: ActionIconGroupItemType;
@@ -25,19 +23,9 @@ interface ChatListActionsBar {
   share: ActionIconGroupItemType;
 }
 
-export const useChatListActionsBar = ({
-  hasThread,
-}: { hasThread?: boolean } = {}): ChatListActionsBar => {
+export const useChatListActionsBar = (): ChatListActionsBar => {
   return useMemo(
     () => ({
-      branching: {
-        disable: isDeprecatedEdition,
-        icon: Split,
-        key: 'branching',
-        label: !isDeprecatedEdition
-          ? '创建子话题'
-          : '「子话题」功能在当前模式下不可用，如需该功能，请切换到 Postgres/Pglite DB 模式或使用 LobeChat Cloud',
-      },
       copy: {
         icon: Copy,
         key: 'copy',
@@ -45,13 +33,11 @@ export const useChatListActionsBar = ({
       },
       del: {
         danger: true,
-        disable: hasThread,
         icon: Trash,
         key: 'del',
-        label: hasThread ? '存在子话题，不能删除' : '删除',
+        label: '删除',
       },
       delAndRegenerate: {
-        disable: hasThread,
         icon: ListRestart,
         key: 'delAndRegenerate',
         label: '删除并重新生成',
@@ -80,6 +66,6 @@ export const useChatListActionsBar = ({
         label: '分享',
       },
     }),
-    [hasThread],
+    [],
   );
 };

@@ -1,12 +1,9 @@
 // sort-imports-ignore
 // 导入各个slice的状态类型和初始状态
 import { ChatToolState, initialToolState } from './slices/builtinTool/initialState'; // 内置工具状态
-import { ChatPortalState, initialChatPortalState } from './slices/portal/initialState'; // 门户状态
 import { ChatMessageState, initialMessageState } from './slices/message/initialState'; // 消息状态
-import { ChatShareState, initialShareState } from './slices/share/initialState'; // 分享状态
 import { ChatTopicState, initialTopicState } from './slices/topic/initialState'; // 话题状态
 import { ChatAIChatState, initialAiChatState } from './slices/aiChat/initialState'; // AI聊天状态
-import { ChatThreadState, initialThreadState } from './slices/thread/initialState'; // 线程状态
 
 /**
  * 聊天Store状态的完整类型定义
@@ -16,17 +13,11 @@ import { ChatThreadState, initialThreadState } from './slices/thread/initialStat
  * - ChatMessageState: 消息相关状态
  * - ChatAIChatState: AI聊天相关状态
  * - ChatToolState: 内置工具相关状态
- * - ChatShareState: 分享相关状态
- * - ChatThreadState: 线程相关状态
- * - ChatPortalState: 门户相关状态
  */
 export type ChatStoreState = ChatTopicState &
   ChatMessageState &
   ChatAIChatState &
-  ChatToolState &
-  ChatShareState &
-  ChatThreadState &
-  ChatPortalState;
+  ChatToolState;
 
 /**
  * 聊天Store的初始状态
@@ -38,7 +29,4 @@ export const initialState: ChatStoreState = {
   ...initialAiChatState, // AI聊天相关初始状态
   ...initialTopicState, // 话题相关初始状态
   ...initialToolState, // 内置工具相关初始状态
-  ...initialShareState, // 分享相关初始状态
-  ...initialThreadState, // 线程相关初始状态
-  ...initialChatPortalState, // 门户相关初始状态
 };

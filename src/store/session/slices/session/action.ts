@@ -1,35 +1,29 @@
+import isEqual from 'fast-deep-equal';
+import useSWR, { SWRResponse, mutate } from 'swr';
+import { DeepPartial } from 'utility-types';
 import { StateCreator } from 'zustand/vanilla';
 
-import { LobeAgentSession, LobeSessions } from '@/types/session';
-import { ChatSessionList } from '@/types/session';
-import { MetaData } from '@/types/meta';
-import { UpdateSessionParams } from '@/types/session';
-
-import { sessionApi } from '@/lib/api/session';
-import { DEFAULT_AGENT_LOBE_SESSION } from '@/const/session';
-import { LobeSessionType } from '@/types/session';
-import { INBOX_SESSION_ID } from '@/const/session';
-
-import { useUserStore } from '../user';
-import { settingsSelectors } from '../user/slices/settings/selectors';
-import { sessionSelectors, sessionMetaSelectors } from './selectors';
-
-import { sessionsReducer, SessionDispatch } from './helpers';
-
-import { useClientDataSWR } from '@/lib/swr';
-import { useSWR, SWRResponse } from 'swr';
-import { mutate } from 'swr';
-
-import { merge } from 'lodash-es';
-import { isEqual } from 'lodash-es';
 import { message } from '@/components/AntdStaticMethods';
-
-import { FETCH_SESSIONS_KEY, SEARCH_SESSIONS_KEY } from '@/const/swr';
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
+import { DEFAULT_AGENT_LOBE_SESSION, INBOX_SESSION_ID } from '@/const/session';
+import { useClientDataSWR } from '@/libs/swr';
+import { sessionApi } from '@/app/api/session';
+import { SessionStore } from '@/store/session';
+import { useUserStore } from '@/store/user';
+import { settingsSelectors } from '@/store/user/selectors';
+import { MetaData } from '@/types/meta';
+import {
+  ChatSessionList,
+  LobeAgentSession,
+  LobeSessionType,
+  LobeSessions,
+  UpdateSessionParams,
+} from '@/types/session';
+import { merge } from '@/utils/merge';
 
-import { n } from '@/utils/dev';
-
-import { SessionStore } from '../../store';
+import { SessionDispatch, sessionsReducer } from './reducers';
+import { sessionSelectors } from './selectors';
+import { sessionMetaSelectors } from './selectors/meta';
 
 export interface SessionAction {
   switchSession: (sessionId: string) => void;

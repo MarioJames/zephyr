@@ -1,7 +1,9 @@
-import { DatabaseLoadingState, MigrationSQL, MigrationTableItem } from '@/types/database';
-import { AsyncLocalStorage } from '@/utils/storage';
-import { LocaleMode, ThemeMode } from '@/types/locale';
+import type { ThemeMode } from 'antd-style';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+
+import { DatabaseLoadingState, MigrationSQL, MigrationTableItem } from '@/types/clientDB';
+import { LocaleMode } from '@/types/locale';
+import { AsyncLocalStorage } from '@/utils/localStorage';
 
 /**
  * 侧边栏标签页枚举

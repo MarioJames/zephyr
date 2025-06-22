@@ -4,14 +4,13 @@ import { Icon } from '@lobehub/ui';
 import { App } from 'antd';
 import { createStyles } from 'antd-style';
 import { Loader2 } from 'lucide-react';
-import { memo, useContext, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useChatStore } from '@/store/chat';
-import { chatPortalSelectors, chatSelectors } from '@/store/chat/selectors';
+import { chatSelectors } from '@/store/chat/selectors';
 import { dotLoading } from '@/styles/loading';
 
-import { InPortalThreadContext } from '../../../ChatItem/InPortalThreadContext';
 import { MarkdownElementProps } from '../../type';
 import ArtifactIcon from './Icon';
 
@@ -62,12 +61,10 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
   const hasChildren = !!children;
   const str = ((children as string) || '').toString?.();
 
-  const inThread = useContext(InPortalThreadContext);
   const { message } = App.useApp();
-  const [isGenerating, isArtifactTagClosed, openArtifact, closeArtifact] = useChatStore((s) => {
+  const [isGenerating, openArtifact, closeArtifact] = useChatStore((s) => {
     return [
       chatSelectors.isMessageGenerating(id)(s),
-      chatPortalSelectors.isArtifactTagClosed(id)(s),
       s.openArtifact,
       s.closeArtifact,
     ];
@@ -88,16 +85,10 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
       className={styles.container}
       gap={16}
       onClick={() => {
-        const currentArtifactMessageId = chatPortalSelectors.artifactMessageId(
-          useChatStore.getState(),
-        );
+        const currentArtifactMessageId = useChatStore.getState().artifactMessageId;
         if (currentArtifactMessageId === id) {
           closeArtifact();
         } else {
-          if (inThread) {
-            message.info('子话题中无法查看，请切换到主对话区打开');
-            return;
-          }
           openArtifactUI();
         }
       }}
@@ -119,11 +110,9 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
             <Flexbox className={styles.desc} horizontal>
               {identifier} ·{' '}
               <Flexbox gap={2} horizontal>
-                {!isArtifactTagClosed && (
-                  <div>
-                    <Icon icon={Loader2} spin />
-                  </div>
-                )}
+                <div>
+                  <Icon icon={Loader2} spin />
+                </div>
                 {str?.length}
               </Flexbox>
             </Flexbox>

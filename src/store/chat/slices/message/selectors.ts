@@ -13,21 +13,9 @@ import { chatHelpers } from '../../helpers';
 import type { ChatStoreState } from '../../initialState';
 
 const getMeta = (message: ChatMessage) => {
-  switch (message.role) {
-    case 'user': {
-      return {
-        avatar: userProfileSelectors.userAvatar(useUserStore.getState()) || DEFAULT_USER_AVATAR,
-      };
-    }
+  if (!message.meta) return {};
 
-    case 'system': {
-      return message.meta;
-    }
-
-    default: {
-      return sessionMetaSelectors.currentAgentMeta(useSessionStore.getState());
-    }
-  }
+  return message.meta;
 };
 
 const currentChatKey = (s: ChatStoreState) => messageMapKey(s.activeId, s.activeTopicId);
@@ -52,34 +40,16 @@ const activeBaseChatsWithoutTool = (s: ChatStoreState) => {
   return messages.filter((m) => m.role !== 'tool');
 };
 
-const getChatsWithThread = (s: ChatStoreState, messages: ChatMessage[]) => {
-  // 如果没有 activeThreadId，则返回所有的主消息
-  if (!s.activeThreadId) return messages.filter((m) => !m.threadId);
-
-  const thread = s.threadMaps[s.activeTopicId!]?.find((t) => t.id === s.activeThreadId);
-
-  if (!thread) return messages.filter((m) => !m.threadId);
-
-  const sourceIndex = messages.findIndex((m) => m.id === thread.sourceMessageId);
-  const sliced = messages.slice(0, sourceIndex + 1);
-
-  return [...sliced, ...messages.filter((m) => m.threadId === s.activeThreadId)];
-};
-
 // ============= Main Display Chats ========== //
 // =========================================== //
 const mainDisplayChats = (s: ChatStoreState): ChatMessage[] => {
-  const displayChats = activeBaseChatsWithoutTool(s);
-
-  return getChatsWithThread(s, displayChats);
+  return activeBaseChatsWithoutTool(s);
 };
 
 const mainDisplayChatIDs = (s: ChatStoreState) => mainDisplayChats(s).map((s) => s.id);
 
 const mainAIChats = (s: ChatStoreState): ChatMessage[] => {
-  const messages = activeBaseChats(s);
-
-  return getChatsWithThread(s, messages);
+  return activeBaseChats(s);
 };
 
 const mainAIChatsWithHistoryConfig = (s: ChatStoreState): ChatMessage[] => {
@@ -133,16 +103,11 @@ const showInboxWelcome = (s: ChatStoreState): boolean => {
 const getMessageById = (id: string) => (s: ChatStoreState) =>
   chatHelpers.getMessageById(activeBaseChats(s), id);
 
-const countMessagesByThreadId = (id: string) => (s: ChatStoreState) => {
-  const messages = activeBaseChats(s).filter((m) => m.threadId === id);
-
-  return messages.length;
-};
-
 const getMessageByToolCallId = (id: string) => (s: ChatStoreState) => {
   const messages = activeBaseChats(s);
   return messages.find((m) => m.tool_call_id === id);
 };
+
 const getTraceIdByMessageId = (id: string) => (s: ChatStoreState) => getMessageById(id)(s)?.traceId;
 
 const latestMessage = (s: ChatStoreState) => activeBaseChats(s).at(-1);
@@ -198,7 +163,6 @@ const isSendButtonDisabledByMessage = (s: ChatStoreState) =>
 export const chatSelectors = {
   activeBaseChats,
   activeBaseChatsWithoutTool,
-  countMessagesByThreadId,
   currentChatKey,
   currentChatLoadingState,
   currentToolMessages,

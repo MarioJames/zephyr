@@ -3,7 +3,6 @@ import { DynamicLayoutProps } from '@/types/next';
 import ChatHydration from './features/ChatHydration';
 import ChatInput from './features/ChatInput/index';
 import ChatList from './features/ChatList';
-import ThreadHydration from './features/ThreadHydration';
 import ZenModeToast from './features/ZenModeToast';
 
 const ChatConversation = async (props: DynamicLayoutProps) => {
@@ -14,7 +13,6 @@ const ChatConversation = async (props: DynamicLayoutProps) => {
       <ChatList />
       <ChatInput/>
       <ChatHydration />
-      <ThreadHydration />
     </>
   );
 };

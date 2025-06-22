@@ -11,36 +11,27 @@ import { ChatStoreState, initialState } from './initialState'; // 聊天状态�
 
 // 导入各个slice的操作
 import { ChatBuiltinToolAction, chatToolSlice } from './slices/builtinTool/actions'; // 内置工具相关操作
-import { ChatPortalAction, chatPortalSlice } from './slices/portal/action'; // 门户相关操作
 import { ChatTranslateAction, chatTranslate } from './slices/translate/action'; // 翻译相关操作
 import { ChatMessageAction, chatMessage } from './slices/message/action'; // 消息相关操作
-import { ShareAction, chatShare } from './slices/share/action'; // 分享相关操作
 import { ChatTopicAction, chatTopic } from './slices/topic/action'; // 话题相关操作
 import { ChatAIChatAction, chatAiChat } from './slices/aiChat/actions'; // AI聊天相关操作
-import { ChatThreadAction, chatThreadMessage } from './slices/thread/action'; // 线程消息相关操作
 
 /**
  * 聊天Store操作接口
  * 通过交叉类型(&)将所有操作组合在一起
  * 包含以下操作模块：
  * - ChatMessageAction: 消息相关操作
- * - ChatThreadAction: 线程消息相关操作
  * - ChatAIChatAction: AI聊天相关操作
  * - ChatTopicAction: 话题相关操作
- * - ShareAction: 分享相关操作
  * - ChatTranslateAction: 翻译相关操作
  * - ChatBuiltinToolAction: 内置工具相关操作
- * - ChatPortalAction: 门户相关操作
  */
 export interface ChatStoreAction
   extends ChatMessageAction,
-    ChatThreadAction,
     ChatAIChatAction,
     ChatTopicAction,
-    ShareAction,
     ChatTranslateAction,
-    ChatBuiltinToolAction,
-    ChatPortalAction {}
+    ChatBuiltinToolAction {}
 
 /**
  * 聊天Store的完整类型定义
@@ -61,13 +52,10 @@ const createStore: StateCreator<ChatStore, [['zustand/devtools', never]]> = (...
 
   // 展开各个slice的操作
   ...chatMessage(...params), // 消息相关操作
-  ...chatThreadMessage(...params), // 线程消息相关操作
   ...chatAiChat(...params), // AI聊天相关操作
   ...chatTopic(...params), // 话题相关操作
-  ...chatShare(...params), // 分享相关操作
   ...chatTranslate(...params), // 翻译相关操作
   ...chatToolSlice(...params), // 内置工具相关操作
-  ...chatPortalSlice(...params), // 门户相关操作
 
   // cloud - 预留云服务相关功能
 });

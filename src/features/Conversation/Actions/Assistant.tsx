@@ -2,23 +2,14 @@
 
 import { ActionIconGroup } from '@lobehub/ui';
 import type { ActionIconGroupItemType } from '@lobehub/ui';
-import { memo, useContext, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
-import { useChatStore } from '@/store/chat';
-import { threadSelectors } from '@/store/chat/selectors';
-
-import { InPortalThreadContext } from '../components/ChatItem/InPortalThreadContext';
 import { useChatListActionsBar } from '../hooks/useChatListActionsBar';
 import { RenderAction } from '../types';
 import { ErrorActionsBar } from './Error';
 import { useCustomActions } from './customAction';
 
-export const AssistantActionsBar: RenderAction = memo(({ onActionClick, error, tools, id }) => {
-  const [isThreadMode, hasThread] = useChatStore((s) => [
-    !!s.activeThreadId,
-    threadSelectors.hasThreadBySourceMsgId(id)(s),
-  ]);
-
+export const AssistantActionsBar: RenderAction = memo(({ onActionClick, error, tools }) => {
   const {
     regenerate,
     edit,
@@ -26,22 +17,17 @@ export const AssistantActionsBar: RenderAction = memo(({ onActionClick, error, t
     copy,
     divider,
     del,
-    branching,
-    // export: exportPDF,
     share,
-  } = useChatListActionsBar({ hasThread });
+  } = useChatListActionsBar();
 
   const { translate } = useCustomActions();
   const hasTools = !!tools;
 
-  const inPortalThread = useContext(InPortalThreadContext);
-  const inThread = isThreadMode || inPortalThread;
-
   const items = useMemo(() => {
     if (hasTools) return [delAndRegenerate, copy];
 
-    return [edit, copy, inThread ? null : branching].filter(Boolean) as ActionIconGroupItemType[];
-  }, [inThread, hasTools]);
+    return [edit, copy] as ActionIconGroupItemType[];
+  }, [hasTools]);
 
   if (error) return <ErrorActionsBar onActionClick={onActionClick} />;
 
@@ -56,7 +42,6 @@ export const AssistantActionsBar: RenderAction = memo(({ onActionClick, error, t
           translate,
           divider,
           share,
-          // exportPDF,
           divider,
           regenerate,
           delAndRegenerate,

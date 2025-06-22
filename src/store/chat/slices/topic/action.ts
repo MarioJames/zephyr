@@ -221,7 +221,7 @@ export const chatTopic: StateCreator<
     ),
   switchTopic: async (id, skipRefreshMessage) => {
     set(
-      { activeTopicId: !id ? (null as any) : id, activeThreadId: undefined },
+      { activeTopicId: !id ? (null as any) : id },
       false,
       n('toggleTopic'),
     );

@@ -12,11 +12,5 @@ export { chatToolSelectors } from './slices/builtinTool/selectors';
 // 导出聊天消息相关选择器
 export { chatSelectors } from './slices/message/selectors';
 
-// 导出门户相关选择器（导出所有）
-export * from './slices/portal/selectors';
-
-// 导出线程相关选择器
-export { threadSelectors } from './slices/thread/selectors';
-
 // 导出话题相关选择器
 export { topicSelectors } from './slices/topic/selectors';

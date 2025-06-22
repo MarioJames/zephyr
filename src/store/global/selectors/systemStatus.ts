@@ -1,5 +1,5 @@
 import { isServerMode, isUsePgliteDB } from '@/const/version';
-import { DatabaseLoadingState } from '@/types/database';
+import { DatabaseLoadingState } from '@/types/clientDB';
 
 import { GlobalState, INITIAL_STATUS } from '../initialState';
 

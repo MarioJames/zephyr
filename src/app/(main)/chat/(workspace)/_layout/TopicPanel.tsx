@@ -6,8 +6,6 @@ import isEqual from 'fast-deep-equal';
 import { PropsWithChildren, memo, useEffect, useState } from 'react';
 
 import { CHAT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
-import { useChatStore } from '@/store/chat';
-import { chatPortalSelectors } from '@/store/chat/slices/portal/selectors';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 
@@ -33,7 +31,6 @@ const TopicPanel = memo(({ children }: PropsWithChildren) => {
     systemStatusSelectors.showTopicPanel(s),
     s.toggleTopicPanel,
   ]);
-  const showPortal = useChatStore(chatPortalSelectors.showPortal);
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showTopic));
 
@@ -58,7 +55,7 @@ const TopicPanel = memo(({ children }: PropsWithChildren) => {
       classNames={{
         content: styles.content,
       }}
-      expand={showTopic && !showPortal}
+      expand={showTopic}
       minWidth={CHAT_SIDEBAR_WIDTH}
       mode={md ? 'fixed' : 'float'}
       onExpandChange={handleExpand}

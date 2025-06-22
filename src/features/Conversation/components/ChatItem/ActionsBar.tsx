@@ -31,11 +31,10 @@ const ActionsBar = memo<ActionsBarProps>((props) => {
 
 interface ActionsProps {
   id: string;
-  inPortalThread?: boolean;
   index: number;
 }
 
-const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
+const Actions = memo<ActionsProps>(({ id, index }) => {
   const item = useChatStore(chatSelectors.getMessageById(id), isEqual);
   const [
     deleteMessage,
@@ -43,9 +42,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
     translateMessage,
     delAndRegenerateMessage,
     copyMessage,
-    openThreadCreator,
-    resendThreadMessage,
-    delAndResendThreadMessage,
     toggleMessageEditing,
   ] = useChatStore((s) => [
     s.deleteMessage,
@@ -53,9 +49,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
     s.translateMessage,
     s.delAndRegenerateMessage,
     s.copyMessage,
-    s.openThreadCreator,
-    s.resendThreadMessage,
-    s.delAndResendThreadMessage,
     s.toggleMessageEditing,
   ]);
   const { message } = App.useApp();
@@ -78,10 +71,6 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
           message.success('复制成功');
           break;
         }
-        case 'branching': {
-          openThreadCreator(id);
-          break;
-        }
 
         case 'del': {
           deleteMessage(id);
@@ -89,9 +78,7 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
         }
 
         case 'regenerate': {
-          if (inPortalThread) {
-            resendThreadMessage(id);
-          } else regenerateMessage(id);
+          regenerateMessage(id);
 
           // if this message is an error message, we need to delete it
           if (item.error) deleteMessage(id);
@@ -99,11 +86,7 @@ const Actions = memo<ActionsProps>(({ id, inPortalThread, index }) => {
         }
 
         case 'delAndRegenerate': {
-          if (inPortalThread) {
-            delAndResendThreadMessage(id);
-          } else {
-            delAndRegenerateMessage(id);
-          }
+          delAndRegenerateMessage(id);
           break;
         }
       }

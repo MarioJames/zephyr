@@ -6,9 +6,7 @@ import ActionsBar from '@/features/Conversation/components/ChatItem/ActionsBar';
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
-import { chatSelectors, threadSelectors } from '@/store/chat/selectors';
-
-import Thread from './Thread';
+import { chatSelectors } from '@/store/chat/selectors';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => {
   const borderColor = isDarkMode ? token.colorFillSecondary : token.colorFillTertiary;
@@ -48,12 +46,9 @@ export interface ThreadChatItemProps {
 }
 
 const MainChatItem = memo<ThreadChatItemProps>(({ id, index }) => {
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
 
-  const [showThread, historyLength] = useChatStore((s) => [
-    threadSelectors.hasThreadBySourceMsgId(id)(s),
-    chatSelectors.mainDisplayChatIDs(s).length,
-  ]);
+  const historyLength = useChatStore((s) => chatSelectors.mainDisplayChatIDs(s).length);
 
   const [displayMode, enableHistoryDivider] = useAgentStore((s) => [
     agentChatConfigSelectors.displayMode(s),
@@ -69,17 +64,7 @@ const MainChatItem = memo<ThreadChatItemProps>(({ id, index }) => {
   return (
     <ChatItem
       actionBar={actionBar}
-      className={showThread ? cx(styles.line, styles[placement]) : ''}
       enableHistoryDivider={enableHistoryDivider}
-      endRender={
-        showThread && (
-          <Thread
-            id={id}
-            placement={placement}
-            style={{ marginTop: displayMode === 'docs' ? 12 : undefined }}
-          />
-        )
-      }
       id={id}
       index={index}
     />

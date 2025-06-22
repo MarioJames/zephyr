@@ -3,11 +3,9 @@
 import { DraggablePanel, DraggablePanelContainer } from '@lobehub/ui';
 import { createStyles, useResponsive } from 'antd-style';
 import isEqual from 'fast-deep-equal';
-import { PropsWithChildren, memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
-import { useChatStore } from '@/store/chat';
-import { chatPortalSelectors } from '@/store/chat/slices/portal/selectors';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import AIHintPanel from './SlotPanelAIHint';
@@ -35,7 +33,6 @@ const SlotPanel = memo(() => {
     systemStatusSelectors.showSlotPanel(s),
     s.toggleSlotPanel,
   ]);
-  const showPortal = useChatStore(chatPortalSelectors.showPortal);
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
@@ -61,7 +58,7 @@ const SlotPanel = memo(() => {
       classNames={{
         content: styles.content,
       }}
-      expand={showSlotPanel && !showPortal}
+      expand={showSlotPanel}
       minWidth={CHAT_SLOT_SIDEBAR_WIDTH}
       mode={md ? 'fixed' : 'float'}
       onExpandChange={handleExpand}
