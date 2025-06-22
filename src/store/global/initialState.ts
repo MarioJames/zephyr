@@ -6,12 +6,20 @@ import { LocaleMode } from '@/types/locale';
 import { SessionDefaultGroup } from '@/types/session';
 import { AsyncLocalStorage } from '@/utils/localStorage';
 
+/**
+ * 侧边栏标签页枚举
+ * 定义应用侧边栏中可用的标签页类型
+ */
 export enum SidebarTabKey {
   Chat = 'chat',
   CustomerManagement = 'customer-management',
   EmployeeManagement = 'employee-management',
 }
 
+/**
+ * 聊天设置标签页枚举
+ * 定义聊天设置面板中可用的标签页类型
+ */
 export enum ChatSettingsTabs {
   Chat = 'chat',
   Meta = 'meta',
@@ -22,6 +30,10 @@ export enum ChatSettingsTabs {
   TTS = 'tts',
 }
 
+/**
+ * 设置标签页枚举
+ * 定义主设置面板中可用的标签页类型
+ */
 export enum SettingsTabs {
   About = 'about',
   Agent = 'agent',
@@ -35,73 +47,243 @@ export enum SettingsTabs {
   TTS = 'tts',
 }
 
+/**
+ * 个人资料标签页枚举
+ * 定义个人资料面板中可用的标签页类型
+ */
 export enum ProfileTabs {
   Profile = 'profile',
   Security = 'security',
   Stats = 'stats',
 }
 
+/**
+ * 系统状态接口
+ * 定义了应用的整体系统状态，包括UI布局、功能开关等
+ */
 export interface SystemStatus {
-  // which sessionGroup should expand
-  expandSessionGroupKeys: string[];
-  filePanelWidth: number;
-  hidePWAInstaller?: boolean;
-  hideThreadLimitAlert?: boolean;
-  inputHeight: number;
   /**
-   * 应用初始化时不启用 PGLite，只有当用户手动开启时才启用
+   * 应该展开的会话分组键列表
+   * 控制哪些会话分组在侧边栏中处于展开状态
+   */
+  expandSessionGroupKeys: string[];
+  
+  /**
+   * 文件面板宽度
+   * 文件管理面板的宽度（像素）
+   */
+  filePanelWidth: number;
+  
+  /**
+   * 是否隐藏PWA安装器
+   * 控制是否显示渐进式Web应用安装提示
+   */
+  hidePWAInstaller?: boolean;
+  
+  /**
+   * 是否隐藏线程限制警告
+   * 控制是否显示线程数量限制的警告信息
+   */
+  hideThreadLimitAlert?: boolean;
+  
+  /**
+   * 输入框高度
+   * 聊天输入框的高度（像素）
+   */
+  inputHeight: number;
+  
+  /**
+   * 是否启用PGLite
+   * 应用初始化时不启用PGLite，只有当用户手动开启时才启用
    */
   isEnablePglite?: boolean;
-  isShowCredit?: boolean;
-  language?: LocaleMode;
-  latestChangelogId?: string;
-  portalWidth: number;
-  sessionsWidth: number;
-  showChatSideBar?: boolean;
-  showFilePanel?: boolean;
-  showHotkeyHelper?: boolean;
-  showSessionPanel?: boolean;
-  showSlotPanel?: boolean;
-  showSystemRole?: boolean;
+  
   /**
-   * TopicPanel 显示状态
+   * 是否显示积分信息
+   * 控制是否显示用户积分相关信息
+   */
+  isShowCredit?: boolean;
+  
+  /**
+   * 语言设置
+   * 应用的当前语言模式
+   */
+  language?: LocaleMode;
+  
+  /**
+   * 最新更新日志ID
+   * 记录用户已查看的最新更新日志ID
+   */
+  latestChangelogId?: string;
+  
+  /**
+   * 门户面板宽度
+   * 门户面板的宽度（像素）
+   */
+  portalWidth: number;
+  
+  /**
+   * 会话面板宽度
+   * 会话列表面板的宽度（像素）
+   */
+  sessionsWidth: number;
+  
+  /**
+   * 是否显示聊天侧边栏
+   * 控制聊天侧边栏的显示状态
+   */
+  showChatSideBar?: boolean;
+  
+  /**
+   * 是否显示文件面板
+   * 控制文件管理面板的显示状态
+   */
+  showFilePanel?: boolean;
+  
+  /**
+   * 是否显示快捷键帮助
+   * 控制快捷键帮助信息的显示状态
+   */
+  showHotkeyHelper?: boolean;
+  
+  /**
+   * 是否显示会话面板
+   * 控制会话列表面板的显示状态
+   */
+  showSessionPanel?: boolean;
+  
+  /**
+   * 是否显示插槽面板
+   * 控制插槽面板的显示状态
+   */
+  showSlotPanel?: boolean;
+  
+  /**
+   * 是否显示系统角色
+   * 控制系统角色信息的显示状态
+   */
+  showSystemRole?: boolean;
+  
+  /**
+   * 话题面板显示状态
+   * 控制话题面板的显示状态
    */
   showTopicPanel?: boolean;
-  systemRoleExpandedMap: Record<string, boolean>;
+  
   /**
-   * theme mode
+   * 系统角色展开状态映射
+   * 记录每个系统角色的展开/折叠状态
+   */
+  systemRoleExpandedMap: Record<string, boolean>;
+  
+  /**
+   * 主题模式
+   * 应用的主题模式（亮色/暗色/自动）
    */
   themeMode?: ThemeMode;
-  threadInputHeight: number;
-  zenMode?: boolean;
+  
   /**
-   * SlotPanel 当前展示类型
+   * 线程输入框高度
+   * 线程输入框的高度（像素）
+   */
+  threadInputHeight: number;
+  
+  /**
+   * 禅模式
+   * 是否启用禅模式（简化界面）
+   */
+  zenMode?: boolean;
+  
+  /**
+   * 插槽面板当前展示类型
+   * 控制插槽面板显示的内容类型
    */
   slotPanelType?: 'aiHint' | 'history';
 }
 
+/**
+ * 全局状态接口
+ * 定义了应用的整体全局状态
+ */
 export interface GlobalState {
+  /**
+   * 是否有新版本
+   * 标识是否有可用的新版本更新
+   */
   hasNewVersion?: boolean;
+  
+  /**
+   * 客户端数据库初始化错误
+   * 存储客户端数据库初始化过程中的错误信息
+   */
   initClientDBError?: Error;
+  
+  /**
+   * 客户端数据库迁移信息
+   * 存储数据库迁移的SQL语句和表记录信息
+   */
   initClientDBMigrations?: {
     sqls: MigrationSQL[];
     tableRecords: MigrationTableItem[];
   };
 
-  initClientDBProcess?: { costTime?: number; phase: 'wasm' | 'dependencies'; progress: number };
+  /**
+   * 客户端数据库初始化进度
+   * 记录数据库初始化的进度信息
+   */
+  initClientDBProcess?: { 
+    costTime?: number;
+    phase: 'wasm' | 'dependencies';
+    progress: number;
+  };
+  
   /**
    * 客户端数据库初始化状态
-   * 启动时为 Idle，完成为 Ready，报错为 Error
+   * 启动时为Idle，完成为Ready，报错为Error
    */
   initClientDBStage: DatabaseLoadingState;
+  
+  /**
+   * 状态是否已初始化
+   * 标识系统状态是否已经完成初始化
+   */
   isStatusInit?: boolean;
+  
+  /**
+   * 最新版本号
+   * 记录最新的应用版本号
+   */
   latestVersion?: string;
+  
+  /**
+   * 路由实例
+   * Next.js应用的路由实例
+   */
   router?: AppRouterInstance;
+  
+  /**
+   * 侧边栏当前标签页
+   * 当前选中的侧边栏标签页
+   */
   sidebarKey: SidebarTabKey;
+  
+  /**
+   * 系统状态
+   * 应用的整体系统状态
+   */
   status: SystemStatus;
+  
+  /**
+   * 状态存储
+   * 用于持久化存储系统状态的异步本地存储实例
+   */
   statusStorage: AsyncLocalStorage<SystemStatus>;
 }
 
+/**
+ * 初始系统状态
+ * 定义系统状态的默认值
+ */
 export const INITIAL_STATUS = {
   expandSessionGroupKeys: [SessionDefaultGroup.Pinned, SessionDefaultGroup.Default],
   filePanelWidth: 320,

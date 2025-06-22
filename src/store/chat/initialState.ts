@@ -1,12 +1,25 @@
 // sort-imports-ignore
-import { ChatToolState, initialToolState } from './slices/builtinTool/initialState';
-import { ChatPortalState, initialChatPortalState } from './slices/portal/initialState';
-import { ChatMessageState, initialMessageState } from './slices/message/initialState';
-import { ChatShareState, initialShareState } from './slices/share/initialState';
-import { ChatTopicState, initialTopicState } from './slices/topic/initialState';
-import { ChatAIChatState, initialAiChatState } from './slices/aiChat/initialState';
-import { ChatThreadState, initialThreadState } from './slices/thread/initialState';
+// 导入各个slice的状态类型和初始状态
+import { ChatToolState, initialToolState } from './slices/builtinTool/initialState'; // 内置工具状态
+import { ChatPortalState, initialChatPortalState } from './slices/portal/initialState'; // 门户状态
+import { ChatMessageState, initialMessageState } from './slices/message/initialState'; // 消息状态
+import { ChatShareState, initialShareState } from './slices/share/initialState'; // 分享状态
+import { ChatTopicState, initialTopicState } from './slices/topic/initialState'; // 话题状态
+import { ChatAIChatState, initialAiChatState } from './slices/aiChat/initialState'; // AI聊天状态
+import { ChatThreadState, initialThreadState } from './slices/thread/initialState'; // 线程状态
 
+/**
+ * 聊天Store状态的完整类型定义
+ * 通过交叉类型(&)将所有子模块的状态组合在一起
+ * 包含以下状态模块：
+ * - ChatTopicState: 话题相关状态
+ * - ChatMessageState: 消息相关状态
+ * - ChatAIChatState: AI聊天相关状态
+ * - ChatToolState: 内置工具相关状态
+ * - ChatShareState: 分享相关状态
+ * - ChatThreadState: 线程相关状态
+ * - ChatPortalState: 门户相关状态
+ */
 export type ChatStoreState = ChatTopicState &
   ChatMessageState &
   ChatAIChatState &
@@ -15,12 +28,17 @@ export type ChatStoreState = ChatTopicState &
   ChatThreadState &
   ChatPortalState;
 
+/**
+ * 聊天Store的初始状态
+ * 通过展开操作符(...)将所有子模块的初始状态合并
+ * 为整个聊天store提供一个完整的初始状态对象
+ */
 export const initialState: ChatStoreState = {
-  ...initialMessageState,
-  ...initialAiChatState,
-  ...initialTopicState,
-  ...initialToolState,
-  ...initialShareState,
-  ...initialThreadState,
-  ...initialChatPortalState,
+  ...initialMessageState, // 消息相关初始状态
+  ...initialAiChatState, // AI聊天相关初始状态
+  ...initialTopicState, // 话题相关初始状态
+  ...initialToolState, // 内置工具相关初始状态
+  ...initialShareState, // 分享相关初始状态
+  ...initialThreadState, // 线程相关初始状态
+  ...initialChatPortalState, // 门户相关初始状态
 };
