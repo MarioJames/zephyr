@@ -26,21 +26,71 @@ export interface AgentItem {
 }
 
 export interface CreateAgentRequest {
-  title?: string;
+  title: string;                       // 必填，智能体标题
   description?: string;
   tags?: string[];
   avatar?: string;
   backgroundColor?: string;
   plugins?: string[];
-  chatConfig?: any;
+  chatConfig?: {                      // 聊天配置
+    autoCreateTopicThreshold: number;
+    enableAutoCreateTopic?: boolean;
+    enableCompressHistory?: boolean;
+    enableHistoryCount?: boolean;
+    enableMaxTokens?: boolean;
+    enableReasoning?: boolean;
+    historyCount?: number;
+    temperature?: number;
+  };
   fewShots?: any;
   model?: string;
-  params?: any;
+  params?: Record<string, unknown>;   // 自定义参数
   provider?: string;
   systemRole?: string;
   tts?: any;
   openingMessage?: string;
   openingQuestions?: string[];
+}
+
+export interface UpdateAgentRequest extends CreateAgentRequest {
+  id: string;
+}
+
+export interface AgentDetailResponse {
+  // 智能体基本信息
+  id: string;
+  title: string;
+  avatar?: string;
+  description?: string;
+  model?: string;
+  provider?: string;
+  systemRole?: string;
+  
+  // 关联信息
+  agentsFiles?: Array<{
+    file: {
+      id: string;
+      name: string;
+      fileType: string;
+      size: number;
+    };
+  }>;
+  agentsKnowledgeBases?: Array<{
+    knowledgeBase: {
+      id: string;
+      name: string;
+      description?: string;
+    };
+  }>;
+  agentsToSessions?: Array<{
+    session: {
+      id: string;
+      title?: string;
+      avatar?: string;
+      description?: string;
+      updatedAt: Date;
+    };
+  }>;
 }
 
 /**
@@ -63,7 +113,41 @@ function createAgent(data: CreateAgentRequest) {
   return http.post<AgentItem>('/api/v1/agents', data);
 }
 
+/**
+ * 更新智能体
+ * @description 更新指定智能体的信息
+ * @param id string
+ * @param data UpdateAgentRequest
+ * @returns AgentItem
+ */
+function updateAgent(id: string, data: UpdateAgentRequest) {
+  return http.put<AgentItem>(`/api/v1/agents/${id}`, data);
+}
+
+/**
+ * 删除智能体
+ * @description 删除指定的智能体
+ * @param id string
+ * @returns void
+ */
+function deleteAgent(id: string) {
+  return http.delete<void>(`/api/v1/agents/${id}`);
+}
+
+/**
+ * 获取智能体详情
+ * @description 根据ID获取智能体详细信息，包含关联的文件、知识库和会话信息
+ * @param id string
+ * @returns AgentDetailResponse
+ */
+function getAgentDetail(id: string) {
+  return http.get<AgentDetailResponse>(`/api/v1/agents/${id}`);
+}
+
 export default {
   getAgentList,
   createAgent,
+  updateAgent,
+  deleteAgent,
+  getAgentDetail,
 };

@@ -19,38 +19,45 @@ export interface TopicListRequest {
 }
 
 export interface TopicCreateRequest {
-  sessionId: string; // 会话 ID
-  title: string; // 标题名称 - 默认标题
+  title: string;
+  sessionId: string;
+  favorite?: boolean;
+}
+
+export interface TopicSummaryRequest {
+  model?: string;
+  provider?: string;
 }
 
 /**
- * 获取指定会话的所有话题
- * @description 查看某一个会话（客户）的所有历史记录（话题）时调用
+ * 获取会话的所有话题
+ * @description 获取指定会话的所有话题列表
  * @param params TopicListRequest
  * @returns TopicItem[]
  */
 function getTopicList(params: TopicListRequest) {
-  return http.get<TopicItem[]>("/api/v1/topics/list", params);
+  return http.get<TopicItem[]>('/api/v1/topics', params);
 }
 
 /**
- * 创建新的话题
- * @description 1创建完客户后默认创建一个话题，在对应话题下聊天 2在客户对话界面点击新开话题
+ * 创建话题
+ * @description 创建新的话题
  * @param data TopicCreateRequest
  * @returns TopicItem
  */
 function createTopic(data: TopicCreateRequest) {
-  return http.post<TopicItem>("/api/v1/topics/create", data);
+  return http.post<TopicItem>('/api/v1/topics', data);
 }
 
 /**
- * 总结对应的话题
- * @description 在客户对话界面点击新开话题，需要对当前的话题进行总结并归档
- * @param topicId string
+ * 话题总结
+ * @description 对指定话题进行总结
+ * @param id string
+ * @param data TopicSummaryRequest
  * @returns TopicItem
  */
-function summaryTopic(topicId: string) {
-  return http.post<TopicItem>("/api/v1/topics/summary", { topicId });
+function summaryTopic(id: string, data?: TopicSummaryRequest) {
+  return http.post<TopicItem>(`/api/v1/topics/${id}/summary`, data || {});
 }
 
 export default {
