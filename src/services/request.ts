@@ -128,4 +128,10 @@ export const http = {
   post<T = any>(api: string, data?: any, config?: AxiosRequestConfig) {
     return request<T>(api, data, { ...config, method: 'post' });
   },
+  put<T = any>(api: string, data?: any, config?: AxiosRequestConfig) {
+    return request<T>(api, data, { ...config, method: 'put' });
+  },
+  delete<T = any>(api: string, params?: any, config?: AxiosRequestConfig) {
+    return request<T>(api, params, { ...config, method: 'delete' });
+  },
 };

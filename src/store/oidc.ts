@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from 'oidc-client-ts';
 import { userManager } from '@/config/oidc';
-import API, { UserItem } from '@/app/oneapi/user';
+import API, { UserItem } from '@/services/user';
 
 // Token 信息接口
 export interface TokenInfo {
