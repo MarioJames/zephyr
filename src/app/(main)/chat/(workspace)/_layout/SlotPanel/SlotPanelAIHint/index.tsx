@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Row, Col } from 'antd';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
-import { useAIHintStyles } from './style';
+import { useAIHintStyles } from '../style';
 
 const mockData = [
   {

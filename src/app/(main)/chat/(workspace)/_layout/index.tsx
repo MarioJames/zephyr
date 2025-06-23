@@ -2,12 +2,12 @@ import { Flexbox } from 'react-layout-kit';
 
 import { LayoutProps } from './type';
 import ChatHeader from './ChatHeader';
-import TopicPanel from './TopicPanel';
+import SessionPanel from './SessionPanel';
 import SlotPanel from './SlotPanel';
 
 const Layout = ({
   children,
-  topic,
+  session,
   conversation,
 }: LayoutProps) => {
   return (
@@ -18,7 +18,7 @@ const Layout = ({
         style={{ overflow: 'hidden', position: 'relative' }}
         width={'100%'}
       >
-        <TopicPanel>{topic}</TopicPanel>
+        <SessionPanel>{session}</SessionPanel>
         <Flexbox
           height={'100%'}
           style={{ overflow: 'hidden', position: 'relative' }}
