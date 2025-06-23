@@ -25,8 +25,8 @@ const API = {
    * @param null
    * @returns UserItem
    */
-  getUserInfo: () => http.get<UserItem>("/api/v1/users/current"),
-  
+  getUserInfo: () => http.get<UserItem>("/api/v1/users/me"),
+
   /**
    * 获取系统中所有用户列表
    * @description 管理员角色用户进入后台页面时获取，用于在聊天页面基于员工维度对客户进行筛选
