@@ -53,6 +53,10 @@ export interface SessionCloneRequest {
   includeMessages?: boolean;
 }
 
+export interface SessionGroupUpdateRequest {
+  groupId?: string;
+}
+
 /**
  * 获取会话列表
  * @description 获取会话列表，支持分页和筛选
@@ -135,6 +139,17 @@ function cloneSession(id: string, data: SessionCloneRequest) {
   return http.post<SessionItem>(`/api/v1/sessions/${id}/clone`, data);
 }
 
+/**
+ * 更新会话分组
+ * @description 更新会话的分组关联
+ * @param id string
+ * @param data SessionGroupUpdateRequest
+ * @returns SessionItem
+ */
+function updateSessionGroup(id: string, data: SessionGroupUpdateRequest) {
+  return http.put<SessionItem>(`/api/v1/sessions/${id}/group`, data);
+}
+
 export default {
   getSessionList,
   getGroupedSessions,
@@ -144,4 +159,5 @@ export default {
   updateSession,
   deleteSession,
   cloneSession,
+  updateSessionGroup,
 }; 

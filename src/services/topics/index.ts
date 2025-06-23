@@ -1,4 +1,4 @@
-import { http } from "../request";
+import { http } from '../request';
 
 // 话题相关类型定义
 export interface TopicItem {
@@ -31,12 +31,12 @@ export interface TopicSummaryRequest {
 
 /**
  * 获取会话的所有话题
- * @description 获取指定会话的所有话题列表
- * @param params TopicListRequest
+ * @description 获取指定会话的所有话题列表，符合文档规范的路径参数方式
+ * @param sessionId string
  * @returns TopicItem[]
  */
-function getTopicList(params: TopicListRequest) {
-  return http.get<TopicItem[]>('/api/v1/topics', params);
+function getTopicList(sessionId: string) {
+  return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`);
 }
 
 /**
@@ -60,8 +60,19 @@ function summaryTopic(id: string, data?: TopicSummaryRequest) {
   return http.post<TopicItem>(`/api/v1/topics/${id}/summary`, data || {});
 }
 
+/**
+ * 删除话题
+ * @description 删除指定的话题
+ * @param id string
+ * @returns void
+ */
+function deleteTopic(id: string) {
+  return http.delete<void>(`/api/v1/topics/${id}`);
+}
+
 export default {
   getTopicList,
   createTopic,
   summaryTopic,
-}; 
+  deleteTopic,
+};

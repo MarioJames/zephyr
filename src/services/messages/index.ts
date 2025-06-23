@@ -28,17 +28,29 @@ export interface MessageItem {
 }
 
 export interface MessagesQueryByTopicRequest {
-  topicId: string; // 翻译内容关联的消息ID
+  topicId: string; // 话题ID
 }
 
 export interface MessagesCreateRequest {
-  content: string; // 消息内容
-  role: "user" | "assistant" | "system"; // 添加的信息来源
-  topicId: string; // 话题ID
-  sessionId?: string; // 会话ID
-  model?: string; // 对话使用的模型
-  provider?: string; // 使用的模型的提供商
-  files?: string[]; // 用户上传的文件ID
+  content: string; // 消息内容，必需，不能为空
+  role: "user" | "system" | "assistant" | "tool"; // 必需，user|system|assistant|tool
+  model?: string; // 可选，AI模型
+  provider?: string; // 可选，AI提供商
+  sessionId?: string; // 可选，会话ID
+  topicId?: string; // 可选，话题ID
+  threadId?: string; // 可选，线程ID
+  parentId?: string; // 可选，父消息ID
+  quotaId?: string; // 可选，配额ID
+  agentId?: string; // 可选，智能体ID
+  clientId?: string; // 可选，客户端ID
+  metadata?: any; // 可选，元数据
+  reasoning?: any; // 可选，推理信息
+  search?: any; // 可选，搜索信息
+  tools?: any; // 可选，工具信息
+  traceId?: string; // 可选，追踪ID
+  observationId?: string; // 可选，观察ID
+  files?: string[]; // 可选，文件ID数组
+  favorite?: boolean; // 可选，是否收藏，默认false
 }
 
 export interface MessageCountByTopicsRequest {
@@ -56,11 +68,11 @@ export interface MessageCountResponse {
 /**
  * 获取指定 Topic 的信息列表
  * @description 进入与客户对话界面时查询
- * @param params MessagesQueryByTopicRequest
+ * @param topicId string 话题ID
  * @returns MessageItem[]
  */
-function queryByTopic(params: MessagesQueryByTopicRequest) {
-  return http.get<MessageItem[]>("/api/v1/messages/queryByTopic", params);
+function queryByTopic(topicId: string) {
+  return http.get<MessageItem[]>(`/api/v1/messages/queryByTopic/${topicId}`);
 }
 
 /**
@@ -113,6 +125,27 @@ function createMessageWithReply(data: MessagesCreateRequest) {
   return http.post<MessageItem>('/api/v1/messages/reply', data);
 }
 
+/**
+ * 更新消息
+ * @description 更新指定消息的信息
+ * @param id string
+ * @param data Partial<MessagesCreateRequest>
+ * @returns MessageItem
+ */
+function updateMessage(id: string, data: Partial<MessagesCreateRequest>) {
+  return http.put<MessageItem>(`/api/v1/messages/${id}`, data);
+}
+
+/**
+ * 删除消息
+ * @description 删除指定的消息
+ * @param id string
+ * @returns void
+ */
+function deleteMessage(id: string) {
+  return http.delete<void>(`/api/v1/messages/${id}`);
+}
+
 export default {
   getMessages,
   queryByTopic,
@@ -120,4 +153,6 @@ export default {
   countByUser,
   createMessage,
   createMessageWithReply,
-}; 
+  updateMessage,
+  deleteMessage,
+};
