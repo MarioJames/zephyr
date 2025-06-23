@@ -25,7 +25,7 @@ import {
   topicsAPI, 
   messagesAPI, 
   messageTranslatesAPI 
-} from '@/app/oneapi';
+} from '@/services';
 ```
 
 ### 2. 导入类型定义
@@ -39,7 +39,7 @@ import type {
   TopicItem,
   MessageItem,
   MessageTranslateItem
-} from '@/app/oneapi';
+} from '@/services';
 ```
 
 ## 接口示例

@@ -82,7 +82,7 @@ src/
 
 ### API 架构
 
-1. **OneAPI 集成**: `/src/app/oneapi/`
+1. **Services API 集成**: `/src/services/`
    - 提供标准化的 API 接口
    - 包含用户、角色、智能体、会话、话题、消息等模块
    - 支持完整的 TypeScript 类型定义
@@ -109,7 +109,7 @@ src/
 
 ### 添加新 API 接口
 1. 在 `src/app/api/` 下定义接口
-2. 在 `src/app/oneapi/` 中封装调用
+2. 在 `src/services/` 中封装调用
 3. 更新 TypeScript 类型定义
 
 ### 状态管理
