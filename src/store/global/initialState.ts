@@ -2,7 +2,6 @@ import type { ThemeMode } from 'antd-style';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 import { DatabaseLoadingState, MigrationSQL, MigrationTableItem } from '@/types/clientDB';
-import { LocaleMode } from '@/types/locale';
 import { AsyncLocalStorage } from '@/utils/localStorage';
 
 /**
@@ -16,105 +15,16 @@ export enum SidebarTabKey {
 }
 
 /**
- * 聊天设置标签页枚举
- * 定义聊天设置面板中的标签页类型
- */
-export enum ChatSettingsTabs {
-  Chat = 'chat',
-  Meta = 'meta',
-  Modal = 'modal',
-  Opening = 'opening',
-  Plugin = 'plugin',
-  Prompt = 'prompt',
-  TTS = 'tts',
-}
-
-/**
- * 设置标签页枚举
- * 定义主设置面板中的标签页类型
- */
-export enum SettingsTabs {
-  About = 'about',
-  Agent = 'agent',
-  Common = 'common',
-  Hotkey = 'hotkey',
-  LLM = 'llm',
-  Provider = 'provider',
-  Storage = 'storage',
-  Sync = 'sync',
-  SystemAgent = 'system-agent',
-  TTS = 'tts',
-}
-
-/**
- * 个人资料标签页枚举
- * 定义个人资料面板中的标签页类型
- */
-export enum ProfileTabs {
-  Profile = 'profile',
-  Security = 'security',
-  Stats = 'stats',
-}
-
-/**
  * 系统状态接口
  * 定义了应用的整体系统状态，包括UI布局、功能开关等
  */
 export interface SystemStatus {
   /**
-   * 文件面板宽度
-   * 文件管理面板的宽度（像素）
-   */
-  filePanelWidth: number;
-  
-  /**
-   * 是否隐藏PWA安装器
-   * 控制是否显示渐进式Web应用安装提示
-   */
-  hidePWAInstaller?: boolean;
-  
-  /**
-   * 是否隐藏线程限制警告
-   * 控制是否显示线程数量限制的警告信息
-   */
-  hideThreadLimitAlert?: boolean;
-  
-  /**
    * 输入框高度
    * 聊天输入框的高度（像素）
    */
   inputHeight: number;
-  
-  /**
-   * 是否启用PGLite
-   * 应用初始化时不启用PGLite，只有当用户手动开启时才启用
-   */
-  isEnablePglite?: boolean;
-  
-  /**
-   * 是否显示积分信息
-   * 控制是否显示用户积分相关信息
-   */
-  isShowCredit?: boolean;
-  
-  /**
-   * 语言设置
-   * 应用的当前语言模式
-   */
-  language?: LocaleMode;
-  
-  /**
-   * 最新更新日志ID
-   * 记录用户已查看的最新更新日志ID
-   */
-  latestChangelogId?: string;
-  
-  /**
-   * 门户面板宽度
-   * 门户面板的宽度（像素）
-   */
-  portalWidth: number;
-  
+
   /**
    * 会话面板宽度
    * 会话列表面板的宽度（像素）
@@ -126,18 +36,6 @@ export interface SystemStatus {
    * 控制聊天侧边栏的显示状态
    */
   showChatSideBar?: boolean;
-  
-  /**
-   * 是否显示文件面板
-   * 控制文件管理面板的显示状态
-   */
-  showFilePanel?: boolean;
-  
-  /**
-   * 是否显示快捷键帮助
-   * 控制快捷键帮助信息的显示状态
-   */
-  showHotkeyHelper?: boolean;
   
   /**
    * 是否显示会话面板
@@ -176,12 +74,6 @@ export interface SystemStatus {
   themeMode?: ThemeMode;
   
   /**
-   * 线程输入框高度
-   * 线程输入框的高度（像素）
-   */
-  threadInputHeight: number;
-  
-  /**
    * 禅模式
    * 是否启用禅模式（简化界面）
    */
@@ -199,12 +91,6 @@ export interface SystemStatus {
  * 定义了应用的整体全局状态
  */
 export interface GlobalState {
-  /**
-   * 是否有新版本
-   * 标识是否有可用的新版本更新
-   */
-  hasNewVersion?: boolean;
-  
   /**
    * 客户端数据库初始化错误
    * 存储客户端数据库初始化过程中的错误信息
@@ -243,12 +129,6 @@ export interface GlobalState {
   isStatusInit?: boolean;
   
   /**
-   * 最新版本号
-   * 记录最新的应用版本号
-   */
-  latestVersion?: string;
-  
-  /**
    * 路由实例
    * Next.js应用的路由实例
    */
@@ -278,22 +158,15 @@ export interface GlobalState {
  * 定义系统状态的默认值
  */
 export const INITIAL_STATUS = {
-  filePanelWidth: 320,
-  hidePWAInstaller: false,
-  hideThreadLimitAlert: false,
   inputHeight: 200,
-  portalWidth: 400,
   sessionsWidth: 320,
   showChatSideBar: true,
-  showFilePanel: true,
-  showHotkeyHelper: false,
   showSessionPanel: true,
   showSlotPanel: true,
   showSystemRole: false,
   showTopicPanel: true,
   systemRoleExpandedMap: {},
   themeMode: 'auto',
-  threadInputHeight: 200,
   zenMode: false,
   slotPanelType: 'aiHint',
 } satisfies SystemStatus;

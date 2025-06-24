@@ -1,18 +1,18 @@
-import { subscribeWithSelector } from 'zustand/middleware';
-import { shallow } from 'zustand/shallow';
-import { createWithEqualityFn } from 'zustand/traditional';
-import { StateCreator } from 'zustand/vanilla';
+import { subscribeWithSelector } from "zustand/middleware";
+import { shallow } from "zustand/shallow";
+import { createWithEqualityFn } from "zustand/traditional";
+import { StateCreator } from "zustand/vanilla";
 
-import { createDevtools } from '../middleware/createDevtools';
+import { createDevtools } from "../middleware/createDevtools";
 import {
   type GlobalGeneralAction,
   generalActionSlice,
-} from './actions/general';
+} from "./actions/general";
 import {
   type GlobalWorkspacePaneAction,
   globalWorkspaceSlice,
-} from './actions/workspacePane';
-import { type GlobalState, initialState } from './initialState';
+} from "./actions/workspacePane";
+import { type GlobalState, initialState } from "./initialState";
 
 //  ===============  聚合 createStoreFn ============ //
 
@@ -27,9 +27,7 @@ import { type GlobalState, initialState } from './initialState';
 export interface GlobalStore
   extends GlobalState,
     GlobalWorkspacePaneAction,
-    GlobalGeneralAction {
-  /* empty */
-}
+    GlobalGeneralAction {}
 
 /**
  * 创建全局Store的工厂函数
@@ -37,7 +35,7 @@ export interface GlobalStore
  * @param parameters - Zustand的创建参数
  * @returns 完整的全局store对象
  */
-const createStore: StateCreator<GlobalStore, [['zustand/devtools', never]]> = (
+const createStore: StateCreator<GlobalStore, [["zustand/devtools", never]]> = (
   ...parameters
 ) => ({
   ...initialState,
@@ -48,7 +46,7 @@ const createStore: StateCreator<GlobalStore, [['zustand/devtools', never]]> = (
 //  ===============  实装 useStore ============ //
 
 // 创建开发工具中间件实例，用于调试全局store
-const devtools = createDevtools('global');
+const devtools = createDevtools("global");
 
 /**
  * 全局Store的React Hook

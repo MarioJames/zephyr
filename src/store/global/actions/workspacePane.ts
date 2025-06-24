@@ -1,12 +1,8 @@
-import { produce } from 'immer';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { INBOX_SESSION_ID } from '@/const/session';
 import { SESSION_CHAT_URL } from '@/const/session';
 import type { GlobalStore } from '@/store/global';
-import { setNamespace } from '@/utils/storeDebug';
-
-const n = setNamespace('w');
 
 /**
  * 全局工作区面板操作接口
@@ -97,8 +93,7 @@ export const globalWorkspaceSlice: StateCreator<
           ...systemRoleExpandedMap,
           [agentId]: nextExpanded,
         },
-      },
-      n('toggleAgentSystemRoleExpand', { agentId, expanded: nextExpanded }),
+      }
     );
   },
   
@@ -112,12 +107,12 @@ export const globalWorkspaceSlice: StateCreator<
 
     // 如果状态未初始化，直接更新状态
     if (!get().isStatusInit) {
-      set({ status: { ...get().status, showChatSideBar } }, false, n('toggleAgentPanel', newValue));
+      set({ status: { ...get().status, showChatSideBar } }, false);
       return;
     }
 
     // 否则使用updateSystemStatus更新
-    get().updateSystemStatus({ showChatSideBar }, n('toggleAgentPanel', newValue));
+    get().updateSystemStatus({ showChatSideBar });
   },
   
   /**
@@ -126,7 +121,7 @@ export const globalWorkspaceSlice: StateCreator<
   toggleSystemRole: (newValue) => {
     const showSystemRole = newValue;
 
-    get().updateSystemStatus({ showSystemRole }, n('toggleMobileTopic', newValue));
+    get().updateSystemStatus({ showSystemRole });
   },
   
   /**
@@ -137,14 +132,14 @@ export const globalWorkspaceSlice: StateCreator<
     const { status } = get();
     const nextZenMode = !status.zenMode;
 
-    get().updateSystemStatus({ zenMode: nextZenMode }, n('toggleZenMode'));
+    get().updateSystemStatus({ zenMode: nextZenMode });
   },
   
   /**
    * 设置插槽面板类型
    */
   setSlotPanelType: (type) => {
-    get().updateSystemStatus({ slotPanelType: type }, n('setSlotPanelType', type));
+    get().updateSystemStatus({ slotPanelType: type });
   },
   
   /**
@@ -157,12 +152,12 @@ export const globalWorkspaceSlice: StateCreator<
 
     // 如果状态未初始化，直接更新状态
     if (!get().isStatusInit) {
-      set({ status: { ...get().status, showSlotPanel } }, false, n('toggleSlotPanel', newValue));
+      set({ status: { ...get().status, showSlotPanel } }, false);
       return;
     }
 
     // 否则使用updateSystemStatus更新
-    get().updateSystemStatus({ showSlotPanel }, n('toggleSlotPanel', newValue));
+    get().updateSystemStatus({ showSlotPanel });
   },
   
   /**
@@ -175,11 +170,11 @@ export const globalWorkspaceSlice: StateCreator<
 
     // 如果状态未初始化，直接更新状态
     if (!get().isStatusInit) {
-      set({ status: { ...get().status, showTopicPanel } }, false, n('toggleTopicPanel', newValue));
+      set({ status: { ...get().status, showTopicPanel } }, false);
       return;
     }
 
     // 否则使用updateSystemStatus更新
-    get().updateSystemStatus({ showTopicPanel }, n('toggleTopicPanel', newValue));
+    get().updateSystemStatus({ showTopicPanel });
   },
 });
