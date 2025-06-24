@@ -72,7 +72,6 @@ src/
 - `store/user/` - 用户相关状态
 - `store/session/` - 会话管理状态
 - `store/agent/` - AI 智能体状态
-- `store/aiInfra/` - AI 基础设施状态
 
 每个 store 包含：
 - `store.ts` - store 主文件

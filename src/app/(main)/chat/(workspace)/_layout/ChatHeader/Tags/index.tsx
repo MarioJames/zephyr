@@ -1,9 +1,7 @@
-import { ModelTag } from '@lobehub/icons';
 import { Skeleton } from 'antd';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import ModelSwitchPanel from '@/features/ModelSwitchPanel';
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
 import { useUserStore } from '@/store/user';
@@ -25,9 +23,6 @@ const TitleTags = memo(() => {
     <Skeleton.Button active size={'small'} style={{ height: 20 }} />
   ) : (
     <Flexbox align={'center'} gap={4} horizontal>
-      <ModelSwitchPanel>
-        <ModelTag model={model} />
-      </ModelSwitchPanel>
       {enableHistoryCount && <HistoryLimitTags />}
     </Flexbox>
   );

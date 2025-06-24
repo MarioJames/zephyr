@@ -1,73 +1,38 @@
-import { Icon, Segmented } from '@lobehub/ui';
-import { SegmentedLabeledOption } from 'antd/es/segmented';
-import { AsteriskSquare, KeySquare, ScanFace } from 'lucide-react';
-import { memo, useState } from 'react';
-import { Flexbox } from 'react-layout-kit';
+import { Icon, Segmented } from "@lobehub/ui";
+import { SegmentedLabeledOption } from "antd/es/segmented";
+import { AsteriskSquare } from "lucide-react";
+import { memo } from "react";
+import { Flexbox } from "react-layout-kit";
 
-import APIKeyForm from './APIKeyForm';
-import AccessCodeForm from './AccessCodeForm';
-import OAuthForm from './OAuthForm';
-import { ErrorActionContainer } from './style';
-
-enum Tab {
-  Api = 'api',
-  Oauth = 'oauth',
-  Password = 'password',
-}
+import AccessCodeForm from "./AccessCodeForm";
+import { ErrorActionContainer } from "./style";
 
 interface InvalidAccessCodeProps {
   id: string;
   provider?: string;
 }
 
-const InvalidAccessCode = memo<InvalidAccessCodeProps>(({ id, provider }) => {
-  // 挽歌TODO
-  const isEnabledOAuth = true;
-  const defaultTab = isEnabledOAuth ? Tab.Oauth : Tab.Password;
-  const [mode, setMode] = useState<Tab>(defaultTab);
-  // 挽歌TODO
-  const showOpenAIApiKey = true;
-  const isEnabledTab = showOpenAIApiKey || isEnabledOAuth;
-
+const InvalidAccessCode = memo<InvalidAccessCodeProps>(({ id }) => {
   return (
     <ErrorActionContainer>
-      {isEnabledTab && (
-        <Segmented
-          block
-          onChange={(value) => setMode(value as Tab)}
-          options={
-            [
-              isEnabledOAuth
-                ? {
-                    icon: <Icon icon={ScanFace} />,
-                    label: 'OAuth 登录',
-                    value: Tab.Oauth,
-                  }
-                : undefined,
-              {
-                icon: <Icon icon={AsteriskSquare} />,
-                label: '密码登录',
-                value: Tab.Password,
-              },
-              showOpenAIApiKey
-                ? {
-                    icon: <Icon icon={KeySquare} />,
-                    label: 'API Key',
-                    value: Tab.Api,
-                  }
-                : undefined,
-            ].filter(Boolean) as SegmentedLabeledOption[]
-          }
-          style={{ width: '100%' }}
-          value={mode}
-          variant={'filled'}
-        />
-      )}
+      <Segmented
+        block
+        options={
+          [
+            {
+              icon: <Icon icon={AsteriskSquare} />,
+              label: "密码登录",
+              value: "password",
+            },
+          ].filter(Boolean) as SegmentedLabeledOption[]
+        }
+        style={{ width: "100%" }}
+        value={"password"}
+        variant={"filled"}
+      />
 
       <Flexbox gap={24}>
-        {mode === Tab.Password && <AccessCodeForm id={id} />}
-        {showOpenAIApiKey && mode === Tab.Api && <APIKeyForm id={id} provider={provider} />}
-        {isEnabledOAuth && mode === Tab.Oauth && <OAuthForm id={id} />}
+        <AccessCodeForm id={id} />
       </Flexbox>
     </ErrorActionContainer>
   );

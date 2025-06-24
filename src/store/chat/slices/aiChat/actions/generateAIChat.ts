@@ -13,8 +13,6 @@ import { messageApi } from '@/app/api';
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
 import { getAgentStoreState } from '@/store/agent/store';
-import { aiModelSelectors } from '@/store/aiInfra';
-import { getAiInfraStoreState } from '@/store/aiInfra/store';
 import { chatHelpers } from '@/store/chat/helpers';
 import { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
@@ -337,7 +335,6 @@ export const generateAIChat: StateCreator<
       parentId: userMessageId,
       sessionId: get().activeId,
       topicId: activeTopicId, // if there is activeTopicId，then add it to topicId
-      threadId: params?.threadId,
       fileChunks,
       ragQueryId,
     };
@@ -346,14 +343,9 @@ export const generateAIChat: StateCreator<
 
     if (!assistantId) return;
 
-    // 3. place a search with the search working model if this model is not support tool use
-    const isModelSupportToolUse = aiModelSelectors.isModelSupportToolUse(
-      model,
-      provider!,
-    )(getAiInfraStoreState());
     const isAgentEnableSearch = agentChatConfigSelectors.isAgentEnableSearch(getAgentStoreState());
 
-    if (isAgentEnableSearch && !isModelSupportToolUse) {
+    if (isAgentEnableSearch) {
       const { model, provider } = agentChatConfigSelectors.searchFCModel(getAgentStoreState());
 
       let isToolsCalling = false;
