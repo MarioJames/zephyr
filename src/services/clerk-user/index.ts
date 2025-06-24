@@ -1,13 +1,13 @@
 import { clerkBackend } from '@/libs/clerk-backend';
-import type { 
-  User, 
-  CreateUserParams, 
+import type {
+  User,
+  CreateUserParams,
   UpdateUserParams,
   UserQueryOptions,
   PasswordResetOptions,
   ClerkApiResponse,
   UserListResponse,
-  ServiceResult
+  ServiceResult,
 } from '@/types/clerk';
 
 /**
@@ -26,14 +26,16 @@ export class ClerkUserService {
       return {
         data: user,
         success: true,
-        message: '用户创建成功'
+        message: '用户创建成功',
       };
     } catch (error) {
       console.error('创建用户失败:', error);
       return {
         data: null as any,
         success: false,
-        error: `创建用户失败: ${error instanceof Error ? error.message : '未知错误'}`
+        error: `创建用户失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`,
       };
     }
   }
@@ -44,20 +46,25 @@ export class ClerkUserService {
    * @param params 更新参数
    * @returns 更新后的用户信息
    */
-  async updateUser(userId: string, params: UpdateUserParams): ServiceResult<User> {
+  async updateUser(
+    userId: string,
+    params: UpdateUserParams
+  ): ServiceResult<User> {
     try {
       const user = await clerkBackend.users.updateUser(userId, params);
       return {
         data: user,
         success: true,
-        message: '用户信息更新成功'
+        message: '用户信息更新成功',
       };
     } catch (error) {
       console.error('更新用户信息失败:', error);
       return {
         data: null as any,
         success: false,
-        error: `更新用户信息失败: ${error instanceof Error ? error.message : '未知错误'}`
+        error: `更新用户信息失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`,
       };
     }
   }
@@ -73,14 +80,16 @@ export class ClerkUserService {
       return {
         data: user,
         success: true,
-        message: '获取用户信息成功'
+        message: '获取用户信息成功',
       };
     } catch (error) {
       console.error('获取用户信息失败:', error);
       return {
         data: null as any,
         success: false,
-        error: `获取用户信息失败: ${error instanceof Error ? error.message : '未知错误'}`
+        error: `获取用户信息失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`,
       };
     }
   }
@@ -96,7 +105,9 @@ export class ClerkUserService {
       return result;
     } catch (error) {
       console.error('删除用户失败:', error);
-      throw new Error(`删除用户失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error(
+        `删除用户失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
     }
   }
 
@@ -113,17 +124,19 @@ export class ClerkUserService {
       if (!userResult.success) {
         return userResult as any;
       }
-      
+
       const user = userResult.data;
-      
+
       // 获取用户的主邮箱地址
-      const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
-      
+      const primaryEmail = user.emailAddresses.find(
+        (email) => email.id === user.primaryEmailAddressId
+      );
+
       if (!primaryEmail) {
         return {
           data: false,
           success: false,
-          error: '用户没有有效的邮箱地址'
+          error: '用户没有有效的邮箱地址',
         };
       }
 
@@ -131,21 +144,21 @@ export class ClerkUserService {
       // 或者通过邮箱验证码方式重置，这里我们采用移除密码的方式
       await clerkBackend.users.updateUser(userId, {
         password: undefined,
-        removePassword: true
       });
 
       return {
         data: true,
         success: true,
-        message: '密码重置邮件发送成功'
+        message: '密码重置邮件发送成功',
       };
-
     } catch (error) {
       console.error('密码重置失败:', error);
       return {
         data: false,
         success: false,
-        error: `密码重置失败: ${error instanceof Error ? error.message : '未知错误'}`
+        error: `密码重置失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`,
       };
     }
   }
@@ -158,20 +171,22 @@ export class ClerkUserService {
   async getUserList(options?: {
     limit?: number;
     offset?: number;
-    orderBy?: string;
     query?: string;
   }) {
     try {
       const users = await clerkBackend.users.getUserList({
         limit: options?.limit || 10,
         offset: options?.offset || 0,
-        orderBy: options?.orderBy || '-created_at',
         query: options?.query,
       });
       return users;
     } catch (error) {
       console.error('获取用户列表失败:', error);
-      throw new Error(`获取用户列表失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error(
+        `获取用户列表失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`
+      );
     }
   }
 
@@ -183,12 +198,20 @@ export class ClerkUserService {
   async getUserByEmail(emailAddress: string): Promise<User | null> {
     try {
       const users = await this.getUserList({ query: emailAddress });
-      return users.data.find(user => 
-        user.emailAddresses.some(email => email.emailAddress === emailAddress)
-      ) || null;
+      return (
+        users.data.find((user) =>
+          user.emailAddresses.some(
+            (email) => email.emailAddress === emailAddress
+          )
+        ) || null
+      );
     } catch (error) {
       console.error('根据邮箱查找用户失败:', error);
-      throw new Error(`根据邮箱查找用户失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error(
+        `根据邮箱查找用户失败: ${
+          error instanceof Error ? error.message : '未知错误'
+        }`
+      );
     }
   }
 
@@ -203,7 +226,9 @@ export class ClerkUserService {
       return user;
     } catch (error) {
       console.error('禁用用户失败:', error);
-      throw new Error(`禁用用户失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error(
+        `禁用用户失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
     }
   }
 
@@ -218,7 +243,9 @@ export class ClerkUserService {
       return user;
     } catch (error) {
       console.error('启用用户失败:', error);
-      throw new Error(`启用用户失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      throw new Error(
+        `启用用户失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
     }
   }
 }

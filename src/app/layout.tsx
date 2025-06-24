@@ -1,31 +1,29 @@
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ResolvingViewport } from "next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import AuthProvider from "@/layout/AuthProvider";
-import GlobalProvider from "@/layout/GlobalProvider";
-import { OIDCInitializer } from "@/components/OIDCInitializer";
-import SystemStatusInitializer from "@/components/SystemStatusInitializer";
-import type { Metadata } from "next";
-import { DynamicLayoutProps } from "@/types/next";
-import { RouteVariants } from "@/utils/routeVariants";
-import { ReactNode } from "react";
+import { ResolvingViewport } from 'next';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import GlobalProvider from '@/layout/GlobalProvider';
+import { OIDCInitializer } from '@/components/OIDCInitializer';
+import SystemStatusInitializer from '@/components/SystemStatusInitializer';
+import type { Metadata } from 'next';
+import { DynamicLayoutProps } from '@/types/next';
+import { RouteVariants } from '@/utils/routeVariants';
+import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: "保险客户管理系统",
-  description: "保险客户管理系统",
+  title: '保险客户管理系统',
+  description: '保险客户管理系统',
 };
 interface RootLayoutProps extends DynamicLayoutProps {
   children: ReactNode;
   modal: ReactNode;
 }
-const inVercel = process.env.VERCEL === "1";
+const inVercel = process.env.VERCEL === '1';
 
 const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
   const { variants } = await params;
   const { locale, theme, primaryColor, neutralColor } =
     RouteVariants.deserializeVariants(variants);
   return (
-    <html lang="zh">
+    <html lang='zh'>
       <body>
         <OIDCInitializer />
         <NuqsAdapter>
@@ -36,13 +34,10 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
             primaryColor={primaryColor}
           >
             <SystemStatusInitializer />
-            <AuthProvider>
-              {children}
-              {modal}
-            </AuthProvider>
+            {children}
+            {modal}
           </GlobalProvider>
         </NuqsAdapter>
-        {inVercel && <SpeedInsights />}
       </body>
     </html>
   );
@@ -55,11 +50,11 @@ export const generateViewport = async (): Promise<ResolvingViewport> => {
     initialScale: 1,
     minimumScale: 1,
     themeColor: [
-      { color: "#f8f8f8", media: "(prefers-color-scheme: light)" },
-      { color: "#000", media: "(prefers-color-scheme: dark)" },
+      { color: '#f8f8f8', media: '(prefers-color-scheme: light)' },
+      { color: '#000', media: '(prefers-color-scheme: dark)' },
     ],
-    viewportFit: "cover",
-    width: "device-width",
+    viewportFit: 'cover',
+    width: 'device-width',
   };
 };
 

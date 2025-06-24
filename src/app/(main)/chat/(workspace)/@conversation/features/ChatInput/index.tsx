@@ -14,11 +14,7 @@ const leftActions = [
   'model',
   'search',
   'fileUpload',
-  'knowledgeBase',
-  'params',
-  'history',
   'stt',
-  'tools',
   'mainToken',
 ] as ActionKeys[];
 

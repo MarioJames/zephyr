@@ -76,7 +76,7 @@ const FileItem = memo<FileItemProps>(
         wrapperClassName={cx(styles.image, editable && styles.editableImage)}
       />
     );
-  },
+  }
 );
 
 export default FileItem;

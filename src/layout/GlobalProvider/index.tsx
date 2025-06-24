@@ -20,7 +20,6 @@ const GlobalLayout = async ({
   children,
   neutralColor,
   primaryColor,
-  locale: userLocale,
   appearance,
 }: GlobalLayoutProps) => {
   return (
@@ -31,12 +30,11 @@ const GlobalLayout = async ({
         defaultAppearance={appearance}
         defaultNeutralColor={neutralColor as any}
         defaultPrimaryColor={primaryColor as any}
-        globalCDN={appEnv.CDN_USE_GLOBAL}
       >
-            <QueryProvider>{children}</QueryProvider>
-            <Suspense>
-              <ReactScan />
-            </Suspense>
+        <QueryProvider>{children}</QueryProvider>
+        <Suspense>
+          <ReactScan />
+        </Suspense>
       </AppTheme>
       <AntdV5MonkeyPatch />
     </StyleRegistry>

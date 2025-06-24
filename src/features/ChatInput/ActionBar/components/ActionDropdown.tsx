@@ -4,6 +4,8 @@ import { Dropdown, DropdownProps } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { memo } from 'react';
 
+import { useIsMobile } from '@/hooks/useIsMobile';
+
 const useStyles = createStyles(({ css, prefixCls }) => ({
   dropdownMenu: css`
     &.${prefixCls}-dropdown-menu {
@@ -26,6 +28,7 @@ export interface ActionDropdownProps extends DropdownProps {
 const ActionDropdown = memo<ActionDropdownProps>(
   ({ menu, maxHeight, minWidth, maxWidth, children, placement = 'top', ...rest }) => {
     const { cx, styles } = useStyles();
+    const isMobile = useIsMobile();
 
     return (
       <Dropdown
@@ -39,14 +42,15 @@ const ActionDropdown = memo<ActionDropdownProps>(
           },
           style: {
             maxHeight,
-            maxWidth,
-            minWidth,
+            maxWidth: isMobile ? undefined : maxWidth,
+            minWidth: isMobile ? undefined : minWidth,
             overflowX: 'hidden',
             overflowY: 'scroll',
+            width: isMobile ? '100vw' : undefined,
             ...menu.style,
           },
         }}
-        placement={placement}
+        placement={isMobile ? 'top' : placement}
         {...rest}
       >
         {children}

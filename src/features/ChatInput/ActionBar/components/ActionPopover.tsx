@@ -5,7 +5,8 @@ import { createStyles } from 'antd-style';
 import { ReactNode, memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import UpdateLoading from '@/components/UpdateLoading';
+import UpdateLoading from '@/components/Loading/UpdateLoading';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 const useStyles = createStyles(({ css, prefixCls }) => ({
   popoverContent: css`
@@ -45,6 +46,7 @@ const ActionPopover = memo<ActionPopoverProps>(
     ...rest
   }) => {
     const { cx, styles, theme } = useStyles();
+    const isMobile = useIsMobile();
     return (
       <Popover
         arrow={false}
@@ -52,13 +54,14 @@ const ActionPopover = memo<ActionPopoverProps>(
           ...classNames,
           body: cx(styles.popoverContent, classNames?.body),
         }}
-        placement={placement}
+        placement={isMobile ? 'top' : placement}
         styles={{
           ...customStyles,
           body: {
             maxHeight,
-            maxWidth,
-            minWidth,
+            maxWidth: isMobile ? undefined : maxWidth,
+            minWidth: isMobile ? undefined : minWidth,
+            width: isMobile ? '100vw' : undefined,
             ...customStyles?.body,
           },
         }}

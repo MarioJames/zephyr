@@ -57,16 +57,6 @@ export type {
   ClerkClient
 };
 
-// 扩展的用户创建参数
-export interface ExtendedCreateUserParams extends CreateUserParams {
-  // 可以在这里添加项目特定的字段
-}
-
-// 扩展的用户更新参数
-export interface ExtendedUpdateUserParams extends UpdateUserParams {
-  // 可以在这里添加项目特定的字段
-}
-
 // 用户查询选项
 export interface UserQueryOptions {
   limit?: number;
@@ -80,14 +70,6 @@ export interface PasswordResetOptions {
   userId: string;
   customEmailTemplate?: string;
   redirectUrl?: string;
-}
-
-// 用户状态枚举
-export enum UserStatus {
-  ACTIVE = 'active',
-  BANNED = 'banned',
-  LOCKED = 'locked',
-  SUSPENDED = 'suspended'
 }
 
 // API 响应类型

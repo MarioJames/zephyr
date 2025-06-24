@@ -1,4 +1,4 @@
-import { LobeChatDatabase } from '../type';
+import { ZephyrDatabase } from '../type';
 
 import { getDBInstance } from './web-server';
 
@@ -6,9 +6,9 @@ import { getDBInstance } from './web-server';
  * 懒加载数据库实例
  * 避免每次模块导入时都初始化数据库
  */
-let cachedDB: LobeChatDatabase | null = null;
+let cachedDB: ZephyrDatabase | null = null;
 
-export const getServerDB = async (): Promise<LobeChatDatabase> => {
+export const getServerDB = async (): Promise<ZephyrDatabase> => {
   // 如果已经有缓存的实例，直接返回
   if (cachedDB) return cachedDB;
 

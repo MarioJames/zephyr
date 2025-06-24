@@ -3,9 +3,6 @@ import { createStyles } from 'antd-style';
 import { TextAreaRef } from 'antd/es/input/TextArea';
 import { RefObject, memo, useEffect, useRef } from 'react';
 
-import { useUserStore } from '@/store/user';
-import { preferenceSelectors } from '@/store/user/selectors';
-
 import { useAutoFocus } from '../useAutoFocus';
 
 const useStyles = createStyles(({ css }) => {
@@ -35,76 +32,73 @@ interface InputAreaProps {
   value: string;
 }
 
-const InputArea = memo<InputAreaProps>(({ onSend, value, loading, onChange }) => {
-  const { styles } = useStyles();
+const InputArea = memo<InputAreaProps>(
+  ({ onSend, value, loading, onChange }) => {
+    const { styles } = useStyles();
 
-  const ref = useRef<TextAreaRef>(null);
-  const isChineseInput = useRef(false);
+    const ref = useRef<TextAreaRef>(null);
+    const isChineseInput = useRef(false);
 
-  const useCmdEnterToSend = useUserStore(preferenceSelectors.useCmdEnterToSend);
+    useAutoFocus(ref as RefObject<TextAreaRef>);
 
-  useAutoFocus(ref as RefObject<TextAreaRef>);
+    const hasValue = !!value;
 
-  const hasValue = !!value;
+    useEffect(() => {
+      const fn = (e: BeforeUnloadEvent) => {
+        if (hasValue) {
+          // set returnValue to trigger alert modal
+          // Note: No matter what value is set, the browser will display the standard text
+          e.returnValue = '你有正在输入中的内容，确定要离开吗？';
+        }
+      };
 
-  useEffect(() => {
-    const fn = (e: BeforeUnloadEvent) => {
-      if (hasValue) {
-        // set returnValue to trigger alert modal
-        // Note: No matter what value is set, the browser will display the standard text
-        e.returnValue = '你有正在输入中的内容，确定要离开吗？';
-      }
-    };
+      window.addEventListener('beforeunload', fn);
+      return () => {
+        window.removeEventListener('beforeunload', fn);
+      };
+    }, [hasValue]);
 
-    window.addEventListener('beforeunload', fn);
-    return () => {
-      window.removeEventListener('beforeunload', fn);
-    };
-  }, [hasValue]);
+    return (
+      <div className={styles.textareaContainer}>
+        <TextArea
+          autoFocus
+          className={styles.textarea}
+          onBlur={(e) => {
+            onChange?.(e.target.value);
+          }}
+          onChange={(e) => {
+            onChange?.(e.target.value);
+          }}
+          onCompositionEnd={() => {
+            isChineseInput.current = false;
+          }}
+          onCompositionStart={() => {
+            isChineseInput.current = true;
+          }}
+          onPressEnter={(e) => {
+            if (loading || e.altKey || e.shiftKey || isChineseInput.current)
+              return;
 
-  return (
-    <div className={styles.textareaContainer}>
-      <TextArea
-        autoFocus
-        className={styles.textarea}
-        onBlur={(e) => {
-          onChange?.(e.target.value);
-        }}
-        onChange={(e) => {
-          onChange?.(e.target.value);
-        }}
-        onCompositionEnd={() => {
-          isChineseInput.current = false;
-        }}
-        onCompositionStart={() => {
-          isChineseInput.current = true;
-        }}
-        onPressEnter={(e) => {
-          if (loading || e.altKey || e.shiftKey || isChineseInput.current) return;
+            // eslint-disable-next-line unicorn/consistent-function-scoping
+            const send = () => {
+              // avoid inserting newline when sending message.
+              // refs: https://github.com/lobehub/lobe-chat/pull/989
+              e.preventDefault();
 
-          // eslint-disable-next-line unicorn/consistent-function-scoping
-          const send = () => {
-            // avoid inserting newline when sending message.
-            // refs: https://github.com/lobehub/lobe-chat/pull/989
-            e.preventDefault();
+              onSend();
+            };
 
-            onSend();
-          };
-
-          // when user like cmd + enter to send message
-          if (useCmdEnterToSend) {
-          } else {
             send();
-          }
-        }}
-        placeholder={'输入聊天内容...'}
-        ref={ref}
-        value={value}
-        variant={'borderless'}
-      />
-    </div>
-  );
-});
+          }}
+          placeholder={'输入聊天内容...'}
+          ref={ref}
+          value={value}
+          variant={'borderless'}
+        />
+      </div>
+    );
+  }
+);
 
 InputArea.displayName = 'DesktopInputArea';
 

@@ -1,7 +1,7 @@
 import { and, eq, inArray, like, or, desc, asc } from 'drizzle-orm/expressions';
 import { sql } from 'drizzle-orm';
 
-import { LobeChatDatabase } from '@/database/type';
+import { ZephyrDatabase } from '@/database/type';
 
 import { CustomerSessionSelect, customerSessions } from '../schemas';
 
@@ -37,9 +37,9 @@ export interface CreateCustomerSessionParams {
 }
 
 export class CustomerModel {
-  private db: LobeChatDatabase;
+  private db: ZephyrDatabase;
 
-  constructor(db: LobeChatDatabase) {
+  constructor(db: ZephyrDatabase) {
     this.db = db;
   }
 

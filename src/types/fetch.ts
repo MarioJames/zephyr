@@ -1,6 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-import { ILobeAgentRuntimeErrorType } from '@/libs/model-runtime';
-
 export const ChatErrorType = {
   // ******* 业务错误语义 ******* //
 
@@ -39,7 +36,4 @@ export const ChatErrorType = {
 
 export type ErrorType = (typeof ChatErrorType)[keyof typeof ChatErrorType];
 
-export interface ErrorResponse {
-  body: any;
-  errorType: ErrorType | ILobeAgentRuntimeErrorType;
-}
+// ErrorResponse 类型已移除，因为未被使用

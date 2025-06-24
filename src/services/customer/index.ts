@@ -2,6 +2,7 @@ import {
   CustomerCreateRequest,
   CustomerUpdateRequest,
 } from '../../app/api/customer/route';
+import qs from 'query-string';
 
 export interface GetCustomerListRequest {
   page?: number;
@@ -26,15 +27,7 @@ async function getCustomerDetail(sessionId: string) {
  * @returns 客户列表
  */
 async function getCustomerList(params: GetCustomerListRequest) {
-  const searchParams = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) {
-      searchParams.set(key, value.toString());
-    }
-  }
-
-  return fetch(`/api/customer?${searchParams.toString()}`, {
+  return fetch(`/api/customer?${qs.stringify(params)}`, {
     method: 'GET',
   });
 }

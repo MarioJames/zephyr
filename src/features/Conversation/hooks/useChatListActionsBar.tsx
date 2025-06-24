@@ -10,8 +10,6 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { isDeprecatedEdition } from '@/const/version';
-
 interface ChatListActionsBar {
   copy: ActionIconGroupItemType;
   del: ActionIconGroupItemType;
@@ -66,6 +64,6 @@ export const useChatListActionsBar = (): ChatListActionsBar => {
         label: '分享',
       },
     }),
-    [],
+    []
   );
 };

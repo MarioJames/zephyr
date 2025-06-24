@@ -16,15 +16,11 @@ import { ReactNode, memo, useEffect } from 'react';
 import AntdStaticMethods from '@/components/AntdStaticMethods';
 import {
   LOBE_THEME_APPEARANCE,
-  LOBE_THEME_NEUTRAL_COLOR,
-  LOBE_THEME_PRIMARY_COLOR,
 } from '@/const/theme';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
-import { useUserStore } from '@/store/user';
-import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { GlobalStyle } from '@/styles';
-import { setCookie } from '@/utils/client/cookie';
+import { setCookie } from '@/utils/client';
 
 const useStyles = createStyles(({ css, token }) => ({
   app: css`
@@ -102,31 +98,17 @@ const AppTheme = memo<AppThemeProps>(
     customFontURL,
     customFontFamily,
   }) => {
-    // console.debug('server:appearance', defaultAppearance);
-    // console.debug('server:primaryColor', defaultPrimaryColor);
-    // console.debug('server:neutralColor', defaultNeutralColor);
     const themeMode = useGlobalStore(systemStatusSelectors.themeMode);
     const { styles, cx, theme } = useStyles();
-    const [primaryColor, neutralColor] = useUserStore((s) => [
-      userGeneralSettingsSelectors.primaryColor(s),
-      userGeneralSettingsSelectors.neutralColor(s),
-    ]);
 
-    useEffect(() => {
-      setCookie(LOBE_THEME_PRIMARY_COLOR, primaryColor);
-    }, [primaryColor]);
-
-    useEffect(() => {
-      setCookie(LOBE_THEME_NEUTRAL_COLOR, neutralColor);
-    }, [neutralColor]);
 
     return (
       <ThemeProvider
         appearance={themeMode !== 'auto' ? themeMode : undefined}
         className={cx(styles.app, styles.scrollbar, styles.scrollbarPolyfill)}
         customTheme={{
-          neutralColor: neutralColor ?? defaultNeutralColor,
-          primaryColor: primaryColor ?? defaultPrimaryColor,
+          neutralColor: defaultNeutralColor,
+          primaryColor: defaultPrimaryColor,
         }}
         defaultAppearance={defaultAppearance}
         onAppearanceChange={(appearance) => {
