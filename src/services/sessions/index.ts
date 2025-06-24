@@ -1,5 +1,5 @@
-import { http } from "../request";
-import { CreateAgentRequest } from "../agents";
+import { http } from '../request';
+import { CreateAgentRequest } from '../agents';
 
 // 会话相关类型定义
 export interface SessionItem {
@@ -9,7 +9,7 @@ export interface SessionItem {
   description?: string;
   avatar?: string;
   backgroundColor?: string;
-  type?: "agent" | "group";
+  type?: 'agent' | 'group';
   userId: string;
   groupId?: string;
   clientId?: string;
@@ -21,8 +21,16 @@ export interface SessionItem {
 export interface SessionListRequest {
   page?: number;
   pageSize?: number;
-  groupId?: string;
-  userId?: string; // 会话所属的员工 ID，没有则查询全部
+}
+
+export interface SessionSearchRequest {
+  keyword: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface BatchSessionListRequest {
+  sessionIds: string[];
 }
 
 export interface SessionCreateRequest {
@@ -43,20 +51,6 @@ export interface SessionUpdateRequest {
   agentId?: string;
 }
 
-export interface SessionSearchRequest {
-  q: string;        // 搜索关键词
-  limit?: number;   // 结果限制
-}
-
-export interface SessionCloneRequest {
-  title?: string;
-  includeMessages?: boolean;
-}
-
-export interface SessionGroupUpdateRequest {
-  groupId?: string;
-}
-
 /**
  * 获取会话列表
  * @description 获取会话列表，支持分页和筛选
@@ -67,34 +61,20 @@ function getSessionList(params?: SessionListRequest) {
   return http.get<SessionItem[]>('/api/v1/sessions', params);
 }
 
-/**
- * 获取分组会话列表
- * @description 获取按组分类的会话列表
- * @param null
- * @returns SessionItem[]
- */
-function getGroupedSessions() {
-  return http.get<SessionItem[]>('/api/v1/sessions/grouped');
-}
-
-/**
- * 搜索会话
- * @description 根据关键词搜索会话
- * @param params SessionSearchRequest
- * @returns SessionItem[]
- */
-function searchSessions(params: SessionSearchRequest) {
+function searchSessionList(params: SessionSearchRequest) {
   return http.get<SessionItem[]>('/api/v1/sessions/search', params);
 }
 
 /**
- * 创建会话
- * @description 创建新的会话
- * @param data SessionCreateRequest
- * @returns SessionItem
+ * 批量获取指定会话列表
+ * @description 批量获取指定会话列表
+ * @param params BatchSessionListRequest
+ * @returns SessionItem[]
  */
-function createSession(data: SessionCreateRequest) {
-  return http.post<SessionItem>('/api/v1/sessions', data);
+function getSessionListByIds(
+  params: BatchSessionListRequest
+): Promise<SessionItem[]> {
+  return http.get<SessionItem[]>(`/api/v1/sessions/batch`, params);
 }
 
 /**
@@ -108,6 +88,16 @@ function getSessionDetail(id: string) {
 }
 
 /**
+ * 创建会话
+ * @description 创建新的会话
+ * @param data SessionCreateRequest
+ * @returns SessionItem
+ */
+function createSession(data: SessionCreateRequest) {
+  return http.post<SessionItem>('/api/v1/sessions', data);
+}
+
+/**
  * 更新会话
  * @description 更新会话信息
  * @param id string
@@ -118,46 +108,11 @@ function updateSession(id: string, data: SessionUpdateRequest) {
   return http.put<SessionItem>(`/api/v1/sessions/${id}`, data);
 }
 
-/**
- * 删除会话
- * @description 删除指定的会话
- * @param id string
- * @returns void
- */
-function deleteSession(id: string) {
-  return http.delete<void>(`/api/v1/sessions/${id}`);
-}
-
-/**
- * 克隆会话
- * @description 克隆现有会话创建新会话
- * @param id string
- * @param data SessionCloneRequest
- * @returns SessionItem
- */
-function cloneSession(id: string, data: SessionCloneRequest) {
-  return http.post<SessionItem>(`/api/v1/sessions/${id}/clone`, data);
-}
-
-/**
- * 更新会话分组
- * @description 更新会话的分组关联
- * @param id string
- * @param data SessionGroupUpdateRequest
- * @returns SessionItem
- */
-function updateSessionGroup(id: string, data: SessionGroupUpdateRequest) {
-  return http.put<SessionItem>(`/api/v1/sessions/${id}/group`, data);
-}
-
 export default {
   getSessionList,
-  getGroupedSessions,
-  searchSessions,
-  createSession,
+  searchSessionList,
+  getSessionListByIds,
   getSessionDetail,
+  createSession,
   updateSession,
-  deleteSession,
-  cloneSession,
-  updateSessionGroup,
-}; 
+};

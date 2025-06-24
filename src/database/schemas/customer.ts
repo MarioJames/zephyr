@@ -17,7 +17,6 @@ export const customerSessions = pgTable(
 
     // 关联字段
     sessionId: text('session_id').notNull().unique(), // 关联外部 session 表的 ID
-    customerId: integer('customer_id').notNull(), // 关联本地客户表的 ID
 
     // Session 表中没有的客户扩展信息
     // 基本信息
@@ -50,7 +49,6 @@ export const customerSessions = pgTable(
   },
   (table) => [
     index('customer_sessions_session_id_idx').on(table.sessionId),
-    index('customer_sessions_customer_id_idx').on(table.customerId),
     // 确保每个 session 只有一条客户关联记录
     unique('unique_session').on(table.sessionId),
   ]
