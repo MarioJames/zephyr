@@ -182,7 +182,7 @@ export const createSessionSlice: StateCreator<
     ),
   useSearchSessions: (keyword) =>
     useSWR<LobeSessions>(
-      [SEARCH_SESSIONS_KEY, keyword],
+      ['searchSessions', keyword],
       async () => {
         if (!keyword) return [];
 
