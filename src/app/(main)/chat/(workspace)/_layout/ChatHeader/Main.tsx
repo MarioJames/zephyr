@@ -10,7 +10,6 @@ import { ChevronDown, PencilLine } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useInitAgentConfig } from "@/hooks/useInitAgentConfig";
-import { useOpenChatSettings } from "@/hooks/useInterceptingRoutes";
 import { useGlobalStore } from "@/store/global";
 import { systemStatusSelectors } from "@/store/global/selectors";
 

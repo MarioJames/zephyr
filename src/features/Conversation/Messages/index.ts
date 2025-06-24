@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 
-import { useOpenChatSettings } from '@/hooks/useInterceptingRoutes';
 import { useGlobalStore } from '@/store/global';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session/selectors';
@@ -29,15 +28,12 @@ export const markdownCustomRenders: Record<string, MarkdownCustomRender> = {
 export const useAvatarsClick = (role?: string) => {
   const [isInbox] = useSessionStore((s) => [sessionSelectors.isInboxSession(s)]);
   const [toggleSystemRole] = useGlobalStore((s) => [s.toggleSystemRole]);
-  const openChatSettings = useOpenChatSettings();
 
   return useCallback(() => {
     switch (role) {
       case 'assistant': {
         if (!isInbox) {
           toggleSystemRole(true);
-        } else {
-          openChatSettings();
         }
       }
     }
