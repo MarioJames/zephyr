@@ -5,7 +5,7 @@ import { StateCreator } from 'zustand/vanilla';
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
 import { isDeprecatedEdition, isUsePgliteDB } from '@/const/version';
 import { useClientDataSWR } from '@/libs/swr';
-import { aiProviderApi } from '@/app/api/aiProvider';
+import { aiProviderApi } from '@/app/api';
 import { AiInfraStore } from '@/store/aiInfra/store';
 import { ModelAbilities } from '@/types/aiModel';
 import {

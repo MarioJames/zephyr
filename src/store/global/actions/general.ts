@@ -7,7 +7,7 @@ import type { StateCreator } from 'zustand/vanilla';
 import { LOBE_THEME_APPEARANCE } from '@/const/base';
 import { CURRENT_VERSION } from '@/const/version';
 import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import { globalApi } from '@/app/api/global';
+import { globalApi } from '@/app/api';
 import type { SystemStatus } from '@/store/global/initialState';
 import { LocaleMode } from '@/types/locale';
 import { setCookie } from '@/utils/client/cookie';

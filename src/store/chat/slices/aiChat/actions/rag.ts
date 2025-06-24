@@ -1,8 +1,8 @@
 import { StateCreator } from 'zustand/vanilla';
 
 import { chainRewriteQuery } from '@/chains/rewriteQuery';
-import { chatApi } from '@/app/api/chat';
-import { ragApi } from '@/app/api/rag';
+import { chatApi } from '@/app/api';
+import { ragApi } from '@/app/api';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
 import { ChatStore } from '@/store/chat';

@@ -7,9 +7,7 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { TraceEventType } from '@/const/trace';
 import { useClientDataSWR } from '@/libs/swr';
-import { messageApi } from '@/app/api/message';
-import { topicApi } from '@/app/api/topic';
-import { traceApi } from '@/app/api/trace';
+import { messageApi, topicApi, traceApi } from '@/app/api';
 import { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 import { ChatErrorType } from '@/types/fetch';

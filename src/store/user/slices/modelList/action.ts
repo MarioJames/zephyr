@@ -200,7 +200,7 @@ export const createModelListSlice: StateCreator<
     useSWR<ChatModelCard[] | undefined>(
       [provider, enabledAutoFetch],
       async ([p]) => {
-        const { modelsApi } = await import('@/app/api/models');
+        const { modelsApi } = await import('@/app/api');
 
         return modelsApi.getModels(p);
       },

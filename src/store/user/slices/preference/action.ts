@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand/vanilla';
 
-import { userApi } from '@/app/api/user';
+import { userApi } from '@/app/api';
 import type { UserStore } from '@/store/user';
 import { UserGuide, UserPreference } from '@/types/user';
 import { merge } from '@/utils/merge';

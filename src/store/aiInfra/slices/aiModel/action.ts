@@ -3,7 +3,7 @@ import { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
 
 import { useClientDataSWR } from '@/libs/swr';
-import { aiModelApi } from '@/app/api/aiModel';
+import { aiModelApi } from '@/app/api';
 import { AiInfraStore } from '@/store/aiInfra/store';
 import {
   AiModelSortMap,
@@ -69,7 +69,7 @@ export const createAiModelSlice: StateCreator<
     await get().refreshAiModelList();
   },
   fetchRemoteModelList: async (providerId) => {
-    const { modelsApi } = await import('@/app/api/models');
+    const { modelsApi } = await import('@/app/api');
 
     const data = await modelsApi.getModels(providerId);
     if (data) {

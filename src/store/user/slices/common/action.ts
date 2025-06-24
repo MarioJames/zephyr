@@ -4,7 +4,7 @@ import type { StateCreator } from 'zustand/vanilla';
 
 import { DEFAULT_PREFERENCE } from '@/const/base';
 import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import { userApi } from '@/app/api/user';
+import { userApi } from '@/app/api';
 import type { UserStore } from '@/store/user';
 import type { GlobalServerConfig } from '@/types/serverConfig';
 import { LobeUser, UserInitializationState } from '@/types/user';

@@ -2,8 +2,8 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { chainSummaryHistory } from '@/chains/summaryHistory';
 import { TraceNameMap } from '@/const/trace';
-import { chatApi } from '@/app/api/chat';
-import { topicApi } from '@/app/api/topic';
+import { chatApi } from '@/app/api';
+import { topicApi } from '@/app/api';
 import { ChatStore } from '@/store/chat';
 import { useUserStore } from '@/store/user';
 import { systemAgentSelectors } from '@/store/user/selectors';
