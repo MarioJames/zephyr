@@ -3,7 +3,7 @@ import { DeepPartial } from 'utility-types';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { userApi } from '@/app/api/user';
+import { userApi } from '@/app/api';
 import type { UserStore } from '@/store/user';
 import { LobeAgentSettings } from '@/types/session';
 import {

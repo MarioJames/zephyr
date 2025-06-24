@@ -7,7 +7,7 @@ import { message } from '@/components/AntdStaticMethods';
 import { MESSAGE_CANCEL_FLAT } from '@/const/message';
 import { DEFAULT_AGENT_LOBE_SESSION, INBOX_SESSION_ID } from '@/const/session';
 import { useClientDataSWR } from '@/libs/swr';
-import { sessionApi } from '@/app/api/session';
+import { sessionApi } from '@/app/api';
 import { SessionStore } from '@/store/session';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors } from '@/store/user/selectors';

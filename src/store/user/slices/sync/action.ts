@@ -94,7 +94,7 @@ export const createSyncSlice: StateCreator<
     set({ syncStatus: PeerSyncStatus.Connecting });
     
     // 动态导入同步API
-    const { syncApi } = await import('@/app/api/sync');
+    const { syncApi } = await import('@/app/api');
 
     // 启用同步连接
     return syncApi.enabledSync({
@@ -135,7 +135,7 @@ export const createSyncSlice: StateCreator<
 
         // 如果用户没有启用同步，停止同步
         if (!userEnableSync) {
-          const { syncApi } = await import('@/app/api/sync');
+          const { syncApi } = await import('@/app/api');
           return syncApi.disableSync();
         }
 

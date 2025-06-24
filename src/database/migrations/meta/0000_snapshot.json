@@ -1,95 +1,132 @@
 {
-  "id": "acec0cc3-a922-469f-b014-567433cce0ff",
+  "id": "6bbb9b5a-7dc5-414c-bee7-f22be2bc62d7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.customer_owners": {
-      "name": "customer_owners",
+    "public.customer_sessions": {
+      "name": "customer_sessions",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "customer_sessions_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "customer_id": {
           "name": "customer_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "belongs_to": {
-          "name": "belongs_to",
-          "type": "text",
+        "gender": {
+          "name": "gender",
+          "type": "varchar(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "customer_owners_customer_id_idx": {
-          "name": "customer_owners_customer_id_idx",
-          "columns": [
-            {
-              "expression": "customer_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "customer_owners_owner_id_idx": {
-          "name": "customer_owners_owner_id_idx",
-          "columns": [
-            {
-              "expression": "belongs_to",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "unique_customer": {
-          "name": "unique_customer",
-          "nullsNotDistinct": false,
-          "columns": [
-            "customer_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.customer_topics": {
-      "name": "customer_topics",
-      "schema": "",
-      "columns": {
-        "custom_id": {
-          "name": "custom_id",
+        "age": {
+          "name": "age",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "topic_id": {
-          "name": "topic_id",
+        "position": {
+          "name": "position",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "customer_type": {
+          "name": "customer_type",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'A'"
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wechat": {
+          "name": "wechat",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "company": {
+          "name": "company",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "industry": {
+          "name": "industry",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scale": {
+          "name": "scale",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "province": {
+          "name": "province",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district": {
+          "name": "district",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "accessed_at": {
           "name": "accessed_at",
@@ -114,11 +151,11 @@
         }
       },
       "indexes": {
-        "customer_topics_customer_id_idx": {
-          "name": "customer_topics_customer_id_idx",
+        "customer_sessions_session_id_idx": {
+          "name": "customer_sessions_session_id_idx",
           "columns": [
             {
-              "expression": "custom_id",
+              "expression": "session_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -129,11 +166,11 @@
           "method": "btree",
           "with": {}
         },
-        "customer_topics_topic_id_idx": {
-          "name": "customer_topics_topic_id_idx",
+        "customer_sessions_customer_id_idx": {
+          "name": "customer_sessions_customer_id_idx",
           "columns": [
             {
-              "expression": "topic_id",
+              "expression": "customer_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -147,157 +184,28 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.customers": {
-      "name": "customers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "byDefault",
-            "name": "customers_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
+      "uniqueConstraints": {
+        "customer_sessions_session_id_unique": {
+          "name": "customer_sessions_session_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "session_id"
+          ]
         },
-        "customerType": {
-          "name": "customerType",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "avatar": {
-          "name": "avatar",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "gender": {
-          "name": "gender",
-          "type": "gender",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "age": {
-          "name": "age",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "wechat": {
-          "name": "wechat",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "company_name": {
-          "name": "company_name",
-          "type": "varchar(200)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "industry": {
-          "name": "industry",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "scale": {
-          "name": "scale",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "province": {
-          "name": "province",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "detail_address": {
-          "name": "detail_address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "remarks": {
-          "name": "remarks",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+        "unique_session": {
+          "name": "unique_session",
+          "nullsNotDistinct": false,
+          "columns": [
+            "session_id"
+          ]
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     }
   },
-  "enums": {
-    "public.gender": {
-      "name": "gender",
-      "schema": "public",
-      "values": [
-        "male",
-        "female"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "roles": {},
