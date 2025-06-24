@@ -8,9 +8,6 @@ import {
   Typography, 
   Space, 
   Dropdown, 
-  Card, 
-  Popover,
-  Menu,
   Modal,
   Form,
   Upload,
@@ -31,96 +28,10 @@ import {
 import { createStyles } from 'antd-style';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { useEmployeeStore } from '@/store/employee';
+import { UserItem } from '@/services/user';
 
 const { Title, Text } = Typography;
-
-// 员工数据类型
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  accountId: string;
-  customerCount: number;
-  role: 'admin' | 'employee';
-  avatar?: string;
-}
-
-// 模拟数据
-const employeeData: Employee[] = [
-  {
-    id: '1',
-    name: '张三',
-    email: 'zhangsan@example.com',
-    phone: '13800138001',
-    accountId: 'ZS001',
-    customerCount: 12,
-    role: 'admin',
-  },
-  {
-    id: '2',
-    name: '李四',
-    email: 'lisi@example.com',
-    phone: '13800138002',
-    accountId: 'LS002',
-    customerCount: 8,
-    role: 'employee',
-  },
-  {
-    id: '3',
-    name: '王五',
-    email: 'wangwu@example.com',
-    phone: '13800138003',
-    accountId: 'WW003',
-    customerCount: 15,
-    role: 'admin',
-  },
-  {
-    id: '4',
-    name: '赵六',
-    email: 'zhaoliu@example.com',
-    phone: '13800138004',
-    accountId: 'ZL004',
-    customerCount: 5,
-    role: 'employee',
-  },
-  {
-    id: '5',
-    name: '钱七',
-    email: 'qianqi@example.com',
-    phone: '13800138005',
-    accountId: 'QQ005',
-    customerCount: 10,
-    role: 'employee',
-  },
-  {
-    id: '6',
-    name: '孙八',
-    email: 'sunba@example.com',
-    phone: '13800138006',
-    accountId: 'SB006',
-    customerCount: 7,
-    role: 'employee',
-  },
-  {
-    id: '7',
-    name: '周九',
-    email: 'zhoujiu@example.com',
-    phone: '13800138007',
-    accountId: 'ZJ007',
-    customerCount: 9,
-    role: 'admin',
-  },
-  {
-    id: '8',
-    name: '吴十',
-    email: 'wushi@example.com',
-    phone: '13800138008',
-    accountId: 'WS008',
-    customerCount: 11,
-    role: 'employee',
-  },
-];
 
 // mock 客户数据
 const allCustomers = [
@@ -305,10 +216,24 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export default function EmployeePage() {
   const { styles } = useStyles();
+  // 使用store
+  const {
+    employees,
+    roles,
+    loading,
+    error,
+    fetchEmployees,
+    fetchRoles,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+  } = useEmployeeStore();
+
+  // 页面状态
   const [searchValue, setSearchValue] = useState('');
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
-  const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
+  const [currentEmployee, setCurrentEmployee] = useState<UserItem | null>(null);
   const [avatarFile, setAvatarFile] = useState<UploadFile | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
@@ -317,54 +242,53 @@ export default function EmployeePage() {
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
   const [employeeCustomers, setEmployeeCustomers] = useState<string[]>(['c1', 'c3']);
-  const [currentCustomerEmployee, setCurrentCustomerEmployee] = useState<Employee | null>(null);
+  const [currentCustomerEmployee, setCurrentCustomerEmployee] = useState<UserItem | null>(null);
+
+  // 页面初始化加载员工和角色
+  React.useEffect(() => {
+    fetchEmployees();
+    fetchRoles();
+  }, []);
 
   // 处理角色变更
-  const handleRoleChange = (employeeId: string, newRole: 'admin' | 'employee') => {
-    console.log(`员工 ${employeeId} 的角色变更为 ${newRole}`);
-    // 实际场景中这里应该调用API更新角色
+  const handleRoleChange = async (employeeId: string, newRoleId: string) => {
+    const employee = employees.find(emp => emp.id === employeeId);
+    if (!employee) return;
+    await updateEmployee(employeeId, { roleId: newRoleId });
   };
 
   // 处理发送登录引导
-  const handleSendLoginGuide = (employee: Employee) => {
+  const handleSendLoginGuide = (employee: UserItem) => {
     setCurrentEmployee(employee);
     setLoginGuideVisible(true);
   };
 
   // 处理编辑员工
   const handleEdit = (employeeId: string) => {
-    const employee = employeeData.find(emp => emp.id === employeeId);
+    const employee = employees.find(emp => emp.id === employeeId);
     if (employee) {
       setIsEditMode(true);
       setCurrentEmployee(employee);
-      
-      // 回显表单数据
       form.setFieldsValue({
-        name: employee.name,
+        username: employee.username,
         email: employee.email,
         phone: employee.phone,
+        fullName: employee.fullName,
+        roleId: employee.roleId,
       });
-      
-      // 如果有头像，设置头像
-      if (employee.avatar) {
-        setAvatarFile({
-          uid: '-1',
-          name: 'avatar.png',
-          status: 'done',
-          url: employee.avatar,
-        });
-      } else {
-        setAvatarFile(null);
-      }
-      
+      setAvatarFile(employee.avatar ? {
+        uid: '-1',
+        name: 'avatar.png',
+        status: 'done',
+        url: employee.avatar,
+      } : null);
       setEmployeeModalVisible(true);
     }
   };
 
   // 处理删除员工
-  const handleDelete = (employeeId: string) => {
-    console.log(`删除员工 ${employeeId}`);
-    // 实际场景中这里应该弹出确认框并调用删除API
+  const handleDelete = async (employeeId: string) => {
+    await deleteEmployee(employeeId);
   };
 
   // 处理添加员工弹窗显示
@@ -386,21 +310,24 @@ export default function EmployeePage() {
   };
 
   // 处理员工表单提交
-  const handleEmployeeSubmit = () => {
-    form.validateFields()
-      .then(values => {
-        if (isEditMode && currentEmployee) {
-          console.log('修改员工数据:', values, '头像:', avatarFile, '员工ID:', currentEmployee.id);
-          message.success('员工信息修改成功');
-        } else {
-          console.log('添加员工数据:', values, '头像:', avatarFile);
-          message.success('员工添加成功');
-        }
-        handleEmployeeModalCancel();
-      })
-      .catch(info => {
-        console.log('表单验证失败:', info);
-      });
+  const handleEmployeeSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      if (isEditMode && currentEmployee) {
+        await updateEmployee(currentEmployee.id, {
+          ...values,
+          avatar: avatarFile?.url,
+        });
+      } else {
+        await addEmployee({
+          ...values,
+          avatar: avatarFile?.url,
+        });
+      }
+      handleEmployeeModalCancel();
+    } catch (info) {
+      // 表单校验失败
+    }
   };
 
   // 头像上传前处理
@@ -426,7 +353,7 @@ export default function EmployeePage() {
   };
 
   // 打开客户管理弹窗
-  const handleCustomerManage = (employee: Employee) => {
+  const handleCustomerManage = (employee: UserItem) => {
     setCurrentCustomerEmployee(employee);
     setCustomerModalVisible(true);
     setSelectedLeft([]);
@@ -453,12 +380,11 @@ export default function EmployeePage() {
   // 右侧客户列表
   const rightList = allCustomers.filter(c => employeeCustomers.includes(c.id));
 
-  // 表格列定义
-  const columns: ColumnsType<Employee> = [
+  const columns: ColumnsType<UserItem> = [
     {
       title: '员工姓名',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'username',
+      key: 'username',
     },
     {
       title: '登录邮箱',
@@ -472,14 +398,14 @@ export default function EmployeePage() {
     },
     {
       title: '账户ID',
-      dataIndex: 'accountId',
-      key: 'accountId',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
       title: '客户数量',
       dataIndex: 'customerCount',
       key: 'customerCount',
-      render: (count: number, record: Employee) => (
+      render: (count: number, record: UserItem) => (
         <span style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
           {count}
           <EditOutlined style={{ marginLeft: 6 }} onClick={() => handleCustomerManage(record)} />
@@ -490,7 +416,7 @@ export default function EmployeePage() {
       title: '权限',
       dataIndex: 'role',
       key: 'role',
-      render: (role: string, record: Employee) => {
+      render: (role: string, record: UserItem) => {
         const roleText = role === 'admin' ? '管理员' : '员工';
         
         const roleMenuItems = [
@@ -591,8 +517,9 @@ export default function EmployeePage() {
       <div className={styles.tableContainer}>
         <Table 
           columns={columns} 
-          dataSource={employeeData} 
+          dataSource={employees} 
           rowKey="id"
+          loading={loading}
           pagination={{ 
             pageSize: 10,
             showSizeChanger: false,
@@ -681,8 +608,8 @@ export default function EmployeePage() {
             colon={true}
           >
             <Form.Item
-              name="name"
-              label="姓名"
+              name="username"
+              label="员工姓名"
               rules={[{ required: true, message: '请输入员工姓名' }]}
               className={styles.formItem}
             >
@@ -725,6 +652,7 @@ export default function EmployeePage() {
             <Button 
               className={styles.confirmButton}
               onClick={handleEmployeeSubmit}
+              loading={loading}
             >
               {isEditMode ? '保存修改' : '添加员工'}
             </Button>
