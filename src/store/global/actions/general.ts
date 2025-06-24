@@ -34,7 +34,7 @@ export interface GlobalGeneralAction {
  */
 export const generalActionSlice: StateCreator<
   GlobalStore,
-  [['zustand/devtools', never]],
+  [],
   [],
   GlobalGeneralAction
 > = (set, get) => ({
@@ -68,7 +68,7 @@ export const generalActionSlice: StateCreator<
       {
         onSuccess: (status) => {
           // 标记状态已初始化
-          set({ isStatusInit: true }, false, 'setStatusInit');
+          set({ isStatusInit: true }, false);
           // 更新系统状态
           get().updateSystemStatus(status, 'initSystemStatus');
         },

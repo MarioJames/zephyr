@@ -65,7 +65,7 @@ export interface GlobalWorkspacePaneAction {
  */
 export const globalWorkspaceSlice: StateCreator<
   GlobalStore,
-  [['zustand/devtools', never]],
+  [],
   [],
   GlobalWorkspacePaneAction
 > = (set, get) => ({
