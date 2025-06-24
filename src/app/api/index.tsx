@@ -19,3 +19,4 @@ export { toolApi } from './tool-bridge';
 export { globalApi } from './global-bridge';
 export { modelsApi } from './models-bridge';
 export { threadApi } from './thread-bridge';
+export { customerApi } from './customer-bridge';
