@@ -24,7 +24,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-const SessionPanel = memo(({ children }: PropsWithChildren) => {
+const TopicPanel = memo(({ children }: PropsWithChildren) => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
   const [showTopic, toggleConfig] = useGlobalStore((s) => [
@@ -76,4 +76,4 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   );
 });
 
-export default SessionPanel;
+export default TopicPanel;

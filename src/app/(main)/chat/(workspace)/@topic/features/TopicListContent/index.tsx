@@ -41,11 +41,10 @@ const useStyles = createStyles(({ css }) => ({
 
 const TopicListContent = memo(() => {
   const { isDarkMode } = useThemeMode();
-  const router = useRouter();
   const { styles } = useStyles();
   const [topicsInit, topicLength] = useChatStore((s) => [
     s.topicsInit,
-    topicSelectors.currentTopicLength(s),()
+    topicSelectors.currentTopicLength(s),
   ]);
   const [isUndefinedTopics, isInSearchMode] = useChatStore((s) => [
     topicSelectors.isUndefinedTopics(s),
