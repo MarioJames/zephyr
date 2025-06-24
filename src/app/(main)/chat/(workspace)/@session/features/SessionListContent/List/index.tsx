@@ -26,11 +26,13 @@ interface SessionListProps {
 const SessionList = memo<SessionListProps>(({ dataSource, groupId, showAddButton = true }) => {
   const { styles } = useStyles();
 
-  const isInit = useSessionStore(sessionSelectors.isSessionListInit);
+  // const isInit = useSessionStore(sessionSelectors.isSessionListInit);
+  const isInit = false;
 
   const switchSession = useSwitchSession();
 
   const isEmpty = !dataSource || dataSource.length === 0;
+  console.log('aaa',isEmpty,isInit)
   return !isInit ? (
     <SkeletonList />
   ) : !isEmpty ? (

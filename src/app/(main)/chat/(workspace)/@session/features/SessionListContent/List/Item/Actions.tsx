@@ -1,27 +1,9 @@
-import { ActionIcon, Dropdown, Icon } from '@lobehub/ui';
+import { ActionIcon } from '@lobehub/ui';
 import { App } from 'antd';
 import { createStyles } from 'antd-style';
-import { ItemType } from 'antd/es/menu/interface';
-import isEqual from 'fast-deep-equal';
-import {
-  Check,
-  HardDriveDownload,
-  ListTree,
-  LucideCopy,
-  LucidePlus,
-  MoreVertical,
-  Pin,
-  PinOff,
-  Trash,
-} from 'lucide-react';
-import { memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { isServerMode } from '@/const/version';
-import { configService } from '@/services/config';
+import { Trash, MoreVertical } from 'lucide-react';
+import { memo } from 'react';
 import { useSessionStore } from '@/store/session';
-import { sessionHelpers } from '@/store/session/helpers';
-import { sessionGroupSelectors, sessionSelectors } from '@/store/session/selectors';
 
 const useStyles = createStyles(({ css }) => ({
   modalRoot: css`
@@ -31,126 +13,34 @@ const useStyles = createStyles(({ css }) => ({
 
 interface ActionProps {
   id: string;
-  openCreateGroupModal: () => void;
-  setOpen: (open: boolean) => void;
 }
 
-const Actions = memo<ActionProps>(({ id, openCreateGroupModal, setOpen }) => {
+const Actions = memo<ActionProps>(({ id }) => {
   const { styles } = useStyles();
-  const { t } = useTranslation('chat');
-
-  const sessionCustomGroups = useSessionStore(sessionGroupSelectors.sessionGroupItems, isEqual);
-  const [pin, removeSession, pinSession, duplicateSession, updateSessionGroup] = useSessionStore(
-    (s) => {
-      const session = sessionSelectors.getSessionById(id)(s);
-      return [
-        sessionHelpers.getSessionPinned(session),
-        s.removeSession,
-        s.pinSession,
-        s.duplicateSession,
-        s.updateSessionGroupId,
-      ];
-    },
-  );
-
+  const removeSession = useSessionStore((s) => s.removeSession);
   const { modal, message } = App.useApp();
 
-  const items = useMemo(
-    () =>
-      (
-        [
-          
-          {
-            type: 'divider',
-          },
-          {
-            children: [
-              {
-                icon: <Icon icon={Check} />,
-                key: 'defaultList',
-                label: "默认列表",
-                onClick: () => {
-                  updateSessionGroup(id, 'default');
-                },
-              },
-              {
-                type: 'divider',
-              },
-            ],
-            icon: <Icon icon={ListTree} />,
-            key: 'moveGroup',
-            label: t('sessionGroup.moveGroup'),
-          },
-          {
-            type: 'divider',
-          },
-          isServerMode
-            ? undefined
-            : {
-                children: [
-                  {
-                    key: 'agent',
-                    label: t('exportType.agent', { ns: 'common' }),
-                    onClick: () => {
-                      configService.exportSingleAgent(id);
-                    },
-                  },
-                  {
-                    key: 'agentWithMessage',
-                    label: t('exportType.agentWithMessage', { ns: 'common' }),
-                    onClick: () => {
-                      configService.exportSingleSession(id);
-                    },
-                  },
-                ],
-                icon: <Icon icon={HardDriveDownload} />,
-                key: 'export',
-                label: t('export', { ns: 'common' }),
-              },
-          {
-            danger: true,
-            icon: <Icon icon={Trash} />,
-            key: 'delete',
-            label: t('delete', { ns: 'common' }),
-            onClick: ({ domEvent }) => {
-              domEvent.stopPropagation();
-              modal.confirm({
-                centered: true,
-                okButtonProps: { danger: true },
-                onOk: async () => {
-                  await removeSession(id);
-                  message.success(t('confirmRemoveSessionSuccess'));
-                },
-                rootClassName: styles.modalRoot,
-                title: t('confirmRemoveSessionItemAlert'),
-              });
-            },
-          },
-        ] as ItemType[]
-      ).filter(Boolean),
-    [id, pin],
-  );
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    modal.confirm({
+      centered: true,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await removeSession(id);
+        message.success('助手删除成功');
+      },
+      rootClassName: styles.modalRoot,
+      title: '即将删除该助手，删除后将无法找回，请确认你的操作',
+    });
+  };
 
   return (
-    <Dropdown
-      arrow={false}
-      menu={{
-        items,
-        onClick: ({ domEvent }) => {
-          domEvent.stopPropagation();
-        },
-      }}
-      onOpenChange={setOpen}
-      trigger={['click']}
-    >
-      <ActionIcon
-        icon={MoreVertical}
-        size={{
-          blockSize: 28,
-          size: 16,
-        }}
-      />
-    </Dropdown>
+    <ActionIcon
+      icon={MoreVertical}
+      size={{ blockSize: 28, size: 16 }}
+      onClick={handleDelete}
+      title="删除"
+    />
   );
 });
 

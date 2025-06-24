@@ -48,8 +48,6 @@ const SessionItem = memo<SessionItemProps>(({ id }) => {
     () => (
       <Actions
         id={id}
-        openCreateGroupModal={() => setCreateGroupModalOpen(true)}
-        setOpen={setOpen}
       />
     ),
     [id],

@@ -12,7 +12,7 @@ const SearchMode = memo(() => {
   ]);
 
   const { data, isLoading } = useSearchSessions(sessionSearchKeywords);
-
+  
   return isLoading ? <SkeletonList /> : <SessionList dataSource={data} showAddButton={false} />;
 });
 

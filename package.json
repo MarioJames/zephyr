@@ -90,6 +90,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-layout-kit": "^1.9.1",
+    "react-lazy-load": "^4.0.1",
     "react-virtuoso": "^4.12.8",
     "react-wrap-balancer": "^1.1.1",
     "semver": "^7.7.2",
