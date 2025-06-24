@@ -1,9 +1,9 @@
-import { http } from "../request";
+import { http } from '../request';
 
 // 消息相关类型定义
 export interface MessageItem {
   id: string;
-  role: "user" | "system" | "assistant" | "tool";
+  role: 'user' | 'system' | 'assistant' | 'tool';
   content?: string;
   reasoning?: any;
   search?: any;
@@ -33,7 +33,7 @@ export interface MessagesQueryByTopicRequest {
 
 export interface MessagesCreateRequest {
   content: string; // 消息内容，必需，不能为空
-  role: "user" | "system" | "assistant" | "tool"; // 必需，user|system|assistant|tool
+  role: 'user' | 'system' | 'assistant' | 'tool'; // 必需，user|system|assistant|tool
   model?: string; // 可选，AI模型
   provider?: string; // 可选，AI提供商
   sessionId?: string; // 可选，会话ID
@@ -65,6 +65,11 @@ export interface MessageCountResponse {
   [topicId: string]: number;
 }
 
+export interface MessagesSearchRequest {
+  keyword: string; // 搜索关键词
+  limit?: number; // 结果限制
+}
+
 /**
  * 获取指定 Topic 的信息列表
  * @description 进入与客户对话界面时查询
@@ -76,23 +81,16 @@ function queryByTopic(topicId: string) {
 }
 
 /**
- * 获取示例数据
- * @description 获取消息示例数据
- * @param null
- * @returns MessageItem[]
- */
-function getMessages() {
-  return http.get<MessageItem[]>('/api/v1/messages');
-}
-
-/**
  * 根据话题统计消息数量
  * @description 统计指定话题列表的消息数量
  * @param data MessageCountByTopicsRequest
  * @returns MessageCountResponse
  */
 function countByTopics(data: MessageCountByTopicsRequest) {
-  return http.post<MessageCountResponse>('/api/v1/messages/count/by-topics', data);
+  return http.post<MessageCountResponse>(
+    '/api/v1/messages/count/by-topics',
+    data
+  );
 }
 
 /**
@@ -146,8 +144,17 @@ function deleteMessage(id: string) {
   return http.delete<void>(`/api/v1/messages/${id}`);
 }
 
+/**
+ * 根据关键字搜索消息
+ * @description 根据关键字搜索消息
+ * @param data MessagesSearchRequest
+ * @returns MessageItem[]
+ */
+function searchMessages(data: MessagesSearchRequest) {
+  return http.get<MessageItem[]>(`/api/v1/messages/search`, data);
+}
+
 export default {
-  getMessages,
   queryByTopic,
   countByTopics,
   countByUser,
@@ -155,4 +162,5 @@ export default {
   createMessageWithReply,
   updateMessage,
   deleteMessage,
+  searchMessages,
 };

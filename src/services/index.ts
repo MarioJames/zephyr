@@ -3,24 +3,18 @@ export { default as userAPI } from './user';
 export { default as rolesAPI } from './roles';
 export { default as agentsAPI } from './agents';
 export { default as sessionsAPI } from './sessions';
-export { default as sessionGroupsAPI } from './session-groups';
 export { default as topicsAPI } from './topics';
 export { default as messagesAPI } from './messages';
 export { default as messageTranslatesAPI } from './message_translates';
 export { default as chatAPI } from './chat';
 export { default as filesAPI } from './files';
 export { default as customersAPI } from './customers';
+export { default as modelsAPI } from './models';
 
 // 导出类型定义
-export type {
-  UserItem,
-  UserCreateRequest,
-  UserUpdateRequest,
-} from './user';
+export type { UserItem, UserCreateRequest, UserUpdateRequest } from './user';
 
-export type {
-  RoleItem,
-} from './roles';
+export type { RoleItem } from './roles';
 
 export type {
   AgentItem,
