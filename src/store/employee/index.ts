@@ -2,7 +2,6 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from 'zustand/vanilla';
-import { createDevtools } from '../middleware/createDevtools';
 import userService, { UserItem, UserCreateRequest, UserUpdateRequest } from '@/services/user';
 import rolesService, { RoleItem } from '@/services/roles';
 
@@ -33,7 +32,7 @@ export const initialEmployeeState: EmployeeState = {
 };
 
 // ========== Slice 工厂 ==========
-export const createEmployeeSlice: StateCreator<EmployeeStore, [['zustand/devtools', never]], [], EmployeeStore> = (set, get) => ({
+export const createEmployeeSlice: StateCreator<EmployeeStore, [], [], EmployeeStore> = (set, get) => ({
   ...initialEmployeeState,
   fetchEmployees: async () => {
     set({ loading: true, error: null });
@@ -93,10 +92,8 @@ export const createEmployeeSlice: StateCreator<EmployeeStore, [['zustand/devtool
 });
 
 // ========== 实装 useStore ==========
-const devtools = createDevtools('employee');
-
 export const useEmployeeStore = createWithEqualityFn<EmployeeStore>()(
-  subscribeWithSelector(devtools(createEmployeeSlice)),
+  subscribeWithSelector(createEmployeeSlice),
   shallow,
 );
 
