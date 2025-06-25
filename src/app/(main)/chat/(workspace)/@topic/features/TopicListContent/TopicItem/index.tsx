@@ -39,11 +39,10 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 export interface ConfigCellProps {
   active?: boolean;
   id: string;
-  threadId?: string;
   title: string;
 }
 
-const TopicItem = memo<ConfigCellProps>(({ title, active, id, threadId }) => {
+const TopicItem = memo<ConfigCellProps>(({ title, active, id }) => {
   const { styles, cx } = useStyles();
   const [toggleTopic] = useChatStore((s) => [s.switchTopic]);
   const [isHover, setHovering] = useState(false);
@@ -52,7 +51,7 @@ const TopicItem = memo<ConfigCellProps>(({ title, active, id, threadId }) => {
     <Flexbox style={{ position: 'relative' }}>
       <Flexbox
         align={'center'}
-        className={cx(styles.container, 'topic-item', active && !threadId && styles.active)}
+        className={cx(styles.container, 'topic-item', active && styles.active)}
         distribution={'space-between'}
         horizontal
         onClick={() => {

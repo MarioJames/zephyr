@@ -12,9 +12,8 @@ import TopicGroupItem from "./GroupItem";
 
 const ShowMode = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [activeTopicId, activeThreadId] = useChatStore((s) => [
+  const [activeTopicId] = useChatStore((s) => [
     s.activeTopicId,
-    s.activeThreadId,
   ]);
   const groupTopics = useChatStore(
     topicSelectors.groupedTopicsSelector,
@@ -37,13 +36,12 @@ const ShowMode = memo(() => {
           active={activeTopicId === id}
           id={id}
           key={id}
-          threadId={activeThreadId}
           title={title}
           employeeName={employeeName}
         />
       );
     },
-    [activeTopicId, topics, activeThreadId]
+    [activeTopicId, topics]
   );
 
   const groupContent = useCallback(
