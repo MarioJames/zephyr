@@ -1,0 +1,36 @@
+"use client";
+
+import { ActionIcon } from "@lobehub/ui";
+import { Search } from "lucide-react";
+import { memo, useState } from "react";
+import { Flexbox } from "react-layout-kit";
+
+import SidebarHeader from "@/components/SidebarHeader";
+
+import SessionSearchBar from "./SessionSearchBar";
+
+const Header = memo(() => {
+  const [showSearch, setShowSearch] = useState(false);
+
+  return showSearch ? (
+    <Flexbox padding={"12px 16px 4px"}>
+      <SessionSearchBar onClear={() => setShowSearch(false)} />
+    </Flexbox>
+  ) : (
+    <SidebarHeader
+      actions={
+        <>
+          <ActionIcon
+            icon={Search}
+            onClick={() => setShowSearch(true)}
+            size={"middle"}
+            color="#000"
+          />
+        </>
+      }
+      title={`对话`}
+    />
+  );
+});
+
+export default Header;
