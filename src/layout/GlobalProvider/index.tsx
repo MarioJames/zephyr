@@ -1,7 +1,5 @@
 import { ReactNode, Suspense } from 'react';
 
-import { appEnv } from '@/config/app';
-
 import AntdV5MonkeyPatch from './AntdV5MonkeyPatch';
 import AppTheme from './AppTheme';
 import QueryProvider from './Query';
@@ -25,8 +23,6 @@ const GlobalLayout = async ({
   return (
     <StyleRegistry>
       <AppTheme
-        customFontFamily={appEnv.CUSTOM_FONT_FAMILY}
-        customFontURL={appEnv.CUSTOM_FONT_URL}
         defaultAppearance={appearance}
         defaultNeutralColor={neutralColor as any}
         defaultPrimaryColor={primaryColor as any}

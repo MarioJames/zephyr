@@ -2,7 +2,6 @@
 
 import {
   ConfigProvider,
-  FontLoader,
   NeutralColors,
   PrimaryColors,
   ThemeProvider,
@@ -11,7 +10,7 @@ import { ThemeAppearance, createStyles } from 'antd-style';
 import 'antd/dist/reset.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, memo, useEffect } from 'react';
+import { ReactNode, memo } from 'react';
 
 import AntdStaticMethods from '@/components/AntdStaticMethods';
 import {
@@ -80,8 +79,6 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export interface AppThemeProps {
   children?: ReactNode;
-  customFontFamily?: string;
-  customFontURL?: string;
   defaultAppearance?: ThemeAppearance;
   defaultNeutralColor?: NeutralColors;
   defaultPrimaryColor?: PrimaryColors;
@@ -95,8 +92,6 @@ const AppTheme = memo<AppThemeProps>(
     defaultPrimaryColor,
     defaultNeutralColor,
     globalCDN,
-    customFontURL,
-    customFontFamily,
   }) => {
     const themeMode = useGlobalStore(systemStatusSelectors.themeMode);
     const { styles, cx, theme } = useStyles();
@@ -118,13 +113,9 @@ const AppTheme = memo<AppThemeProps>(
         }}
         theme={{
           cssVar: true,
-          token: {
-            fontFamily: customFontFamily ? `${customFontFamily},${theme.fontFamily}` : undefined,
-          },
         }}
         themeMode={themeMode}
       >
-        {!!customFontURL && <FontLoader url={customFontURL} />}
         <GlobalStyle />
         <AntdStaticMethods />
         <ConfigProvider

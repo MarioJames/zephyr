@@ -1,7 +1,5 @@
 "use client";
 
-import { GuideCard } from "@lobehub/ui";
-import { useThemeMode } from "antd-style";
 import React, { memo } from "react";
 import { Flexbox } from "react-layout-kit";
 import { Button } from "antd";
@@ -9,7 +7,6 @@ import { ChevronDown, Plus } from "lucide-react";
 import { createStyles } from "antd-style";
 import { useRouter } from "next/navigation";
 
-import { imageUrl } from "@/const/base";
 import { useFetchTopics } from "@/hooks/useFetchTopics";
 import { useChatStore } from "@/store/chat";
 import { topicSelectors } from "@/store/chat/selectors";
@@ -40,7 +37,7 @@ const useStyles = createStyles(({ css }) => ({
 }));
 
 const SessionListContent = memo(() => {
-  const { isDarkMode } = useThemeMode();
+  const router = useRouter();
   const { styles } = useStyles();
   const [topicsInit, topicLength] = useChatStore((s) => [
     s.topicsInit,
@@ -92,26 +89,7 @@ const SessionListContent = memo(() => {
       </Flexbox>
       {topicLength === 0 && visible && (
         <Flexbox paddingInline={8}>
-          <GuideCard
-            alt={"点击发送左侧按钮可将当前会话保存为历史话题，并开启新一轮会话"}
-            cover={imageUrl(
-              `empty_topic_${isDarkMode ? "dark" : "light"}.webp`
-            )}
-            coverProps={{
-              priority: true,
-            }}
-            desc={
-              "点击发送左侧按钮可将当前会话保存为历史话题，并开启新一轮会话"
-            }
-            height={120}
-            onClose={() => {
-              updateGuideState({ topic: false });
-            }}
-            style={{ flex: "none", marginBottom: 12 }}
-            title={"话题列表"}
-            visible={visible}
-            width={200}
-          />
+            暂时为空
         </Flexbox>
       )}
       {<ShowMode />}
