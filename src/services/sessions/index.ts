@@ -49,6 +49,7 @@ export interface SessionUpdateRequest {
   backgroundColor?: string;
   groupId?: string;
   agentId?: string;
+  pinned?: boolean;
 }
 
 /**
