@@ -2,7 +2,6 @@ import { ActionIcon } from '@lobehub/ui';
 import { Upload } from 'antd';
 import { FileUp, LucideImage } from 'lucide-react';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useModelSupportFiles } from '@/hooks/useModelSupportFiles';
 import { useModelSupportVision } from '@/hooks/useModelSupportVision';
@@ -11,8 +10,6 @@ import { agentSelectors } from '@/store/agent/slices/chat';
 import { useFileStore } from '@/store/file';
 
 const FileUpload = memo(() => {
-  const { t } = useTranslation('chat');
-
   const upload = useFileStore((s) => s.uploadChatFiles);
 
   const model = useAgentStore(agentSelectors.currentAgentModel);
@@ -22,12 +19,20 @@ const FileUpload = memo(() => {
   const supportVision = useModelSupportVision(model, provider);
   const canUpload = enabledFiles || supportVision;
 
+  let title = '上传已禁用';
+  if (canUpload) {
+    if (enabledFiles) {
+      title = '上传文件';
+    } else {
+      title = '上传图片';
+    }
+  }
+
   return (
     <Upload
       accept={enabledFiles ? undefined : 'image/*'}
       beforeUpload={async (file) => {
         await upload([file]);
-
         return false;
       }}
       disabled={!canUpload}
@@ -37,13 +42,7 @@ const FileUpload = memo(() => {
       <ActionIcon
         disabled={!canUpload}
         icon={enabledFiles ? FileUp : LucideImage}
-        title={t(
-          canUpload
-            ? enabledFiles
-              ? 'upload.clientMode.actionFiletip'
-              : 'upload.clientMode.actionTooltip'
-            : 'upload.clientMode.disabled',
-        )}
+        title={title}
         tooltipProps={{
           placement: 'bottom',
         }}

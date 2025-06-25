@@ -3,7 +3,6 @@ import { TokenTag } from '@lobehub/ui/chat';
 import { useTheme } from 'antd-style';
 import numeral from 'numeral';
 import { memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useModelContextWindowTokens } from '@/hooks/useModelContextWindowTokens';
@@ -23,7 +22,6 @@ interface TokenTagProps {
   total: string;
 }
 const Token = memo<TokenTagProps>(({ total: messageString }) => {
-  const { t } = useTranslation(['chat', 'components']);
   const theme = useTheme();
 
   const [input, historySummary] = useChatStore((s) => [
@@ -83,13 +81,10 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const content = (
     <Flexbox gap={12} style={{ minWidth: 200 }}>
       <Flexbox align={'center'} gap={4} horizontal justify={'space-between'} width={'100%'}>
-        <div style={{ color: theme.colorTextDescription }}>{t('tokenDetails.title')}</div>
+        <div style={{ color: theme.colorTextDescription }}>Token 详情</div>
         <Tooltip
           styles={{ root: { maxWidth: 'unset', pointerEvents: 'none' } }}
-          title={t('ModelSelect.featureTag.tokens', {
-            ns: 'components',
-            tokens: numeral(maxTokens).format('0,0'),
-          })}
+          title={`最大 Token 数：${numeral(maxTokens).format('0,0')}`}
         >
           <Center
             height={20}
@@ -111,25 +106,25 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
           {
             color: theme.magenta,
             id: 'systemRole',
-            title: t('tokenDetails.systemRole'),
+            title: '系统角色',
             value: systemRoleToken,
           },
           {
             color: theme.geekblue,
             id: 'tools',
-            title: t('tokenDetails.tools'),
+            title: '工具',
             value: toolsToken,
           },
           {
             color: theme.orange,
             id: 'historySummary',
-            title: t('tokenDetails.historySummary'),
+            title: '历史摘要',
             value: historySummaryToken,
           },
           {
             color: theme.gold,
             id: 'chats',
-            title: t('tokenDetails.chats'),
+            title: '聊天内容',
             value: chatsToken,
           },
         ]}
@@ -140,18 +135,18 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
           {
             color: theme.colorSuccess,
             id: 'used',
-            title: t('tokenDetails.used'),
+            title: '已用 Token',
             value: totalToken,
           },
           {
             color: theme.colorFill,
             id: 'rest',
-            title: t('tokenDetails.rest'),
+            title: '剩余 Token',
             value: maxTokens - totalToken,
           },
         ]}
         showIcon
-        showTotal={t('tokenDetails.total')}
+        showTotal={'总计'}
       />
     </Flexbox>
   );
@@ -163,9 +158,9 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
         mode={'used'}
         style={{ marginLeft: 8 }}
         text={{
-          overload: t('tokenTag.overload'),
-          remained: t('tokenTag.remained'),
-          used: t('tokenTag.used'),
+          overload: '超出上限',
+          remained: '剩余',
+          used: '已用',
         }}
         value={totalToken}
       />

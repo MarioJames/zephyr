@@ -3,13 +3,10 @@ import { Upload } from 'antd';
 import { css, cx } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip } from 'lucide-react';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import { useModelSupportVision } from '@/hooks/useModelSupportVision';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/slices/chat';
 import { useFileStore } from '@/store/file';
-
 import Action from '../components/Action';
 
 const hotArea = css`
@@ -22,8 +19,6 @@ const hotArea = css`
 `;
 
 const FileUpload = memo(() => {
-  const { t } = useTranslation('chat');
-
   const upload = useFileStore((s) => s.uploadChatFiles);
 
   const model = useAgentStore(agentSelectors.currentAgentModel);
@@ -41,17 +36,16 @@ const FileUpload = memo(() => {
           accept={'image/*'}
           beforeUpload={async (file) => {
             await upload([file]);
-
             return false;
           }}
           multiple
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>{t('upload.action.imageUpload')}</div>
+          <div className={cx(hotArea)}>上传图片</div>
         </Upload>
       ) : (
-        <Tooltip placement={'right'} title={t('upload.action.imageDisabled')}>
-          <div className={cx(hotArea)}>{t('upload.action.imageUpload')}</div>
+        <Tooltip placement={'right'} title={'图片上传已禁用'}>
+          <div className={cx(hotArea)}>上传图片</div>
         </Tooltip>
       ),
     },
@@ -62,15 +56,13 @@ const FileUpload = memo(() => {
         <Upload
           beforeUpload={async (file) => {
             if (!canUploadImage && file.type.startsWith('image')) return false;
-
             await upload([file]);
-
             return false;
           }}
           multiple
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>{t('upload.action.fileUpload')}</div>
+          <div className={cx(hotArea)}>上传文件</div>
         </Upload>
       ),
     },
@@ -81,16 +73,14 @@ const FileUpload = memo(() => {
         <Upload
           beforeUpload={async (file) => {
             if (!canUploadImage && file.type.startsWith('image')) return false;
-
             await upload([file]);
-
             return false;
           }}
           directory
           multiple={true}
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>{t('upload.action.folderUpload')}</div>
+          <div className={cx(hotArea)}>上传文件夹</div>
         </Upload>
       ),
     },
@@ -103,7 +93,7 @@ const FileUpload = memo(() => {
       }}
       icon={Paperclip}
       showTooltip={false}
-      title={t('upload.action.tooltip')}
+      title={'上传'}
     />
   );
 });
