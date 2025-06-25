@@ -1,13 +1,15 @@
 import { Button, Dropdown, Icon } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
-import { BotMessageSquare, LucideCheck, LucideChevronDown, MessageSquarePlus } from 'lucide-react';
+import {
+  BotMessageSquare,
+  LucideChevronDown,
+  MessageSquarePlus,
+} from 'lucide-react';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
-import { useUserStore } from '@/store/user';
-import { preferenceSelectors } from '@/store/user/selectors';
 
 const useStyles = createStyles(({ css, prefixCls }) => {
   return {
@@ -27,10 +29,7 @@ interface SendMoreProps {
 const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
   const { styles } = useStyles();
 
-  const [useCmdEnterToSend, updatePreference] = useUserStore((s) => [
-    preferenceSelectors.useCmdEnterToSend(s),
-    s.updatePreference,
-  ]);
+  // 本地状态管理发送方式偏好，默认使用 Enter 发送
   const addAIMessage = useChatStore((s) => s.addAIMessage);
 
   const { send: sendMessage } = useSendMessage();
@@ -41,28 +40,11 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
       menu={{
         items: [
           {
-            icon: !useCmdEnterToSend ? <Icon icon={LucideCheck} /> : <div />,
-            key: 'sendWithEnter',
-            label: '按 Enter 键发送',
-            onClick: () => {
-              updatePreference({ useCmdEnterToSend: false });
-            },
-          },
-          {
-            icon: useCmdEnterToSend ? <Icon icon={LucideCheck} /> : <div />,
-            key: 'sendWithCmdEnter',
-            label: `按 ${typeof isMac === 'boolean' ? (isMac ? '⌘' : 'Ctrl') : '…'} + Enter 键发送`,
-            onClick: () => {
-              updatePreference({ useCmdEnterToSend: true });
-            },
-          },
-          { type: 'divider' },
-          {
             icon: <Icon icon={BotMessageSquare} />,
             key: 'addAi',
             label: '添加一条 AI 消息',
             onClick: () => {
-              addAIMessage();
+              addAIMessage('1');
             },
           },
           {

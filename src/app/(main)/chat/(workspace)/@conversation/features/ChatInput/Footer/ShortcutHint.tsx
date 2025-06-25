@@ -3,33 +3,39 @@ import { useTheme } from 'antd-style';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useUserStore } from '@/store/user';
-import { preferenceSelectors } from '@/store/user/selectors';
 import { KeyEnum } from '@/types/hotkey';
 
 const ShortcutHint = memo(() => {
   const theme = useTheme();
-  const useCmdEnterToSend = useUserStore(preferenceSelectors.useCmdEnterToSend);
+  // 默认使用 Enter 发送，Cmd+Enter 换行
 
-  const sendShortcut = useCmdEnterToSend
-    ? combineKeys([KeyEnum.Mod, KeyEnum.Enter])
-    : KeyEnum.Enter;
+  const sendShortcut = KeyEnum.Enter;
 
-  const wrapperShortcut = useCmdEnterToSend
-    ? KeyEnum.Enter
-    : combineKeys([KeyEnum.Mod, KeyEnum.Enter]);
+  const wrapperShortcut = combineKeys([KeyEnum.Mod, KeyEnum.Enter]);
 
   return (
     <Flexbox
       align={'center'}
       gap={4}
       horizontal
-      style={{ color: theme.colorTextDescription, fontSize: 12, marginRight: 12 }}
+      style={{
+        color: theme.colorTextDescription,
+        fontSize: 12,
+        marginRight: 12,
+      }}
     >
-      <Hotkey keys={sendShortcut} style={{ color: 'inherit' }} variant={'borderless'} />
+      <Hotkey
+        keys={sendShortcut}
+        style={{ color: 'inherit' }}
+        variant={'borderless'}
+      />
       <span>{'发送'}</span>
       <span>/</span>
-      <Hotkey keys={wrapperShortcut} style={{ color: 'inherit' }} variant={'borderless'} />
+      <Hotkey
+        keys={wrapperShortcut}
+        style={{ color: 'inherit' }}
+        variant={'borderless'}
+      />
       <span>{'换行'}</span>
     </Flexbox>
   );

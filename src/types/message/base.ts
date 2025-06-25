@@ -1,5 +1,3 @@
-import { ChatMessageError } from '@/types/message/chat';
-
 export interface CitationItem {
   id?: string;
   onlyUrl?: boolean;
@@ -7,7 +5,7 @@ export interface CitationItem {
   url: string;
 }
 
-export type MessageRoleType = 'user' | 'system' | 'assistant' | 'tool';
+export type MessageRoleType = 'user' | 'assistant';
 
 export interface MessageItem {
   agentId: string | null;

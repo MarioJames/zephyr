@@ -18,4 +18,7 @@ export const oidcAuthSelectors = {
   userId: (s: OIDCStore) => s.user?.profile?.sub || null,
   userEmail: (s: OIDCStore) => s.user?.profile?.email || null,
   userName: (s: OIDCStore) => s.user?.profile?.name || null,
+  
+  // 为了兼容原 user store 的 selectors，添加登录状态选择器
+  isLogin: (s: OIDCStore) => s.isAuthenticated,
 };

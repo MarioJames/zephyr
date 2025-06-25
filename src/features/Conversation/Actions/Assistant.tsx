@@ -1,42 +1,18 @@
 'use client';
 
 import { ActionIconGroup } from '@lobehub/ui';
-import type { ActionIconGroupItemType } from '@lobehub/ui';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
 import { useChatListActionsBar } from '../hooks/useChatListActionsBar';
 import { RenderAction } from '../types';
-import { ErrorActionsBar } from './Error';
 import { useCustomActions } from './customAction';
 
-export const AssistantActionsBar: RenderAction = memo(
-  ({ onActionClick, error }) => {
-    const { regenerate, edit, delAndRegenerate, copy, divider, del, share } =
-      useChatListActionsBar();
+export const AssistantActionsBar: RenderAction = memo(({ onActionClick }) => {
+  const { copy } = useChatListActionsBar();
 
-    const { translate } = useCustomActions();
+  const { translate } = useCustomActions();
 
-    if (error) return <ErrorActionsBar onActionClick={onActionClick} />;
-
-    return (
-      <ActionIconGroup
-        items={[copy]}
-        menu={{
-          items: [
-            edit,
-            copy,
-            divider,
-            translate,
-            divider,
-            share,
-            divider,
-            regenerate,
-            delAndRegenerate,
-            del,
-          ],
-        }}
-        onActionClick={onActionClick}
-      />
-    );
-  }
-);
+  return (
+    <ActionIconGroup items={[copy, translate]} onActionClick={onActionClick} />
+  );
+});

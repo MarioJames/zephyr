@@ -5,8 +5,8 @@ import { createStyles } from 'antd-style';
 import { forwardRef } from 'react';
 
 import { BRANDING_NAME,DEFAULT_USER_AVATAR_URL } from '@/const/base';
-import { useUserStore } from '@/store/user';
-import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcAuthSelectors, oidcUserSelectors } from '@/store/oidc/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   clickable: css`
@@ -47,12 +47,12 @@ export interface UserAvatarProps extends AvatarProps {
 const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ size = 40, background, clickable, className, style, ...rest }, ref) => {
     const { styles, cx } = useStyles();
-    const [avatar, username] = useUserStore((s) => [
-      userProfileSelectors.userAvatar(s),
-      userProfileSelectors.username(s),
+    const [avatar, username] = useOIDCStore((s) => [
+      oidcUserSelectors.userAvatar(s),
+      oidcUserSelectors.username(s),
     ]);
 
-    const isSignedIn = useUserStore(authSelectors.isLogin);
+    const isSignedIn = useOIDCStore(oidcAuthSelectors.isLogin);
 
     return (
       <Avatar

@@ -15,13 +15,14 @@ export interface MessageAction {
   updateInputMessage: (message: string) => void;
   clearInputMessage: () => void;
   
-  // AI生成相关
-  startGenerating: () => void;
-  stopGenerateMessage: () => void;
-  finishGenerating: () => void;
+  // 移除AI生成相关方法，因为我们的对话都是确定内容
   
   // 发送消息
   sendMessage: (content: string) => Promise<void>;
+  
+  // 消息操作
+  copyMessage: (id: string, content?: string) => Promise<void>;
+  translateMessage: (id: string, targetLanguage: string) => Promise<void>;
 }
 
 export const messageSlice: StateCreator<
@@ -117,33 +118,6 @@ export const messageSlice: StateCreator<
     set({ inputMessage: '' });
   },
 
-  startGenerating: () => {
-    const abortController = new AbortController();
-    set({ 
-      isAIGenerating: true, 
-      abortController,
-      error: undefined 
-    });
-  },
-
-  stopGenerateMessage: () => {
-    const state = get();
-    if (state.abortController) {
-      state.abortController.abort();
-    }
-    set({ 
-      isAIGenerating: false, 
-      abortController: undefined 
-    });
-  },
-
-  finishGenerating: () => {
-    set({ 
-      isAIGenerating: false, 
-      abortController: undefined 
-    });
-  },
-
   sendMessage: async (content: string) => {
     const state = get();
     
@@ -156,12 +130,11 @@ export const messageSlice: StateCreator<
     };
 
     try {
+      set({ isLoading: true, error: undefined });
+      
       // 创建用户消息
       const createdMessage = await messageService.createMessage(userMessage);
       get().addMessage(createdMessage);
-
-      // 开始生成AI回复
-      get().startGenerating();
       
       // 生成AI回复
       const response = await chatService.generateReply({
@@ -188,14 +161,76 @@ export const messageSlice: StateCreator<
         get().addMessage(createdAIMessage);
       }
 
-      // 清空输入并结束生成
+      // 清空输入
       get().clearInputMessage();
-      get().finishGenerating();
+      set({ isLoading: false });
       
     } catch (error) {
       console.error('Failed to send message:', error);
-      get().finishGenerating();
-      set({ error: error instanceof Error ? error.message : 'Failed to send message' });
+      set({ 
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Failed to send message' 
+      });
+      throw error;
+    }
+  },
+
+  copyMessage: async (id: string, content?: string) => {
+    try {
+      const state = get();
+      const message = state.messages.find(msg => msg.id === id);
+      const textToCopy = content || message?.content || '';
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        // 降级处理：使用传统方法
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        textArea.style.position = 'absolute';
+        textArea.style.left = '-999999px';
+        document.body.prepend(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+    } catch (error) {
+      console.error('Failed to copy message:', error);
+      throw error;
+    }
+  },
+
+  translateMessage: async (id: string, targetLanguage: string) => {
+    try {
+      const state = get();
+      const message = state.messages.find(msg => msg.id === id);
+      
+      if (!message?.content) {
+        throw new Error('Message content not found');
+      }
+
+      // 调用翻译接口
+      const response = await chatService.translate({
+        text: message.content,
+        toLanguage: targetLanguage,
+        fromLanguage: 'auto', // 自动检测源语言
+      });
+
+      if (response.content) {
+        // 更新消息内容为翻译后的内容
+        get().updateMessage(id, {
+          content: response.content,
+          metadata: {
+            ...message.metadata,
+            originalContent: message.content,
+            translatedTo: targetLanguage,
+            translatedAt: new Date().toISOString(),
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Failed to translate message:', error);
+      set({ error: error instanceof Error ? error.message : 'Failed to translate message' });
       throw error;
     }
   },

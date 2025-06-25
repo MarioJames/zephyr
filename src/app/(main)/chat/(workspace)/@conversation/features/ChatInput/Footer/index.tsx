@@ -50,10 +50,8 @@ interface FooterProps {
 const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
   const { styles } = useStyles();
 
-  const [isAIGenerating, stopGenerateMessage] = useChatStore((s) => [
-    chatSelectors.isAIGenerating(s),
-    s.stopGenerateMessage,
-  ]);
+  // 移除AI生成状态，因为我们的对话都是确定内容，没有流式生成
+  const isLoading = useChatStore((s) => s.isLoading);
 
   const { send: sendMessage, canSend } = useSendMessage();
 
@@ -77,30 +75,20 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         style={{ paddingRight: 16 }}
       >
         <ShortcutHint />
-        {isAIGenerating ? (
+        <Space.Compact>
           <Button
-            className={styles.loadingButton}
-            icon={StopLoadingIcon}
-            onClick={stopGenerateMessage}
+            disabled={!canSend || isLoading}
+            loading={isLoading}
+            onClick={() => {
+              sendMessage();
+              onExpandChange?.(false);
+            }}
+            type={'primary'}
           >
-            {'停止'}
+            {'发送'}
           </Button>
-        ) : (
-          <Space.Compact>
-            <Button
-              disabled={!canSend}
-              loading={!canSend}
-              onClick={() => {
-                sendMessage();
-                onExpandChange?.(false);
-              }}
-              type={'primary'}
-            >
-              {'发送'}
-            </Button>
-            <SendMore disabled={!canSend} isMac={isMac} />
-          </Space.Compact>
-        )}
+          <SendMore disabled={!canSend || isLoading} isMac={isMac} />
+        </Space.Compact>
       </Flexbox>
     </>
   );

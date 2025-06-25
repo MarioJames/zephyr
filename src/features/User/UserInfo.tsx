@@ -5,8 +5,8 @@ import { memo } from 'react';
 import { Flexbox, FlexboxProps } from 'react-layout-kit';
 
 import PlanTag from '@/features/User/PlanTag';
-import { useUserStore } from '@/store/user';
-import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcAuthSelectors, oidcUserSelectors } from '@/store/oidc/selectors';
 
 import UserAvatar, { type UserAvatarProps } from './UserAvatar';
 
@@ -29,10 +29,10 @@ export interface UserInfoProps extends FlexboxProps {
 
 const UserInfo = memo<UserInfoProps>(({ avatarProps, onClick, ...rest }) => {
   const { styles, theme } = useStyles();
-  const isSignedIn = useUserStore(authSelectors.isLogin);
-  const [nickname, username] = useUserStore((s) => [
-    userProfileSelectors.nickName(s),
-    userProfileSelectors.username(s),
+  const isSignedIn = useOIDCStore(oidcAuthSelectors.isLogin);
+  const [nickname, username] = useOIDCStore((s) => [
+    oidcUserSelectors.nickName(s),
+    oidcUserSelectors.username(s),
   ]);
 
   return (

@@ -3,7 +3,7 @@ import { type ChatItemProps } from '@lobehub/ui/chat';
 import { FC, ReactNode } from 'react';
 
 import { LLMRoleType } from '@/types/llm';
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services/messages';
 
 import { type ActionsBarProps } from '../components/ChatItem/ActionsBar';
 

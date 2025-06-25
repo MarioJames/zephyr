@@ -4,8 +4,8 @@ import { Flexbox } from 'react-layout-kit';
 
 import { useAgentStore } from '@/store/agent';
 import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
-import { useUserStore } from '@/store/user';
-import { authSelectors } from '@/store/user/selectors';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcAuthSelectors } from '@/store/oidc/selectors';
 
 import HistoryLimitTags from './HistoryLimitTags';
 
@@ -17,7 +17,7 @@ const TitleTags = memo(() => {
 
   const enableHistoryCount = useAgentStore(agentChatConfigSelectors.enableHistoryCount);
 
-  const isLogin = useUserStore(authSelectors.isLogin);
+  const isLogin = useOIDCStore(oidcAuthSelectors.isAuthenticated);
 
   return isLoading && isLogin ? (
     <Skeleton.Button active size={'small'} style={{ height: 20 }} />

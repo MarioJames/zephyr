@@ -1,4 +1,4 @@
-import { MessageItem } from '@/services/messages';
+import { MessageItem } from '@/services';
 import { TopicItem } from '@/services/topics';
 
 export interface ChatState {
@@ -6,12 +6,12 @@ export interface ChatState {
   activeId: string;
   // 当前激活的话题ID
   activeTopicId?: string;
-  
+
   // 消息相关
   messages: MessageItem[];
   messagesInit: boolean;
   inputMessage: string;
-  
+
   // 话题相关
   topics: TopicItem[];
   topicsInit: boolean;
@@ -19,11 +19,9 @@ export interface ChatState {
   searchTopics: TopicItem[];
   inSearchingMode: boolean;
   topicRenamingId?: string;
-  
-  // 生成状态
-  isAIGenerating: boolean;
-  abortController?: AbortController;
-  
+
+  // 简化后的加载状态（移除AI生成状态，因为我们的对话都是确定内容）
+
   // 其他状态
   isLoading: boolean;
   error?: string;
@@ -32,21 +30,18 @@ export interface ChatState {
 export const initialState: ChatState = {
   activeId: '',
   activeTopicId: undefined,
-  
+
   messages: [],
   messagesInit: false,
   inputMessage: '',
-  
+
   topics: [],
   topicsInit: false,
   isSearchingTopic: false,
   searchTopics: [],
   inSearchingMode: false,
   topicRenamingId: undefined,
-  
-  isAIGenerating: false,
-  abortController: undefined,
-  
+
   isLoading: false,
   error: undefined,
 };

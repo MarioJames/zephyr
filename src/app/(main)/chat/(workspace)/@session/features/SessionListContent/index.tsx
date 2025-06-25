@@ -1,20 +1,19 @@
-"use client";
+'use client';
 
-import React, { memo } from "react";
-import { Flexbox } from "react-layout-kit";
-import { Button } from "antd";
-import { ChevronDown, Plus } from "lucide-react";
-import { createStyles } from "antd-style";
-import { useRouter } from "next/navigation";
+import React, { memo } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { Button } from 'antd';
+import { ChevronDown, Plus } from 'lucide-react';
+import { createStyles } from 'antd-style';
+import { useRouter } from 'next/navigation';
 
-import { useFetchTopics } from "@/hooks/useFetchTopics";
-import { useChatStore } from "@/store/chat";
-import { topicSelectors } from "@/store/chat/selectors";
-import { useUserStore } from "@/store/user";
+import { useFetchTopics } from '@/hooks/useFetchTopics';
+import { useChatStore } from '@/store/chat';
+import { topicSelectors } from '@/store/chat/selectors';
 
-import { SkeletonList } from "../SkeletonList";
-import ShowMode from "./ShowMode";
-import SearchResult from "./SearchResult";
+import { SkeletonList } from '../SkeletonList';
+import ShowMode from './ShowMode';
+import SearchResult from './SearchResult';
 
 const useStyles = createStyles(({ css }) => ({
   button: css`
@@ -48,11 +47,6 @@ const SessionListContent = memo(() => {
     topicSelectors.isInSearchMode(s),
   ]);
 
-  const [visible, updateGuideState] = useUserStore((s) => [
-    s.preference.guide?.topic,
-    s.updateGuideState,
-  ]);
-
   const handleAddCustomer = () => {
     router.push('/customer/edit');
   };
@@ -68,18 +62,16 @@ const SessionListContent = memo(() => {
     <>
       <Flexbox
         horizontal
-        align="center"
-        justify="space-between"
+        align='center'
+        justify='space-between'
         className={styles.flexbox}
       >
-        <Button
-          type="default"
-          className={styles.button}
-        >
-          全部员工<ChevronDown size={16}/>
+        <Button type='default' className={styles.button}>
+          全部员工
+          <ChevronDown size={16} />
         </Button>
         <Button
-          type="default"
+          type='default'
           icon={<Plus size={16} />}
           className={`${styles.button}`}
           onClick={handleAddCustomer}
@@ -87,16 +79,12 @@ const SessionListContent = memo(() => {
           创建客户
         </Button>
       </Flexbox>
-      {topicLength === 0 && visible && (
-        <Flexbox paddingInline={8}>
-            暂时为空
-        </Flexbox>
-      )}
+      {topicLength === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
       {<ShowMode />}
     </>
   );
 });
 
-SessionListContent.displayName = "SessionListContent";
+SessionListContent.displayName = 'SessionListContent';
 
 export default SessionListContent;

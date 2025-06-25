@@ -16,4 +16,9 @@ export const oidcUserSelectors = {
   // 复合选择器
   hasUserInfo: (s: OIDCStore) => !!s.userInfo,
   isUserInfoReady: (s: OIDCStore) => !s.isLoadingUserInfo && !!s.userInfo,
+  
+  // 为了兼容原 user store 的 selectors，添加以下选择器
+  username: (s: OIDCStore) => s.userInfo?.name || s.user?.profile?.name || null,
+  nickName: (s: OIDCStore) => s.userInfo?.name || s.user?.profile?.name || null,
+  userAvatar: (s: OIDCStore) => s.userInfo?.avatar || s.user?.profile?.picture || null,
 };

@@ -1,10 +1,9 @@
 import { http } from '../request';
 
 // 聊天相关类型定义
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
+import { MessageItem } from '@/services/messages';
+
+export type ChatMessage = MessageItem;
 
 export interface ChatRequest {
   messages: ChatMessage[];
