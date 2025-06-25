@@ -3,21 +3,17 @@ import { Upload } from 'antd';
 import { FileUp, LucideImage } from 'lucide-react';
 import { memo } from 'react';
 
-import { useModelSupportFiles } from '@/hooks/useModelSupportFiles';
-import { useModelSupportVision } from '@/hooks/useModelSupportVision';
 import { useAgentStore } from '@/store/agent';
-import { agentSelectors } from '@/store/agent/selectors';
+import { agentModelSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 
 const FileUpload = memo(() => {
   const upload = useChatStore((s) => s.uploadChatFiles);
   const isUploading = useChatStore((s) => s.isUploading);
 
-  const model = useAgentStore(agentSelectors.currentAgentModel)!;
-  const provider = useAgentStore(agentSelectors.currentAgentModelProvider)!;
+  const { supportFiles: enabledFiles, supportVision: supportVision } =
+    useAgentStore(agentModelSelectors.currentModelDetails)!;
 
-  const enabledFiles = useModelSupportFiles(model, provider);
-  const supportVision = useModelSupportVision(model, provider);
   const canUpload = enabledFiles || supportVision;
 
   let title = '上传已禁用';

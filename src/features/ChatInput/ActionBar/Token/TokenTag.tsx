@@ -11,7 +11,7 @@ import {
   agentSelectors,
 } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
-import { chatSelectors, topicSelectors } from '@/store/chat/selectors';
+import { topicSelectors } from '@/store/chat/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
@@ -30,13 +30,10 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     topicSelectors.currentActiveTopic(s)?.historySummary || '',
   ]);
 
-  const [systemRole, model, provider, modelDetails] = useAgentStore((s) => {
+  const [systemRole, modelDetails] = useAgentStore((s) => {
     return [
       agentSelectors.currentAgentSystemRole(s),
-      agentSelectors.currentAgentModel(s) as string,
-      agentSelectors.currentAgentModelProvider(s) as string,
       agentModelSelectors.currentModelDetails(s),
-      // add these two params to enable the component to re-render
     ];
   });
 

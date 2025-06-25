@@ -44,33 +44,36 @@ export const navigationSlice: StateCreator<
       set({
         previousSessionId: currentSessionId,
         currentSessionId: sessionId,
-        isSwitching: false
+        isSwitching: false,
       });
 
       // 获取会话详情并加载相关的智能体和模型信息
       const sessions = get().sessions;
-      const existingSession = sessions.find(s => s.id === sessionId);
+      const existingSession = sessions.find((s) => s.id === sessionId);
 
       if (sessionId !== INBOX_SESSION_ID) {
         let sessionDetail = existingSession;
-        
+
         // 如果会话不在缓存中，获取会话详情
         if (!existingSession) {
           sessionDetail = await get().fetchSessionDetail(sessionId);
         }
 
         // 如果会话有关联的智能体，加载智能体信息和模型详情
-        if (sessionDetail?.agentId) {
+        if (sessionDetail?.agent?.id) {
           const agentStore = useAgentStore.getState();
-          
+
           // 加载智能体信息
-          await agentStore.loadAgentById(sessionDetail.agentId);
-          
+          await agentStore.loadAgentById(sessionDetail.agent?.id);
+
           // 获取当前智能体的模型信息
           const currentAgent = agentStore.currentAgent;
           if (currentAgent?.model && currentAgent?.provider) {
             // 获取模型详情
-            await agentStore.fetchModelDetails(currentAgent.model, currentAgent.provider);
+            await agentStore.fetchModelDetails(
+              currentAgent.model,
+              currentAgent.provider
+            );
           }
         }
       }
@@ -101,7 +104,7 @@ export const navigationSlice: StateCreator<
     const { navigationHistory, maxHistorySize } = get();
 
     // 移除重复项
-    const filteredHistory = navigationHistory.filter(id => id !== sessionId);
+    const filteredHistory = navigationHistory.filter((id) => id !== sessionId);
 
     // 添加到历史记录开头
     const newHistory = [sessionId, ...filteredHistory];
@@ -123,7 +126,7 @@ export const navigationSlice: StateCreator<
 
     set({
       previousSessionId: currentSessionId,
-      currentSessionId: sessionId
+      currentSessionId: sessionId,
     });
 
     // 获取会话详情

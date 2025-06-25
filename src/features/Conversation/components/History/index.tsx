@@ -31,12 +31,12 @@ const useStyles = createStyles(({ css, token }) => ({
 const History = memo(() => {
   const { styles, theme } = useStyles();
   const [content, model] = useChatStore((s) => {
-    const history = topicSelectors.currentActiveTopicSummary(s);
-    return [history?.content, history?.model];
+    const history = topicSelectors.currentActiveTopic(s);
+    return [history?.historySummary, history?.metadata?.model];
   });
 
-  const enableCompressHistory = useAgentStore(
-    (s) => agentChatConfigSelectors.currentChatConfig(s).enableCompressHistory,
+  const enableCompressHistory = useAgentStore((s) =>
+    agentChatConfigSelectors.enableCompressHistory(s)
   );
 
   return (
@@ -46,7 +46,11 @@ const History = memo(() => {
         <Flexbox className={styles.container} gap={8}>
           <Flexbox align={'flex-start'} gap={8} horizontal>
             <Center height={20} width={20}>
-              <Icon icon={ScrollText} size={16} style={{ color: theme.colorTextDescription }} />
+              <Icon
+                icon={ScrollText}
+                size={16}
+                style={{ color: theme.colorTextDescription }}
+              />
             </Center>
             <Typography.Text type={'secondary'}>历史消息总结</Typography.Text>
             {model && (

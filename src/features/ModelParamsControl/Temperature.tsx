@@ -20,8 +20,8 @@ const alertCls = css`
 
 const Warning = memo(() => {
   const [temperature] = useAgentStore((s) => {
-    const config = agentSelectors.currentAgentConfig(s);
-    return [config.params?.temperature];
+    const config = agentSelectors.currentAgent(s);
+    return [config?.params?.temperature];
   });
 
   return (
@@ -50,9 +50,21 @@ const Temperature = memo<TemperatureProps>(({ value, onChange }) => {
       <SliderWithInput
         controls={false}
         marks={{
-          0: <Icon icon={Sparkle} size={'small'} style={{ color: theme.colorTextQuaternary }} />,
+          0: (
+            <Icon
+              icon={Sparkle}
+              size={'small'}
+              style={{ color: theme.colorTextQuaternary }}
+            />
+          ),
           1: <div />,
-          2: <Icon icon={Sparkles} size={'small'} style={{ color: theme.colorTextQuaternary }} />,
+          2: (
+            <Icon
+              icon={Sparkles}
+              size={'small'}
+              style={{ color: theme.colorTextQuaternary }}
+            />
+          ),
         }}
         max={2}
         onChange={onChange}

@@ -3,9 +3,8 @@ import { Upload } from 'antd';
 import { css, cx } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip } from 'lucide-react';
 import { memo } from 'react';
-import { useModelSupportVision } from '@/hooks/useModelSupportVision';
 import { useAgentStore } from '@/store/agent';
-import { agentSelectors } from '@/store/agent/selectors';
+import { agentModelSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import Action from '../components/Action';
 
@@ -22,10 +21,9 @@ const FileUpload = memo(() => {
   const upload = useChatStore((s) => s.uploadChatFiles);
   const isUploading = useChatStore((s) => s.isUploading);
 
-  const model = useAgentStore(agentSelectors.currentAgentModel);
-  const provider = useAgentStore(agentSelectors.currentAgentModelProvider);
-
-  const canUploadImage = useModelSupportVision(model, provider);
+  const { supportVision: canUploadImage } = useAgentStore(
+    agentModelSelectors.currentModelDetails
+  )!;
 
   const items: MenuProps['items'] = [
     {

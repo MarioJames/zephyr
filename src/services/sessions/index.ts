@@ -1,5 +1,5 @@
 import { http } from '../request';
-import { CreateAgentRequest } from '../agents';
+import { AgentItem } from '../agents';
 
 // 会话相关类型定义
 export interface SessionItem {
@@ -14,6 +14,8 @@ export interface SessionItem {
   groupId?: string;
   clientId?: string;
   pinned?: boolean;
+  // 关联的智能体完整信息
+  agent?: AgentItem;
   createdAt?: string;
   updatedAt?: string;
 }

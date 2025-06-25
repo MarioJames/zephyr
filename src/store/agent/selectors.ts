@@ -1,4 +1,4 @@
-import { AgentState, AgentChatConfig } from './initialState';
+import { AgentState } from './initialState';
 import { AgentItem } from '@/services/agents';
 import { modelSelectors } from './slices/model/selectors';
 

@@ -11,7 +11,10 @@ export interface TopicItem {
   user: UserItem;
   clientId?: string;
   historySummary?: string;
-  metadata?: any;
+  metadata?: {
+    model?: string;
+    provider?: string;
+  };
   createdAt?: string;
   updatedAt?: string;
 }
