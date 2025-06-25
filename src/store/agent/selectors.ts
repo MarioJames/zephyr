@@ -1,5 +1,6 @@
 import { AgentState, AgentChatConfig } from './initialState';
 import { AgentItem } from '@/services/agents';
+import { modelSelectors } from './slices/model/selectors';
 
 // 基础选择器
 const agents = (s: AgentState) => s.agents;
@@ -29,6 +30,13 @@ const openingQuestions = (s: AgentState): string[] =>
 const systemRole = (s: AgentState): string | undefined =>
   s.currentAgent?.systemRole;
 
+// 为了兼容组件中的使用，添加以下别名选择器
+const currentAgentSystemRole = (s: AgentState): string | undefined =>
+  s.currentAgent?.systemRole;
+
+const currentAgentModelProvider = (s: AgentState): string | undefined =>
+  s.currentAgent?.provider;
+
 const agentMeta = (s: AgentState) => ({
   id: s.currentAgent?.id,
   title: s.currentAgent?.title,
@@ -53,6 +61,9 @@ export const agentSelectors = {
   openingMessage,
   openingQuestions,
   systemRole,
+  // 别名选择器，用于兼容组件中的使用
+  currentAgentSystemRole,
+  currentAgentModelProvider,
   agentMeta,
 };
 
@@ -109,3 +120,6 @@ export const agentChatConfigSelectors = {
   temperature,
   enableHistoryDivider,
 };
+
+// 模型选择器导出
+export const agentModelSelectors = modelSelectors;

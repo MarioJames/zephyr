@@ -1,4 +1,5 @@
 import { AgentItem } from '@/services/agents';
+import { ModelState, initialModelState } from './slices/model/initialState';
 
 export interface AgentChatConfig {
   autoCreateTopicThreshold: number;
@@ -13,7 +14,7 @@ export interface AgentChatConfig {
   enableHistoryDivider?: boolean;
 }
 
-export interface AgentState {
+export interface AgentState extends ModelState {
   // 智能体列表
   agents: AgentItem[];
   agentsInit: boolean;
@@ -32,6 +33,10 @@ export interface AgentState {
 }
 
 export const initialState: AgentState = {
+  // Model state
+  ...initialModelState,
+  
+  // Agent state
   agents: [],
   agentsInit: false,
   

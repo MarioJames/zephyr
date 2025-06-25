@@ -8,7 +8,16 @@ export interface FileMetadata {
   [key: string]: any;
 }
 
-export interface FileUploadResponse {
+// 移除进度状态，简化为基本上传状态
+
+export type FileUploadStatus =
+  | 'pending'
+  | 'uploading'
+  | 'processing'
+  | 'success'
+  | 'error';
+
+export interface FileItem {
   id: string;
   filename: string;
   fileType: string;
@@ -17,7 +26,10 @@ export interface FileUploadResponse {
   url: string;
   uploadedAt: string;
   metadata: FileMetadata;
+  status: FileUploadStatus;
 }
+
+export interface FileUploadResponse extends FileItem {}
 
 export interface FileUploadRequest {
   file: File;
@@ -71,8 +83,10 @@ export interface FileListResponse {
 function upload(data: FileUploadRequest) {
   const formData = new FormData();
   formData.append('file', data.file);
-  if (data.knowledgeBaseId) formData.append('knowledgeBaseId', data.knowledgeBaseId);
-  if (data.skipCheckFileType !== undefined) formData.append('skipCheckFileType', String(data.skipCheckFileType));
+  if (data.knowledgeBaseId)
+    formData.append('knowledgeBaseId', data.knowledgeBaseId);
+  if (data.skipCheckFileType !== undefined)
+    formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
 
   return http.post<FileUploadResponse>('/api/v1/files/upload', formData, {
@@ -90,18 +104,24 @@ function upload(data: FileUploadRequest) {
  */
 function batchUpload(data: BatchUploadRequest) {
   const formData = new FormData();
-  data.files.forEach(file => {
+  data.files.forEach((file) => {
     formData.append('files', file);
   });
-  if (data.knowledgeBaseId) formData.append('knowledgeBaseId', data.knowledgeBaseId);
-  if (data.skipCheckFileType !== undefined) formData.append('skipCheckFileType', String(data.skipCheckFileType));
+  if (data.knowledgeBaseId)
+    formData.append('knowledgeBaseId', data.knowledgeBaseId);
+  if (data.skipCheckFileType !== undefined)
+    formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
 
-  return http.post<BatchUploadResponse>('/api/v1/files/batch-upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  return http.post<BatchUploadResponse>(
+    '/api/v1/files/batch-upload',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 }
 
 /**

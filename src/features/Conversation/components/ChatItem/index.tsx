@@ -39,11 +39,8 @@ const useStyles = createStyles(({ css, prefixCls }) => ({
 export interface ChatListItemProps {
   actionBar?: ReactNode;
   className?: string;
-  disableEditing?: boolean;
-  enableHistoryDivider?: boolean;
   endRender?: ReactNode;
   id: string;
-  index: number;
 }
 
 const Item = memo<ChatListItemProps>(

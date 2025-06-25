@@ -1,22 +1,23 @@
-import { Tooltip } from '@lobehub/ui';
 import { TokenTag } from '@lobehub/ui/chat';
 import { useTheme } from 'antd-style';
-import numeral from 'numeral';
 import { memo, useMemo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
-import { useModelContextWindowTokens } from '@/hooks/useModelContextWindowTokens';
-import { useModelSupportToolUse } from '@/hooks/useModelSupportToolUse';
 import { useTokenCount } from '@/hooks/useTokenCount';
 import { useAgentStore } from '@/store/agent';
-import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
+import {
+  agentChatConfigSelectors,
+  agentModelSelectors,
+  agentSelectors,
+} from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors, topicSelectors } from '@/store/chat/selectors';
-import { useToolStore } from '@/store/tool';
-import { toolSelectors } from '@/store/tool/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
+import { mainAIChatsWithHistoryConfig } from '@/store/chat/slices/message/selectors';
+import numeral from 'numeral';
+import { Tooltip } from '@lobehub/ui';
 
 interface TokenTagProps {
   total: string;
@@ -26,17 +27,16 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
 
   const [input, historySummary] = useChatStore((s) => [
     s.inputMessage,
-    topicSelectors.currentActiveTopicSummary(s)?.content || '',
+    topicSelectors.currentActiveTopic(s)?.historySummary || '',
   ]);
 
-  const [systemRole, model, provider] = useAgentStore((s) => {
+  const [systemRole, model, provider, modelDetails] = useAgentStore((s) => {
     return [
       agentSelectors.currentAgentSystemRole(s),
       agentSelectors.currentAgentModel(s) as string,
       agentSelectors.currentAgentModelProvider(s) as string,
+      agentModelSelectors.currentModelDetails(s),
       // add these two params to enable the component to re-render
-      agentChatConfigSelectors.historyCount(s),
-      agentChatConfigSelectors.enableHistoryCount(s),
     ];
   });
 
@@ -45,27 +45,13 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     agentChatConfigSelectors.enableHistoryCount(s),
   ]);
 
-  const maxTokens = useModelContextWindowTokens(model, provider);
-
-  // Tool usage token
-  const canUseTool = useModelSupportToolUse(model, provider);
-  const plugins = useAgentStore(agentSelectors.currentAgentPlugins);
-  const toolsString = useToolStore((s) => {
-    const pluginSystemRoles = toolSelectors.enabledSystemRoles(plugins)(s);
-    const schemaNumber = toolSelectors
-      .enabledSchema(plugins)(s)
-      .map((i) => JSON.stringify(i))
-      .join('');
-
-    return pluginSystemRoles + schemaNumber;
-  });
-  const toolsToken = useTokenCount(canUseTool ? toolsString : '');
+  const { contextWindowTokens: maxTokens = 0 } = modelDetails || {};
 
   // Chat usage token
   const inputTokenCount = useTokenCount(input);
 
   const chatsString = useMemo(() => {
-    const chats = chatSelectors.mainAIChatsWithHistoryConfig(useChatStore.getState());
+    const chats = mainAIChatsWithHistoryConfig(useChatStore.getState());
     return chats.map((chat) => chat.content).join('');
   }, [messageString, historyCount, enableHistoryCount]);
 
@@ -76,11 +62,17 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const historySummaryToken = useTokenCount(historySummary);
 
   // Total token
-  const totalToken = systemRoleToken + historySummaryToken + toolsToken + chatsToken;
+  const totalToken = systemRoleToken + historySummaryToken + chatsToken;
 
   const content = (
     <Flexbox gap={12} style={{ minWidth: 200 }}>
-      <Flexbox align={'center'} gap={4} horizontal justify={'space-between'} width={'100%'}>
+      <Flexbox
+        align={'center'}
+        gap={4}
+        horizontal
+        justify={'space-between'}
+        width={'100%'}
+      >
         <div style={{ color: theme.colorTextDescription }}>Token 详情</div>
         <Tooltip
           styles={{ root: { maxWidth: 'unset', pointerEvents: 'none' } }}
@@ -108,12 +100,6 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
             id: 'systemRole',
             title: '系统角色',
             value: systemRoleToken,
-          },
-          {
-            color: theme.geekblue,
-            id: 'tools',
-            title: '工具',
-            value: toolsToken,
           },
           {
             color: theme.orange,

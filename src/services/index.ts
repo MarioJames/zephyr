@@ -8,7 +8,6 @@ export { default as messagesAPI } from './messages';
 export { default as messageTranslatesAPI } from './message_translates';
 export { default as chatAPI } from './chat';
 export { default as filesAPI } from './files';
-export { default as customersAPI } from './customers';
 export { default as modelsAPI } from './models';
 
 // 导出类型定义
@@ -29,15 +28,8 @@ export type {
   SessionCreateRequest,
   SessionUpdateRequest,
   SessionSearchRequest,
-  SessionCloneRequest,
 } from './sessions';
 
-export type {
-  SessionGroupItem,
-  SessionGroupCreateRequest,
-  SessionGroupUpdateRequest,
-  SessionGroupOrderRequest,
-} from './session-groups';
 
 export type {
   TopicItem,
@@ -78,15 +70,3 @@ export type {
   FileListRequest,
   FileListResponse,
 } from './files';
-
-export type {
-  CustomerSessionItem,
-  CustomerDetailItem,
-  CustomerListRequest,
-  CustomerListResponse,
-  CustomerCreateRequest,
-  CustomerUpdateRequest,
-  CustomerSearchRequest,
-  CustomerStatsResponse,
-  BatchUpdateTypeRequest,
-} from './customers';

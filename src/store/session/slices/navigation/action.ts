@@ -1,14 +1,15 @@
 import { StateCreator } from 'zustand';
 import { SessionStore } from '@/store/session';
 import { INBOX_SESSION_ID, SESSION_CHAT_URL } from '@/const/session';
+import { useAgentStore } from '@/store/agent';
 
 export interface NavigationAction {
   // 切换会话
-  switchSession: (sessionId: string) => void;
+  switchSession: (sessionId: string) => Promise<void>;
   // 切换到上一个会话
-  switchToPreviousSession: () => void;
+  switchToPreviousSession: () => Promise<void>;
   // 切换到收件箱
-  switchToInbox: () => void;
+  switchToInbox: () => Promise<void>;
   // 添加会话到历史记录
   addToHistory: (sessionId: string) => void;
   // 清除导航历史
@@ -25,7 +26,7 @@ export const navigationSlice: StateCreator<
   [],
   NavigationAction
 > = (set, get) => ({
-  switchSession: (sessionId: string) => {
+  switchSession: async (sessionId: string) => {
     const currentSessionId = get().currentSessionId;
 
     // 如果切换到相同会话，直接返回
@@ -46,12 +47,32 @@ export const navigationSlice: StateCreator<
         isSwitching: false
       });
 
-      // 获取会话详情（如果不在缓存中）
+      // 获取会话详情并加载相关的智能体和模型信息
       const sessions = get().sessions;
-      const sessionExists = sessions.find(s => s.id === sessionId);
+      const existingSession = sessions.find(s => s.id === sessionId);
 
-      if (!sessionExists && sessionId !== INBOX_SESSION_ID) {
-        get().fetchSessionDetail(sessionId);
+      if (sessionId !== INBOX_SESSION_ID) {
+        let sessionDetail = existingSession;
+        
+        // 如果会话不在缓存中，获取会话详情
+        if (!existingSession) {
+          sessionDetail = await get().fetchSessionDetail(sessionId);
+        }
+
+        // 如果会话有关联的智能体，加载智能体信息和模型详情
+        if (sessionDetail?.agentId) {
+          const agentStore = useAgentStore.getState();
+          
+          // 加载智能体信息
+          await agentStore.loadAgentById(sessionDetail.agentId);
+          
+          // 获取当前智能体的模型信息
+          const currentAgent = agentStore.currentAgent;
+          if (currentAgent?.model && currentAgent?.provider) {
+            // 获取模型详情
+            await agentStore.fetchModelDetails(currentAgent.model, currentAgent.provider);
+          }
+        }
       }
 
       // 导航到会话页面
@@ -65,15 +86,15 @@ export const navigationSlice: StateCreator<
     }
   },
 
-  switchToPreviousSession: () => {
+  switchToPreviousSession: async () => {
     const previousSessionId = get().previousSessionId;
     if (previousSessionId) {
-      get().switchSession(previousSessionId);
+      await get().switchSession(previousSessionId);
     }
   },
 
-  switchToInbox: () => {
-    get().switchSession(INBOX_SESSION_ID);
+  switchToInbox: async () => {
+    await get().switchSession(INBOX_SESSION_ID);
   },
 
   addToHistory: (sessionId: string) => {
