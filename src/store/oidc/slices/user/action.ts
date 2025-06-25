@@ -11,12 +11,12 @@ export interface OIDCUserAction {
    * 设置用户信息
    */
   setUserInfo: (userInfo: UserItem | null) => void;
-  
+
   /**
    * 设置用户信息加载状态
    */
   setLoadingUserInfo: (loading: boolean) => void;
-  
+
   /**
    * 加载用户信息
    */
@@ -47,7 +47,7 @@ export const createOIDCUserSlice: StateCreator<
     try {
       set({ isLoadingUserInfo: true, error: null });
 
-      const userInfo = await API.getUserInfo();
+      const userInfo = await API.getCurrentUser();
       set({ userInfo });
     } catch (error) {
       console.error('用户信息加载异常:', error);

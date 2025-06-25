@@ -1,29 +1,27 @@
-'use client';
-
 import React, { useState } from 'react';
-import { 
-  Button, 
-  Input, 
-  Table, 
-  Typography, 
-  Space, 
-  Dropdown, 
+import {
+  Button,
+  Input,
+  Table,
+  Typography,
+  Space,
+  Dropdown,
   Modal,
   Form,
   Upload,
   message,
   Tabs,
-  Checkbox
+  Checkbox,
 } from 'antd';
-import { 
-  SearchOutlined, 
-  DownOutlined, 
+import {
+  SearchOutlined,
+  DownOutlined,
   CheckCircleFilled,
   UploadOutlined,
   PlusOutlined,
   EditOutlined,
   DoubleRightOutlined,
-  DoubleLeftOutlined
+  DoubleLeftOutlined,
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import type { ColumnsType } from 'antd/es/table';
@@ -88,7 +86,8 @@ const useStyles = createStyles(({ css, token }) => ({
   addButton: css`
     background-color: #000;
     color: #fff;
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: #333;
       color: #fff;
     }
@@ -106,7 +105,7 @@ const useStyles = createStyles(({ css, token }) => ({
   roleDropdown: css`
     width: 154px;
     border-radius: 8px;
-    background: #FFF;
+    background: #fff;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     z-index: 1050;
     padding: 4px 0;
@@ -127,7 +126,8 @@ const useStyles = createStyles(({ css, token }) => ({
   confirmButton: css`
     background-color: #000;
     color: #fff;
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: #333;
       color: #fff;
     }
@@ -139,7 +139,7 @@ const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
     .ant-modal-content {
       border-radius: 8px;
-      background: #F4F4F4;
+      background: #f4f4f4;
       padding: 24px;
     }
   `,
@@ -191,7 +191,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   formItem: css`
     margin-bottom: 16px;
-    
+
     .ant-form-item-label {
       padding-bottom: 4px;
     }
@@ -207,7 +207,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   customInput: css`
     border-radius: 6px !important;
-    background: #EAEAEA !important;
+    background: #eaeaea !important;
     height: 32px !important;
     border: none !important;
     box-shadow: none !important;
@@ -241,8 +241,12 @@ export default function EmployeePage() {
   const [customerTab, setCustomerTab] = useState('all');
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
-  const [employeeCustomers, setEmployeeCustomers] = useState<string[]>(['c1', 'c3']);
-  const [currentCustomerEmployee, setCurrentCustomerEmployee] = useState<UserItem | null>(null);
+  const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([
+    'c1',
+    'c3',
+  ]);
+  const [currentCustomerEmployee, setCurrentCustomerEmployee] =
+    useState<UserItem | null>(null);
 
   // 页面初始化加载员工和角色
   React.useEffect(() => {
@@ -252,7 +256,7 @@ export default function EmployeePage() {
 
   // 处理角色变更
   const handleRoleChange = async (employeeId: string, newRoleId: string) => {
-    const employee = employees.find(emp => emp.id === employeeId);
+    const employee = employees.find((emp) => emp.id === employeeId);
     if (!employee) return;
     await updateEmployee(employeeId, { roleId: newRoleId });
   };
@@ -265,7 +269,7 @@ export default function EmployeePage() {
 
   // 处理编辑员工
   const handleEdit = (employeeId: string) => {
-    const employee = employees.find(emp => emp.id === employeeId);
+    const employee = employees.find((emp) => emp.id === employeeId);
     if (employee) {
       setIsEditMode(true);
       setCurrentEmployee(employee);
@@ -274,14 +278,18 @@ export default function EmployeePage() {
         email: employee.email,
         phone: employee.phone,
         fullName: employee.fullName,
-        roleId: employee.roleId,
+        roleId: employee.roles?.[0]?.id,
       });
-      setAvatarFile(employee.avatar ? {
-        uid: '-1',
-        name: 'avatar.png',
-        status: 'done',
-        url: employee.avatar,
-      } : null);
+      setAvatarFile(
+        employee.avatar
+          ? {
+              uid: '-1',
+              name: 'avatar.png',
+              status: 'done',
+              url: employee.avatar,
+            }
+          : null
+      );
       setEmployeeModalVisible(true);
     }
   };
@@ -365,20 +373,26 @@ export default function EmployeePage() {
     setEmployeeCustomers([...employeeCustomers, ...selectedLeft]);
     setSelectedLeft([]);
   };
+
   // 穿梭到左侧
   const moveToLeft = () => {
-    setEmployeeCustomers(employeeCustomers.filter(id => !selectedRight.includes(id)));
+    setEmployeeCustomers(
+      employeeCustomers.filter((id) => !selectedRight.includes(id))
+    );
     setSelectedRight([]);
   };
 
   // 左侧客户列表过滤
-  const leftList = allCustomers.filter(c => {
+  const leftList = allCustomers.filter((c) => {
     if (customerTab === 'all') return !employeeCustomers.includes(c.id);
-    if (customerTab === 'unassigned') return c.owner === '未分配' && !employeeCustomers.includes(c.id);
+    if (customerTab === 'unassigned')
+      return c.owner === '未分配' && !employeeCustomers.includes(c.id);
     return false;
   });
   // 右侧客户列表
-  const rightList = allCustomers.filter(c => employeeCustomers.includes(c.id));
+  const rightList = allCustomers.filter((c) =>
+    employeeCustomers.includes(c.id)
+  );
 
   const columns: ColumnsType<UserItem> = [
     {
@@ -406,9 +420,18 @@ export default function EmployeePage() {
       dataIndex: 'customerCount',
       key: 'customerCount',
       render: (count: number, record: UserItem) => (
-        <span style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
+        <span
+          style={{
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
           {count}
-          <EditOutlined style={{ marginLeft: 6 }} onClick={() => handleCustomerManage(record)} />
+          <EditOutlined
+            style={{ marginLeft: 6 }}
+            onClick={() => handleCustomerManage(record)}
+          />
         </span>
       ),
     },
@@ -418,14 +441,16 @@ export default function EmployeePage() {
       key: 'role',
       render: (role: string, record: UserItem) => {
         const roleText = role === 'admin' ? '管理员' : '员工';
-        
+
+        const roleName = record.roles?.[0]?.name;
+
         const roleMenuItems = [
           {
             key: 'admin',
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
-                {record.role === 'admin' && <CheckCircleFilled />}
+                {roleName === 'admin' && <CheckCircleFilled />}
               </div>
             ),
           },
@@ -434,7 +459,7 @@ export default function EmployeePage() {
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
-                {record.role === 'employee' && <CheckCircleFilled />}
+                {roleName === 'employee' && <CheckCircleFilled />}
               </div>
             ),
           },
@@ -444,12 +469,13 @@ export default function EmployeePage() {
           <Dropdown
             menu={{
               items: roleMenuItems,
-              onClick: ({ key }) => handleRoleChange(record.id, key as 'admin' | 'employee'),
+              onClick: ({ key }) =>
+                handleRoleChange(record.id, key as 'admin' | 'employee'),
               className: styles.roleDropdown,
             }}
             trigger={['click']}
           >
-            <a onClick={e => e.preventDefault()} className={styles.blackText}>
+            <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
               {roleText} <DownOutlined />
             </a>
           </Dropdown>
@@ -460,30 +486,32 @@ export default function EmployeePage() {
       title: '员工消息记录',
       key: 'messages',
       render: (_, record) => (
-        <span className={styles.blackText}>{employeeMessageCount[record.id] ?? 0}条</span>
+        <span className={styles.blackText}>
+          {employeeMessageCount[record.id] ?? 0}条
+        </span>
       ),
     },
     {
       title: '操作',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle">
-          <Button 
-            type="link" 
+        <Space size='middle'>
+          <Button
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
           >
             发送登录引导
           </Button>
-          <Button 
-            type="link" 
+          <Button
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
           >
             编辑
           </Button>
-          <Button 
-            type="link" 
+          <Button
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleDelete(record.id)}
           >
@@ -498,10 +526,12 @@ export default function EmployeePage() {
     <div className={styles.container}>
       {/* 顶部标题和搜索区 */}
       <div className={styles.header}>
-        <Title level={4} className={styles.title}>员工管理</Title>
+        <Title level={4} className={styles.title}>
+          员工管理
+        </Title>
         <div className={styles.headerRight}>
           <Input
-            placeholder="搜索员工"
+            placeholder='搜索员工'
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
@@ -515,12 +545,12 @@ export default function EmployeePage() {
 
       {/* 员工表格 */}
       <div className={styles.tableContainer}>
-        <Table 
-          columns={columns} 
-          dataSource={employees} 
-          rowKey="id"
+        <Table
+          columns={columns}
+          dataSource={employees}
+          rowKey='id'
           loading={loading}
-          pagination={{ 
+          pagination={{
             pageSize: 10,
             showSizeChanger: false,
             showQuickJumper: true,
@@ -530,7 +560,7 @@ export default function EmployeePage() {
 
       {/* 登录引导弹窗 */}
       <Modal
-        title="发送邮件引导员工登录系统"
+        title='发送邮件引导员工登录系统'
         open={loginGuideVisible}
         footer={null}
         onCancel={() => setLoginGuideVisible(false)}
@@ -538,16 +568,18 @@ export default function EmployeePage() {
         closable={false}
       >
         <div>
-          <p>将发送一条包含"系统地址"以及员工个人登录的账号信息（邮箱&密码）的邮件，到员工邮箱。</p>
+          <p>
+            将发送一条包含"系统地址"以及员工个人登录的账号信息（邮箱&密码）的邮件，到员工邮箱。
+          </p>
           <p>{currentEmployee?.email}</p>
           <div className={styles.cardActions}>
-            <Button 
+            <Button
               className={styles.cancelButton}
               onClick={() => setLoginGuideVisible(false)}
             >
               取消
             </Button>
-            <Button 
+            <Button
               className={styles.confirmButton}
               onClick={() => {
                 console.log(`发送登录引导邮件到 ${currentEmployee?.email}`);
@@ -569,25 +601,32 @@ export default function EmployeePage() {
         width={414}
         className={styles.addEmployeeModal}
         closable={true}
-        closeIcon={<span style={{fontSize:20, color:'#999'}}>×</span>}
+        closeIcon={<span style={{ fontSize: 20, color: '#999' }}>×</span>}
       >
         <div>
           <div className={styles.modalTitle}>
             {isEditMode ? '编辑员工' : '添加员工'}
           </div>
-          
+
           {/* 头像上传区域 */}
           <div className={styles.sectionTitle}>头像</div>
           <div className={styles.avatarUploader}>
             <div className={styles.avatarCircle}>
               {avatarFile ? (
-                <img src={avatarFile.url || (avatarFile.originFileObj && URL.createObjectURL(avatarFile.originFileObj))} alt="头像" />
+                <img
+                  src={
+                    avatarFile.url ||
+                    (avatarFile.originFileObj &&
+                      URL.createObjectURL(avatarFile.originFileObj))
+                  }
+                  alt='头像'
+                />
               ) : (
                 <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
               )}
             </div>
             <Upload
-              name="avatar"
+              name='avatar'
               showUploadList={false}
               beforeUpload={beforeUpload}
               onChange={handleAvatarChange}
@@ -598,58 +637,62 @@ export default function EmployeePage() {
               </div>
             </Upload>
           </div>
-          
+
           {/* 基本信息表单 */}
           <div className={styles.sectionTitle}>基本信息</div>
-          <Form
-            form={form}
-            layout="vertical"
-            requiredMark={true}
-            colon={true}
-          >
+          <Form form={form} layout='vertical' requiredMark={true} colon={true}>
             <Form.Item
-              name="username"
-              label="员工姓名"
+              name='username'
+              label='员工姓名'
               rules={[{ required: true, message: '请输入员工姓名' }]}
               className={styles.formItem}
             >
-              <Input placeholder="请输入员工姓名" className={styles.customInput} />
+              <Input
+                placeholder='请输入员工姓名'
+                className={styles.customInput}
+              />
             </Form.Item>
-            
+
             <Form.Item
-              name="email"
-              label="邮箱"
+              name='email'
+              label='邮箱'
               rules={[
                 { required: true, message: '请输入员工邮箱' },
-                { type: 'email', message: '请输入有效的邮箱地址' }
+                { type: 'email', message: '请输入有效的邮箱地址' },
               ]}
               className={styles.formItem}
             >
-              <Input placeholder="请输入员工邮箱" className={styles.customInput} />
+              <Input
+                placeholder='请输入员工邮箱'
+                className={styles.customInput}
+              />
             </Form.Item>
-            
+
             <Form.Item
-              name="phone"
-              label="手机号"
+              name='phone'
+              label='手机号'
               rules={[
                 { required: true, message: '请输入员工手机号' },
-                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' }
+                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
               ]}
               className={styles.formItem}
             >
-              <Input placeholder="请输入员工手机号" className={styles.customInput} />
+              <Input
+                placeholder='请输入员工手机号'
+                className={styles.customInput}
+              />
             </Form.Item>
           </Form>
-          
+
           {/* 底部按钮 */}
           <div className={styles.modalFooter}>
-            <Button 
+            <Button
               className={styles.cancelButton}
               onClick={handleEmployeeModalCancel}
             >
               取消
             </Button>
-            <Button 
+            <Button
               className={styles.confirmButton}
               onClick={handleEmployeeSubmit}
               loading={loading}
@@ -669,14 +712,31 @@ export default function EmployeePage() {
         width={680}
         style={{ top: 60 }}
         styles={{
-          body:{ borderRadius: 8, background: '#F4F4F4', padding: 24, height: 500, display: 'flex', flexDirection: 'column' }
+          body: {
+            borderRadius: 8,
+            background: '#F4F4F4',
+            padding: 24,
+            height: 500,
+            display: 'flex',
+            flexDirection: 'column',
+          },
         }}
         closable={false}
       >
-        <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 24 }}>员工对接客户管理</div>
+        <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 24 }}>
+          员工对接客户管理
+        </div>
         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
           {/* 左侧 */}
-          <div style={{ width: 220, display: 'flex', flexDirection: 'column', marginRight: 24, minHeight: 0 }}>
+          <div
+            style={{
+              width: 220,
+              display: 'flex',
+              flexDirection: 'column',
+              marginRight: 24,
+              minHeight: 0,
+            }}
+          >
             <Tabs
               activeKey={customerTab}
               onChange={setCustomerTab}
@@ -686,13 +746,44 @@ export default function EmployeePage() {
               ]}
               style={{ marginBottom: 8 }}
             />
-            <div style={{ background: '#fff', flex: 1, borderRadius: 6, overflow: 'auto', border: '1px solid #eee', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div
+              style={{
+                background: '#fff',
+                flex: 1,
+                borderRadius: 6,
+                overflow: 'auto',
+                border: '1px solid #eee',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+              }}
+            >
               {/* 标题栏 */}
-              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eee', padding: '0 12px', height: 40, fontWeight: 500, flexShrink: 0 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #eee',
+                  padding: '0 12px',
+                  height: 40,
+                  fontWeight: 500,
+                  flexShrink: 0,
+                }}
+              >
                 <Checkbox
-                  checked={selectedLeft.length === leftList.length && leftList.length > 0}
-                  indeterminate={selectedLeft.length > 0 && selectedLeft.length < leftList.length}
-                  onChange={e => setSelectedLeft(e.target.checked ? leftList.map(c => c.id) : [])}
+                  checked={
+                    selectedLeft.length === leftList.length &&
+                    leftList.length > 0
+                  }
+                  indeterminate={
+                    selectedLeft.length > 0 &&
+                    selectedLeft.length < leftList.length
+                  }
+                  onChange={(e) =>
+                    setSelectedLeft(
+                      e.target.checked ? leftList.map((c) => c.id) : []
+                    )
+                  }
                   style={{ marginRight: 8 }}
                 />
                 <span style={{ flex: 1 }}>客户名称</span>
@@ -700,12 +791,25 @@ export default function EmployeePage() {
               </div>
               {/* 客户项 */}
               <div style={{ flex: 1, overflow: 'auto' }}>
-                {leftList.map(c => (
-                  <div key={c.id} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eee', padding: '0 12px', height: 40 }}>
+                {leftList.map((c) => (
+                  <div
+                    key={c.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderBottom: '1px solid #eee',
+                      padding: '0 12px',
+                      height: 40,
+                    }}
+                  >
                     <Checkbox
                       checked={selectedLeft.includes(c.id)}
-                      onChange={e => {
-                        setSelectedLeft(e.target.checked ? [...selectedLeft, c.id] : selectedLeft.filter(id => id !== c.id));
+                      onChange={(e) => {
+                        setSelectedLeft(
+                          e.target.checked
+                            ? [...selectedLeft, c.id]
+                            : selectedLeft.filter((id) => id !== c.id)
+                        );
                       }}
                       style={{ marginRight: 8 }}
                     />
@@ -717,42 +821,131 @@ export default function EmployeePage() {
             </div>
           </div>
           {/* 中间双箭头 */}
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 16, width: 60 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 16,
+              width: 60,
+            }}
+          >
             <Button
-              style={{ width: 36, height: 36, border: '1px solid #ccc', background: '#fff', color: '#000', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                width: 36,
+                height: 36,
+                border: '1px solid #ccc',
+                background: '#fff',
+                color: '#000',
+                borderRadius: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
               icon={<DoubleRightOutlined />}
               disabled={selectedLeft.length === 0}
               onClick={moveToRight}
             />
             <Button
-              style={{ width: 36, height: 36, border: '1px solid #ccc', background: '#fff', color: '#000', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                width: 36,
+                height: 36,
+                border: '1px solid #ccc',
+                background: '#fff',
+                color: '#000',
+                borderRadius: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
               icon={<DoubleLeftOutlined />}
               disabled={selectedRight.length === 0}
               onClick={moveToLeft}
             />
           </div>
           {/* 右侧 */}
-          <div style={{ width: 320, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-            <div style={{ fontWeight: 500, marginBottom: 8, height: 24, flexShrink: 0 }}>员工客户</div>
-            <div style={{ background: '#fff', flex: 1, borderRadius: 6, overflow: 'auto', border: '1px solid #eee', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div
+            style={{
+              width: 320,
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0,
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 500,
+                marginBottom: 8,
+                height: 24,
+                flexShrink: 0,
+              }}
+            >
+              员工客户
+            </div>
+            <div
+              style={{
+                background: '#fff',
+                flex: 1,
+                borderRadius: 6,
+                overflow: 'auto',
+                border: '1px solid #eee',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+              }}
+            >
               {/* 标题栏 */}
-              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eee', padding: '0 12px', height: 40, fontWeight: 500, flexShrink: 0 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #eee',
+                  padding: '0 12px',
+                  height: 40,
+                  fontWeight: 500,
+                  flexShrink: 0,
+                }}
+              >
                 <Checkbox
-                  checked={selectedRight.length === rightList.length && rightList.length > 0}
-                  indeterminate={selectedRight.length > 0 && selectedRight.length < rightList.length}
-                  onChange={e => setSelectedRight(e.target.checked ? rightList.map(c => c.id) : [])}
+                  checked={
+                    selectedRight.length === rightList.length &&
+                    rightList.length > 0
+                  }
+                  indeterminate={
+                    selectedRight.length > 0 &&
+                    selectedRight.length < rightList.length
+                  }
+                  onChange={(e) =>
+                    setSelectedRight(
+                      e.target.checked ? rightList.map((c) => c.id) : []
+                    )
+                  }
                   style={{ marginRight: 8 }}
                 />
                 <span style={{ flex: 1 }}>客户名称</span>
               </div>
               {/* 客户项 */}
               <div style={{ flex: 1, overflow: 'auto' }}>
-                {rightList.map(c => (
-                  <div key={c.id} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eee', padding: '0 12px', height: 40 }}>
+                {rightList.map((c) => (
+                  <div
+                    key={c.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderBottom: '1px solid #eee',
+                      padding: '0 12px',
+                      height: 40,
+                    }}
+                  >
                     <Checkbox
                       checked={selectedRight.includes(c.id)}
-                      onChange={e => {
-                        setSelectedRight(e.target.checked ? [...selectedRight, c.id] : selectedRight.filter(id => id !== c.id));
+                      onChange={(e) => {
+                        setSelectedRight(
+                          e.target.checked
+                            ? [...selectedRight, c.id]
+                            : selectedRight.filter((id) => id !== c.id)
+                        );
                       }}
                       style={{ marginRight: 8 }}
                     />
@@ -764,9 +957,20 @@ export default function EmployeePage() {
           </div>
         </div>
         {/* 底部按钮 */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 24 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 12,
+            marginTop: 24,
+          }}
+        >
           <Button
-            style={{ background: '#fff', color: '#000', border: '1px solid #ccc' }}
+            style={{
+              background: '#fff',
+              color: '#000',
+              border: '1px solid #ccc',
+            }}
             onClick={() => setCustomerModalVisible(false)}
           >
             取消

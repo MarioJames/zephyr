@@ -1,4 +1,5 @@
-import { http } from "../request";
+import { http } from '../request';
+import { RoleItem } from '../roles';
 
 // 用户相关类型定义
 export interface UserItem {
@@ -14,9 +15,9 @@ export interface UserItem {
   clerkCreatedAt?: string;
   emailVerifiedAt?: string;
   preference?: any;
-  roleId?: string;
   createdAt?: string;
   updatedAt?: string;
+  roles?: RoleItem[];
 }
 
 export interface UserCreateRequest {
@@ -103,7 +104,4 @@ export default {
   getUserDetail,
   updateUser,
   deleteUser,
-  // 保持向后兼容
-  getUserInfo: getCurrentUser,
-  getUserList: getAllUsers,
 };

@@ -84,7 +84,7 @@ async resetPassword(userId: string): ServiceResult<boolean>
 
 #### 6. 获取用户列表
 ```typescript
-async getUserList(options?: UserQueryOptions): ServiceResult<UserListResponse>
+async getAllUsers(options?: UserQueryOptions): ServiceResult<UserListResponse>
 ```
 
 **查询选项:**
@@ -138,7 +138,7 @@ const createResult = await clerkUserService.createUser({
 
 if (createResult.success) {
   const userId = createResult.data.id;
-  
+
   // 2. 更新用户信息
   const updateResult = await clerkUserService.updateUser(userId, {
     publicMetadata: {
@@ -146,13 +146,13 @@ if (createResult.success) {
       role: '开发工程师'
     }
   });
-  
+
   // 3. 获取更新后的用户信息
   const userResult = await clerkUserService.getUser(userId);
-  
+
   // 4. 如果需要，重置密码
   const resetResult = await clerkUserService.resetPassword(userId);
-  
+
   console.log('用户管理操作完成');
 }
 ```
@@ -161,7 +161,7 @@ if (createResult.success) {
 
 ```typescript
 // 获取所有用户并进行批量操作
-const userListResult = await clerkUserService.getUserList({
+const userListResult = await clerkUserService.getAllUsers({
   limit: 100,
   orderBy: '-created_at'
 });
