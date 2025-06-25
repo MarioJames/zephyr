@@ -1,4 +1,5 @@
 import { http } from '../request';
+import { UserItem } from '../user';
 
 // 话题相关类型定义
 export interface TopicItem {
@@ -6,7 +7,8 @@ export interface TopicItem {
   title?: string;
   favorite?: boolean;
   sessionId?: string;
-  userId: string;
+  messageCount: number;
+  user: UserItem;
   clientId?: string;
   historySummary?: string;
   metadata?: any;
