@@ -5,8 +5,6 @@ import { isUndefined } from 'lodash-es';
 import { memo } from 'react';
 import useMergeState from 'use-merge-value';
 
-import { useServerConfigStore } from '@/store/serverConfig';
-
 import ActionDropdown, { ActionDropdownProps } from './ActionDropdown';
 import ActionPopover, { ActionPopoverProps } from './ActionPopover';
 
@@ -37,7 +35,6 @@ const Action = memo<ActionProps>(
       onChange: onOpenChange,
       value: open,
     });
-    const mobile = useServerConfigStore((s) => s.isMobile);
     const iconNode = (
       <ActionIcon
         disabled={disabled}
@@ -45,7 +42,7 @@ const Action = memo<ActionProps>(
         loading={loading}
         onClick={() => setShow(true)}
         title={
-          isUndefined(showTooltip) ? (mobile ? undefined : title) : showTooltip ? title : undefined
+          isUndefined(showTooltip) ? ( title) : showTooltip ? title : undefined
         }
         tooltipProps={{
           placement: 'bottom',
@@ -63,8 +60,8 @@ const Action = memo<ActionProps>(
           open={show}
           trigger={trigger}
           {...dropdown}
-          minWidth={mobile ? '100%' : dropdown.minWidth}
-          placement={mobile ? 'top' : dropdown.placement}
+          minWidth={dropdown.minWidth}
+          placement={dropdown.placement}
         >
           {iconNode}
         </ActionDropdown>
@@ -76,8 +73,8 @@ const Action = memo<ActionProps>(
           open={show}
           trigger={trigger}
           {...popover}
-          minWidth={mobile ? '100%' : popover.minWidth}
-          placement={mobile ? 'top' : popover.placement}
+          minWidth={popover.minWidth}
+          placement={popover.placement}
         >
           {iconNode}
         </ActionPopover>
