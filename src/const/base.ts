@@ -1,6 +1,5 @@
 export const LOADING_FLAT = '...';
 
-export const BRANDING_NAME = 'Zephyr';
 
 export const ARTIFACT_TAG = 'zephyrArtifact';
 

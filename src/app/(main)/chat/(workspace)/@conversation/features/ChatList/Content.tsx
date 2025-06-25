@@ -8,7 +8,6 @@ import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 
 import MainChatItem from './ChatItem';
-import Welcome from './WelcomeChatItem';
 
 const Content = memo(() => {
   const [isCurrentChatLoaded] = useChatStore((s) => [chatSelectors.isCurrentChatLoaded(s)]);
@@ -23,7 +22,7 @@ const Content = memo(() => {
 
   if (!isCurrentChatLoaded) return <SkeletonList />;
 
-  if (data.length === 0) return <Welcome />;
+  if (data.length === 0) return null;
 
   return <VirtualizedList dataSource={data} itemContent={itemContent} />;
 });

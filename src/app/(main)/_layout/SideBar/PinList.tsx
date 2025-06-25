@@ -1,13 +1,10 @@
 import { Avatar, Tooltip } from '@lobehub/ui';
 import { Divider } from 'antd';
 import { createStyles } from 'antd-style';
-import isEqual from 'fast-deep-equal';
 import { parseAsBoolean, useQueryState } from 'nuqs';
 import { Flexbox } from 'react-layout-kit';
 import { useSwitchSession } from '@/hooks/useSwitchSession';
-import { useSessionStore } from '@/store/session';
-import { sessionHelpers } from '@/store/session/helpers';
-import { sessionSelectors } from '@/store/session/selectors';
+import { sessionHelpers, sessionSelectors, useSessionStore } from '@/store/session';
 
 const HANDLER_WIDTH = 4;
 
@@ -62,8 +59,8 @@ const useStyles = createStyles(({ css, token }) => ({
 
 const PinList = () => {
   const { styles, cx } = useStyles();
-  const list = useSessionStore(sessionSelectors.pinnedSessions, isEqual);
-  const [activeId] = useSessionStore((s) => [s.activeId]);
+  const list = useSessionStore(sessionSelectors.pinnedSessions);
+  const [activeId] = useSessionStore((s) => [s.currentSessionId]);
   const switchSession = useSwitchSession();
   const hasList = list.length > 0;
   const [isPinned, setPinned] = useQueryState('pinned', parseAsBoolean);
@@ -82,7 +79,7 @@ const PinList = () => {
             <Flexbox key={item.id} style={{ position: 'relative' }}>
               <Tooltip
                 placement={'right'}
-                title={sessionHelpers.getTitle(item.meta)}
+                title={sessionHelpers.formatSessionTitle(item)}
               >
                 <Flexbox
                   className={cx(
@@ -91,8 +88,8 @@ const PinList = () => {
                   )}
                 >
                   <Avatar
-                    avatar={sessionHelpers.getAvatar(item.meta)}
-                    background={item.meta.backgroundColor}
+                    avatar={sessionHelpers.getSessionAvatar(item)}
+                    background={sessionHelpers.getSessionColor(item)}
                     onClick={() => {
                       switchAgent(item.id);
                     }}

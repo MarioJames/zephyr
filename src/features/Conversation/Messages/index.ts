@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 
 import { useGlobalStore } from '@/store/global';
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session/selectors';
 
 import { MarkdownCustomRender, RenderBelowMessage, RenderMessage } from '../types';
 import { AssistantMessage } from './Assistant';
 import { DefaultBelowMessage, DefaultMessage } from './Default';
 import { UserBelowMessage, UserMarkdownRender, UserMessage } from './User';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 
 export const renderMessages: Record<string, RenderMessage> = {
   assistant: AssistantMessage,
@@ -26,7 +25,7 @@ export const markdownCustomRenders: Record<string, MarkdownCustomRender> = {
 };
 
 export const useAvatarsClick = (role?: string) => {
-  const [isInbox] = useSessionStore((s) => [sessionSelectors.isInboxSession(s)]);
+  const [isInbox] = useSessionStore((s) => [sessionSelectors.currentSessionId(s)]);
   const [toggleSystemRole] = useGlobalStore((s) => [s.toggleSystemRole]);
 
   return useCallback(() => {

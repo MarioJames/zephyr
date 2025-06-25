@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-
 import { useSessionStore } from '@/store/session';
 
 export const useSwitchSession = () => {
@@ -9,6 +8,6 @@ export const useSwitchSession = () => {
     (id: string) => {
       switchSession(id);
     },
-    [switchSession],
+    [switchSession]
   );
 };

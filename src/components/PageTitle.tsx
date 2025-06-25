@@ -1,10 +1,8 @@
 import { memo, useEffect } from 'react';
 
-import { BRANDING_NAME } from '@/const/base';
-
 const PageTitle = memo<{ title: string }>(({ title }) => {
   useEffect(() => {
-    document.title = title ? `${title} · ${BRANDING_NAME}` : BRANDING_NAME;
+    document.title = title;
   }, [title]);
 
   return null;

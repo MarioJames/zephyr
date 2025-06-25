@@ -7,6 +7,11 @@ export const sessionHelpers = {
     return session.title || session.slug || `会话 ${session.id}`;
   },
 
+  // 获取会话头像
+  getSessionAvatar: (session: SessionItem): string => {
+    return session.avatar || '';
+  },
+
   // 检查会话是否为空
   isEmptySession: (session: SessionItem): boolean => {
     return !session.title && !session.description;
@@ -45,7 +50,10 @@ export const sessionHelpers = {
     }
 
     if (session.description) {
-      parts.push(session.description.slice(0, 50) + (session.description.length > 50 ? '...' : ''));
+      parts.push(
+        session.description.slice(0, 50) +
+          (session.description.length > 50 ? '...' : '')
+      );
     }
 
     return parts.join(' • ') || '暂无描述';
@@ -56,17 +64,19 @@ export const sessionHelpers = {
     if (!keyword) return true;
 
     const searchText = keyword.toLowerCase();
-    const sessionText = [
-      session.title,
-      session.description,
-      session.slug,
-    ].filter(Boolean).join(' ').toLowerCase();
+    const sessionText = [session.title, session.description, session.slug]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
     return sessionText.includes(searchText);
   },
 
   // 排序会话列表
-  sortSessions: (sessions: SessionItem[], sortBy: 'title' | 'updatedAt' | 'createdAt' = 'updatedAt'): SessionItem[] => {
+  sortSessions: (
+    sessions: SessionItem[],
+    sortBy: 'title' | 'updatedAt' | 'createdAt' = 'updatedAt'
+  ): SessionItem[] => {
     return [...sessions].sort((a, b) => {
       switch (sortBy) {
         case 'title':
@@ -89,15 +99,19 @@ export const sessionHelpers = {
   },
 
   // 过滤会话列表
-  filterSessions: (sessions: SessionItem[], filters: {
-    type?: 'agent' | 'group';
-    pinned?: boolean;
-    userId?: string;
-    groupId?: string;
-  }): SessionItem[] => {
-    return sessions.filter(session => {
+  filterSessions: (
+    sessions: SessionItem[],
+    filters: {
+      type?: 'agent' | 'group';
+      pinned?: boolean;
+      userId?: string;
+      groupId?: string;
+    }
+  ): SessionItem[] => {
+    return sessions.filter((session) => {
       if (filters.type && session.type !== filters.type) return false;
-      if (filters.pinned !== undefined && !!session.pinned !== filters.pinned) return false;
+      if (filters.pinned !== undefined && !!session.pinned !== filters.pinned)
+        return false;
       if (filters.userId && session.userId !== filters.userId) return false;
       if (filters.groupId && session.groupId !== filters.groupId) return false;
       return true;
@@ -121,7 +135,7 @@ export const sessionHelpers = {
     if (diffDays === 0) {
       return date.toLocaleTimeString('zh-CN', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     } else if (diffDays === 1) {
       return '昨天';
@@ -138,8 +152,14 @@ export const sessionHelpers = {
 
     // 基于会话ID生成一致的颜色
     const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-      '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'
+      '#FF6B6B',
+      '#4ECDC4',
+      '#45B7D1',
+      '#96CEB4',
+      '#FFEAA7',
+      '#DDA0DD',
+      '#98D8C8',
+      '#F7DC6F',
     ];
 
     const hash = session.id.split('').reduce((acc, char) => {

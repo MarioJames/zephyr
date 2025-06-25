@@ -25,7 +25,7 @@ export const sessionSelectors = {
 
   // 根据ID获取会话
   getSessionById: (state: SessionStore) => (id: string) =>
-    state.sessions.find(session => session.id === id),
+    state.sessions.find((session) => session.id === id),
 
   // 获取分页信息
   pagination: (state: SessionStore) => state.pagination,
@@ -36,6 +36,9 @@ export const sessionSelectors = {
 
 // 会话元数据选择器
 export const sessionMetaSelectors = {
+  // 当前会话标题
+  currentSessionTitle: (state: SessionStore) => state.currentSession?.title,
+
   // 是否正在加载
   isLoading: (state: SessionStore) => state.isLoading,
 
@@ -68,7 +71,11 @@ export const sessionMetaSelectors = {
 
   // 是否有任何操作正在进行
   isAnyLoading: (state: SessionStore) =>
-    state.isLoading || state.isSearching || state.isCreating || state.isUpdating || state.isSwitching,
+    state.isLoading ||
+    state.isSearching ||
+    state.isCreating ||
+    state.isUpdating ||
+    state.isSwitching,
 
   // 会话总数
   sessionsCount: (state: SessionStore) => state.sessions.length,
