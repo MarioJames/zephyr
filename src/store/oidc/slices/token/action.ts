@@ -54,7 +54,7 @@ export interface OIDCTokenAction {
  */
 export const createOIDCTokenSlice: StateCreator<
   OIDCStore,
-  [['zustand/devtools', never]],
+  [],
   [],
   OIDCTokenAction
 > = (set, get) => ({

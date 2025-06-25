@@ -63,7 +63,7 @@ const extractTokenInfo = (user: User) => {
  */
 export const createOIDCAuthSlice: StateCreator<
   OIDCStore,
-  [['zustand/devtools', never]],
+  [],
   [],
   OIDCAuthAction
 > = (set, get) => ({

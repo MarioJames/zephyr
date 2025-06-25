@@ -28,7 +28,7 @@ export interface OIDCUserAction {
  */
 export const createOIDCUserSlice: StateCreator<
   OIDCStore,
-  [['zustand/devtools', never]],
+  [],
   [],
   OIDCUserAction
 > = (set, get) => ({

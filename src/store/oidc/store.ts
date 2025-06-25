@@ -4,7 +4,6 @@ import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from 'zustand/vanilla';
 
-import { createDevtools } from '../middleware/createDevtools';
 import { type OIDCState, initialState } from './initialState';
 import { type OIDCAuthAction, createOIDCAuthSlice } from './slices/auth/action';
 import { type OIDCTokenAction, createOIDCTokenSlice } from './slices/token/action';
@@ -24,7 +23,7 @@ export type OIDCStore = OIDCState &
 /**
  * 创建OIDC Store的工厂函数
  */
-const createStore: StateCreator<OIDCStore, [['zustand/devtools', never]]> = (...parameters) => ({
+const createStore: StateCreator<OIDCStore, []> = (...parameters) => ({
   ...initialState,
   ...createOIDCAuthSlice(...parameters),
   ...createOIDCTokenSlice(...parameters),
@@ -33,9 +32,6 @@ const createStore: StateCreator<OIDCStore, [['zustand/devtools', never]]> = (...
 
 //  ===============  实装 useStore ============ //
 
-// 创建开发工具中间件实例
-const devtools = createDevtools('oidc');
-
 /**
  * OIDC Store的React Hook
  * 集成了持久化、开发工具、浅比较等中间件
@@ -43,7 +39,7 @@ const devtools = createDevtools('oidc');
 export const useOIDCStore = createWithEqualityFn<OIDCStore>()(
   subscribeWithSelector(
     persist(
-      devtools(createStore),
+      createStore,
       {
         name: 'oidc-storage', // localStorage key
         storage: createJSONStorage(() => localStorage),
