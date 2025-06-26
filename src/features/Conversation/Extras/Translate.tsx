@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, ChevronsRight, CopyIcon, TrashIcon } from 'luci
 import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import BubblesLoading from '@/components/BubblesLoading';
+import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { useChatStore } from '@/store/chat';
 import { ChatTranslate } from '@/types/message';
 

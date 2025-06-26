@@ -4,20 +4,16 @@ import {
   EditableText,
   Icon,
   type MenuProps,
-} from "@lobehub/ui";
-import { App, Typography } from "antd";
-import { createStyles } from "antd-style";
-import {
-  MoreVertical,
-  PencilLine,
-  Trash,
-} from "lucide-react";
-import { memo, useMemo } from "react";
-import { Flexbox } from "react-layout-kit";
-import { useRouter } from "next/navigation";
+} from '@lobehub/ui';
+import { App, Typography } from 'antd';
+import { createStyles } from 'antd-style';
+import { MoreVertical, PencilLine, Trash } from 'lucide-react';
+import { memo, useMemo } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { useRouter } from 'next/navigation';
 
-import BubblesLoading from "@/components/BubblesLoading";
-import { LOADING_FLAT } from "@/const/base";
+import BubblesLoading from '@/components/Loading/BubblesLoading';
+import { LOADING_FLAT } from '@/const/base';
 import { useSessionStore } from '@/store/session';
 
 const useStyles = createStyles(({ css }) => ({
@@ -36,7 +32,7 @@ const useStyles = createStyles(({ css }) => ({
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #D9D9D9;
+    background: #d9d9d9;
     color: #000;
     display: flex;
     align-items: center;
@@ -45,9 +41,9 @@ const useStyles = createStyles(({ css }) => ({
     font-size: 14px;
     user-select: none;
     cursor: pointer;
-  `
+  `,
 }));
-    
+
 interface SessionContentProps {
   id: string;
   showMore?: boolean;
@@ -55,42 +51,44 @@ interface SessionContentProps {
   employeeName?: string;
 }
 
-const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName }) => {
-  const [currentSessionId, updateSession, deleteSession, sessions] = useSessionStore((s) => [
-    s.currentSessionId,
-    s.updateSession,
-    s.deleteSession,
-    s.sessions,
-  ]);
-  const editing = currentSessionId === id;
-  const { styles } = useStyles();
-  const router = useRouter();
+const SessionContent = memo<SessionContentProps>(
+  ({ id, title, showMore, employeeName }) => {
+    const [currentSessionId, updateSession, deleteSession, sessions] =
+      useSessionStore((s) => [
+        s.currentSessionId,
+        s.updateSession,
+        s.deleteSession,
+        s.sessions,
+      ]);
+    const editing = currentSessionId === id;
+    const { styles } = useStyles();
+    const router = useRouter();
 
-  const toggleEditing = () => {
-    if (id) {
-      router.push(`/customer/edit?id=${id}`);
-    }
-  };
+    const toggleEditing = () => {
+      if (id) {
+        router.push(`/customer/edit?id=${id}`);
+      }
+    };
 
-  const { modal } = App.useApp();
+    const { modal } = App.useApp();
 
-  const items = useMemo<MenuProps["items"]>(
-    () => [
-      {
-        icon: <Icon icon={PencilLine} />,
-        key: "edit",
-        label: "编辑客户信息",
-        onClick: () => {
-          toggleEditing();
+    const items = useMemo<MenuProps['items']>(
+      () => [
+        {
+          icon: <Icon icon={PencilLine} />,
+          key: 'edit',
+          label: '编辑客户信息',
+          onClick: () => {
+            toggleEditing();
+          },
         },
-      },
-      {
-        danger: true,
-        icon: <Icon icon={Trash} />,
-        key: "delete",
-        label: "从最近对话中移除",
-        onClick: () => {
-          if (!id) return;
+        {
+          danger: true,
+          icon: <Icon icon={Trash} />,
+          key: 'delete',
+          label: '从最近对话中移除',
+          onClick: () => {
+            if (!id) return;
 
           modal.confirm({
             centered: true,
