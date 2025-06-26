@@ -19,15 +19,15 @@ const ShowMode = memo(() => {
   const sessions = useSessionStore(sessionSelectors.sessions);
   const sortedSessions = useMemo(() => sessionHelpers.sortSessions(sessions, 'updatedAt'), [sessions]);
 
-  // 分组逻辑：最近客户（近7条），全部客户（剩余）
+  // 分组逻辑：最近客户（前7个），全部客户（所有）
   const recentSessions = sortedSessions.slice(0, 7);
-  const allSessions = sortedSessions.slice(7);
+  const allSessions = sortedSessions;
   const groups = [
     { id: 'recent', title: '最近客户', children: recentSessions },
     { id: 'all', title: '全部客户', children: allSessions },
   ];
   const groupCounts = [recentSessions.length, allSessions.length];
-  // 用于 GroupedVirtuoso 的 itemContent 需要平铺所有 children
+  // flatSessions 需与 groupCounts 对应，先 recent 再 all
   const flatSessions = [...recentSessions, ...allSessions];
 
   const itemContent = useCallback(
@@ -49,7 +49,9 @@ const ShowMode = memo(() => {
   const groupContent = useCallback(
     (index: number) => {
       const sessionGroup = groups[index];
-      return <SessionGroupItem {...sessionGroup} count={sessionGroup.children.length} />;
+      // 只有"全部客户"分组才展示数量
+      const count = sessionGroup.id === 'all' ? sessionGroup.children.length : undefined;
+      return <SessionGroupItem {...sessionGroup} count={count} />;
     },
     [groups]
   );
