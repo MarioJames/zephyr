@@ -11,14 +11,16 @@ import Footer from './Footer';
 import TextArea from './TextArea';
 
 const leftActions = [
-  'model',
-  'search',
+  // 'model',
+  // 'search',
   'fileUpload',
-  'stt',
-  'mainToken',
+  // 'stt',
+  // 'mainToken',
 ] as ActionKeys[];
 
-const rightActions = ['clear'] as ActionKeys[];
+// const rightActions = ['clear'] as ActionKeys[];
+const rightActions = [] as ActionKeys[];
+
 
 const renderTextArea = (onSend: () => void) => <TextArea onSend={onSend} />;
 const renderFooter: FooterRender = ({ expand, onExpandChange }) => (

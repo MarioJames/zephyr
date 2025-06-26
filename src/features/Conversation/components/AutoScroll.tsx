@@ -11,15 +11,21 @@ interface AutoScrollProps {
   onScrollToBottom: (type: 'auto' | 'click') => void;
 }
 const AutoScroll = memo<AutoScrollProps>(({ atBottom, isScrolling, onScrollToBottom }) => {
-  const trackVisibility = useChatStore(chatSelectors.isAIGenerating);
-  const str = useChatStore(chatSelectors.mainAIChatsMessageString);
-  const reasoningStr = useChatStore(chatSelectors.mainAILatestMessageReasoningContent);
+  const isLoading = useChatStore((s) => s.isLoading);
+  const messages = useChatStore((s) => s.messages);
+  // 拼接所有消息内容
+  const str = messages.map(m => m.content || '').join('');
+  // 找到最后一条 assistant 消息的 reasoning 字段
+  const reasoningStr = (() => {
+    const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant');
+    return lastAssistant?.reasoning || '';
+  })();
 
   useEffect(() => {
-    if (atBottom && trackVisibility && !isScrolling) {
+    if (atBottom && isLoading && !isScrolling) {
       onScrollToBottom?.('auto');
     }
-  }, [atBottom, trackVisibility, str, reasoningStr]);
+  }, [atBottom, isLoading, str, reasoningStr]);
 
   return <BackBottom onScrollToBottom={() => onScrollToBottom('click')} visible={!atBottom} />;
 });

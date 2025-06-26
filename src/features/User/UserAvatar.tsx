@@ -4,7 +4,7 @@ import { Avatar, type AvatarProps } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { forwardRef } from 'react';
 
-import { BRANDING_NAME,DEFAULT_USER_AVATAR_URL } from '@/const/base';
+import { DEFAULT_USER_AVATAR_URL } from '@/const/base';
 import { useOIDCStore } from '@/store/oidc';
 import { oidcAuthSelectors, oidcUserSelectors } from '@/store/oidc/selectors';
 
@@ -56,7 +56,7 @@ const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
 
     return (
       <Avatar
-        alt={isSignedIn && !!username ? username : BRANDING_NAME}
+        alt={isSignedIn && !!username ? username : '默认'}
         avatar={isSignedIn && !!avatar ? avatar : DEFAULT_USER_AVATAR_URL}
         background={isSignedIn && avatar ? background : 'transparent'}
         className={cx(clickable && styles.clickable, className)}

@@ -10,35 +10,21 @@ export type UseSendMessageParams = Pick<
 >;
 
 export const useSendMessage = () => {
-  const [sendMessage, updateInputMessage] = useChatStore((s) => [
+  const [sendMessage, updateInputMessage, inputMessage, isLoading] = useChatStore((s) => [
     s.sendMessage,
     s.updateInputMessage,
+    s.inputMessage,
+    s.isLoading,
   ]);
 
-  const isSendButtonDisabledByMessage = useChatStore(chatSelectors.isSendButtonDisabledByMessage);
+  const canSend = !!inputMessage && !isLoading;
 
-  const canSend = !isSendButtonDisabledByMessage;
-
-  const send = useCallback((params: UseSendMessageParams = {}) => {
+  const send = useCallback(() => {
     const store = useChatStore.getState();
-    if (chatSelectors.isAIGenerating(store)) return;
-
-    // if uploading file or send button is disabled by message, then we should not send the message
-    const isSendButtonDisabledByMessage = chatSelectors.isSendButtonDisabledByMessage(
-      useChatStore.getState(),
-    );
-
-    const canSend = !isSendButtonDisabledByMessage;
-    if (!canSend) return;
-
-    // if there is no message and no image, then we should not send the message
+    if (store.isLoading) return;
     if (!store.inputMessage) return;
 
-    sendMessage({
-      message: store.inputMessage,
-      ...params,
-    });
-
+    sendMessage(store.inputMessage);
     updateInputMessage('');
   }, []);
 

@@ -11,8 +11,8 @@ const FileUpload = memo(() => {
   const upload = useChatStore((s) => s.uploadChatFiles);
   const isUploading = useChatStore((s) => s.isUploading);
 
-  const { supportFiles: enabledFiles, supportVision: supportVision } =
-    useAgentStore(agentModelSelectors.currentModelDetails)!;
+  const modelDetails = useAgentStore(agentModelSelectors.currentModelDetails);
+  const { supportFiles: enabledFiles, supportVision: supportVision } = modelDetails || {};
 
   const canUpload = enabledFiles || supportVision;
 
