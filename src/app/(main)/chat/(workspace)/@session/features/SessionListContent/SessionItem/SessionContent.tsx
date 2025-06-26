@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 import BubblesLoading from "@/components/BubblesLoading";
 import { LOADING_FLAT } from "@/const/base";
-import { useChatStore } from "@/store/chat";
+import { useSessionStore } from '@/store/session';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -56,15 +56,13 @@ interface SessionContentProps {
 }
 
 const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName }) => {
-  const [
-    editing,
-    updateTopicTitle,
-    removeTopic,
-  ] = useChatStore((s) => [
-    s.topicRenamingId === id,
-    s.updateTopicTitle,
-    s.removeTopic,
+  const [currentSessionId, updateSession, deleteSession, sessions] = useSessionStore((s) => [
+    s.currentSessionId,
+    s.updateSession,
+    s.deleteSession,
+    s.sessions,
   ]);
+  const editing = currentSessionId === id;
   const { styles } = useStyles();
   const router = useRouter();
 
@@ -98,14 +96,14 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
             centered: true,
             okButtonProps: { danger: true },
             onOk: async () => {
-              await removeTopic(id);
+              await deleteSession(id);
             },
             title: "即将从最近对话中移除该客户，请确认",
           });
         },
       },
     ],
-    []
+    [id, deleteSession]
   );
 
   return (
@@ -148,7 +146,7 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
             editing={editing}
             onChangeEnd={(v) => {
               if (title !== v) {
-                updateTopicTitle(id, v);
+                updateSession(id, { title: v });
               }
               toggleEditing();
             }}

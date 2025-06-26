@@ -4,24 +4,31 @@ import { SearchBar } from '@lobehub/ui';
 import { useUnmount } from 'ahooks';
 import { memo, useState } from 'react';
 
-import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
 
 const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
   const [tempValue, setTempValue] = useState('');
   const [searchKeyword, setSearchKeywords] = useState('');
-  const [activeSessionId, useSearchTopics] = useChatStore((s) => [s.activeId, s.useSearchTopics]);
+  const [currentSessionId, searchSessions, clearSearchResults] = useSessionStore((s) => [
+    s.currentSessionId,
+    s.searchSessions,
+    s.clearSearchResults,
+  ]);
 
-  useSearchTopics(searchKeyword, activeSessionId);
+  // 搜索会话
+  const doSearch = (keyword: string) => {
+    searchSessions({ keyword });
+  };
 
+  // 清除搜索
   useUnmount(() => {
-    useChatStore.setState({ inSearchingMode: false, isSearchingTopic: false });
+    clearSearchResults();
   });
 
   const startSearchSession = () => {
     if (tempValue === searchKeyword) return;
-
     setSearchKeywords(tempValue);
-    useChatStore.setState({ inSearchingMode: !!tempValue, isSearchingTopic: !!tempValue });
+    doSearch(tempValue);
   };
 
   return (
@@ -30,10 +37,8 @@ const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
       onBlur={() => {
         if (tempValue === '') {
           onClear?.();
-
           return;
         }
-
         startSearchSession();
       }}
       onChange={(e) => {

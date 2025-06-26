@@ -1,15 +1,15 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { Button } from 'antd';
 import { ChevronDown, Plus } from 'lucide-react';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 
-import { useFetchTopics } from '@/hooks/useFetchTopics';
-import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat/selectors';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
+import { sessionMetaSelectors } from '@/store/session';
 
 import { SkeletonList } from '../SkeletonList';
 import ShowMode from './ShowMode';
@@ -38,25 +38,25 @@ const useStyles = createStyles(({ css }) => ({
 const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
-  const [topicsInit, topicLength] = useChatStore((s) => [
-    s.topicsInit,
-    topicSelectors.currentTopicLength(s),
+  const [initialized, sessionLength, isLoading, isInSearchMode, isUndefinedSessions, fetchSessions] = useSessionStore((s) => [
+    sessionMetaSelectors.initialized(s),
+    sessionMetaSelectors.sessionsCount(s),
+    sessionMetaSelectors.isLoading(s),
+    sessionMetaSelectors.isSearching(s),
+    !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0,
+    s.fetchSessions,
   ]);
-  const [isUndefinedTopics, isInSearchMode] = useChatStore((s) => [
-    topicSelectors.isUndefinedTopics(s),
-    topicSelectors.isInSearchMode(s),
-  ]);
+
+  useEffect(() => {
+    if (!initialized) fetchSessions();
+  }, [initialized, fetchSessions]);
 
   const handleAddCustomer = () => {
     router.push('/customer/edit');
   };
 
-  useFetchTopics();
-
   if (isInSearchMode) return <SearchResult />;
-
-  // first time loading or has no data
-  if (!topicsInit || isUndefinedTopics) return <SkeletonList />;
+  if (isLoading || isUndefinedSessions) return <SkeletonList />;
 
   return (
     <>
@@ -79,7 +79,7 @@ const SessionListContent = memo(() => {
           创建客户
         </Button>
       </Flexbox>
-      {topicLength === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
+      {sessionLength === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
       {<ShowMode />}
     </>
   );

@@ -4,36 +4,28 @@ import isEqual from "fast-deep-equal";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 import { GroupedVirtuoso, VirtuosoHandle } from "react-virtuoso";
 
-import { useChatStore } from "@/store/chat";
-import { topicSelectors } from "@/store/chat/selectors";
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
+import { sessionMetaSelectors } from '@/store/session';
 
 import SessionItem from "../SessionItem";
 import SessionGroupItem from "./GroupItem";
 
 const ShowMode = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [activeTopicId] = useChatStore((s) => [
-    s.activeTopicId,
-  ]);
-  const groupTopics = useChatStore(
-    topicSelectors.groupedTopicsSelector,
-    isEqual
-  );
-
-  const { groups, groupCounts, topics } = useMemo(() => {
-    const groups = groupTopics;
-    const groupCounts = groups.map((group) => group.children.length);
-    const topics = groups.flatMap((group) => group.children);
-    return { groups, groupCounts, topics };
-  }, [groupTopics]);
+  const [currentSessionId] = useSessionStore((s) => [s.currentSessionId]);
+  // 这里假设 sessions 没有分组，直接平铺
+  const sessions = useSessionStore(sessionSelectors.sessions);
+  const groupCounts = [sessions.length];
+  const groups = [{ id: 'all', children: sessions }];
+  const topics = sessions;
 
   const itemContent = useCallback(
     (index: number) => {
       const { id, title, employeeName } = topics[index];
-
       return (
         <SessionItem
-          active={activeTopicId === id}
+          active={currentSessionId === id}
           id={id}
           key={id}
           title={title}
@@ -41,7 +33,7 @@ const ShowMode = memo(() => {
         />
       );
     },
-    [activeTopicId, topics]
+    [currentSessionId, topics]
   );
 
   const groupContent = useCallback(

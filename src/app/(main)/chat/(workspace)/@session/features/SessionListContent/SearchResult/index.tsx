@@ -6,33 +6,33 @@ import React, { memo, useCallback, useRef } from 'react';
 import { Center } from 'react-layout-kit';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat/selectors';
-import { ChatTopic } from '@/types/topic';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
+import { sessionMetaSelectors } from '@/store/session';
 
 import { SkeletonList } from '../../SkeletonList';
 import SessionItem from '../SessionItem';
 
 const SearchResult = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [activeTopicId, isSearchingTopic] = useChatStore((s) => [
-    s.activeTopicId,
-    topicSelectors.isSearchingTopic(s),
+  const [currentSessionId, isSearching] = useSessionStore((s) => [
+    s.currentSessionId,
+    sessionMetaSelectors.isSearching(s),
   ]);
-  const topics = useChatStore(topicSelectors.searchTopics, isEqual);
+  const sessions = useSessionStore(sessionSelectors.searchResults, isEqual);
 
   const itemContent = useCallback(
-    (index: number, { id, title }: ChatTopic) => (
-      <SessionItem active={activeTopicId === id} id={id} key={id} title={title} />
+    (index: number, { id, title }) => (
+      <SessionItem active={currentSessionId === id} id={id} key={id} title={title} />
     ),
-    [activeTopicId],
+    [currentSessionId],
   );
 
-  const activeIndex = topics.findIndex((topic) => topic.id === activeTopicId);
+  const activeIndex = sessions.findIndex((session) => session.id === currentSessionId);
 
-  if (isSearchingTopic) return <SkeletonList />;
+  if (isSearching) return <SkeletonList />;
 
-  if (topics.length === 0)
+  if (sessions.length === 0)
     return (
       <Center paddingBlock={12}>
         <Typography.Text type={'secondary'}>{'暂无搜索结果'}</Typography.Text>
@@ -42,7 +42,7 @@ const SearchResult = memo(() => {
   return (
     <Virtuoso
       computeItemKey={(_, item) => item.id}
-      data={topics}
+      data={sessions}
       defaultItemHeight={44}
       initialTopMostItemIndex={Math.max(activeIndex, 0)}
       itemContent={itemContent}
