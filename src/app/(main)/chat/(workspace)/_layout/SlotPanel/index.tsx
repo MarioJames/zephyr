@@ -8,6 +8,7 @@ import { memo, useEffect, useState } from 'react';
 import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
+import { useChatStore } from '@/store/chat';
 import AIHintPanel from './SlotPanelAIHint';
 import HistoryPanel from './SlotPanelHistory';
 
@@ -32,6 +33,10 @@ const SlotPanel = memo(() => {
   const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
+  
+  // 获取当前激活的 session
+  const activeId = useChatStore((s) => s.activeId);
+  const hasActiveSession = activeId && activeId.length > 0;
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
 
@@ -49,6 +54,11 @@ const SlotPanel = memo(() => {
     if (lg && cacheExpand) toggleSlotPanel(true);
     if (!lg) toggleSlotPanel(false);
   }, [lg, cacheExpand, toggleSlotPanel]);
+
+  // 当有激活的 session 时，不展示 SlotPanel
+  if (hasActiveSession) {
+    return null;
+  }
 
   return (
     <DraggablePanel
