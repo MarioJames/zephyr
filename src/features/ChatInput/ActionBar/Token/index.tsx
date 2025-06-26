@@ -14,7 +14,10 @@ const Token = memo<PropsWithChildren>(({ children }) => {
 });
 
 export const MainToken = memo(() => {
-  const total = useChatStore(chatSelectors.mainAIChatsMessageString);
+  // Get all messages from the store
+  const messages = useChatStore((s) => s.messages);
+  // Join all message contents into a single string
+  const total = messages.map((msg) => msg.content || '').join('');
 
   return (
     <Token>
