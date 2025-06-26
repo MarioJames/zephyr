@@ -105,7 +105,6 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
     ],
     [id, deleteSession]
   );
-
   return (
     <Flexbox
       align={"center"}

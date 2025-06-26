@@ -2,15 +2,13 @@ import { createStyles } from "antd-style";
 import React, { memo } from "react";
 import { Flexbox } from "react-layout-kit";
 
-import { GroupedTopic } from "@/types/topic";
-
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     color: ${token.colorTextQuaternary};
     background: ${token.colorBgContainerSecondary};
     box-shadow: 0 3px 4px -2px ${token.colorBgContainerSecondary};
   `,
-  topicTitle: css`
+  sessionTitle: css`
     color: rgba(0, 0, 0, 0.88);
     font-size: 14px;
     font-weight: 600;
@@ -23,8 +21,10 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-interface SessionGroupItemProps extends Omit<GroupedTopic, "children"> {
+interface SessionGroupItemProps {
   count?: number;
+  title:string;
+  id:string;
 }
 
 const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count, id }) => {
@@ -39,7 +39,7 @@ const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count, id }) => {
         horizontal
         align="center"
       >
-        <span className={styles.topicTitle}>{title}</span>
+        <span className={styles.sessionTitle}>{title}</span>
         {typeof count === "number" && <span className={styles.count}>{count}</span>}
       </Flexbox>
     </>

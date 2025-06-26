@@ -7,6 +7,7 @@ import { GroupedVirtuoso, VirtuosoHandle } from "react-virtuoso";
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
 import { sessionMetaSelectors } from '@/store/session';
+import { sessionHelpers } from '@/store/session';
 
 import SessionItem from "../SessionItem";
 import SessionGroupItem from "./GroupItem";
@@ -14,37 +15,44 @@ import SessionGroupItem from "./GroupItem";
 const ShowMode = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const [currentSessionId] = useSessionStore((s) => [s.currentSessionId]);
-  // 这里假设 sessions 没有分组，直接平铺
+  // 获取所有会话并排序
   const sessions = useSessionStore(sessionSelectors.sessions);
-  const groupCounts = [sessions.length];
-  const groups = [{ id: 'all', children: sessions }];
-  const topics = sessions;
+  const sortedSessions = useMemo(() => sessionHelpers.sortSessions(sessions, 'updatedAt'), [sessions]);
+
+  // 分组逻辑：最近客户（近7条），全部客户（剩余）
+  const recentSessions = sortedSessions.slice(0, 7);
+  const allSessions = sortedSessions.slice(7);
+  const groups = [
+    { id: 'recent', title: '最近客户', children: recentSessions },
+    { id: 'all', title: '全部客户', children: allSessions },
+  ];
+  const groupCounts = [recentSessions.length, allSessions.length];
+  // 用于 GroupedVirtuoso 的 itemContent 需要平铺所有 children
+  const flatSessions = [...recentSessions, ...allSessions];
 
   const itemContent = useCallback(
     (index: number) => {
-      const { id, title, employeeName } = topics[index];
+      const session = flatSessions[index];
+      const title = session?.title && session.title.trim() !== '' ? session.title : '默认客户';
       return (
         <SessionItem
-          active={currentSessionId === id}
-          id={id}
-          key={id}
+          active={currentSessionId === session.id}
+          id={session.id}
+          key={session.id}
           title={title}
-          employeeName={employeeName}
         />
       );
     },
-    [currentSessionId, topics]
+    [currentSessionId, flatSessions]
   );
 
   const groupContent = useCallback(
     (index: number) => {
-      const topicGroup = groups[index];
-      const showCount = topicGroup.id === 'all';
-      return <SessionGroupItem {...topicGroup} count={showCount ? topicGroup.children.length : undefined} />;
+      const sessionGroup = groups[index];
+      return <SessionGroupItem {...sessionGroup} count={sessionGroup.children.length} />;
     },
     [groups]
   );
-
   return (
     <GroupedVirtuoso
       groupContent={groupContent}
