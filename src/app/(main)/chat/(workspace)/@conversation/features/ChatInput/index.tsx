@@ -28,10 +28,8 @@ const renderFooter: FooterRender = ({ expand, onExpandChange }) => (
 );
 
 const ChatInput = memo(() => {
-  const [inputHeight, updatePreference] = useGlobalStore((s) => [
-    systemStatusSelectors.inputHeight(s),
-    s.updateSystemStatus,
-  ]);
+  const inputHeight = useGlobalStore(systemStatusSelectors.inputHeight);
+  const updatePreference = useGlobalStore((s) => s.updateSystemStatus);
 
   return (
     <DesktopChatInput

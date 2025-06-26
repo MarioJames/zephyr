@@ -5,11 +5,9 @@ import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
 
 const TextArea = memo<{ onSend?: () => void }>(({ onSend }) => {
-  const [loading, value, updateInputMessage] = useChatStore((s) => [
-    s.isLoading,
-    s.inputMessage,
-    s.updateInputMessage,
-  ]);
+  const loading = useChatStore((s) => s.isLoading);
+  const value = useChatStore((s) => s.inputMessage);
+  const updateInputMessage = useChatStore((s) => s.updateInputMessage);
   const { send: sendMessage } = useSendMessage();
 
   return (

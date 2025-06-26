@@ -29,10 +29,8 @@ const useStyles = createStyles(({ css, token }) => ({
 const SlotPanel = memo(() => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
-  const [showSlotPanel, toggleSlotPanel] = useGlobalStore((s) => [
-    systemStatusSelectors.showSlotPanel(s),
-    s.toggleSlotPanel,
-  ]);
+  const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
+  const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));

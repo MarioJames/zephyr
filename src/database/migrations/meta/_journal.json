@@ -8,6 +8,13 @@
       "when": 1750759099275,
       "tag": "0000_init_customer_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1750947211394,
+      "tag": "0001_nappy_war_machine",
+      "breakpoints": true
     }
   ]
 }

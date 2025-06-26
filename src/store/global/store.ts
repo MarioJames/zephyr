@@ -1,4 +1,6 @@
-import { create } from "zustand";
+import { subscribeWithSelector } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from "zustand/vanilla";
 
 import {
@@ -10,6 +12,7 @@ import {
   globalWorkspaceSlice,
 } from "./actions/workspacePane";
 import { type GlobalState, initialState } from "./initialState";
+import { createDevtools } from '@/utils/store';
 
 //  ===============  聚合 createStoreFn ============ //
 
@@ -32,7 +35,7 @@ export interface GlobalStore
  * @param parameters - Zustand的创建参数
  * @returns 完整的全局store对象
  */
-const createStore: StateCreator<GlobalStore> = (
+const createStore: StateCreator<GlobalStore, [['zustand/devtools', never]]> = (
   ...parameters
 ) => ({
   ...initialState,
@@ -42,11 +45,14 @@ const createStore: StateCreator<GlobalStore> = (
 
 //  ===============  实装 useStore ============ //
 
+const devtools = createDevtools('global');
+
 /**
  * 全局Store的React Hook
  * 使用createWithEqualityFn创建，支持自定义比较函数
  * 使用shallow比较函数进行浅比较，避免不必要的重渲染
  */
-export const useGlobalStore = create<GlobalStore>()(
-  createStore
+export const useGlobalStore = createWithEqualityFn<GlobalStore>()(
+  subscribeWithSelector(devtools(createStore)),
+  shallow,
 );

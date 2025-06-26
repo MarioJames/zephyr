@@ -38,14 +38,14 @@ const useStyles = createStyles(({ css }) => ({
 const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
-  const [initialized, sessionLength, isLoading, isInSearchMode, isUndefinedSessions, fetchSessions] = useSessionStore((s) => [
-    sessionMetaSelectors.initialized(s),
-    sessionMetaSelectors.sessionsCount(s),
-    sessionMetaSelectors.isLoading(s),
-    sessionMetaSelectors.isSearching(s),
-    !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0,
-    s.fetchSessions,
-  ]);
+  const initialized = useSessionStore(sessionMetaSelectors.initialized);
+  const sessionLength = useSessionStore(sessionMetaSelectors.sessionsCount);
+  const isLoading = useSessionStore(sessionMetaSelectors.isLoading);
+  const isInSearchMode = useSessionStore(sessionMetaSelectors.isSearching);
+  const isUndefinedSessions = useSessionStore((s) =>
+    !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0
+  );
+  const fetchSessions = useSessionStore((s) => s.fetchSessions);
 
   useEffect(() => {
     if (!initialized) fetchSessions();

@@ -6,7 +6,8 @@ import isEqual from 'fast-deep-equal';
 import { PropsWithChildren, memo, useEffect, useState } from 'react';
 
 import { CHAT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
-import { useSessionStore } from '@/store/session';
+import { useGlobalStore } from '@/store/global';
+import { systemStatusSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   content: css`
@@ -27,24 +28,25 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
 
-  // 本地 UI 状态管理（替代 showTopicPanel/toggleTopicPanel）
-  const [showSessionPanel, setShowSessionPanel] = useState(true);
-  const [cacheExpand, setCacheExpand] = useState<boolean>(showSessionPanel);
+  // 使用全局状态管理
+  const showSessionPanel = useGlobalStore(systemStatusSelectors.showSessionPanel);
+  const toggleSessionPanel = useGlobalStore((s) => s.toggleSessionPanel);
+  const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSessionPanel));
 
   useEffect(() => {
-    setCacheExpand(showSessionPanel);
+    setCacheExpand(Boolean(showSessionPanel));
   }, [showSessionPanel]);
 
   const handleExpand = (expand: boolean) => {
-    if (expand === showSessionPanel) return;
-    setShowSessionPanel(expand);
+    if (isEqual(expand, Boolean(showSessionPanel))) return;
+    toggleSessionPanel(expand);
     setCacheExpand(expand);
   };
 
   useEffect(() => {
-    if (lg && cacheExpand) setShowSessionPanel(true);
-    if (!lg) setShowSessionPanel(false);
-  }, [lg, cacheExpand]);
+    if (lg && cacheExpand) toggleSessionPanel(true);
+    if (!lg) toggleSessionPanel(false);
+  }, [lg, cacheExpand, toggleSessionPanel]);
 
   return (
     <DraggablePanel

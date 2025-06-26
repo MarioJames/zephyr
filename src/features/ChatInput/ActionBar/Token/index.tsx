@@ -3,7 +3,6 @@ import { PropsWithChildren, memo } from 'react';
 
 import { useModelHasContextWindowToken } from '@/hooks/useModelHasContextWindowToken';
 import { useChatStore } from '@/store/chat';
-import { chatSelectors } from '@/store/chat/selectors';
 
 const LargeTokenContent = dynamic(() => import('./TokenTag'), { ssr: false });
 

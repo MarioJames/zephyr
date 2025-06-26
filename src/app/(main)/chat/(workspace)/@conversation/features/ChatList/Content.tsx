@@ -1,6 +1,7 @@
 'use client';
 
 import React, { memo, useCallback } from 'react';
+import { shallow } from 'zustand/shallow';
 
 import { SkeletonList, VirtualizedList } from '@/features/Conversation';
 import { useFetchMessages } from '@/hooks/useFetchMessages';
@@ -10,10 +11,10 @@ import { chatSelectors } from '@/store/chat/selectors';
 import MainChatItem from './ChatItem';
 
 const Content = memo(() => {
-  const [isCurrentChatLoaded] = useChatStore((s) => [chatSelectors.isCurrentChatLoaded(s)]);
+  const isCurrentChatLoaded = useChatStore(chatSelectors.isCurrentChatLoaded);
 
   useFetchMessages();
-  const data = useChatStore(chatSelectors.mainDisplayChatIDs);
+  const data = useChatStore((s) => chatSelectors.mainDisplayChatIDs(s), shallow);
 
   const itemContent = useCallback(
     (index: number, id: string) => <MainChatItem id={id} index={index} />,

@@ -8,6 +8,7 @@ import { type OIDCState, initialState } from './initialState';
 import { type OIDCAuthAction, createOIDCAuthSlice } from './slices/auth/action';
 import { type OIDCTokenAction, createOIDCTokenSlice } from './slices/token/action';
 import { type OIDCUserAction, createOIDCUserSlice } from './slices/user/action';
+import { createDevtools } from '@/utils/store';
 
 //  ===============  聚合 createStoreFn ============ //
 
@@ -15,15 +16,15 @@ import { type OIDCUserAction, createOIDCUserSlice } from './slices/user/action';
  * OIDC Store的完整类型定义
  * 通过交叉类型(&)将所有状态和操作组合在一起
  */
-export type OIDCStore = OIDCState & 
-  OIDCAuthAction & 
-  OIDCTokenAction & 
+export type OIDCStore = OIDCState &
+  OIDCAuthAction &
+  OIDCTokenAction &
   OIDCUserAction;
 
 /**
  * 创建OIDC Store的工厂函数
  */
-const createStore: StateCreator<OIDCStore, []> = (...parameters) => ({
+const createStore: StateCreator<OIDCStore, [['zustand/devtools', never], ['zustand/persist', unknown]]> = (...parameters) => ({
   ...initialState,
   ...createOIDCAuthSlice(...parameters),
   ...createOIDCTokenSlice(...parameters),
@@ -32,33 +33,37 @@ const createStore: StateCreator<OIDCStore, []> = (...parameters) => ({
 
 //  ===============  实装 useStore ============ //
 
+const devtools = createDevtools('oidc');
+
 /**
  * OIDC Store的React Hook
  * 集成了持久化、开发工具、浅比较等中间件
  */
 export const useOIDCStore = createWithEqualityFn<OIDCStore>()(
   subscribeWithSelector(
-    persist(
-      createStore,
-      {
-        name: 'oidc-storage', // localStorage key
-        storage: createJSONStorage(() => localStorage),
-        // 只持久化必要的状态，不持久化 loading、error、timer 等临时状态
-        partialize: (state) => ({
-          user: state.user,
-          userInfo: state.userInfo,
-          tokenInfo: state.tokenInfo,
-          isAuthenticated: state.isAuthenticated,
-          lastRefreshTime: state.lastRefreshTime,
-        }),
-        // 从持久化存储恢复后的处理
-        onRehydrateStorage: () => (state) => {
-          if (state?.isAuthenticated && state?.tokenInfo) {
-            // 恢复后重新设置自动刷新定时器
-            state.scheduleTokenRefresh();
-          }
-        },
-      }
+    devtools(
+      persist(
+        createStore,
+        {
+          name: 'oidc-storage', // localStorage key
+          storage: createJSONStorage(() => localStorage),
+          // 只持久化必要的状态，不持久化 loading、error、timer 等临时状态
+          partialize: (state) => ({
+            user: state.user,
+            userInfo: state.userInfo,
+            tokenInfo: state.tokenInfo,
+            isAuthenticated: state.isAuthenticated,
+            lastRefreshTime: state.lastRefreshTime,
+          }),
+          // 从持久化存储恢复后的处理
+          onRehydrateStorage: () => (state) => {
+            if (state?.isAuthenticated && state?.tokenInfo) {
+              // 恢复后重新设置自动刷新定时器
+              state.scheduleTokenRefresh();
+            }
+          },
+        }
+      )
     )
   ),
   shallow,

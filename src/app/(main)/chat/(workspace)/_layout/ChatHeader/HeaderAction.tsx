@@ -38,7 +38,7 @@ const useStyles = createStyles(({ css }) => ({
     align-items: center;
     gap: 4px;
     transition: background-color 0.2s ease;
-    
+
     &:hover {
       background-color: rgba(0, 0, 0, 0.04) !important;
     }
@@ -52,7 +52,7 @@ const useStyles = createStyles(({ css }) => ({
     gap: 4px;
     transition: background-color 0.2s ease;
     background-color: #AEBBFF !important;
-    
+
     &:hover {
       background-color: #AEBBFF !important;
     }
@@ -61,10 +61,8 @@ const useStyles = createStyles(({ css }) => ({
 
 const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
-  const [showSlotPanel, toggleSlotPanel] = useGlobalStore((s) => [
-    systemStatusSelectors.showSlotPanel(s),
-    s.toggleSlotPanel,
-  ]);
+  const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
+  const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore(
     (s) => s.status.slotPanelType || "aiHint"
   );

@@ -1,5 +1,6 @@
 import { http } from '../request';
 import { AgentItem } from '../agents';
+import { UserItem } from '../user';
 
 // 会话相关类型定义
 export interface SessionItem {
@@ -16,6 +17,8 @@ export interface SessionItem {
   pinned?: boolean;
   // 关联的智能体完整信息
   agent?: AgentItem;
+  // 关联的员工完整信息
+  user?: UserItem;
   createdAt?: string;
   updatedAt?: string;
 }

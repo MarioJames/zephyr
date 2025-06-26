@@ -10,12 +10,10 @@ export type UseSendMessageParams = Pick<
 >;
 
 export const useSendMessage = () => {
-  const [sendMessage, updateInputMessage, inputMessage, isLoading] = useChatStore((s) => [
-    s.sendMessage,
-    s.updateInputMessage,
-    s.inputMessage,
-    s.isLoading,
-  ]);
+  const sendMessage = useChatStore((s) => s.sendMessage);
+  const updateInputMessage = useChatStore((s) => s.updateInputMessage);
+  const inputMessage = useChatStore((s) => s.inputMessage);
+  const isLoading = useChatStore((s) => s.isLoading);
 
   const canSend = !!inputMessage && !isLoading;
 

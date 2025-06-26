@@ -1,4 +1,6 @@
-import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from 'zustand/vanilla';
 
 import { CoreAction, coreSlice } from './slices/core/action';
@@ -6,6 +8,7 @@ import { StatsAction, statsSlice } from './slices/stats/action';
 import { NotificationAction, notificationSlice } from './slices/notification/action';
 import { SearchAction, searchSlice } from './slices/search/action';
 import { EmployeeState, initialState } from './initialState';
+import { createDevtools } from '@/utils/store';
 
 // ========== 组合Store接口 ==========
 export interface EmployeeStore
@@ -16,7 +19,7 @@ export interface EmployeeStore
           SearchAction {}
 
 // ========== Store创建器 ==========
-const createStore: StateCreator<EmployeeStore> = (...parameters) => ({
+const createStore: StateCreator<EmployeeStore, [['zustand/devtools', never]]> = (...parameters) => ({
   ...initialState,
   ...coreSlice(...parameters),
   ...statsSlice(...parameters),
@@ -24,5 +27,12 @@ const createStore: StateCreator<EmployeeStore> = (...parameters) => ({
   ...searchSlice(...parameters),
 });
 
+//  ===============  实装 useStore ============ //
+
+const devtools = createDevtools('employee');
+
 // ========== 导出store hook ==========
-export const useEmployeeStore = create<EmployeeStore>()(createStore);
+export const useEmployeeStore = createWithEqualityFn<EmployeeStore>()(
+  subscribeWithSelector(devtools(createStore)),
+  shallow,
+);

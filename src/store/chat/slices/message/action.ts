@@ -1,7 +1,18 @@
 import { StateCreator } from 'zustand';
 import messageService, { MessageItem, MessagesCreateRequest } from '@/services/messages';
 import chatService from '@/services/chat';
+import agentSuggestionsService from '@/services/agent_suggestions';
 import { ChatStore } from '../../store';
+
+// 将消息转换为AI模型消费的格式
+const formatMessagesForAI = (messages: MessageItem[]) => {
+  return messages
+    .filter(msg => msg.content && ['user', 'assistant', 'system'].includes(msg.role))
+    .map(msg => ({
+      role: msg.role as 'user' | 'assistant' | 'system',
+      content: msg.content!,
+    }));
+};
 
 export interface MessageAction {
   // 消息CRUD操作
@@ -121,7 +132,7 @@ export const messageSlice: StateCreator<
   sendMessage: async (content: string) => {
     const state = get();
     
-    // 添加用户消息
+    // 构建用户消息
     const userMessage: MessagesCreateRequest = {
       content,
       role: 'user',
@@ -133,28 +144,24 @@ export const messageSlice: StateCreator<
       set({ isLoading: true, error: undefined });
       
       // 创建用户消息
-      const createdMessage = await messageService.createMessage(userMessage);
-      get().addMessage(createdMessage);
+      const createdUserMessage = await messageService.createMessage(userMessage);
+      get().addMessage(createdUserMessage);
       
-      // 生成AI回复
-      const response = await chatService.generateReply({
-        userMessage: content,
-        sessionId: state.activeId,
-        conversationHistory: state.messages.map(msg => ({
-          role: msg.role as 'user' | 'assistant' | 'system',
-          content: msg.content || '',
-        })),
-      });
-
-      // 添加AI回复
-      if (response.content) {
+      // 记录 parentMessageId 用于后续存储建议
+      const parentMessageId = createdUserMessage.id;
+      
+      // 生成AI建议并存储到 suggestions slice 中
+      const suggestion = await get().generateAISuggestion(content, parentMessageId);
+      
+      // 如果生成了建议，创建对应的AI消息
+      if (suggestion) {
         const aiMessage: MessagesCreateRequest = {
-          content: response.content,
+          content: suggestion.content,
           role: 'assistant',
           sessionId: state.activeId,
           topicId: state.activeTopicId,
-          model: response.model,
-          provider: response.provider,
+          model: suggestion.model,
+          provider: suggestion.provider,
         };
 
         const createdAIMessage = await messageService.createMessage(aiMessage);
