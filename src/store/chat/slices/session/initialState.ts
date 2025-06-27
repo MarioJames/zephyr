@@ -1,7 +1,7 @@
 export interface SessionState {
-  activeId: string;
+  activeSessionId: string;
 }
 
 export const initialSessionState: SessionState = {
-  activeId: '',
+  activeSessionId: '',
 };

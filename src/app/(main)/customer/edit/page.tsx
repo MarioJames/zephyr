@@ -1,32 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Select, 
-  Space, 
-  Divider, 
-  Typography, 
-  Upload, 
+import {
+  Form,
+  Input,
+  Button,
+  Select,
+  Divider,
+  Typography,
+  Upload,
   message,
   Row,
   Col,
   Cascader,
   ConfigProvider
 } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  CheckCircleFilled, 
-  UploadOutlined 
+import {
+  ArrowLeftOutlined,
+  CheckCircleFilled,
+  UploadOutlined
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import zhCN from 'antd/locale/zh_CN';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -34,7 +32,7 @@ const { Option } = Select;
 const useStyles = createStyles(({ css, token }) => ({
   pageContainer: css`
     padding: 24px;
-    background-color: #f0f2f5;
+    background-color: ${token.colorBgContainer};
     min-height: 100vh;
     width: 100%;
     flex: 1;
@@ -68,15 +66,15 @@ const useStyles = createStyles(({ css, token }) => ({
     justify-content: space-between;
     cursor: pointer;
     position: relative;
-    background-color: white;
+    background-color: ${token.colorBgContainer};
     border-radius: 4px;
     transition: all 0.3s;
   `,
   typeBoxSelected: css`
-    border: 1px solid #000;
+    border: 1px solid ${token.colorText};
   `,
   typeBoxUnselected: css`
-    border: 1px solid #e8e8e8;
+    border: 1px solid ${token.colorSplit};
   `,
   typeTitle: css`
     font-size: 16px;
@@ -84,13 +82,13 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   typeDesc: css`
     font-size: 12px;
-    color: #666;
+    color: ${token.colorTextQuaternary};
   `,
   checkIcon: css`
     position: absolute;
     top: 10px;
     right: 10px;
-    color: #000;
+    color: ${token.colorText};
     font-size: 18px;
   `,
   avatarContainer: css`
@@ -102,8 +100,8 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #fff;
-    border: 1px dashed #d9d9d9;
+    background-color: ${token.colorBgContainer};
+    border: 1px dashed ${token.colorSplit};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -122,7 +120,7 @@ const useStyles = createStyles(({ css, token }) => ({
   requiredLabel: css`
     &::before {
       content: '*';
-      color: #ff4d4f;
+      color: ${token.colorError};
       margin-right: 4px;
     }
   `,
@@ -133,7 +131,7 @@ const useStyles = createStyles(({ css, token }) => ({
     gap: 16px;
   `,
   formContainer: css`
-    background-color: white;
+    background-color: ${token.colorBgContainer};
     padding: 24px;
     border-radius: 8px;
   `,
@@ -243,26 +241,26 @@ export default function CustomerEdit() {
   const { styles } = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // 获取URL参数，判断是新增还是编辑模式
   const id = searchParams.get('id');
   const isEdit = !!id;
-  
+
   // 表单实例
   const [form] = Form.useForm();
-  
+
   // 状态管理
   const [customerType, setCustomerType] = useState('A');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   // 如果是编辑模式，加载客户数据
   useEffect(() => {
     if (isEdit) {
       // 实际项目中，这里应该调用API获取客户数据
       // 这里使用模拟数据
       setLoading(true);
-      
+
       // 模拟API请求延迟
       setTimeout(() => {
         form.setFieldsValue({
@@ -280,21 +278,21 @@ export default function CustomerEdit() {
           region: [mockCustomerData.province, mockCustomerData.city, mockCustomerData.district],
           notes: mockCustomerData.notes,
         });
-        
+
         setCustomerType(mockCustomerData.type);
         if (mockCustomerData.avatar) {
           setAvatarUrl(mockCustomerData.avatar);
         }
-        
+
         setLoading(false);
       }, 500);
     }
   }, [isEdit, form]);
-  
+
   // 处理表单提交
   const handleSubmit = (values) => {
     setLoading(true);
-    
+
     // 构建提交数据
     const submitData = {
       ...values,
@@ -304,7 +302,7 @@ export default function CustomerEdit() {
       city: values.region ? values.region[1] : '',
       district: values.region ? values.region[2] : '',
     };
-    
+
     // 模拟API请求
     setTimeout(() => {
       console.log('提交的数据:', submitData);
@@ -313,7 +311,7 @@ export default function CustomerEdit() {
       router.push('/customer');
     }, 1000);
   };
-  
+
   // 处理上传头像
   const handleAvatarChange = (info) => {
     if (info.file.status === 'done') {
@@ -324,12 +322,12 @@ export default function CustomerEdit() {
       message.success('头像上传成功！');
     }
   };
-  
+
   // 处理返回
   const handleBack = () => {
     router.push('/customer');
   };
-  
+
   // 客户类型描述
   const customerTypeDesc = {
     A: 'A类客户：重要客户，需要重点关注和维护',
@@ -347,7 +345,7 @@ export default function CustomerEdit() {
             <span>返回客户管理</span>
           </div>
         </div>
-        
+
         {/* 客户类型选择 */}
         <Title level={5}>选择客户类型</Title>
         <div className={styles.typeContainer}>
@@ -365,9 +363,9 @@ export default function CustomerEdit() {
             </div>
           ))}
         </div>
-        
+
         <Divider />
-        
+
         {/* 表单区域 */}
         <div className={styles.formContainer}>
           <Form
@@ -408,9 +406,9 @@ export default function CustomerEdit() {
                 <Button>上传头像</Button>
               </Upload>
             </div>
-            
+
             <Divider />
-            
+
             {/* 基本信息 */}
             <div className={styles.sectionTitle}>基本信息</div>
             <Row gutter={24}>
@@ -456,7 +454,7 @@ export default function CustomerEdit() {
                 </Form.Item>
               </Col>
             </Row>
-            
+
             {/* 联系方式 */}
             <div className={styles.sectionTitle}>联系方式</div>
             <Row gutter={24}>
@@ -492,7 +490,7 @@ export default function CustomerEdit() {
                 </Form.Item>
               </Col>
             </Row>
-            
+
             {/* 公司信息 */}
             <div className={styles.sectionTitle}>公司信息</div>
             <Row gutter={24}>
@@ -529,7 +527,7 @@ export default function CustomerEdit() {
                 </Form.Item>
               </Col>
             </Row>
-            
+
             {/* 地址信息 */}
             <div className={styles.sectionTitle}>地址信息</div>
             <Row gutter={24}>
@@ -550,9 +548,9 @@ export default function CustomerEdit() {
                 </Form.Item>
               </Col>
             </Row>
-            
+
             <Divider />
-            
+
             {/* 备注 */}
             <Form.Item
               name="notes"
@@ -560,7 +558,7 @@ export default function CustomerEdit() {
             >
               <TextArea rows={2} placeholder="请输入备注信息" />
             </Form.Item>
-            
+
             {/* 提交按钮 */}
             <div className={styles.buttonsContainer}>
               <Button type="primary" htmlType="submit" loading={loading}>
@@ -573,4 +571,4 @@ export default function CustomerEdit() {
       </div>
     </ConfigProvider>
   );
-} 
+}

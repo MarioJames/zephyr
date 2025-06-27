@@ -14,20 +14,20 @@ export const sessionSlice: StateCreator<
   SessionAction
 > = (set, get) => ({
   switchSession: (sessionId: string) => {
-    set({ 
-      activeId: sessionId,
+    set({
+      activeSessionId: sessionId,
       activeTopicId: undefined,
       messages: [],
       messagesInit: false,
       topics: [],
       topicsInit: false,
     });
-    
+
     // 获取新会话的话题列表
     get().fetchTopics(sessionId);
   },
 
   setActiveSession: (sessionId: string) => {
-    set({ activeId: sessionId });
+    set({ activeSessionId: sessionId });
   },
 });

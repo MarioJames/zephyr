@@ -9,12 +9,12 @@ const useStyles = createStyles(({ css, token }) => ({
     box-shadow: 0 3px 4px -2px ${token.colorBgContainerSecondary};
   `,
   sessionTitle: css`
-    color: rgba(0, 0, 0, 0.88);
+    color: ${token.colorText};
     font-size: 14px;
     font-weight: 600;
   `,
   count: css`
-    color: "rgba(0, 0, 0, 0.45)";
+    color: ${token.colorTextQuaternary};
     font-size: 14;
     font-weight: 600;
     margin-left:10px;

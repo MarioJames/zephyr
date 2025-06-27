@@ -9,6 +9,7 @@ export { default as messageTranslatesAPI } from './message_translates';
 export { default as chatAPI } from './chat';
 export { default as filesAPI } from './files';
 export { default as modelsAPI } from './models';
+export { default as customerAPI } from './customer';
 
 // 导出类型定义
 export type { UserItem, UserCreateRequest, UserUpdateRequest } from './user';
@@ -29,7 +30,6 @@ export type {
   SessionUpdateRequest,
   SessionSearchRequest,
 } from './sessions';
-
 
 export type {
   TopicItem,
@@ -70,3 +70,11 @@ export type {
   FileListRequest,
   FileListResponse,
 } from './files';
+
+export type {
+  CustomerItem,
+  CustomerListRequest,
+  CustomerListResponse,
+  CustomerCreateRequest,
+  CustomerUpdateRequest,
+} from './customer';

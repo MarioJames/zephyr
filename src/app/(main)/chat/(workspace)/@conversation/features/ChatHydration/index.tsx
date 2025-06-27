@@ -5,16 +5,23 @@ import { memo, useLayoutEffect } from 'react';
 import { createStoreUpdater } from 'zustand-utils';
 
 import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
 
-// sync outside state to useChatStore
+// sync outside state to useChatStore and useSessionStore
 const ChatHydration = memo(() => {
   const useStoreUpdater = createStoreUpdater(useChatStore);
+  const useSessionStoreUpdater = createStoreUpdater(useSessionStore);
 
   // two-way bindings the topic params to chat store
   const [topic, setTopic] = useQueryState('topic', { history: 'replace', throttleMs: 500 });
   useStoreUpdater('activeTopicId', topic);
 
+  // two-way bindings the session params to session store
+  const [session, setSession] = useQueryState('session', { history: 'replace', throttleMs: 500 });
+  useSessionStoreUpdater('currentSessionId', session);
+
   useLayoutEffect(() => {
+    // 订阅topic变化并同步到URL
     const unsubscribeTopic = useChatStore.subscribe(
       (s) => s.activeTopicId,
       (state) => {
@@ -22,10 +29,19 @@ const ChatHydration = memo(() => {
       },
     );
 
+    // 订阅session变化并同步到URL
+    const unsubscribeSession = useSessionStore.subscribe(
+      (s) => s.currentSessionId,
+      (state) => {
+        setSession(!state ? null : state);
+      },
+    );
+
     return () => {
       unsubscribeTopic();
+      unsubscribeSession();
     };
-  }, []);
+  }, [setTopic, setSession]);
 
   return null;
 });

@@ -113,7 +113,7 @@ export async function request<T = any>(
 ): Promise<T> {
   const method = (config?.method || 'post') as AxiosRequestConfig['method'];
   const reqConfig: AxiosRequestConfig = {
-    url: `http://localhost:3010${api}`,
+    url: api?.startsWith('/v1') ? `${process.env.LOBE_HOST}${api}` : api,
     method,
     ...config,
   };

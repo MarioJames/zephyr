@@ -3,6 +3,7 @@ import { SessionStore } from '@/store/session';
 import { INBOX_SESSION_ID, SESSION_CHAT_URL } from '@/const/session';
 import { useAgentStore } from '@/store/agent';
 import { useChatStore } from '@/store/chat';
+import { useGlobalStore } from '@/store/global';
 
 export interface NavigationAction {
   // 切换会话
@@ -19,6 +20,10 @@ export interface NavigationAction {
   setCurrentSession: (sessionId?: string) => void;
   // 设置切换状态
   setSwitching: (switching: boolean) => void;
+  // 自动切换到最后对话的会话（当URL中没有session参数时）
+  autoSwitchToLastSession: () => Promise<void>;
+  // 从URL参数初始化session和topic
+  initFromUrlParams: () => Promise<void>;
 }
 
 export const navigationSlice: StateCreator<
@@ -149,5 +154,125 @@ export const navigationSlice: StateCreator<
 
   setSwitching: (switching: boolean) => {
     set({ isSwitching: switching });
+  },
+
+  autoSwitchToLastSession: async () => {
+    // 只在浏览器环境中执行
+    if (typeof window === 'undefined') return;
+
+    // 检查URL中是否已经有session参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionParam = urlParams.get('session');
+    
+    // 如果URL中已经有session参数，不执行自动切换
+    if (sessionParam) return;
+
+    // 如果当前已经有活跃会话，不执行自动切换
+    const currentSessionId = get().currentSessionId;
+    if (currentSessionId) return;
+
+    try {
+      // 确保会话列表已经获取
+      const { sessions, initialized } = get();
+      
+      // 如果会话列表未初始化，先获取会话列表
+      if (!initialized) {
+        await get().fetchSessions();
+      }
+
+      // 获取最新的会话列表
+      const latestSessions = get().sessions;
+      
+      // 如果没有会话，不执行切换
+      if (latestSessions.length === 0) return;
+
+      // 获取最后对话的会话（按updatedAt排序，取第一个）
+      const lastSession = [...latestSessions]
+        .sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())
+        [0];
+
+      // 如果找到最后对话的会话，自动切换
+      if (lastSession?.id) {
+        console.log('自动切换到最后对话的会话:', lastSession.id, lastSession.title);
+        await get().switchSession(lastSession.id);
+      }
+    } catch (error) {
+      console.error('自动切换到最后对话的会话失败:', error);
+    }
+  },
+
+  initFromUrlParams: async () => {
+    // 只在浏览器环境中执行
+    if (typeof window === 'undefined') return;
+
+    try {
+      // 获取URL参数
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionParam = urlParams.get('session');
+      const topicParam = urlParams.get('topic');
+      const openHistoryParam = urlParams.get('openHistory');
+
+      console.log('URL参数初始化:', { session: sessionParam, topic: topicParam, openHistory: openHistoryParam });
+
+      // 如果有session参数，初始化session
+      if (sessionParam) {
+        const currentSessionId = get().currentSessionId;
+        
+        // 如果当前session与URL参数不同，切换session
+        if (currentSessionId !== sessionParam) {
+          console.log('初始化切换到session:', sessionParam);
+          await get().switchSession(sessionParam);
+        }
+
+        // 如果有topic参数，需要等待session切换完成后初始化topic
+        if (topicParam) {
+          // 获取chat store并设置activeTopicId
+          const chatStore = useChatStore.getState();
+          if (chatStore) {
+            console.log('初始化设置topic:', topicParam);
+            // 设置活跃的topic ID
+            chatStore.activeTopicId = topicParam;
+            
+            // 确保topic存在于topics列表中
+            // 如果topics还未加载，先加载topics
+            if (!chatStore.topicsInit) {
+              console.log('加载topics列表以验证topic存在性');
+              await chatStore.fetchTopics(sessionParam);
+            }
+            
+            // 验证topic是否存在
+            const topicExists = chatStore.topics.some(t => t.id === topicParam);
+            if (!topicExists) {
+              console.warn('Topic不存在于当前session中:', topicParam);
+              // 清除无效的topic参数
+              chatStore.activeTopicId = undefined;
+              // 可选：更新URL移除无效的topic参数
+              const newUrl = new URL(window.location.href);
+              newUrl.searchParams.delete('topic');
+              window.history.replaceState(null, '', newUrl.toString());
+            } else {
+              console.log('Topic初始化成功:', topicParam);
+            }
+          }
+        }
+      } else {
+        // 如果没有session参数，执行自动切换到最后对话的逻辑
+        await get().autoSwitchToLastSession();
+      }
+
+      // 处理openHistory参数
+      if (openHistoryParam === 'true') {
+        console.log('检测到openHistory=true，打开历史面板');
+        const globalStore = useGlobalStore.getState();
+        if (globalStore) {
+          // 设置面板类型为历史模式
+          globalStore.setSlotPanelType('history');
+          // 确保面板是打开状态
+          globalStore.toggleSlotPanel(true);
+        }
+      }
+    } catch (error) {
+      console.error('URL参数初始化失败:', error);
+    }
   },
 });

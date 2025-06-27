@@ -88,6 +88,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: { session: sessionResponse, extend: customerSession },
+        timestamp: Date.now(),
       });
     }
 
@@ -120,9 +121,10 @@ export async function GET(request: NextRequest) {
     const total = await customerModel.count();
 
     return NextResponse.json({
+      total,
       success: true,
       data: result,
-      total,
+      timestamp: Date.now(),
     });
   } catch (error) {
     console.error('GET /api/customer error:', error);
@@ -131,6 +133,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: '获取客户信息失败',
         message: error instanceof Error ? error.message : '未知错误',
+        timestamp: Date.now(),
       },
       { status: 500 }
     );
@@ -193,6 +196,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: result,
       message: '客户创建成功',
+      timestamp: Date.now(),
     });
   } catch (error) {
     console.error('POST /api/customer error:', error);
@@ -201,6 +205,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: '创建客户失败',
         message: error instanceof Error ? error.message : '未知错误',
+        timestamp: Date.now(),
       },
       { status: 500 }
     );
@@ -282,6 +287,7 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: null,
       message: '客户更新成功',
+      timestamp: Date.now(),
     });
   } catch (error) {
     console.error('PUT /api/customer error:', error);
@@ -290,6 +296,7 @@ export async function PUT(request: NextRequest) {
         success: false,
         error: '更新客户失败',
         message: error instanceof Error ? error.message : '未知错误',
+        timestamp: Date.now(),
       },
       { status: 500 }
     );
