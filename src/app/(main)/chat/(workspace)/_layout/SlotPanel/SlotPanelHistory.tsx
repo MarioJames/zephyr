@@ -5,6 +5,7 @@ import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat';
 import { useHistoryStyles } from './style';
+import dayjs from 'dayjs';
 
 const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
@@ -56,7 +57,7 @@ const HistoryPanel = () => {
             <Flexbox>
               <div className={styles.historyTitle}>{item.title}</div>
               <div className={styles.historyMeta}>
-                @{item.user?.username || item.user?.fullName || '未知用户'} | {item.updatedAt}
+                @{item.user?.username || item.user?.fullName || '未知员工'} | {item.updatedAt ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
               </div>
             </Flexbox>
             <div className={styles.historyCount}>{item.messageCount}</div>
