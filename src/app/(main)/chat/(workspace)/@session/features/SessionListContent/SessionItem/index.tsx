@@ -3,7 +3,7 @@ import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { useSessionStore } from '@/store/session';
-
+import { useGlobalStore } from '@/store/global';
 
 import SessionContent from './SessionContent';
 
@@ -47,9 +47,10 @@ export interface ConfigCellProps {
 
 const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent, user }) => {
   const { styles, cx } = useStyles();
-  const [switchSession] = useSessionStore((s) => [s.switchSession]);
+  const [currentSessionId, switchSession] = useSessionStore((s) => [s.currentSessionId, s.switchSession]);
   const [isHover, setHovering] = useState(false);
-
+  const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
+  const showSlotPanel = useGlobalStore((s) => s.status.showSlotPanel);
 
   return (
     <Flexbox style={{ position: 'relative' }}>
@@ -59,7 +60,20 @@ const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent, user }
         distribution={'space-between'}
         horizontal
         onClick={() => {
-          switchSession(id);
+          if (currentSessionId === id) {
+            useSessionStore.setState({ currentSessionId: undefined });
+            if (typeof window !== 'undefined') {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('session');
+              window.history.replaceState(null, '', url.toString());
+            }
+            toggleSlotPanel(false);
+          } else {
+            switchSession(id);
+            if (!showSlotPanel) {
+              toggleSlotPanel(true);
+            }
+          }
         }}
         onMouseEnter={() => {
           setHovering(true);
@@ -68,7 +82,7 @@ const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent, user }
           setHovering(false);
         }}
       >
-          <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} employeeName={user?.username} />
+        <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} employeeName={user?.username} />
       </Flexbox>
     </Flexbox>
   );

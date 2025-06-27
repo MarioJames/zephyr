@@ -55,8 +55,8 @@ const SlotPanel = memo(() => {
     if (!lg) toggleSlotPanel(false);
   }, [lg, cacheExpand, toggleSlotPanel]);
 
-  // 当有激活的 session 时，不展示 SlotPanel
-  if (hasActiveSession) {
+  // 当没有激活的 session 时，不展示 SlotPanel
+  if (!hasActiveSession) {
     return null;
   }
 
