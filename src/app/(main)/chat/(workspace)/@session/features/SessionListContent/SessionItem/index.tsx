@@ -2,7 +2,7 @@ import { createStyles } from 'antd-style';
 import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
 
 import SessionContent from './SessionContent';
 
@@ -45,7 +45,7 @@ export interface ConfigCellProps {
 
 const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent }) => {
   const { styles, cx } = useStyles();
-  const [toggleTopic] = useChatStore((s) => [s.switchTopic]);
+  const [switchSession] = useSessionStore((s) => [s.switchSession]);
   const [isHover, setHovering] = useState(false);
 
   return (
@@ -56,7 +56,7 @@ const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent }) => {
         distribution={'space-between'}
         horizontal
         onClick={() => {
-          toggleTopic(id);
+          switchSession(id);
         }}
         onMouseEnter={() => {
           setHovering(true);
