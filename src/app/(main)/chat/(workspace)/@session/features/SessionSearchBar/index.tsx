@@ -26,6 +26,11 @@ const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
   });
 
   const startSearchSession = () => {
+    if (tempValue.trim() === '') {
+      clearSearchResults();
+      onClear?.();
+      return;
+    }
     if (tempValue === searchKeyword) return;
     setSearchKeywords(tempValue);
     doSearch(tempValue);
