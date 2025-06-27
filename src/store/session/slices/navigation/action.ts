@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { SessionStore } from '@/store/session';
 import { INBOX_SESSION_ID, SESSION_CHAT_URL } from '@/const/session';
 import { useAgentStore } from '@/store/agent';
+import { useChatStore } from '@/store/chat';
 
 export interface NavigationAction {
   // 切换会话
@@ -46,6 +47,17 @@ export const navigationSlice: StateCreator<
         currentSessionId: sessionId,
         isSwitching: false,
       });
+
+      // 同步 chat store 的 activeId，并请求 topics
+      try {
+        const chatStore = useChatStore.getState();
+        if (chatStore && chatStore.fetchTopics) {
+          chatStore.activeId = sessionId;
+          chatStore.fetchTopics(sessionId);
+        }
+      } catch (e) {
+        // ignore
+      }
 
       // 获取会话详情并加载相关的智能体和模型信息
       const sessions = get().sessions;
