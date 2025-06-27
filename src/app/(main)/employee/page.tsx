@@ -229,6 +229,7 @@ export default function EmployeePage() {
     updateEmployee,
     deleteEmployee,
   } = useEmployeeStore();
+  console.log('employees', employees);
 
   // 页面状态
   const [searchValue, setSearchValue] = useState('');
@@ -400,21 +401,25 @@ export default function EmployeePage() {
       title: '员工姓名',
       dataIndex: 'username',
       key: 'username',
+      render: (text) => text || '-',
     },
     {
       title: '登录邮箱',
       dataIndex: 'email',
       key: 'email',
+      render: (text) => text || '-',
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
       key: 'phone',
+      render: (text) => text || '-',
     },
     {
       title: '账户ID',
       dataIndex: 'id',
       key: 'id',
+      render: (text) => text || '-',
     },
     {
       title: '客户数量',
@@ -428,11 +433,17 @@ export default function EmployeePage() {
             alignItems: 'center',
           }}
         >
-          {count}
-          <EditOutlined
-            style={{ marginLeft: 6 }}
-            onClick={() => handleCustomerManage(record)}
-          />
+          {count == null || count === '' ? (
+            '-'
+          ) : (
+            <>
+              {count}
+              <EditOutlined
+                style={{ marginLeft: 6 }}
+                onClick={() => handleCustomerManage(record)}
+              />
+            </>
+          )}
         </span>
       ),
     },
@@ -442,7 +453,7 @@ export default function EmployeePage() {
       key: 'role',
       render: (role: string, record: UserItem) => {
         const roleText = role === 'admin' ? '管理员' : '员工';
-
+        const displayRole = roleText || '-';
         const roleName = record.roles?.[0]?.name;
 
         const roleMenuItems = [
@@ -477,7 +488,7 @@ export default function EmployeePage() {
             trigger={['click']}
           >
             <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
-              {roleText} <DownOutlined />
+              {displayRole} <DownOutlined />
             </a>
           </Dropdown>
         );
@@ -488,7 +499,9 @@ export default function EmployeePage() {
       key: 'messages',
       render: (_, record) => (
         <span className={styles.blackText}>
-          {employeeMessageCount[record.id] ?? 0}条
+          {employeeMessageCount[record.id] == null || employeeMessageCount[record.id] === ''
+            ? '-'
+            : employeeMessageCount[record.id]}
         </span>
       ),
     },
