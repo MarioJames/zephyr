@@ -51,8 +51,23 @@ export function OIDCInitializer() {
       setError(error);
       
       // 如果静默续期失败且错误提示需要重新登录，清除状态
-      if (error.message.includes('login_required')) {
+      const needsReauth = [
+        'login_required',
+        'interaction_required',
+        'invalid_grant',
+        'unauthorized',
+        'access_denied'
+      ].some(errorType => error.message.toLowerCase().includes(errorType.toLowerCase()));
+      
+      if (needsReauth) {
+        console.log('OIDCInitializer: Silent renew requires re-authentication, clearing state');
         clearState();
+        
+        // 引导用户到认证网关
+        if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+          console.log('OIDCInitializer: Redirecting to authentication gateway');
+          window.location.href = '/';
+        }
       }
     };
 

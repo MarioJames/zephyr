@@ -52,10 +52,10 @@ export const useOIDC = (): UseOIDCReturn => {
   const login = useCallback(async () => {
     // 保存当前页面路径，用于登录后跳转
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem(
-        'oidc_return_url',
-        window.location.pathname + window.location.search
-      );
+      const currentPath = window.location.pathname + window.location.search;
+      // 如果当前在根路径，保存 /chat 作为返回地址，避免循环
+      const returnUrl = currentPath === '/' ? '/chat' : currentPath;
+      sessionStorage.setItem('oidc_return_url', returnUrl);
     }
     await storeLogin();
   }, [storeLogin]);

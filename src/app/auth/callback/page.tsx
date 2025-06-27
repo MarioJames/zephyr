@@ -43,10 +43,16 @@ export default function CallbackPage() {
           console.log('OIDC: Callback successful, user authenticated', user.profile);
           setUser(user);
           
-          // 认证成功，直接跳转
-          const returnUrl = sessionStorage.getItem('oidc_return_url') || '/';
+          // 认证成功，处理返回地址
+          const returnUrl = sessionStorage.getItem('oidc_return_url');
           sessionStorage.removeItem('oidc_return_url');
-          router.replace(returnUrl);
+          
+          // 如果有有效的返回地址且不是根路径，跳转到返回地址
+          // 否则跳转到默认的聊天页面
+          const finalUrl = (returnUrl && returnUrl !== '/') ? returnUrl : '/chat';
+          
+          console.log('OIDC Callback: 认证成功，跳转到', finalUrl);
+          router.replace(finalUrl);
         } else {
           throw new Error('认证成功但未获得有效的访问令牌');
         }

@@ -95,6 +95,14 @@ export const createOIDCAuthSlice: StateCreator<
   setError: (error) => set({ error }),
 
   login: async () => {
+    const { isLoading } = get();
+    
+    // 防止重复登录请求
+    if (isLoading) {
+      console.log('OIDC: Login already in progress, skipping');
+      return;
+    }
+
     if (!userManager) {
       set({ error: new Error('OIDC client not initialized') });
       return;

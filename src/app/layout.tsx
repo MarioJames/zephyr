@@ -16,7 +16,6 @@ interface RootLayoutProps extends DynamicLayoutProps {
   children: ReactNode;
   modal: ReactNode;
 }
-const inVercel = process.env.VERCEL === '1';
 
 const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
   const { variants } = await params;

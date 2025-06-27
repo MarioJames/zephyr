@@ -105,9 +105,28 @@ export const createOIDCTokenSlice: StateCreator<
         isRefreshing: false,
       });
 
-      // 如果刷新失败，可能需要重新登录
-      if (err instanceof Error && err.message.includes('login_required')) {
-        get().clearState();
+      // 如果刷新失败，根据错误类型决定是否清除状态
+      if (err instanceof Error) {
+        // 这些错误表示需要重新登录
+        const needsReauth = [
+          'login_required',
+          'interaction_required',
+          'invalid_grant',
+          'invalid_request',
+          'unauthorized',
+          'access_denied'
+        ].some(errorType => err.message.toLowerCase().includes(errorType.toLowerCase()));
+        
+        if (needsReauth) {
+          console.log('OIDC: Token refresh requires re-authentication, clearing state');
+          get().clearState();
+          
+          // 如果在浏览器环境中，引导用户到认证网关
+          if (typeof window !== 'undefined') {
+            console.log('OIDC: Redirecting to authentication gateway');
+            window.location.href = '/';
+          }
+        }
       }
 
       return false;

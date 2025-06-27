@@ -1,9 +1,10 @@
 import { useOIDCStore } from '@/store/oidc';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
+
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
-  baseURL: process.env.LOBE_HOST,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -112,8 +113,11 @@ export async function request<T = any>(
   config?: AxiosRequestConfig
 ): Promise<T> {
   const method = (config?.method || 'post') as AxiosRequestConfig['method'];
+
+  const isOpenAPI = api.startsWith('/api/v1');
+
   const reqConfig: AxiosRequestConfig = {
-    url: api?.startsWith('/v1') ? `${process.env.LOBE_HOST}${api}` : api,
+    url: isOpenAPI ? `${baseURL}${api}` : api,
     method,
     ...config,
   };
