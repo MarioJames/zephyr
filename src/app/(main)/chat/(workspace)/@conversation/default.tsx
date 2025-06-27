@@ -1,15 +1,29 @@
+'use client';
 import { DynamicLayoutProps } from '@/types/next';
 
 import ChatHydration from './features/ChatHydration';
 import ChatInput from './features/ChatInput/index';
 import ChatList from './features/ChatList';
 import ZenModeToast from './features/ZenModeToast';
+import dynamic from 'next/dynamic';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
 
-const ChatConversation = async (props: DynamicLayoutProps) => {
+const ChatHeader = dynamic(() => import('../_layout/ChatHeader'));
 
+const ChatConversation = (props: DynamicLayoutProps) => {
+  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  if (!currentSessionId) {
+    return (
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
+        请选择客户后进行对话哦
+      </div>
+    );
+  }
   return (
     <>
       <ZenModeToast />
+      <ChatHeader />
       <ChatList />
       <ChatInput/>
       <ChatHydration />

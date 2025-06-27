@@ -24,7 +24,6 @@ const Layout = ({
           style={{ overflow: 'hidden', position: 'relative' }}
           width={'100%'}
         >
-          <ChatHeader />
           {conversation}
         </Flexbox>
         {children}

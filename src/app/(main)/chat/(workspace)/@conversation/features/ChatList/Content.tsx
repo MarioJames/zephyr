@@ -7,11 +7,14 @@ import { SkeletonList, VirtualizedList } from '@/features/Conversation';
 import { useFetchMessages } from '@/hooks/useFetchMessages';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
 
 import MainChatItem from './ChatItem';
 
 const Content = memo(() => {
   const isCurrentChatLoaded = useChatStore(chatSelectors.isCurrentChatLoaded);
+  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
 
   useFetchMessages();
   const data = useChatStore((s) => chatSelectors.mainDisplayChatIDs(s), shallow);
@@ -20,6 +23,14 @@ const Content = memo(() => {
     (index: number, id: string) => <MainChatItem id={id} index={index} />,
     []
   );
+
+  if (!currentSessionId) {
+    return (
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
+        请选择客户后进行对话哦
+      </div>
+    );
+  }
 
   if (!isCurrentChatLoaded) return <SkeletonList />;
 
