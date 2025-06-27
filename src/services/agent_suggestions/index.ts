@@ -1,13 +1,29 @@
+// Agent 建议内容具体类型定义
+export interface AgentSuggestionContent {
+  summary: string; // 用户诉求摘要
+  knowledges: {
+    finance?: string; // 金融知识
+    psychology?: string; // 心理知识
+    korea?: string; // 韩国知识
+    role?: string; // 角色背景
+    [key: string]: string | undefined; // 支持扩展其他知识类型
+  };
+  responses: Array<{
+    type: string; // 回复类型，如"贴心版"、"感同身受版"等
+    content: string; // 建议内容
+  }>;
+}
+
 // Agent 建议相关类型定义
 export interface AgentSuggestionCreate {
-  suggestion: any; // JSON 建议内容
+  suggestion: AgentSuggestionContent; // 具体化的建议内容类型
   topicId: string;
   parentMessageId: string;
 }
 
 export interface AgentSuggestionItem {
   id: number;
-  suggestion: any;
+  suggestion: AgentSuggestionContent; // 具体化的建议内容类型
   topicId: string;
   parentMessageId: string;
   createdAt: string;

@@ -1,6 +1,6 @@
 import { ReactNode, memo } from 'react';
 
-import BubblesLoading from '@/components/BubblesLoading';
+import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';

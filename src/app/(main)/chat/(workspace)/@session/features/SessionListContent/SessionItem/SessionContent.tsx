@@ -15,7 +15,7 @@ import { memo, useMemo } from "react";
 import { Flexbox } from "react-layout-kit";
 import { useRouter } from "next/navigation";
 
-import BubblesLoading from "@/components/BubblesLoading";
+import BubblesLoading from "@/components/Loading/BubblesLoading";
 import { LOADING_FLAT } from "@/const/base";
 import { useSessionStore } from '@/store/session';
 import { useOIDCStore } from '@/store/oidc';

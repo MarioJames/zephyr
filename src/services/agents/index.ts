@@ -1,5 +1,39 @@
 import { http } from '../request';
 
+// {
+//   "searchMode": "auto",
+//   "displayMode": "chat",
+//   "historyCount": 8,
+//   "searchFCModel": {
+//     "model": "gpt-4o-mini",
+//     "provider": "openai"
+//   },
+//   "enableReasoning": false,
+//   "enableHistoryCount": false,
+//   "reasoningBudgetToken": 1024,
+//   "enableAutoCreateTopic": true,
+//   "enableCompressHistory": true,
+//   "useModelBuiltinSearch": true,
+//   "autoCreateTopicThreshold": 2
+// }
+
+export interface AgentChatConfig {
+  searchMode?: string;
+  displayMode?: string;
+  historyCount?: number;
+  searchFCModel?: {
+    model: string;
+    provider: string;
+  };
+  enableReasoning?: boolean;
+  enableHistoryCount?: boolean;
+  reasoningBudgetToken?: number;
+  enableAutoCreateTopic?: boolean;
+  enableCompressHistory?: boolean;
+  useModelBuiltinSearch?: boolean;
+  autoCreateTopicThreshold?: number;
+}
+
 // 智能体相关类型定义
 export interface AgentItem {
   id: string;
@@ -12,7 +46,7 @@ export interface AgentItem {
   plugins?: string[];
   clientId?: string;
   userId: string;
-  chatConfig?: any;
+  chatConfig?: AgentChatConfig;
   fewShots?: any;
   model?: string;
   params?: any;
@@ -65,7 +99,7 @@ export interface AgentDetailResponse {
   model?: string;
   provider?: string;
   systemRole?: string;
-  
+
   // 关联信息
   agentsFiles?: Array<{
     file: {

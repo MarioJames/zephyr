@@ -42,6 +42,10 @@ export interface GenerateReplyRequest {
   provider?: string;
 }
 
+export interface GenerateReplyResponse {
+  reply: string;
+}
+
 /**
  * 通用聊天接口
  * @description 发送聊天消息获取AI回复
@@ -69,7 +73,7 @@ function translate(data: TranslateRequest) {
  * @returns ChatResponse
  */
 function generateReply(data: GenerateReplyRequest) {
-  return http.post<ChatResponse>('/api/v1/chat/generate-reply', data);
+  return http.post<GenerateReplyResponse>('/api/v1/chat/generate-reply', data);
 }
 
 export default {

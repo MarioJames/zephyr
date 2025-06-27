@@ -4,13 +4,20 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userManager } from '@/config/oidc';
 import { useOIDCStore } from '@/store/oidc';
-import { Spin, Alert } from 'antd';
-// 移除调试工具导入
+import { Icon } from '@lobehub/ui';
+import { XCircle } from 'lucide-react';
+import { Alert, Typography } from 'antd';
+import { Center, Flexbox } from 'react-layout-kit';
+import { useTheme } from 'antd-style';
+import Initializing from '../../loading';
+
+const { Title, Text } = Typography;
 
 export default function CallbackPage() {
   const router = useRouter();
+  const theme = useTheme();
   const { setUser, setError, setLoading } = useOIDCStore();
-  const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
+  const [status, setStatus] = useState<'processing' | 'error'>('processing');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -35,17 +42,11 @@ export default function CallbackPage() {
         if (user && user.access_token) {
           console.log('OIDC: Callback successful, user authenticated', user.profile);
           setUser(user);
-          setStatus('success');
-
-          // 认证成功
-
-          // 延迟 1 秒后重定向，让用户看到成功信息
-          setTimeout(() => {
-            // 检查是否有回调前的页面信息
-            const returnUrl = sessionStorage.getItem('oidc_return_url') || '/';
-            sessionStorage.removeItem('oidc_return_url');
-            router.replace(returnUrl);
-          }, 1000);
+          
+          // 认证成功，直接跳转
+          const returnUrl = sessionStorage.getItem('oidc_return_url') || '/';
+          sessionStorage.removeItem('oidc_return_url');
+          router.replace(returnUrl);
         } else {
           throw new Error('认证成功但未获得有效的访问令牌');
         }
@@ -57,7 +58,10 @@ export default function CallbackPage() {
         const errorObj = error instanceof Error ? error : new Error(message);
         setError(errorObj);
 
-        // 错误处理完成
+        // 错误后 3 秒自动跳转到首页
+        setTimeout(() => {
+          router.replace('/');
+        }, 3000);
       } finally {
         setLoading(false);
       }
@@ -66,52 +70,60 @@ export default function CallbackPage() {
     handleCallback();
   }, [router, setUser, setError, setLoading]);
 
-  const renderContent = () => {
-    switch (status) {
-      case 'processing':
-        return (
-          <div className="text-center">
-            <Spin size="large" className="mb-4" />
-            <h1 className="text-2xl font-bold mb-4">处理登录中...</h1>
-            <p className="text-gray-600">请稍候，正在完成认证流程</p>
-          </div>
-        );
+  // 如果是处理中状态，直接使用统一的加载组件
+  if (status === 'processing') {
+    return <Initializing />;
+  }
 
-      case 'success':
-        return (
-          <div className="text-center">
-            <div className="text-green-500 text-6xl mb-4">✓</div>
-            <h1 className="text-2xl font-bold mb-4 text-green-600">登录成功！</h1>
-            <p className="text-gray-600">正在跳转到应用...</p>
-          </div>
-        );
-
-      case 'error':
-        return (
-          <div className="text-center max-w-md">
-            <div className="text-red-500 text-6xl mb-4">✗</div>
-            <h1 className="text-2xl font-bold mb-4 text-red-600">登录失败</h1>
-            <Alert
-              message="认证错误"
-              description={errorMessage}
-              type="error"
-              showIcon
-              className="mb-4 text-left"
+  // 如果是错误状态，显示错误信息
+  if (status === 'error') {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: theme.colorBgLayout,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: theme.colorBgContainer,
+            padding: 48,
+            borderRadius: theme.borderRadius,
+            boxShadow: theme.boxShadow,
+            minWidth: 320,
+            maxWidth: 400,
+          }}
+        >
+          <Center gap={24}>
+            <Icon
+              icon={XCircle}
+              size="large"
+              style={{ color: theme.colorError, fontSize: 48 }}
             />
-            <p className="text-gray-600 text-sm">3 秒后自动跳转到登录页...</p>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        {renderContent()}
+            <Flexbox gap={16} align="center">
+              <Title level={3} style={{ margin: 0, color: theme.colorError }}>
+                登录失败
+              </Title>
+              <Alert
+                message="认证错误"
+                description={errorMessage}
+                type="error"
+                showIcon
+                style={{ textAlign: 'left' }}
+              />
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                3 秒后自动跳转到登录页...
+              </Text>
+            </Flexbox>
+          </Center>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // 正常情况下不应该到达这里，显示加载状态
+  return <Initializing />;
 }

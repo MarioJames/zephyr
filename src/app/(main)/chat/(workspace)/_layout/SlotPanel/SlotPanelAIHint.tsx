@@ -1,88 +1,116 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Row, Col } from 'antd';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { useChatStore } from '@/store/chat';
+import { suggestionsSelectors } from '@/store/chat/slices/agent_suggestions/selectors';
+import { AgentSuggestionItem } from '@/services/agent_suggestions';
 import { useAIHintStyles } from './style';
 
-const mockData = [
-  {
-    id: 1,
-    date: '2024-05-01 14:23',
-    hint: '客户需要开票相关的流程，建议这样回复：',
-    cards: [
-      { title: '步骤一', desc: '请先准备好相关发票资料，包括公司抬头、税号、地址、电话等信息。' },
-      { title: '步骤二', desc: '登录企业财务系统，进入发票申请模块，填写相关信息并提交。' },
-      { title: '步骤三', desc: '等待财务审核，审核通过后会生成电子发票。' },
-      { title: '步骤四', desc: '下载电子发票并发送给客户，或按需邮寄纸质发票。' },
-    ],
-    sectionTitle: 'AI推荐话术',
-    sectionDesc:
-      '您好，关于开票流程，您可以按照以下步骤操作：1.准备资料 2.系统申请 3.审核 4.下载发票。如有疑问请随时联系。您好，关于开票流程，您可以按照以下步骤操作：1.准备资料 2.系统申请 3.审核 4.下载发票。如有疑问请随时联系。',
-  },
-  {
-    id: 2,
-    date: '2024-05-02 09:10',
-    hint: '客户需要报销相关的流程，建议这样回复：',
-    cards: [
-      { title: '准备材料', desc: '请准备好发票原件、报销单据及相关审批文件。' },
-      { title: '系统录入', desc: '登录OA系统，填写报销申请并上传相关材料。' },
-      { title: '审批流程', desc: '提交后将进入部门负责人及财务审批流程。' },
-      { title: '款项发放', desc: '审批通过后，财务将在3个工作日内完成打款。' },
-    ],
-    sectionTitle: 'AI推荐话术',
-    sectionDesc:
-      '您好，报销流程如下：1.准备材料 2.系统申请 3.审批 4.打款。如有疑问请随时联系。',
-  },
-];
-
-function AIHintItem({ item }: { item: typeof mockData[0] }) {
+function AIHintItem({ item }: { item: AgentSuggestionItem }) {
   const [expand, setExpand] = useState(false);
   const { styles } = useAIHintStyles();
+
+  // 格式化日期
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('zh-CN', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  // 获取知识点作为卡片展示
+  const getKnowledgeCards = () => {
+    const knowledges = item.suggestion.knowledges;
+    const cards = [];
+    
+    if (knowledges.finance) cards.push({ title: '金融知识', desc: knowledges.finance });
+    if (knowledges.psychology) cards.push({ title: '心理知识', desc: knowledges.psychology });
+    if (knowledges.korea) cards.push({ title: '韩国知识', desc: knowledges.korea });
+    if (knowledges.role) cards.push({ title: '角色背景', desc: knowledges.role });
+    
+    // 补充其他知识类型
+    Object.entries(knowledges).forEach(([key, value]) => {
+      if (!['finance', 'psychology', 'korea', 'role'].includes(key) && value) {
+        cards.push({ title: key, desc: value });
+      }
+    });
+    
+    return cards;
+  };
+
+  const knowledgeCards = getKnowledgeCards();
 
   return (
     <Flexbox>
       {/* 分割线日期 */}
       <div className={styles.dividerDate}>
         <div className={styles.dividerLine} />
-        <span className={styles.dividerText}>{item.date}</span>
+        <span className={styles.dividerText}>{formatDate(item.createdAt)}</span>
         <div className={styles.dividerLine} />
       </div>
       {/* 上方提示语 */}
-      <div className={styles.hint}>{item.hint}</div>
-      {/* 2*2 栅格卡片 */}
-      <Row gutter={[8, 8]} className={styles.cardGrid}>
-        {item.cards.map((card, idx) => (
-          <Col span={12} key={idx}>
-            <div className={styles.cardItem} style={{ height: '100%', width: '100%' }}>
-              <div className={styles.cardTitle}>{card.title}</div>
-              <div className={styles.cardDesc} style={{ WebkitLineClamp: 3 }}>{card.desc}</div>
-            </div>
-          </Col>
-        ))}
-      </Row>
-      <div className={styles.suggestTitle}>建议这样回复：</div>
-      {/* 推荐话术大卡片 */}
-      <div className={styles.sectionTitle}>{item.sectionTitle}</div>
-      <div className={styles.sectionCard}>
-        <div
-          className={expand ? styles.sectionDescExpand : styles.sectionDesc}
-        >
-          {item.sectionDesc}
+      <div className={styles.hint}>{item.suggestion.summary}</div>
+      
+      {/* 知识点卡片 */}
+      {knowledgeCards.length > 0 && (
+        <Row gutter={[8, 8]} className={styles.cardGrid}>
+          {knowledgeCards.slice(0, 4).map((card, idx) => (
+            <Col span={12} key={idx}>
+              <div className={styles.cardItem} style={{ height: '100%', width: '100%' }}>
+                <div className={styles.cardTitle}>{card.title}</div>
+                <div className={styles.cardDesc} style={{ WebkitLineClamp: 3 }}>{card.desc}</div>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      )}
+      
+      <div className={styles.suggestTitle}>AI推荐回复：</div>
+      
+      {/* 推荐话术列表 */}
+      {item.suggestion.responses.map((response, idx) => (
+        <div key={idx} className={styles.sectionCard}>
+          <div className={styles.sectionTitle}>{response.type}</div>
+          <div
+            className={expand ? styles.sectionDescExpand : styles.sectionDesc}
+          >
+            {response.content}
+          </div>
+          <div className={styles.sectionFooter}>
+            <span className={styles.expandBtn} onClick={() => setExpand((v) => !v)}>
+              {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {expand ? '收起' : '展开'}
+            </span>
+            <Button className={styles.adoptBtn} type="primary">采用</Button>
+          </div>
         </div>
-        <div className={styles.sectionFooter}>
-          <span className={styles.expandBtn} onClick={() => setExpand((v) => !v)}>
-            {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            {expand ? '收起' : '展开'}
-          </span>
-          <Button className={styles.adoptBtn} type="primary">采用</Button>
-        </div>
-      </div>
+      ))}
     </Flexbox>
   );
 }
 
 const AIHintPanel = () => {
   const { styles } = useAIHintStyles();
+  
+  // 获取当前 topic 的建议数据
+  const suggestions = useChatStore(suggestionsSelectors.suggestionsSortedByTime);
+  const isGeneratingAI = useChatStore(suggestionsSelectors.isGeneratingAI);
+  const suggestionsInit = useChatStore(suggestionsSelectors.suggestionsInit);
+  const activeId = useChatStore((s) => s.activeId);
+  const fetchSuggestions = useChatStore((s) => s.fetchSuggestions);
+
+  // 获取建议数据
+  useEffect(() => {
+    if (activeId && !suggestionsInit) {
+      fetchSuggestions(activeId);
+    }
+  }, [activeId, suggestionsInit, fetchSuggestions]);
+
   return (
     <Flexbox height="100%" className={styles.panelBg}>
       {/* Header */}
@@ -98,7 +126,13 @@ const AIHintPanel = () => {
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
-        {mockData.map((item) => (
+        {isGeneratingAI && (
+          <div className={styles.loadingMsg}>AI正在生成建议...</div>
+        )}
+        {suggestions.length === 0 && !isGeneratingAI && (
+          <div className={styles.emptyMsg}>暂无AI建议</div>
+        )}
+        {suggestions.map((item) => (
           <AIHintItem key={item.id} item={item} />
         ))}
       </Flexbox>
