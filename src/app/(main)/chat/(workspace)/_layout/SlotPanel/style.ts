@@ -1,8 +1,11 @@
 import { createStyles } from 'antd-style';
 
-export const useHistoryStyles = createStyles(({ css, token }) => ({
+export const useHistoryStyles = createStyles(({ css, token, isDarkMode }) => ({
   panelBg: css`
-    background: #F4F4F4;
+    background: ${isDarkMode
+      ? token.colorFillSecondary
+      : token.colorFillTertiary};
+    transition: background 200ms ${token.motionEaseOut};
   `,
   header: css`
     height: 56px;
@@ -25,7 +28,7 @@ export const useHistoryStyles = createStyles(({ css, token }) => ({
     transition: background 0.2s;
     cursor: pointer;
     &:hover {
-      background: #fff;
+      background: ${token.colorFill};
     }
   `,
   historyTitle: css`
@@ -33,7 +36,7 @@ export const useHistoryStyles = createStyles(({ css, token }) => ({
     font-size: 14px;
   `,
   historyMeta: css`
-    color: rgba(0, 0, 0, 0.45);
+    color: ${token.colorTextQuaternary};
     font-size: 12px;
     font-weight: 400;
   `,
@@ -41,11 +44,11 @@ export const useHistoryStyles = createStyles(({ css, token }) => ({
     font-weight: 400;
     font-size: 14px;
   `,
-})); 
+}));
 
 export const useAIHintStyles = createStyles(({ css, token }) => ({
   panelBg: css`
-    background: #F4F4F4;
+    background: ${token.colorFillSecondary};
   `,
   header: css`
     height: 56px;
@@ -55,7 +58,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     font-weight: 500;
     font-size: 14px;
   `,
-    listWrap: css`
+  listWrap: css`
     overflow-y: auto;
     padding: 0px 24px;
   `,
@@ -67,11 +70,11 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   dividerLine: css`
     flex: 1;
     height: 1px;
-    background: rgba(0, 0, 0, 0.06);
+    background: ${token.colorSplit};
   `,
   dividerText: css`
     margin: 0 10px;
-    color: #000;
+    color: ${token.colorText};
     font-size: 12px;
     font-weight: 400;
     line-height: 22px;
@@ -80,7 +83,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     font-weight: 400;
     font-size: 14px;
     margin: 0px 8px 12px 8px;
-    color: rgba(0, 0, 0, 0.65);
+    color: ${token.colorTextQuaternary};
     line-height: 22px;
   `,
   cardGrid: css`
@@ -90,8 +93,8 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   cardItem: css`
     padding: 6px 12px;
     border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.06);
-    background: #fff;
+    border: 1px solid ${token.colorSplit};
+    background: ${token.colorBgContainer};
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -106,7 +109,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     margin-bottom: 4px;
   `,
   cardDesc: css`
-    color: rgba(0, 0, 0, 0.65);
+    color: ${token.colorTextQuaternary};
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
@@ -137,13 +140,13 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     width: 100%;
     height: auto;
     border-radius: 6px;
-    background: #E9E9E9;
+    background: ${token.colorFillSecondary};
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   `,
   sectionDesc: css`
-    color: rgba(0, 0, 0, 0.65);
+    color: ${token.colorTextQuaternary};
     font-size: 13px;
     line-height: 22px;
     font-weight: 400;
@@ -155,7 +158,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     margin-bottom: 10px;
   `,
   sectionDescExpand: css`
-    color: rgba(0, 0, 0, 0.65);
+    color: ${token.colorTextQuaternary};
     font-size: 13px;
     line-height: 22px;
     font-weight: 400;
@@ -172,7 +175,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     justify-content: space-between;
   `,
   expandBtn: css`
-    color: rgba(0, 0, 0, 0.45);
+    color: ${token.colorTextQuaternary};
     font-size: 12px;
     font-weight: 400;
     cursor: pointer;
@@ -180,7 +183,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     align-items: center;
   `,
   adoptBtn: css`
-    color: #fff;
+    color: ${token.colorText};
     height: 22px;
     background-color: ${token.colorPrimary};
     border: none;
@@ -191,4 +194,4 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     border-radius: 6px;
     cursor: pointer;
   `,
-})); 
+}));

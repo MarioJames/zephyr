@@ -158,7 +158,7 @@ export interface GlobalState {
  * 定义系统状态的默认值
  */
 export const INITIAL_STATUS = {
-  inputHeight: 200,
+  inputHeight: 160,
   sessionsWidth: 320,
   showChatSideBar: true,
   showSessionPanel: true,

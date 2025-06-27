@@ -1,19 +1,19 @@
-import { createStyles } from "antd-style";
-import { type ReactNode, memo } from "react";
-import { Flexbox, FlexboxProps } from "react-layout-kit";
+import { createStyles } from 'antd-style';
+import { type ReactNode, memo } from 'react';
+import { Flexbox, FlexboxProps } from 'react-layout-kit';
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   header: css`
     z-index: 10;
   `,
   title: css`
-    color: rgba(0, 0, 0, 0.88);
+    color: ${token.colorText};
     font-size: 20px;
     font-weight: 600;
   `,
 }));
 
-interface SidebarHeaderProps extends Omit<FlexboxProps, "title"> {
+interface SidebarHeaderProps extends Omit<FlexboxProps, 'title'> {
   actions?: ReactNode;
   onClick?: () => void;
   title: ReactNode;
@@ -25,9 +25,9 @@ const SidebarHeader = memo<SidebarHeaderProps>(
 
     return (
       <Flexbox
-        align={"center"}
+        align={'center'}
         className={styles.header}
-        distribution={"space-between"}
+        distribution={'space-between'}
         horizontal
         onClick={onClick}
         paddingBlock={14}
@@ -35,10 +35,10 @@ const SidebarHeader = memo<SidebarHeaderProps>(
         style={style}
         {...rest}
       >
-        <Flexbox align={"center"} gap={4} horizontal width={"100%"}>
+        <Flexbox align={'center'} gap={4} horizontal width={'100%'}>
           <div className={styles.title}>{title}</div>
         </Flexbox>
-        <Flexbox align={"center"} gap={2} horizontal>
+        <Flexbox align={'center'} gap={2} horizontal>
           {actions}
         </Flexbox>
       </Flexbox>

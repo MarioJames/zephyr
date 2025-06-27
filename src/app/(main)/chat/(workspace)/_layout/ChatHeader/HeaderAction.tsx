@@ -11,7 +11,7 @@ import { systemStatusSelectors } from "@/store/global/selectors";
 import { Input } from "antd";
 import { createStyles } from "antd-style";
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   search: css`
     display: flex;
     width: 279px;
@@ -40,7 +40,7 @@ const useStyles = createStyles(({ css }) => ({
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04) !important;
+      background-color: ${token.colorSplit} !important;
     }
   `,
   historyButtonSelected: css`
@@ -51,10 +51,10 @@ const useStyles = createStyles(({ css }) => ({
     align-items: center;
     gap: 4px;
     transition: background-color 0.2s ease;
-    background-color: #AEBBFF !important;
+    background-color: ${token.colorPrimary} !important;
 
     &:hover {
-      background-color: #AEBBFF !important;
+      background-color: ${token.colorPrimary} !important;
     }
   `,
 }));

@@ -1,0 +1,176 @@
+import { StateCreator } from 'zustand/vanilla';
+import customerAPI, { type CustomerItem, type CustomerListRequest, type CustomerCreateRequest, type CustomerUpdateRequest } from '@/services/customer';
+import { CustomerState } from '../../initialState';
+
+// ========== 核心功能Action接口 ==========
+export interface CoreAction {
+  fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
+  fetchCustomerDetail: (sessionId: string) => Promise<void>;
+  createCustomer: (data: CustomerCreateRequest) => Promise<void>;
+  updateCustomer: (sessionId: string, data: CustomerUpdateRequest) => Promise<void>;
+  deleteCustomer: (sessionId: string) => Promise<void>;
+  setCurrentCustomer: (customer?: CustomerItem) => void;
+  clearError: () => void;
+}
+
+// ========== 核心功能Slice ==========
+export const coreSlice: StateCreator<
+  CustomerState & CoreAction,
+  [],
+  [],
+  CoreAction
+> = (set, get) => ({
+  fetchCustomers: async (params) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await customerAPI.getCustomerList(params);
+      set({
+        customers: response.data,
+        total: response.total,
+        loading: false
+      });
+
+      // 触发其他slice的相关方法
+      const state = get() as any;
+      if (state.updateCategoryStats) {
+        state.updateCategoryStats();
+      }
+      if (state.updateCustomerStats) {
+        state.updateCustomerStats();
+      }
+      if (state.filterCustomers) {
+        state.filterCustomers();
+      }
+    } catch (error) {
+      console.error('获取客户列表失败:', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : '获取客户列表失败'
+      });
+    }
+  },
+
+  fetchCustomerDetail: async (sessionId) => {
+    set({ loading: true, error: null });
+    try {
+      const customer = await customerAPI.getCustomerDetail(sessionId);
+      set({
+        currentCustomer: customer,
+        loading: false
+      });
+    } catch (error) {
+      console.error('获取客户详情失败:', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : '获取客户详情失败'
+      });
+    }
+  },
+
+  createCustomer: async (data) => {
+    set({ loading: true, error: null });
+    try {
+      const newCustomer = await customerAPI.createCustomer(data);
+      set(state => ({
+        customers: [newCustomer, ...state.customers],
+        total: state.total + 1,
+        loading: false
+      }));
+
+      // 刷新相关数据
+      const state = get() as any;
+      if (state.updateCategoryStats) {
+        state.updateCategoryStats();
+      }
+      if (state.updateCustomerStats) {
+        state.updateCustomerStats();
+      }
+    } catch (error) {
+      console.error('创建客户失败:', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : '创建客户失败'
+      });
+    }
+  },
+
+  updateCustomer: async (sessionId, data) => {
+    set({ loading: true, error: null });
+    try {
+      await customerAPI.updateCustomer(sessionId, data);
+
+      // 更新本地状态
+      set(state => ({
+        customers: state.customers.map(customer =>
+          customer.session.id === sessionId
+            ? { ...customer, ...data }
+            : customer
+        ),
+        loading: false
+      }));
+
+      // 如果更新的是当前客户，也更新当前客户状态
+      const state = get();
+      if (state.currentCustomer?.session.id === sessionId) {
+        set({ currentCustomer: { ...state.currentCustomer, ...data } });
+      }
+
+      // 刷新相关数据
+      const stateWithActions = get() as any;
+      if (stateWithActions.updateCategoryStats) {
+        stateWithActions.updateCategoryStats();
+      }
+    } catch (error) {
+      console.error('更新客户失败:', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : '更新客户失败'
+      });
+    }
+  },
+
+  deleteCustomer: async (sessionId) => {
+    set({ loading: true, error: null });
+    try {
+      await customerAPI.deleteCustomer(sessionId);
+
+      // 更新本地状态
+      set(state => ({
+        customers: state.customers.filter(customer =>
+          customer.session.id !== sessionId
+        ),
+        total: state.total - 1,
+        loading: false
+      }));
+
+      // 如果删除的是当前客户，清除当前客户状态
+      const state = get();
+      if (state.currentCustomer?.session.id === sessionId) {
+        set({ currentCustomer: undefined });
+      }
+
+      // 刷新相关数据
+      const stateWithActions = get() as any;
+      if (stateWithActions.updateCategoryStats) {
+        stateWithActions.updateCategoryStats();
+      }
+      if (stateWithActions.updateCustomerStats) {
+        stateWithActions.updateCustomerStats();
+      }
+    } catch (error) {
+      console.error('删除客户失败:', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : '删除客户失败'
+      });
+    }
+  },
+
+  setCurrentCustomer: (customer) => {
+    set({ currentCustomer: customer });
+  },
+
+  clearError: () => {
+    set({ error: null });
+  },
+});

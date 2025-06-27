@@ -17,7 +17,7 @@ import { SkeletonList } from '../SkeletonList';
 import ShowMode from './ShowMode';
 import SearchResult from './SearchResult';
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   button: css`
     display: flex;
     height: 32px;
@@ -25,9 +25,9 @@ const useStyles = createStyles(({ css }) => ({
     align-items: center;
     gap: 4px;
     border-radius: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid ${token.colorBorder};
     background: inherit;
-    color: #000;
+    color: ${token.colorText};
     flex: 1;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
   `,
@@ -48,11 +48,17 @@ const SessionListContent = memo(() => {
     !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0
   );
   const fetchSessions = useSessionStore((s) => s.fetchSessions);
+  const initFromUrlParams = useSessionStore((s) => s.initFromUrlParams);
   const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
 
   useEffect(() => {
-    if (!initialized) fetchSessions();
-  }, [initialized, fetchSessions]);
+    if (!initialized) {
+      fetchSessions().then(() => {
+        // 会话列表获取完成后，从URL参数初始化session和topic
+        initFromUrlParams();
+      });
+    }
+  }, [initialized, fetchSessions, initFromUrlParams]);
 
   const handleAddCustomer = () => {
     router.push('/customer/edit');
