@@ -78,7 +78,7 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
   },
 
   searchSessions: async (params: SessionSearchRequest) => {
-    set({ isSearching: true, searchError: undefined });
+    set({ isSearching: true, searchError: undefined, inSearchMode: true });
     try {
       const searchResults = await sessionService.searchSessionList(params);
       set({
@@ -245,6 +245,7 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
       searchResults: [],
       searchKeyword: '',
       searchError: undefined,
+      inSearchMode: false,
     });
   },
 

@@ -24,6 +24,7 @@ export interface SessionManagementState {
   // 错误信息
   error?: string;
   searchError?: string;
+  inSearchMode: boolean;
 }
 
 export const sessionManagementInitialState: SessionManagementState = {
@@ -43,4 +44,5 @@ export const sessionManagementInitialState: SessionManagementState = {
   isUpdating: false,
   error: undefined,
   searchError: undefined,
+  inSearchMode: false,
 };

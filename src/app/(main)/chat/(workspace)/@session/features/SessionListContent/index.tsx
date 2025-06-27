@@ -41,7 +41,7 @@ const SessionListContent = memo(() => {
   const initialized = useSessionStore(sessionMetaSelectors.initialized);
   const sessionLength = useSessionStore(sessionMetaSelectors.sessionsCount);
   const isLoading = useSessionStore(sessionMetaSelectors.isLoading);
-  const isInSearchMode = useSessionStore(sessionMetaSelectors.isSearching);
+  const isInSearchMode = useSessionStore((s) => s.inSearchMode);
   const isUndefinedSessions = useSessionStore((s) =>
     !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0
   );
@@ -54,7 +54,6 @@ const SessionListContent = memo(() => {
   const handleAddCustomer = () => {
     router.push('/customer/edit');
   };
-
   if (isInSearchMode) return <SearchResult />;
   if (isLoading || isUndefinedSessions) return <SkeletonList />;
 

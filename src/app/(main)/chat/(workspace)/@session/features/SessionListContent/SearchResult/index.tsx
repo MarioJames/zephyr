@@ -22,9 +22,12 @@ const SearchResult = memo(() => {
   const sessions = useSessionStore(sessionSelectors.searchResults, isEqual);
 
   const itemContent = useCallback(
-    (index: number, { id, title }) => (
-      <SessionItem active={currentSessionId === id} id={id} key={id} title={title} />
-    ),
+    (index: number, item: any) => {
+      const title = item?.title && item.title.trim() !== '' ? item.title : '默认客户';
+      return (
+        <SessionItem active={currentSessionId === item.id} id={item.id} key={item.id} title={title} />
+      );
+    },
     [currentSessionId],
   );
 
