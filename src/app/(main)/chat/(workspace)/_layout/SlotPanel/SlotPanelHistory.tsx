@@ -46,23 +46,29 @@ const HistoryPanel = () => {
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
-        {topics.map((item) => (
-          <Flexbox
-            key={item.id}
-            horizontal
-            distribution="space-between"
-            align="center"
-            className={styles.historyItem}
-          >
-            <Flexbox>
-              <div className={styles.historyTitle}>{item.title}</div>
-              <div className={styles.historyMeta}>
-                @{item.user?.username || item.user?.fullName || '未知员工'} | {item.updatedAt ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-              </div>
-            </Flexbox>
-            <div className={styles.historyCount}>{item.messageCount}</div>
+        {topics.length === 0 ? (
+          <Flexbox flex={1} align="center" justify="center" style={{ color: '#999', fontSize: 16 }}>
+            暂无历史会话
           </Flexbox>
-        ))}
+        ) : (
+          topics.map((item) => (
+            <Flexbox
+              key={item.id}
+              horizontal
+              distribution="space-between"
+              align="center"
+              className={styles.historyItem}
+            >
+              <Flexbox>
+                <div className={styles.historyTitle}>{item.title}</div>
+                <div className={styles.historyMeta}>
+                  @{item.user?.username || item.user?.fullName || '未知员工'} | {item.updatedAt ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+                </div>
+              </Flexbox>
+              <div className={styles.historyCount}>{item.messageCount}</div>
+            </Flexbox>
+          ))
+        )}
       </Flexbox>
     </Flexbox>
   );
