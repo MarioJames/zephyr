@@ -1,7 +1,6 @@
 import {
   ActionIcon,
   Dropdown,
-  EditableText,
   Icon,
   type MenuProps,
 } from "@lobehub/ui";
@@ -12,7 +11,7 @@ import {
   PencilLine,
   Trash,
 } from "lucide-react";
-import { memo, useMemo, useCallback } from "react";
+import { memo, useMemo } from "react";
 import { Flexbox } from "react-layout-kit";
 import { useRouter } from "next/navigation";
 
@@ -57,14 +56,10 @@ interface SessionContentProps {
 }
 
 const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName, isRecent }) => {
-  const [currentSessionId, updateSession, deleteSession, sessions, removeFromRecentSessions] = useSessionStore((s) => [
-    s.currentSessionId,
-    s.updateSession,
+  const [deleteSession, removeFromRecentSessions] = useSessionStore((s) => [
     s.deleteSession,
-    s.sessions,
     s.removeFromRecentSessions,
   ]);
-  const editing = currentSessionId === id;
   const { styles } = useStyles();
   const router = useRouter();
 
@@ -132,8 +127,7 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
         {title?.[0] || ''}
       </div>
       <Flexbox flex={1} style={{ minWidth: 0 }} direction="vertical" justify="center">
-        {!editing ? (
-          title === LOADING_FLAT ? (
+          {title === LOADING_FLAT ? (
             <Flexbox flex={1} height={28} justify={"center"}>
               <BubblesLoading />
             </Flexbox>
@@ -145,29 +139,14 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
             >
               {title}
             </Typography.Paragraph>
-          )
-        ) : (
-          <EditableText
-            editing={editing}
-            onChangeEnd={(v) => {
-              if (title !== v) {
-                updateSession(id, { title: v });
-              }
-              toggleEditing();
-            }}
-            onEditingChange={toggleEditing}
-            showEditIcon={false}
-            style={{ height: 28 }}
-            value={title}
-          />
-        )}
-        {!editing && employeeName && (
+          )}
+        {employeeName && (
           <Typography.Text type="secondary" style={{ fontSize: 12 }} ellipsis={{ rows: 1 }}>
             {employeeName}
           </Typography.Text>
         )}
       </Flexbox>
-      {showMore && !editing && (
+      {showMore && (
         <Dropdown
           arrow={false}
           menu={{
