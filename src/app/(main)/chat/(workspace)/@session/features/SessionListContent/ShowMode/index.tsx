@@ -20,30 +20,33 @@ const ShowMode = memo(() => {
   const sortedSessions = useMemo(() => sessionHelpers.sortSessions(sessions, 'updatedAt'), [sessions]);
 
   // 分组逻辑：最近客户（前7个），全部客户（所有）
-  const recentSessions = sortedSessions.slice(0, 7);
-  const allSessions = sortedSessions;
+  const recentSessions = useSessionStore(sessionSelectors.recentSessions);
+  const allSessions = useSessionStore(sessionSelectors.sessions);
   const groups = [
     { id: 'recent', title: '最近客户', children: recentSessions },
     { id: 'all', title: '全部客户', children: allSessions },
   ];
   const groupCounts = [recentSessions.length, allSessions.length];
-  // flatSessions 需与 groupCounts 对应，先 recent 再 all
+  // flatSessions 顺序与 groupCounts 对应，全部客户分组始终展示所有客户
   const flatSessions = [...recentSessions, ...allSessions];
 
   const itemContent = useCallback(
     (index: number) => {
+      // 判断属于哪个分组
+      const isRecent = index < recentSessions.length;
       const session = flatSessions[index];
-      const title = session?.title && session.title.trim() !== '' ? session.title : '默认客户';
+      const title = session?.title && session.title.trim() !== '' ? session.title : `默认客户${index + 1}`;
       return (
         <SessionItem
           active={currentSessionId === session.id}
           id={session.id}
           key={session.id}
           title={title}
+          isRecent={isRecent}
         />
       );
     },
-    [currentSessionId, flatSessions]
+    [currentSessionId, flatSessions, recentSessions.length]
   );
 
   const groupContent = useCallback(

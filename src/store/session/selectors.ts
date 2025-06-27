@@ -32,6 +32,13 @@ export const sessionSelectors = {
 
   // 获取搜索关键词
   searchKeyword: (state: SessionStore) => state.searchKeyword,
+
+  // 获取最近客户（自动按 updatedAt 排序，前7个，过滤黑名单）
+  recentSessions: (state: SessionStore) =>
+    [...state.sessions]
+      .sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())
+      .filter((s) => !state.recentSessionBlacklist.includes(s.id))
+      .slice(0, 7),
 };
 
 // 会话元数据选择器

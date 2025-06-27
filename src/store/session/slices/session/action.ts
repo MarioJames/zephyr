@@ -41,6 +41,10 @@ export interface SessionAction {
   clearError: () => void;
   // 刷新会话列表
   refreshSessions: () => Promise<void>;
+  // 添加到最近客户
+  addToRecentSessions: (sessionId: string) => void;
+  // 从最近客户移除（加入黑名单）
+  removeFromRecentSessions: (sessionId: string) => void;
 }
 
 export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
@@ -221,6 +225,7 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
           get().currentSessionId === id ? undefined : get().currentSessionId,
         lastUpdated: Date.now(),
       });
+      get().removeFromRecentSessions(id);
     } catch (error) {
       console.error('删除会话失败:', error);
       set({
@@ -267,5 +272,21 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
       page: currentPagination.page,
       pageSize: currentPagination.pageSize,
     });
+  },
+
+  // 添加到最近客户
+  addToRecentSessions: (sessionId: string) => {
+    set((state) => {
+      const ids = state.recentSessionIds.filter((id) => id !== sessionId);
+      ids.unshift(sessionId);
+      if (ids.length > 7) ids.length = 7;
+      return { recentSessionIds: ids };
+    });
+  },
+  // 从最近客户移除（加入黑名单）
+  removeFromRecentSessions: (sessionId: string) => {
+    set((state) => ({
+      recentSessionBlacklist: [...state.recentSessionBlacklist, sessionId],
+    }));
   },
 });

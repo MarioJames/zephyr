@@ -25,6 +25,8 @@ export interface SessionManagementState {
   error?: string;
   searchError?: string;
   inSearchMode: boolean;
+  recentSessionIds: string[];
+  recentSessionBlacklist: string[];
 }
 
 export const sessionManagementInitialState: SessionManagementState = {
@@ -45,4 +47,6 @@ export const sessionManagementInitialState: SessionManagementState = {
   error: undefined,
   searchError: undefined,
   inSearchMode: false,
+  recentSessionIds: [],
+  recentSessionBlacklist: [],
 };

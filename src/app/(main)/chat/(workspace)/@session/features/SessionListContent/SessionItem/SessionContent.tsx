@@ -12,7 +12,7 @@ import {
   PencilLine,
   Trash,
 } from "lucide-react";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useCallback } from "react";
 import { Flexbox } from "react-layout-kit";
 import { useRouter } from "next/navigation";
 
@@ -53,14 +53,16 @@ interface SessionContentProps {
   showMore?: boolean;
   title: string;
   employeeName?: string;
+  isRecent?: boolean;
 }
 
-const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName }) => {
-  const [currentSessionId, updateSession, deleteSession, sessions] = useSessionStore((s) => [
+const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName, isRecent }) => {
+  const [currentSessionId, updateSession, deleteSession, sessions, removeFromRecentSessions] = useSessionStore((s) => [
     s.currentSessionId,
     s.updateSession,
     s.deleteSession,
     s.sessions,
+    s.removeFromRecentSessions,
   ]);
   const editing = currentSessionId === id;
   const { styles } = useStyles();
@@ -84,26 +86,30 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
           toggleEditing();
         },
       },
-      {
-        danger: true,
-        icon: <Icon icon={Trash} />,
-        key: "delete",
-        label: "从最近对话中移除",
-        onClick: () => {
-          if (!id) return;
+      ...(isRecent
+        ? [
+            {
+              danger: true,
+              icon: <Icon icon={Trash} />,
+              key: "delete",
+              label: "从最近对话中移除",
+              onClick: () => {
+                if (!id) return;
 
-          modal.confirm({
-            centered: true,
-            okButtonProps: { danger: true },
-            onOk: async () => {
-              await deleteSession(id);
+                modal.confirm({
+                  centered: true,
+                  okButtonProps: { danger: true },
+                  onOk: async () => {
+                    removeFromRecentSessions(id);
+                  },
+                  title: "即将从最近对话中移除该客户，请确认",
+                });
+              },
             },
-            title: "即将从最近对话中移除该客户，请确认",
-          });
-        },
-      },
+          ]
+        : []),
     ],
-    [id, deleteSession]
+    [id, deleteSession, isRecent]
   );
   return (
     <Flexbox
@@ -134,7 +140,7 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
           ) : (
             <Typography.Paragraph
               className={styles.title}
-              ellipsis={{ rows: 1, tooltip: { placement: "left", title } }}
+              ellipsis={{ tooltip: { placement: "left", title } }}
               style={{ margin: 0 }}
             >
               {title}

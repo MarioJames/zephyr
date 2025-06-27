@@ -40,9 +40,10 @@ export interface ConfigCellProps {
   active?: boolean;
   id: string;
   title: string;
+  isRecent?: boolean;
 }
 
-const SessionItem = memo<ConfigCellProps>(({ title, active, id }) => {
+const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent }) => {
   const { styles, cx } = useStyles();
   const [toggleTopic] = useChatStore((s) => [s.switchTopic]);
   const [isHover, setHovering] = useState(false);
@@ -64,7 +65,7 @@ const SessionItem = memo<ConfigCellProps>(({ title, active, id }) => {
           setHovering(false);
         }}
       >
-          <SessionContent id={id} showMore={isHover} title={title} />
+          <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} />
       </Flexbox>
     </Flexbox>
   );
