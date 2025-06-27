@@ -1,12 +1,10 @@
 "use client";
 
-import isEqual from "fast-deep-equal";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 import { GroupedVirtuoso, VirtuosoHandle } from "react-virtuoso";
 
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
-import { sessionMetaSelectors } from '@/store/session';
 import { sessionHelpers } from '@/store/session';
 
 import SessionItem from "../SessionItem";
