@@ -4,6 +4,7 @@ import { DynamicLayoutProps } from "@/types/next";
 
 import Desktop from "./_layout/Desktop";
 import SkeletonList from "./features/SkeletonList";
+import ChatHydration from '../@conversation/features/ChatHydration';
 
 const SessionContent = lazy(() => import("./features/SessionListContent"));
 
@@ -16,6 +17,7 @@ const Session = async (props: DynamicLayoutProps) => {
         <Suspense fallback={<SkeletonList />}>
           <SessionContent />
         </Suspense>
+        <ChatHydration />
       </Layout>
     </>
   );

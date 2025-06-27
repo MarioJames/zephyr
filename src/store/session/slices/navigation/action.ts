@@ -57,7 +57,7 @@ export const navigationSlice: StateCreator<
       try {
         const chatStore = useChatStore.getState();
         if (chatStore && chatStore.fetchTopics) {
-          chatStore.activeId = sessionId;
+          chatStore.activeSessionId = sessionId;
           chatStore.fetchTopics(sessionId);
         }
       } catch (e) {
@@ -93,12 +93,6 @@ export const navigationSlice: StateCreator<
             );
           }
         }
-      }
-
-      // 导航到会话页面
-      if (typeof window !== 'undefined') {
-        const url = SESSION_CHAT_URL(sessionId);
-        window.history.pushState(null, '', url);
       }
     } catch (error) {
       console.error('切换会话失败:', error);
