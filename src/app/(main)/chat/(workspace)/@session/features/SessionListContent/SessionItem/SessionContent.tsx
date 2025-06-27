@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import BubblesLoading from "@/components/BubblesLoading";
 import { LOADING_FLAT } from "@/const/base";
 import { useSessionStore } from '@/store/session';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -56,6 +58,7 @@ interface SessionContentProps {
 }
 
 const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employeeName, isRecent }) => {
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
   const [deleteSession, removeFromRecentSessions] = useSessionStore((s) => [
     s.deleteSession,
     s.removeFromRecentSessions,
@@ -140,9 +143,9 @@ const SessionContent = memo<SessionContentProps>(({ id, title, showMore, employe
               {title}
             </Typography.Paragraph>
           )}
-        {employeeName && (
-          <Typography.Text type="secondary" style={{ fontSize: 12 }} ellipsis={{ rows: 1 }}>
-            {employeeName}
+        {isAdmin && (
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            @{employeeName || '未知员工'}
           </Typography.Text>
         )}
       </Flexbox>

@@ -41,6 +41,7 @@ const ShowMode = memo(() => {
           key={session.id}
           title={title}
           isRecent={isRecent}
+          user={session.user}
         />
       );
     },

@@ -4,6 +4,7 @@ import { Flexbox } from 'react-layout-kit';
 
 import { useSessionStore } from '@/store/session';
 
+
 import SessionContent from './SessionContent';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -41,12 +42,14 @@ export interface ConfigCellProps {
   id: string;
   title: string;
   isRecent?: boolean;
+  user?: { username?: string };
 }
 
-const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent }) => {
+const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent, user }) => {
   const { styles, cx } = useStyles();
   const [switchSession] = useSessionStore((s) => [s.switchSession]);
   const [isHover, setHovering] = useState(false);
+
 
   return (
     <Flexbox style={{ position: 'relative' }}>
@@ -65,7 +68,7 @@ const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent }) => {
           setHovering(false);
         }}
       >
-          <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} />
+          <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} employeeName={user?.username} />
       </Flexbox>
     </Flexbox>
   );
