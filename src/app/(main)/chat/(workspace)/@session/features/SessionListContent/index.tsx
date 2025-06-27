@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
 import { sessionMetaSelectors } from '@/store/session';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 
 import { SkeletonList } from '../SkeletonList';
 import ShowMode from './ShowMode';
@@ -46,6 +48,7 @@ const SessionListContent = memo(() => {
     !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0
   );
   const fetchSessions = useSessionStore((s) => s.fetchSessions);
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
 
   useEffect(() => {
     if (!initialized) fetchSessions();
@@ -65,14 +68,17 @@ const SessionListContent = memo(() => {
         justify='space-between'
         className={styles.flexbox}
       >
-        <Button type='default' className={styles.button}>
-          全部员工
-          <ChevronDown size={16} />
-        </Button>
+        {isAdmin && (
+          <Button type='default' className={styles.button} style={{ flex: 1 }}>
+            全部员工
+            <ChevronDown size={16} />
+          </Button>
+        )}
         <Button
           type='default'
           icon={<Plus size={16} />}
-          className={`${styles.button}`}
+          className={styles.button}
+          style={!isAdmin ? { flex: 1 } : {}}
           onClick={handleAddCustomer}
         >
           创建客户
