@@ -1,68 +1,23 @@
 'use client';
 
-import React from 'react';
-import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Modal, Form, Input, message, Spin, Empty } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
 
-interface CustomerTemplate {
-    id: string;
-    title: string;
-    description: string;
-    imageUrl: string;
-  }
-  
-const customerTemplates: CustomerTemplate[] = [
-    {
-      id: '1',
-      title: 'A类客户',
-      description: '适用于大型企业客户的模版，包含企业级服务支持和定制化解决方案',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '2',
-      title: 'A类客户',
-      description: '适用于个人用户的基础模版，提供标准化服务和支持',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '3',
-      title: 'A类客户',
-      description: '为中小型企业设计的模版，平衡了成本和服务质量',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '4',
-      title: 'A类客户',
-      description: '针对政府部门的特殊需求定制的模版，符合相关规定和要求',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '5',
-      title: 'A类客户',
-      description: '为学校、培训机构等教育单位设计的模版，包含教育资源管理和学生服务',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '6',
-      title: 'A类客户',
-      description: '适用于医院、诊所等医疗机构的模版，包含患者管理和医疗服务支持',
-      imageUrl: '/test.png',
-    },
-    {
-      id: '7',
-      title: 'A类客户',
-      description: '为非营利组织和慈善机构设计的模版，支持公益活动和志愿者管理',
-      imageUrl: '/test.png',
-    },
-  ]; 
+import { useAgentStore } from '@/store/agent/store';
+import { agentSelectors } from '@/store/agent/selectors';
 
 const { Title, Paragraph } = Typography;
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     padding: 16px 24px;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: auto;
   `,
   header: css`
     height: 56px;
@@ -155,16 +110,82 @@ const useStyles = createStyles(({ css, token }) => ({
 export default function CustomerTemplatePage() {
   const { styles } = useStyles();
 
-  const handleEdit = (id: string) => {
-    console.log('编辑模版', id);
+  // agent store hooks
+  const agents = useAgentStore(agentSelectors.agents);
+  const isLoading = useAgentStore(agentSelectors.isLoading);
+  const error = useAgentStore(agentSelectors.error);
+  const fetchAgents = useAgentStore((s) => s.fetchAgents);
+  const createAgent = useAgentStore((s) => s.createAgent);
+  const updateAgent = useAgentStore((s) => s.updateAgent);
+  const deleteAgent = useAgentStore((s) => s.deleteAgent);
+
+  // 弹窗表单相关
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<{id?: string, initial?: any}|null>(null);
+  const [form] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
+
+  // 拉取 agent 列表
+  useEffect(() => { fetchAgents(); }, [fetchAgents]);
+
+  // 合并新增/编辑弹窗逻辑
+  const openModal = (agent?: any) => {
+    if (agent) {
+      setEditing({ id: agent.id, initial: agent });
+      form.setFieldsValue({
+        title: agent.title,
+        description: agent.description,
+        avatar: agent.avatar,
+      });
+    } else {
+      setEditing(null);
+      form.resetFields();
+    }
+    setModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    console.log('删除模版', id);
+  // 删除
+  const handleDelete = async (id: string) => {
+    Modal.confirm({
+      title: '确认删除该客户模版？',
+      onOk: async () => {
+        try {
+          await deleteAgent(id);
+          message.success('删除成功');
+        } catch {
+          message.error('删除失败');
+        }
+      },
+    });
   };
 
-  const handleAddType = () => {
-    console.log('添加客户类型');
+  // 提交表单（合并新增/编辑）
+  const handleModalOk = async () => {
+    try {
+      const values = await form.validateFields();
+      setSubmitting(true);
+      if (editing?.id) {
+        await updateAgent(editing.id, { id: editing.id, ...values });
+        message.success('编辑成功');
+      } else {
+        await createAgent(values);
+        message.success('添加成功');
+      }
+      setModalOpen(false);
+      setEditing(null);
+      form.resetFields();
+    } catch (e) {
+      // 校验失败或接口异常
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // 关闭弹窗
+  const handleModalCancel = () => {
+    setModalOpen(false);
+    setEditing(null);
+    form.resetFields();
   };
 
   return (
@@ -180,48 +201,80 @@ export default function CustomerTemplatePage() {
       {/* 子标题和添加按钮 */}
       <div className={styles.subHeader}>
         <Title level={4} style={{ margin: 0 }}>客户模版配置</Title>
-        <Button className={styles.addButton} onClick={handleAddType}>
+        <Button className={styles.addButton} onClick={() => openModal()}>
           添加客户类型
         </Button>
       </div>
 
-      {/* 卡片网格 */}
-      <Row gutter={[16, 16]} className={styles.cardGrid}>
-        {customerTemplates.map((template) => (
-          <Col xs={24} sm={12} md={8} lg={6} xl={4.8} key={template.id}>
-            <div className={styles.card}>
-              <div className={styles.cardContent}>
-                <img 
-                  src={template.imageUrl}
-                  alt={template.title}
-                  className={styles.cardImage} 
-                />
-                <div className={styles.cardTitle}>{template.title}</div>
-                <Tooltip title={template.description}>
-                  <div className={styles.cardDescription}>
-                    {template.description}
+      {/* 卡片网格/数据区，撑满高度，支持溢出滚动 */}
+      <Spin spinning={isLoading} tip="加载中...">
+        <div style={{ minHeight: '60vh' }}>
+          {error ? (
+            <Empty description={error} style={{ minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+          ) : agents.length === 0 ? (
+            <Empty description="暂无客户模版" style={{ minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+          ) : (
+            <Row gutter={[16, 16]} className={styles.cardGrid}>
+              {agents.map((agent) => (
+                <Col xs={24} sm={12} md={8} lg={6} xl={4.8} key={agent.id}>
+                  <div className={styles.card}>
+                    <div className={styles.cardContent}>
+                      <img 
+                        src={'/test.png'}
+                        alt={agent.title}
+                        className={styles.cardImage} 
+                      />
+                      <div className={styles.cardTitle}>{agent.title}</div>
+                      <Tooltip title={agent.description}>
+                        <div className={styles.cardDescription}>
+                          {agent.description}
+                        </div>
+                      </Tooltip>
+                    </div>
+                    <div className={styles.cardFooter}>
+                      <span 
+                        className={styles.footerButton} 
+                        onClick={() => openModal(agent)}
+                      >
+                        编辑
+                      </span>
+                      <div className={styles.footerDivider} />
+                      <span 
+                        className={styles.footerButton} 
+                        onClick={() => handleDelete(agent.id)}
+                      >
+                        删除
+                      </span>
+                    </div>
                   </div>
-                </Tooltip>
-              </div>
-              <div className={styles.cardFooter}>
-                <span 
-                  className={styles.footerButton} 
-                  onClick={() => handleEdit(template.id)}
-                >
-                  编辑
-                </span>
-                <div className={styles.footerDivider} />
-                <span 
-                  className={styles.footerButton} 
-                  onClick={() => handleDelete(template.id)}
-                >
-                  删除
-                </span>
-              </div>
-            </div>
-          </Col>
-        ))}
-      </Row>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </div>
+      </Spin>
+
+      {/* 新增/编辑弹窗表单 */}
+      <Modal
+        title={editing?.id ? '编辑客户模版' : '添加客户类型'}
+        open={modalOpen}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+        confirmLoading={submitting}
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical" preserve={false} initialValues={editing?.initial}>
+          <Form.Item name="title" label="模版名称" rules={[{ required: true, message: '请输入模版名称' }]}> 
+            <Input placeholder="请输入模版名称" />
+          </Form.Item>
+          <Form.Item name="description" label="模版描述">
+            <Input.TextArea placeholder="请输入模版描述" rows={3} />
+          </Form.Item>
+          <Form.Item name="avatar" label="图片URL">
+            <Input placeholder="请输入图片URL（可选，实际展示为/test.png兜底）" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
