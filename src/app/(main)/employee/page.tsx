@@ -44,18 +44,6 @@ const allCustomers = [
   { id: "c7", name: "客户G", owner: "未分配" },
 ];
 
-// mock 员工消息数
-const employeeMessageCount: Record<string, number> = {
-  "1": 12,
-  "2": 5,
-  "3": 8,
-  "4": 0,
-  "5": 3,
-  "6": 1,
-  "7": 7,
-  "8": 0,
-};
-
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     padding: 16px 24px;
@@ -544,15 +532,15 @@ export default function EmployeePage() {
     },
     {
       title: "员工消息记录",
-      key: "messages",
-      render: (_, record) => (
-        <span className={styles.blackText}>
-          {employeeMessageCount[record.id] === undefined ||
-          employeeMessageCount[record.id] === null
-            ? "-"
-            : employeeMessageCount[record.id]}
-        </span>
-      ),
+      dataIndex: "messageCount",
+      key: "messageCount",
+      render: (text: number) => {
+        console.log("text", text);
+        if (text === undefined || text === null) {
+          return "-";
+        }
+        return <span className={styles.blackText}>{text}</span>;
+      }
     },
     {
       title: "操作",
