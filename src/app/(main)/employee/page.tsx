@@ -1,5 +1,5 @@
-'use client';
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
 import {
   Button,
   Input,
@@ -13,48 +13,46 @@ import {
   message,
   Tabs,
   Checkbox,
-} from 'antd';
+} from "antd";
 import {
   SearchOutlined,
-  DownOutlined,
   UploadOutlined,
   PlusOutlined,
-  EditOutlined,
   DoubleRightOutlined,
   DoubleLeftOutlined,
-} from '@ant-design/icons';
-import { createStyles } from 'antd-style';
-import type { ColumnsType } from 'antd/es/table';
-import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { useEmployeeStore } from '@/store/employee';
-import { UserItem } from '@/services/user';
-import { adminList } from '@/const/role';
-import { RoleItem } from '@/services/roles';
-import { CircleCheck } from 'lucide-react';
+} from "@ant-design/icons";
+import { createStyles } from "antd-style";
+import type { ColumnsType } from "antd/es/table";
+import type { UploadFile, UploadProps } from "antd/es/upload/interface";
+import { useEmployeeStore } from "@/store/employee";
+import { UserItem } from "@/services/user";
+import { adminList } from "@/const/role";
+import { RoleItem } from "@/services/roles";
+import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
 
 const { Title, Text } = Typography;
 
 // mock 客户数据
 const allCustomers = [
-  { id: 'c1', name: '客户A', owner: '张三' },
-  { id: 'c2', name: '客户B', owner: '李四' },
-  { id: 'c3', name: '客户C', owner: '王五' },
-  { id: 'c4', name: '客户D', owner: '赵六' },
-  { id: 'c5', name: '客户E', owner: '钱七' },
-  { id: 'c6', name: '客户F', owner: '未分配' },
-  { id: 'c7', name: '客户G', owner: '未分配' },
+  { id: "c1", name: "客户A", owner: "张三" },
+  { id: "c2", name: "客户B", owner: "李四" },
+  { id: "c3", name: "客户C", owner: "王五" },
+  { id: "c4", name: "客户D", owner: "赵六" },
+  { id: "c5", name: "客户E", owner: "钱七" },
+  { id: "c6", name: "客户F", owner: "未分配" },
+  { id: "c7", name: "客户G", owner: "未分配" },
 ];
 
 // mock 员工消息数
 const employeeMessageCount: Record<string, number> = {
-  '1': 12,
-  '2': 5,
-  '3': 8,
-  '4': 0,
-  '5': 3,
-  '6': 1,
-  '7': 7,
-  '8': 0,
+  "1": 12,
+  "2": 5,
+  "3": 8,
+  "4": 0,
+  "5": 3,
+  "6": 1,
+  "7": 7,
+  "8": 0,
 };
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -239,10 +237,10 @@ export default function EmployeePage() {
     updateEmployee,
     deleteEmployee,
   } = useEmployeeStore();
-  console.log('employees', employees);
+  console.log("employees", employees);
 
   // 页面状态
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<UserItem | null>(null);
@@ -250,12 +248,12 @@ export default function EmployeePage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [customerTab, setCustomerTab] = useState('all');
+  const [customerTab, setCustomerTab] = useState("all");
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
   const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([
-    'c1',
-    'c3',
+    "c1",
+    "c3",
   ]);
   const [currentCustomerEmployee, setCurrentCustomerEmployee] =
     useState<UserItem | null>(null);
@@ -295,9 +293,9 @@ export default function EmployeePage() {
       setAvatarFile(
         employee.avatar
           ? {
-              uid: '-1',
-              name: 'avatar.png',
-              status: 'done',
+              uid: "-1",
+              name: "avatar.png",
+              status: "done",
               url: employee.avatar,
             }
           : null
@@ -352,19 +350,19 @@ export default function EmployeePage() {
 
   // 头像上传前处理
   const beforeUpload = (file: File) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
-      message.error('只能上传 JPG/PNG 格式的图片!');
+      message.error("只能上传 JPG/PNG 格式的图片!");
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('图片大小不能超过 2MB!');
+      message.error("图片大小不能超过 2MB!");
     }
     return isJpgOrPng && isLt2M;
   };
 
   // 头像上传变更处理
-  const handleAvatarChange: UploadProps['onChange'] = ({ fileList }) => {
+  const handleAvatarChange: UploadProps["onChange"] = ({ fileList }) => {
     if (fileList.length > 0) {
       setAvatarFile(fileList[0]);
     } else {
@@ -396,9 +394,9 @@ export default function EmployeePage() {
 
   // 左侧客户列表过滤
   const leftList = allCustomers.filter((c) => {
-    if (customerTab === 'all') return !employeeCustomers.includes(c.id);
-    if (customerTab === 'unassigned')
-      return c.owner === '未分配' && !employeeCustomers.includes(c.id);
+    if (customerTab === "all") return !employeeCustomers.includes(c.id);
+    if (customerTab === "unassigned")
+      return c.owner === "未分配" && !employeeCustomers.includes(c.id);
     return false;
   });
   // 右侧客户列表
@@ -408,69 +406,76 @@ export default function EmployeePage() {
 
   const columns: ColumnsType<UserItem> = [
     {
-      title: '员工姓名',
-      dataIndex: 'username',
-      key: 'username',
-      render: (text) => text || '-',
+      title: "员工姓名",
+      dataIndex: "username",
+      key: "username",
+      render: (text) => text || "-",
     },
     {
-      title: '登录邮箱',
-      dataIndex: 'email',
-      key: 'email',
-      render: (text) => text || '-',
+      title: "登录邮箱",
+      dataIndex: "email",
+      key: "email",
+      render: (text) => text || "-",
     },
     {
-      title: '联系电话',
-      dataIndex: 'phone',
-      key: 'phone',
-      render: (text) => text || '-',
+      title: "联系电话",
+      dataIndex: "phone",
+      key: "phone",
+      render: (text) => text || "-",
     },
     {
-      title: '账户ID',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text) => text || '-',
+      title: "账户ID",
+      dataIndex: "id",
+      key: "id",
+      render: (text) => text || "-",
     },
     {
-      title: '客户数量',
-      dataIndex: 'customerCount',
-      key: 'customerCount',
-      render: (count: number, record: UserItem) => (
-        <span
-          style={{
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-          }}
-        >
-          {count === undefined || count === null ? (
-            '-'
-          ) : (
-            <>
-              {count}
-              <EditOutlined
-                style={{ marginLeft: 6 }}
-                onClick={() => handleCustomerManage(record)}
-              />
-            </>
-          )}
-        </span>
-      ),
+      title: "客户数量",
+      dataIndex: "customerCount",
+      key: "customerCount",
+      render: (_: any, record: UserItem) => {
+        const customerList = record.sessions || [];
+        const count = customerList?.length;
+        console.log("count", count, record);
+
+        return (
+          <span
+            style={{
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
+            {count === undefined || count === null ? (
+              "-"
+            ) : (
+              <>
+                {count}
+                <SquarePen
+                  size={16}
+                  style={{ marginLeft: 10 }}
+                  onClick={() => handleCustomerManage(record)}
+                />
+              </>
+            )}
+          </span>
+        );
+      },
     },
     {
-      title: '权限',
-      dataIndex: 'roles',
-      key: 'roles',
+      title: "权限",
+      dataIndex: "roles",
+      key: "roles",
       render: (roles: RoleItem[], record: UserItem) => {
-        console.log('role1', roles,record);
+        console.log("role1", roles, record);
         const role = roles[0];
         const isAdmin = adminList.includes(role?.name);
-        const roleText = isAdmin ? '管理员' : '员工';
-        const displayRole = roleText || '-';
+        const roleText = isAdmin ? "管理员" : "员工";
+        const displayRole = roleText || "-";
 
         const roleMenuItems = [
           {
-            key: 'admin',
+            key: "admin",
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
@@ -479,7 +484,7 @@ export default function EmployeePage() {
             ),
           },
           {
-            key: 'employee',
+            key: "employee",
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
@@ -494,50 +499,51 @@ export default function EmployeePage() {
             menu={{
               items: roleMenuItems,
               onClick: ({ key }) =>
-                handleRoleChange(record.id, key as 'admin' | 'employee'),
+                handleRoleChange(record.id, key as "admin" | "employee"),
               className: styles.roleDropdown,
             }}
-            trigger={['click']}
+            trigger={["click"]}
           >
             <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
-              {displayRole} <DownOutlined />
+              {displayRole} <ChevronDown size={16} />
             </a>
           </Dropdown>
         );
       },
     },
     {
-      title: '员工消息记录',
-      key: 'messages',
+      title: "员工消息记录",
+      key: "messages",
       render: (_, record) => (
         <span className={styles.blackText}>
-          {employeeMessageCount[record.id] === undefined || employeeMessageCount[record.id] === null ? (
-            '-'
-          ) : employeeMessageCount[record.id]}
+          {employeeMessageCount[record.id] === undefined ||
+          employeeMessageCount[record.id] === null
+            ? "-"
+            : employeeMessageCount[record.id]}
         </span>
       ),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       render: (_, record) => (
-        <Space size='middle'>
+        <Space size="middle">
           <Button
-            type='link'
+            type="link"
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
           >
             发送登录引导
           </Button>
           <Button
-            type='link'
+            type="link"
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
           >
             编辑
           </Button>
           <Button
-            type='link'
+            type="link"
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleDelete(record.id)}
           >
@@ -557,7 +563,7 @@ export default function EmployeePage() {
         </Title>
         <div className={styles.headerRight}>
           <Input
-            placeholder='搜索员工'
+            placeholder="搜索员工"
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
@@ -574,7 +580,7 @@ export default function EmployeePage() {
         <Table
           columns={columns}
           dataSource={employees}
-          rowKey='id'
+          rowKey="id"
           loading={loading}
           pagination={{
             pageSize: 10,
@@ -586,7 +592,7 @@ export default function EmployeePage() {
 
       {/* 登录引导弹窗 */}
       <Modal
-        title='发送邮件引导员工登录系统'
+        title="发送邮件引导员工登录系统"
         open={loginGuideVisible}
         footer={null}
         onCancel={() => setLoginGuideVisible(false)}
@@ -627,11 +633,11 @@ export default function EmployeePage() {
         width={414}
         className={styles.addEmployeeModal}
         closable={true}
-        closeIcon={<span style={{ fontSize: 20, color: '#999' }}>×</span>}
+        closeIcon={<span style={{ fontSize: 20, color: "#999" }}>×</span>}
       >
         <div>
           <div className={styles.modalTitle}>
-            {isEditMode ? '编辑员工' : '添加员工'}
+            {isEditMode ? "编辑员工" : "添加员工"}
           </div>
 
           {/* 头像上传区域 */}
@@ -645,14 +651,14 @@ export default function EmployeePage() {
                     (avatarFile.originFileObj &&
                       URL.createObjectURL(avatarFile.originFileObj))
                   }
-                  alt='头像'
+                  alt="头像"
                 />
               ) : (
-                <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
+                <PlusOutlined style={{ fontSize: 24, color: "#ccc" }} />
               )}
             </div>
             <Upload
-              name='avatar'
+              name="avatar"
               showUploadList={false}
               beforeUpload={beforeUpload}
               onChange={handleAvatarChange}
@@ -666,45 +672,45 @@ export default function EmployeePage() {
 
           {/* 基本信息表单 */}
           <div className={styles.sectionTitle}>基本信息</div>
-          <Form form={form} layout='vertical' requiredMark={true} colon={true}>
+          <Form form={form} layout="vertical" requiredMark={true} colon={true}>
             <Form.Item
-              name='username'
-              label='员工姓名'
-              rules={[{ required: true, message: '请输入员工姓名' }]}
+              name="username"
+              label="员工姓名"
+              rules={[{ required: true, message: "请输入员工姓名" }]}
               className={styles.formItem}
             >
               <Input
-                placeholder='请输入员工姓名'
+                placeholder="请输入员工姓名"
                 className={styles.customInput}
               />
             </Form.Item>
 
             <Form.Item
-              name='email'
-              label='邮箱'
+              name="email"
+              label="邮箱"
               rules={[
-                { required: true, message: '请输入员工邮箱' },
-                { type: 'email', message: '请输入有效的邮箱地址' },
+                { required: true, message: "请输入员工邮箱" },
+                { type: "email", message: "请输入有效的邮箱地址" },
               ]}
               className={styles.formItem}
             >
               <Input
-                placeholder='请输入员工邮箱'
+                placeholder="请输入员工邮箱"
                 className={styles.customInput}
               />
             </Form.Item>
 
             <Form.Item
-              name='phone'
-              label='手机号'
+              name="phone"
+              label="手机号"
               rules={[
-                { required: true, message: '请输入员工手机号' },
-                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
+                { required: true, message: "请输入员工手机号" },
+                { pattern: /^1[3-9]\d{9}$/, message: "请输入有效的手机号" },
               ]}
               className={styles.formItem}
             >
               <Input
-                placeholder='请输入员工手机号'
+                placeholder="请输入员工手机号"
                 className={styles.customInput}
               />
             </Form.Item>
@@ -723,7 +729,7 @@ export default function EmployeePage() {
               onClick={handleEmployeeSubmit}
               loading={loading}
             >
-              {isEditMode ? '保存修改' : '添加员工'}
+              {isEditMode ? "保存修改" : "添加员工"}
             </Button>
           </div>
         </div>
@@ -740,11 +746,11 @@ export default function EmployeePage() {
         styles={{
           body: {
             borderRadius: 8,
-            background: '#F4F4F4',
+            background: "#F4F4F4",
             padding: 24,
             height: 500,
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
           },
         }}
         closable={false}
@@ -752,13 +758,13 @@ export default function EmployeePage() {
         <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 24 }}>
           员工对接客户管理
         </div>
-        <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+        <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
           {/* 左侧 */}
           <div
             style={{
               width: 220,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               marginRight: 24,
               minHeight: 0,
             }}
@@ -767,30 +773,30 @@ export default function EmployeePage() {
               activeKey={customerTab}
               onChange={setCustomerTab}
               items={[
-                { key: 'all', label: '全部客户' },
-                { key: 'unassigned', label: '未分配客户' },
+                { key: "all", label: "全部客户" },
+                { key: "unassigned", label: "未分配客户" },
               ]}
               style={{ marginBottom: 8 }}
             />
             <div
               style={{
-                background: '#fff',
+                background: "#fff",
                 flex: 1,
                 borderRadius: 6,
-                overflow: 'auto',
-                border: '1px solid #eee',
-                display: 'flex',
-                flexDirection: 'column',
+                overflow: "auto",
+                border: "1px solid #eee",
+                display: "flex",
+                flexDirection: "column",
                 minHeight: 0,
               }}
             >
               {/* 标题栏 */}
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderBottom: '1px solid #eee',
-                  padding: '0 12px',
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee",
+                  padding: "0 12px",
                   height: 40,
                   fontWeight: 500,
                   flexShrink: 0,
@@ -816,15 +822,15 @@ export default function EmployeePage() {
                 <span style={{ width: 60 }}>对接人</span>
               </div>
               {/* 客户项 */}
-              <div style={{ flex: 1, overflow: 'auto' }}>
+              <div style={{ flex: 1, overflow: "auto" }}>
                 {leftList.map((c) => (
                   <div
                     key={c.id}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderBottom: '1px solid #eee',
-                      padding: '0 12px',
+                      display: "flex",
+                      alignItems: "center",
+                      borderBottom: "1px solid #eee",
+                      padding: "0 12px",
                       height: 40,
                     }}
                   >
@@ -849,10 +855,10 @@ export default function EmployeePage() {
           {/* 中间双箭头 */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
               gap: 16,
               width: 60,
             }}
@@ -861,13 +867,13 @@ export default function EmployeePage() {
               style={{
                 width: 36,
                 height: 36,
-                border: '1px solid #ccc',
-                background: '#fff',
-                color: '#000',
+                border: "1px solid #ccc",
+                background: "#fff",
+                color: "#000",
                 borderRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
               icon={<DoubleRightOutlined />}
               disabled={selectedLeft.length === 0}
@@ -877,13 +883,13 @@ export default function EmployeePage() {
               style={{
                 width: 36,
                 height: 36,
-                border: '1px solid #ccc',
-                background: '#fff',
-                color: '#000',
+                border: "1px solid #ccc",
+                background: "#fff",
+                color: "#000",
                 borderRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
               icon={<DoubleLeftOutlined />}
               disabled={selectedRight.length === 0}
@@ -894,8 +900,8 @@ export default function EmployeePage() {
           <div
             style={{
               width: 320,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               minHeight: 0,
             }}
           >
@@ -911,23 +917,23 @@ export default function EmployeePage() {
             </div>
             <div
               style={{
-                background: '#fff',
+                background: "#fff",
                 flex: 1,
                 borderRadius: 6,
-                overflow: 'auto',
-                border: '1px solid #eee',
-                display: 'flex',
-                flexDirection: 'column',
+                overflow: "auto",
+                border: "1px solid #eee",
+                display: "flex",
+                flexDirection: "column",
                 minHeight: 0,
               }}
             >
               {/* 标题栏 */}
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderBottom: '1px solid #eee',
-                  padding: '0 12px',
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee",
+                  padding: "0 12px",
                   height: 40,
                   fontWeight: 500,
                   flexShrink: 0,
@@ -952,15 +958,15 @@ export default function EmployeePage() {
                 <span style={{ flex: 1 }}>客户名称</span>
               </div>
               {/* 客户项 */}
-              <div style={{ flex: 1, overflow: 'auto' }}>
+              <div style={{ flex: 1, overflow: "auto" }}>
                 {rightList.map((c) => (
                   <div
                     key={c.id}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderBottom: '1px solid #eee',
-                      padding: '0 12px',
+                      display: "flex",
+                      alignItems: "center",
+                      borderBottom: "1px solid #eee",
+                      padding: "0 12px",
                       height: 40,
                     }}
                   >
@@ -985,24 +991,24 @@ export default function EmployeePage() {
         {/* 底部按钮 */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
+            display: "flex",
+            justifyContent: "flex-end",
             gap: 12,
             marginTop: 24,
           }}
         >
           <Button
             style={{
-              background: '#fff',
-              color: '#000',
-              border: '1px solid #ccc',
+              background: "#fff",
+              color: "#000",
+              border: "1px solid #ccc",
             }}
             onClick={() => setCustomerModalVisible(false)}
           >
             取消
           </Button>
           <Button
-            style={{ background: '#000', color: '#fff', border: 'none' }}
+            style={{ background: "#000", color: "#fff", border: "none" }}
             onClick={() => {
               // 保存逻辑
               setCustomerModalVisible(false);
