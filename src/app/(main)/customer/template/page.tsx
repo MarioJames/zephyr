@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Modal, Form, Input, message, Spin, Empty } from 'antd';
+import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Form, Input, message, Spin, Empty } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
 
 import { useAgentStore } from '@/store/agent/store';
 import { agentSelectors } from '@/store/agent/selectors';
+import TemplateModal from './components/templateModal';
 
 const { Title, Paragraph } = Typography;
 
@@ -254,27 +255,40 @@ export default function CustomerTemplatePage() {
         </div>
       </Spin>
 
-      {/* 新增/编辑弹窗表单 */}
-      <Modal
-        title={editing?.id ? '编辑客户模版' : '添加客户类型'}
+      <TemplateModal
         open={modalOpen}
-        onOk={handleModalOk}
         onCancel={handleModalCancel}
-        confirmLoading={submitting}
-        destroyOnClose
-      >
-        <Form form={form} layout="vertical" preserve={false} initialValues={editing?.initial}>
-          <Form.Item name="title" label="模版名称" rules={[{ required: true, message: '请输入模版名称' }]}> 
-            <Input placeholder="请输入模版名称" />
-          </Form.Item>
-          <Form.Item name="description" label="模版描述">
-            <Input.TextArea placeholder="请输入模版描述" rows={3} />
-          </Form.Item>
-          <Form.Item name="avatar" label="图片URL">
-            <Input placeholder="请输入图片URL（可选，实际展示为/test.png兜底）" />
-          </Form.Item>
-        </Form>
-      </Modal>
+        onOk={async (values) => {
+          setSubmitting(true);
+          try {
+            if (editing?.id) {
+              await updateAgent(editing.id, { id: editing.id, ...values });
+              message.success('编辑成功');
+            } else {
+              await createAgent(values);
+              message.success('添加成功');
+            }
+            setModalOpen(false);
+            setEditing(null);
+            form.resetFields();
+          } catch (e) {
+            // 校验失败或接口异常
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+        loading={submitting}
+        initialValues={editing?.initial}
+        modelOptions={[
+          { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
+          { label: 'gpt-4', value: 'gpt-4' },
+        ]}
+        onUploadImage={async (file) => {
+          // 这里需要你实现上传逻辑，返回图片url
+          // 示例：return await uploadImage(file);
+          return '';
+        }}
+      />
     </div>
   );
 }
