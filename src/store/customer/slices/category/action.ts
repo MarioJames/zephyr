@@ -20,41 +20,41 @@ export const categorySlice: StateCreator<
 > = (set, get) => ({
   setPagination: (page: number, pageSize: number) => {
     set({ page, pageSize });
-    
+
     // 调用 core slice 中的 fetchCustomers action，传递当前分类参数
     const state = get();
     if (state.selectedCategory) {
       const params = {
         page,
         pageSize,
-        ...(state.selectedCategory.agent?.id !== 'ALL' 
+        ...(state.selectedCategory.agent?.id !== 'ALL'
           ? { agentId: state.selectedCategory.agent?.id }
           : {})
       };
-      
+
       state.fetchCustomers(params);
     }
   },
 
   setSelectedCategory: (category) => {
     set({ selectedCategory: category, page: 1 });
-    
+
     // 调用 core slice 中的 fetchCustomers action
     const state = get();
     // 根据选中的分类获取客户列表
     const params = {
       page: 1,
       pageSize: state.pageSize || 10,
-      ...(category.agent?.id !== 'ALL' 
+      ...(category.agent?.id !== 'ALL'
         ? { agentId: category.agent?.id }
         : {})
     };
-    
+
     state.fetchCustomers(params);
   },
 
   fetchCategoryStats: async () => {
-    const data = await sessionsAPI.getSessionListGroupedByAgent();
+    const data = await sessionsAPI.getSessionsGroupedByAgent();
 
     const categoryStats: SessionStatGroupedByAgentItem[] = [
       {
