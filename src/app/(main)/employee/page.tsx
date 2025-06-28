@@ -237,6 +237,7 @@ export default function EmployeePage() {
     addEmployee,
     updateEmployee,
     deleteEmployee,
+    uploadAvatar,
   } = useEmployeeStore();
   const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
 
@@ -365,25 +366,39 @@ export default function EmployeePage() {
   };
 
   // 头像上传前处理
-  const beforeUpload = (file: File) => {
+  const beforeUpload = async (file: File) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       message.error("只能上传 JPG/PNG 格式的图片!");
+      return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       message.error("图片大小不能超过 2MB!");
+      return false;
     }
-    return isJpgOrPng && isLt2M;
+    try {
+      const url = await uploadAvatar(file);
+      setAvatarFile({
+        uid: `${Date.now()}_${file.name}`,
+        name: file.name,
+        status: "done",
+        url,
+      });
+      message.success("头像上传成功");
+    } catch (e: any) {
+      message.error(e.message || "头像上传失败");
+    }
+    // 阻止Upload组件自动上传
+    return false;
   };
 
   // 头像上传变更处理
   const handleAvatarChange: UploadProps["onChange"] = ({ fileList }) => {
-    if (fileList.length > 0) {
-      setAvatarFile(fileList[0]);
-    } else {
+    if (fileList.length === 0) {
       setAvatarFile(null);
     }
+    // 其余情况已在beforeUpload处理
   };
 
   // 打开客户管理弹窗

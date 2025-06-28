@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand/vanilla';
 import userService, { UserItem, UserCreateRequest, UserUpdateRequest } from '@/services/user';
 import rolesService from '@/services/roles';
+import filesService from '@/services/files';
 import { EmployeeState } from '../../initialState';
 
 // ========== 核心功能Action接口 ==========
@@ -11,6 +12,7 @@ export interface CoreAction {
   addEmployee: (data: UserCreateRequest) => Promise<void>;
   updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<string>;
 }
 
 // ========== 核心功能Slice ==========
@@ -101,6 +103,15 @@ export const coreSlice: StateCreator<
       set({ error: e?.message || '删除员工失败' });
     } finally {
       set({ loading: false });
+    }
+  },
+
+  uploadAvatar: async (file) => {
+    try {
+      const res = await filesService.uploadPublic({ file, directory: 'avatar' });
+      return res.url;
+    } catch (e: any) {
+      throw new Error(e?.message || '头像上传失败');
     }
   },
 });
