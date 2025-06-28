@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand/vanilla';
 import userService, { UserItem, UserCreateRequest, UserUpdateRequest } from '@/services/user';
 import rolesService from '@/services/roles';
 import filesService from '@/services/files';
+import sessionsService from '@/services/sessions';
 import { EmployeeState } from '../../initialState';
 
 // ========== 核心功能Action接口 ==========
@@ -13,6 +14,8 @@ export interface CoreAction {
   updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
+  fetchSessionList: () => Promise<Array<{ id: string; customerName: string; employeeName: string; userId: string }>>;
+  updateEmployeeSessions: (userId: string, sessionIds: string[]) => Promise<void>;
 }
 
 // ========== 核心功能Slice ==========
@@ -113,5 +116,22 @@ export const coreSlice: StateCreator<
     } catch (e: any) {
       throw new Error(e?.message || '头像上传失败');
     }
+  },
+
+  fetchSessionList: async () => {
+    const res = await sessionsService.getSessionList();
+    // 格式化为{id, customerName, employeeName, userId}
+    return res.sessions.map((s: any) => ({
+      id: s.id,
+      customerName: s.title,
+      employeeName: s.user?.username || '',
+      userId: s.userId || '',
+    }));
+  },
+
+  updateEmployeeSessions: async (userId, sessionIds) => {
+    // 直接更新user的sessionIds字段（假设后端支持）
+    await userService.updateUser(userId, { sessionIds });
+    await get().fetchEmployees();
   },
 });

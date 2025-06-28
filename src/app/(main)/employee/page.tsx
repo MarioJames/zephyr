@@ -35,13 +35,13 @@ const { Title, Text } = Typography;
 
 // mock 客户数据
 const allCustomers = [
-  { id: "c1", name: "客户A", owner: "张三" },
-  { id: "c2", name: "客户B", owner: "李四" },
-  { id: "c3", name: "客户C", owner: "王五" },
-  { id: "c4", name: "客户D", owner: "赵六" },
-  { id: "c5", name: "客户E", owner: "钱七" },
-  { id: "c6", name: "客户F", owner: "未分配" },
-  { id: "c7", name: "客户G", owner: "未分配" },
+  { id: "c1", customerName: "客户A", employeeName: "张三",userId: "1" },
+  { id: "c2", customerName: "客户B", employeeName: "李四",userId: "2" },
+  { id: "c3", customerName: "客户C", employeeName: "王五",userId: "3" },
+  { id: "c4", customerName: "客户D", employeeName: "赵六",userId: "4" },
+  { id: "c5", customerName: "客户E", employeeName: "钱七",userId: "5" },
+  { id: "c6", customerName: "客户F", employeeName: "未分配",userId: "6" },
+  { id: "c7", customerName: "客户G", employeeName: "未分配",userId: "7" },
 ];
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -226,6 +226,8 @@ export default function EmployeePage() {
     updateEmployee,
     deleteEmployee,
     uploadAvatar,
+    fetchSessionList,
+    updateEmployeeSessions,
   } = useEmployeeStore();
   const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
 
@@ -250,6 +252,8 @@ export default function EmployeePage() {
   ]);
   const [currentCustomerEmployee, setCurrentCustomerEmployee] =
     useState<UserItem | null>(null);
+  const [sessionList, setSessionList] = useState<any[]>([]);
+  const [sessionLoading, setSessionLoading] = useState(false);
 
   // 页面初始化加载员工和角色
   React.useEffect(() => {
@@ -390,11 +394,20 @@ export default function EmployeePage() {
   };
 
   // 打开客户管理弹窗
-  const handleCustomerManage = (employee: UserItem) => {
+  const handleCustomerManage = async (employee: UserItem) => {
     setCurrentCustomerEmployee(employee);
     setCustomerModalVisible(true);
     setSelectedLeft([]);
     setSelectedRight([]);
+    setSessionLoading(true);
+    try {
+      const list = await fetchSessionList();
+      setSessionList(list);
+      // 右侧为当前员工的sessions
+      setEmployeeCustomers((employee.sessions || []).map((s) => s.id));
+    } finally {
+      setSessionLoading(false);
+    }
   };
 
   // 穿梭到右侧
@@ -412,16 +425,14 @@ export default function EmployeePage() {
   };
 
   // 左侧客户列表过滤
-  const leftList = allCustomers.filter((c) => {
+  const leftList = sessionList.filter((c) => {
     if (customerTab === "all") return !employeeCustomers.includes(c.id);
     if (customerTab === "unassigned")
-      return c.owner === "未分配" && !employeeCustomers.includes(c.id);
+      return (!c.username || c.username === "未分配") && !employeeCustomers.includes(c.id);
     return false;
   });
   // 右侧客户列表
-  const rightList = allCustomers.filter((c) =>
-    employeeCustomers.includes(c.id)
-  );
+  const rightList = sessionList.filter((c) => employeeCustomers.includes(c.id));
 
   const columns: ColumnsType<UserItem> = [
     {
@@ -877,8 +888,8 @@ export default function EmployeePage() {
                       }}
                       style={{ marginRight: 8 }}
                     />
-                    <span style={{ flex: 1 }}>{c.name}</span>
-                    <span style={{ width: 60 }}>{c.owner}</span>
+                    <span style={{ flex: 1 }}>{c.customerName}</span>
+                    <span style={{ width: 60 }}>{c.employeeName}</span>
                   </div>
                 ))}
               </div>
@@ -1013,7 +1024,7 @@ export default function EmployeePage() {
                       }}
                       style={{ marginRight: 8 }}
                     />
-                    <span style={{ flex: 1 }}>{c.name}</span>
+                    <span style={{ flex: 1 }}>{c.customerName}</span>
                   </div>
                 ))}
               </div>
@@ -1041,9 +1052,19 @@ export default function EmployeePage() {
           </Button>
           <Button
             style={{ background: "#000", color: "#fff", border: "none" }}
-            onClick={() => {
-              // 保存逻辑
-              setCustomerModalVisible(false);
+            loading={sessionLoading}
+            onClick={async () => {
+              if (!currentCustomerEmployee) return;
+              setSessionLoading(true);
+              try {
+                await updateEmployeeSessions(currentCustomerEmployee.id, employeeCustomers);
+                message.success("保存成功");
+                setCustomerModalVisible(false);
+              } catch (e: any) {
+                message.error(e.message || "保存失败");
+              } finally {
+                setSessionLoading(false);
+              }
             }}
           >
             保存
