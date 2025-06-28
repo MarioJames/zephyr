@@ -119,7 +119,8 @@ export const coreSlice: StateCreator<
   },
 
   fetchSessionList: async () => {
-    const res = await sessionsService.getSessionList();
+    const res = await sessionsService.getSessionList({ page: 1, pageSize: 100, userId: 'ALL' });
+    
     // 格式化为{id, customerName, employeeName, userId}
     return res.sessions.map((s: any) => ({
       id: s.id,
