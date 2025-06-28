@@ -2,20 +2,11 @@ import { http } from '../request';
 
 // 文件相关类型定义
 export interface FileMetadata {
-  width?: number;
-  height?: number;
-  duration?: number;
-  [key: string]: any;
+  date: string;
+  dirname: string;
+  filename: string;
+  path: string;
 }
-
-// 移除进度状态，简化为基本上传状态
-
-export type FileUploadStatus =
-  | 'pending'
-  | 'uploading'
-  | 'processing'
-  | 'success'
-  | 'error';
 
 export interface FileItem {
   id: string;
@@ -26,10 +17,11 @@ export interface FileItem {
   url: string;
   uploadedAt: string;
   metadata: FileMetadata;
-  status: FileUploadStatus;
 }
 
-export interface FileUploadResponse extends FileItem {}
+export interface FilePublicUploadResponse extends FileItem {
+  url: string;
+}
 
 export interface FileUploadRequest {
   file: File;
@@ -46,7 +38,7 @@ export interface BatchUploadRequest {
 }
 
 export interface BatchUploadResponse {
-  successful: FileUploadResponse[];
+  successful: FileItem[];
   failed: Array<{
     filename: string;
     error: string;
@@ -67,7 +59,7 @@ export interface FileListRequest {
 }
 
 export interface FileListResponse {
-  files: FileUploadResponse[];
+  files: FileItem[];
   page: number;
   pageSize: number;
   total: number;
@@ -89,7 +81,7 @@ function upload(data: FileUploadRequest) {
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
 
-  return http.post<FileUploadResponse>('/api/v1/files/upload', formData, {
+  return http.post<FileItem>('/api/v1/files/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -125,6 +117,32 @@ function batchUpload(data: BatchUploadRequest) {
 }
 
 /**
+ * 单文件上传（公共读）
+ * @description 上传单个文件到服务器
+ * @param data FileUploadRequest
+ * @returns FileUploadResponse
+ */
+function uploadPublic(data: FileUploadRequest) {
+  const formData = new FormData();
+  formData.append('file', data.file);
+  if (data.knowledgeBaseId)
+    formData.append('knowledgeBaseId', data.knowledgeBaseId);
+  if (data.skipCheckFileType !== undefined)
+    formData.append('skipCheckFileType', String(data.skipCheckFileType));
+  if (data.directory) formData.append('directory', data.directory);
+
+  return http.post<FilePublicUploadResponse>(
+    '/api/v1/files/upload-public',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+}
+
+/**
  * 获取文件列表
  * @description 获取文件列表，支持分页和过滤
  * @param params FileListRequest
@@ -141,7 +159,7 @@ function getFileList(params?: FileListRequest) {
  * @returns FileUploadResponse
  */
 function getFileDetail(id: string) {
-  return http.get<FileUploadResponse>(`/api/v1/files/${id}`);
+  return http.get<FileItem>(`/api/v1/files/${id}`);
 }
 
 /**
@@ -156,6 +174,7 @@ function deleteFile(id: string) {
 
 export default {
   upload,
+  uploadPublic,
   batchUpload,
   getFileList,
   getFileDetail,

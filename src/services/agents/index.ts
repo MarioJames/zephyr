@@ -1,22 +1,5 @@
 import { http } from '../request';
 
-// {
-//   "searchMode": "auto",
-//   "displayMode": "chat",
-//   "historyCount": 8,
-//   "searchFCModel": {
-//     "model": "gpt-4o-mini",
-//     "provider": "openai"
-//   },
-//   "enableReasoning": false,
-//   "enableHistoryCount": false,
-//   "reasoningBudgetToken": 1024,
-//   "enableAutoCreateTopic": true,
-//   "enableCompressHistory": true,
-//   "useModelBuiltinSearch": true,
-//   "autoCreateTopicThreshold": 2
-// }
-
 export interface AgentChatConfig {
   searchMode?: string;
   displayMode?: string;
@@ -60,13 +43,14 @@ export interface AgentItem {
 }
 
 export interface CreateAgentRequest {
-  title: string;                       // 必填，智能体标题
+  title: string; // 必填，智能体标题
   description?: string;
   tags?: string[];
   avatar?: string;
   backgroundColor?: string;
   plugins?: string[];
-  chatConfig?: {                      // 聊天配置
+  chatConfig?: {
+    // 聊天配置
     autoCreateTopicThreshold: number;
     enableAutoCreateTopic?: boolean;
     enableCompressHistory?: boolean;
@@ -78,7 +62,7 @@ export interface CreateAgentRequest {
   };
   fewShots?: any;
   model?: string;
-  params?: Record<string, unknown>;   // 自定义参数
+  params?: Record<string, unknown>; // 自定义参数
   provider?: string;
   systemRole?: string;
   tts?: any;

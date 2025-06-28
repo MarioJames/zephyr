@@ -1,10 +1,17 @@
-import { CustomerItem, CustomerCreateRequest, CustomerUpdateRequest } from '@/services/customer';
-import { CustomerFormData } from '@/types/customer-form';
+import {
+  CustomerItem,
+  CustomerCreateRequest,
+  CustomerUpdateRequest,
+} from '@/services/customer';
+import { CustomerFormData } from './CustomerForm';
+import { AgentItem } from '@/services/agents';
 
 /**
  * 将CustomerItem转换为表单数据
  */
-export function customerItemToFormData(customer: CustomerItem): CustomerFormData {
+export function customerItemToFormData(
+  customer: CustomerItem
+): CustomerFormData {
   const { session, extend } = customer;
 
   // 构建地区数组
@@ -14,20 +21,9 @@ export function customerItemToFormData(customer: CustomerItem): CustomerFormData
   if (extend?.district) region.push(extend.district);
 
   return {
-    name: session.title || '',
-    gender: extend?.gender || undefined,
-    age: extend?.age?.toString() || undefined,
-    position: extend?.position || undefined,
-    phone: extend?.phone || '',
-    email: extend?.email || undefined,
-    wechat: extend?.wechat || undefined,
-    company: extend?.company || undefined,
-    industry: extend?.industry || undefined,
-    scale: extend?.scale || undefined,
+    ...session,
+    ...extend,
     region: region.length > 0 ? region : undefined,
-    address: extend?.address || undefined,
-    notes: extend?.notes || undefined,
-    avatar: session.avatar || undefined,
   };
 }
 
@@ -35,30 +31,30 @@ export function customerItemToFormData(customer: CustomerItem): CustomerFormData
  * 将表单数据转换为创建请求
  */
 export function formDataToCreateRequest(
-  formData: CustomerFormData & { type: string; avatar?: string }
+  formData: CustomerFormData
 ): CustomerCreateRequest {
   return {
     // Session字段
-    title: formData.name,
-    description: `${formData.type}类客户`,
+    title: formData.title || '',
+    description: formData.description,
     avatar: formData.avatar,
     agentId: undefined, // 可以根据type映射到具体的agentId
 
     // 扩展字段
-    gender: formData.gender,
-    age: formData.age ? parseInt(formData.age) : undefined,
-    position: formData.position,
-    phone: formData.phone,
-    email: formData.email,
-    wechat: formData.wechat,
-    company: formData.company,
-    industry: formData.industry,
-    scale: formData.scale,
+    gender: formData.gender || undefined,
+    age: formData.age || undefined,
+    position: formData.position || undefined,
+    phone: formData.phone || undefined,
+    email: formData.email || undefined,
+    wechat: formData.wechat || undefined,
+    company: formData.company || undefined,
+    industry: formData.industry || undefined,
+    scale: formData.scale || undefined,
     province: formData.region?.[0],
     city: formData.region?.[1],
     district: formData.region?.[2],
-    address: formData.address,
-    notes: formData.notes,
+    address: formData.address || undefined,
+    notes: formData.notes || undefined,
   };
 }
 
@@ -66,7 +62,7 @@ export function formDataToCreateRequest(
  * 将表单数据转换为更新请求
  */
 export function formDataToUpdateRequest(
-  formData: CustomerFormData & { type: string; avatar?: string }
+  formData: CustomerFormData
 ): CustomerUpdateRequest {
   // 更新请求和创建请求结构相同，都是Partial类型
   return formDataToCreateRequest(formData);
@@ -74,9 +70,13 @@ export function formDataToUpdateRequest(
 
 /**
  * 根据客户类型获取agentId映射
+ * 现在客户类型就是agentId，所以直接返回
  */
-export function getAgentIdByType(type: string, agents: any[]): string | undefined {
-  // 这里可以根据业务需求实现类型到agentId的映射
-  // 目前返回第一个agent的ID作为默认值
-  return agents.length > 0 ? agents[0].id : undefined;
+export function getAgentIdByType(
+  type: string,
+  agents: AgentItem[]
+): string | undefined {
+  // 验证 agentId 是否存在于 agents 列表中
+  const agent = agents.find((a) => a.id === type);
+  return agent ? agent.id : agents.length > 0 ? agents[0].id : undefined;
 }

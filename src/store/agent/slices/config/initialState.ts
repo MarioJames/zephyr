@@ -7,17 +7,17 @@ export interface AgentChatConfig {
   enableReasoning?: boolean;
   historyCount?: number;
   temperature?: number;
-  displayMode?: 'chat' | 'docs';
+  displayMode?: string;
   enableHistoryDivider?: boolean;
 }
 
 export interface ConfigState {
-  agentConfig: AgentChatConfig;
+  agentChatConfig: AgentChatConfig;
   isAgentConfigLoading: boolean;
 }
 
 export const initialConfigState: ConfigState = {
-  agentConfig: {
+  agentChatConfig: {
     autoCreateTopicThreshold: 4,
     enableAutoCreateTopic: true,
     enableCompressHistory: true,

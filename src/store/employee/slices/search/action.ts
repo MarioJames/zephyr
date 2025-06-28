@@ -33,7 +33,7 @@ export const searchSlice: StateCreator<
       return;
     }
 
-    const filtered = employees.filter(employee => {
+    const filtered = employees.filter((employee) => {
       const searchTerm = searchQuery.toLowerCase();
       return (
         employee.fullName?.toLowerCase().includes(searchTerm) ||
@@ -51,7 +51,7 @@ export const searchSlice: StateCreator<
     const { roles } = get();
     const roleMap: Record<string, string> = {};
 
-    roles.forEach(role => {
+    roles.forEach((role) => {
       roleMap[role.id] = role.name;
     });
 
@@ -75,7 +75,7 @@ export const searchSlice: StateCreator<
         return;
       }
       // 远程搜索用户
-      const res = await userService.searchUsers({ keyword, page: 1, pageSize });
+      const res = await userService.searchUsers(keyword);
       set({ filteredEmployees: res, loading: false });
     } catch (e: any) {
       set({ filteredEmployees: [], loading: false });

@@ -70,6 +70,16 @@ function getAllUsers(params?: UserListRequest) {
 }
 
 /**
+ * 根据关键字搜索用户
+ * @description 根据关键字搜索用户
+ * @param keyword string
+ * @returns UserItem[]
+ */
+function searchUsers(keyword: string) {
+  return http.get<UserItem[]>(`/api/v1/users/search?keyword=${keyword}`);
+}
+
+/**
  * 创建用户
  * @description 创建新的用户
  * @param data UserCreateRequest
@@ -108,16 +118,6 @@ function updateUser(id: string, data: UserUpdateRequest) {
  */
 function deleteUser(id: string) {
   return http.delete<void>(`/api/v1/users/${id}`);
-}
-
-/**
- * 搜索用户
- * @description 支持关键词搜索
- * @param params UserSearchRequest
- * @returns UserItem[]
- */
-function searchUsers(params: UserSearchRequest) {
-  return http.get<UserItem[]>('/api/v1/users/search', params);
 }
 
 export default {

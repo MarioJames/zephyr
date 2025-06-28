@@ -69,7 +69,7 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   statsBox: css`
     cursor: pointer;
     flex: 1;
-    border: 1px solid ${token.colorText};
+    border: 1px solid ${token.colorBorderSecondary};
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -82,7 +82,7 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
     }
   `,
   statsBoxActive: css`
-    border-color: ${token.colorPrimary} !important;
+    border-color: ${token.colorText};
     background: ${isDarkMode
       ? token.colorFillSecondary
       : token.colorFillTertiary};
@@ -272,7 +272,13 @@ export default function Customer() {
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
-    router.push('/customer/form');
+    console.log('点击添加客户按钮，准备跳转到 /customer/form');
+    try {
+      router.push('/customer/form');
+      console.log('router.push 调用成功');
+    } catch (error) {
+      console.error('router.push 调用失败:', error);
+    }
   }, [router]);
 
   // 跳转到编辑客户页面

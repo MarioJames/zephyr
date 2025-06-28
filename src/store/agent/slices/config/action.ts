@@ -7,7 +7,7 @@ export interface ConfigAction {
   updateAgentConfig: (config: Partial<AgentChatConfig>) => void;
   resetAgentConfig: () => void;
   setConfigLoading: (loading: boolean) => void;
-  
+
   // 特定配置更新
   updateDisplayMode: (mode: 'chat' | 'docs') => void;
   updateHistoryCount: (count: number) => void;
@@ -18,16 +18,14 @@ export interface ConfigAction {
   toggleHistoryDivider: () => void;
 }
 
-export const configSlice: StateCreator<
-  AgentStore,
-  [],
-  [],
-  ConfigAction
-> = (set, get) => ({
+export const configSlice: StateCreator<AgentStore, [], [], ConfigAction> = (
+  set,
+  get
+) => ({
   updateAgentConfig: (config: Partial<AgentChatConfig>) => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
+      agentChatConfig: {
+        ...state.agentChatConfig,
         ...config,
       },
     }));
@@ -35,7 +33,7 @@ export const configSlice: StateCreator<
 
   resetAgentConfig: () => {
     const { initialState } = require('../../initialState');
-    set({ agentConfig: initialState.agentConfig });
+    set({ agentChatConfig: initialState.agentChatConfig });
   },
 
   setConfigLoading: (loading: boolean) => {
@@ -44,8 +42,8 @@ export const configSlice: StateCreator<
 
   updateDisplayMode: (mode: 'chat' | 'docs') => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
+      agentChatConfig: {
+        ...state.agentChatConfig,
         displayMode: mode,
       },
     }));
@@ -53,8 +51,8 @@ export const configSlice: StateCreator<
 
   updateHistoryCount: (count: number) => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
+      agentChatConfig: {
+        ...state.agentChatConfig,
         historyCount: count,
       },
     }));
@@ -62,8 +60,8 @@ export const configSlice: StateCreator<
 
   updateTemperature: (temp: number) => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
+      agentChatConfig: {
+        ...state.agentChatConfig,
         temperature: temp,
       },
     }));
@@ -71,36 +69,36 @@ export const configSlice: StateCreator<
 
   toggleHistoryCount: () => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
-        enableHistoryCount: !state.agentConfig.enableHistoryCount,
+      agentChatConfig: {
+        ...state.agentChatConfig,
+        enableHistoryCount: !state.agentChatConfig.enableHistoryCount,
       },
     }));
   },
 
   toggleAutoCreateTopic: () => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
-        enableAutoCreateTopic: !state.agentConfig.enableAutoCreateTopic,
+      agentChatConfig: {
+        ...state.agentChatConfig,
+        enableAutoCreateTopic: !state.agentChatConfig.enableAutoCreateTopic,
       },
     }));
   },
 
   toggleCompressHistory: () => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
-        enableCompressHistory: !state.agentConfig.enableCompressHistory,
+      agentChatConfig: {
+        ...state.agentChatConfig,
+        enableCompressHistory: !state.agentChatConfig.enableCompressHistory,
       },
     }));
   },
 
   toggleHistoryDivider: () => {
     set((state) => ({
-      agentConfig: {
-        ...state.agentConfig,
-        enableHistoryDivider: !state.agentConfig.enableHistoryDivider,
+      agentChatConfig: {
+        ...state.agentChatConfig,
+        enableHistoryDivider: !state.agentChatConfig.enableHistoryDivider,
       },
     }));
   },
