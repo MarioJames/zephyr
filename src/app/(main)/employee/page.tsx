@@ -240,6 +240,9 @@ export default function EmployeePage() {
   } = useEmployeeStore();
   const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
 
+  // 分页状态
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+
   // 页面状态
   const [searchValue, setSearchValue] = useState("");
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
@@ -261,9 +264,9 @@ export default function EmployeePage() {
 
   // 页面初始化加载员工和角色
   React.useEffect(() => {
-    fetchEmployees();
+    fetchEmployees({ page: pagination.current, pageSize: pagination.pageSize });
     fetchRoles();
-  }, []);
+  }, [pagination.current, pagination.pageSize]);
 
   // 处理角色变更
   const handleRoleChange = async (employeeId: string, newRoleId: string) => {
@@ -573,6 +576,11 @@ export default function EmployeePage() {
     searchEmployees(value);
   };
 
+  const handleTableChange = (paginationConfig) => {
+    setPagination({ current: paginationConfig.current, pageSize: paginationConfig.pageSize });
+    fetchEmployees({ page: paginationConfig.current, pageSize: paginationConfig.pageSize });
+  };
+
   return (
     <div className={styles.container}>
       {/* 顶部标题和搜索区 */}
@@ -602,10 +610,12 @@ export default function EmployeePage() {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
             showSizeChanger: true,
             showQuickJumper: false,
           }}
+          onChange={handleTableChange}
         />
       </div>
 

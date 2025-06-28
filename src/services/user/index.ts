@@ -44,6 +44,11 @@ export interface UserSearchRequest {
   pageSize?: number;
 }
 
+export interface UserListRequest {
+  page?: number;
+  pageSize?: number;
+}
+
 /**
  * 获取当前用户信息
  * @description 获取当前登录用户的详细信息
@@ -60,8 +65,8 @@ function getCurrentUser() {
  * @param null
  * @returns UserItem[]
  */
-function getAllUsers() {
-  return http.get<UserItem[]>('/api/v1/users');
+function getAllUsers(params?: UserListRequest) {
+  return http.get<UserItem[]>('/api/v1/users', params);
 }
 
 /**

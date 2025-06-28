@@ -5,7 +5,7 @@ import { EmployeeState } from '../../initialState';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
-  fetchEmployees: (options?: { skipStats?: boolean }) => Promise<void>;
+  fetchEmployees: (options?: { page?: number; pageSize?: number; skipStats?: boolean }) => Promise<void>;
   fetchEmployeesWithStats: () => Promise<void>;
   fetchRoles: () => Promise<void>;
   addEmployee: (data: UserCreateRequest) => Promise<void>;
@@ -21,10 +21,10 @@ export const coreSlice: StateCreator<
   CoreAction
 > = (set, get) => ({
   fetchEmployees: async (options = {}) => {
-    const { skipStats = false } = options;
+    const { skipStats = false, page = 1, pageSize = 10 } = options;
     set({ loading: true, error: null });
     try {
-      const res = await userService.getAllUsers();
+      const res = await userService.getAllUsers({ page, pageSize });
       set({ employees: res });
 
       // 获取其他slice的方法并调用
