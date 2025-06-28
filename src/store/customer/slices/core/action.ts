@@ -1,13 +1,22 @@
 import { StateCreator } from 'zustand/vanilla';
-import customerAPI, { type CustomerItem, type CustomerListRequest, type CustomerCreateRequest, type CustomerUpdateRequest } from '@/services/customer';
+import customerAPI, {
+  type CustomerItem,
+  type CustomerListRequest,
+  type CustomerCreateRequest,
+  type CustomerUpdateRequest,
+} from '@/services/customer';
 import { CustomerState } from '../../initialState';
+import { sessionsAPI } from '@/services';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
   fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
   fetchCustomerDetail: (sessionId: string) => Promise<void>;
   createCustomer: (data: CustomerCreateRequest) => Promise<void>;
-  updateCustomer: (sessionId: string, data: CustomerUpdateRequest) => Promise<void>;
+  updateCustomer: (
+    sessionId: string,
+    data: CustomerUpdateRequest
+  ) => Promise<void>;
   deleteCustomer: (sessionId: string) => Promise<void>;
   setCurrentCustomer: (customer?: CustomerItem) => void;
   clearError: () => void;
@@ -21,31 +30,22 @@ export const coreSlice: StateCreator<
   CoreAction
 > = (set, get) => ({
   fetchCustomers: async (params) => {
-    set({ loading: true, error: null });
     try {
+      set({ loading: true, error: null });
+
+      // 获取客户列表
       const response = await customerAPI.getCustomerList(params);
+
       set({
         customers: response.data,
         total: response.total,
-        loading: false
+        loading: false,
       });
-
-      // 触发其他slice的相关方法
-      const state = get() as any;
-      if (state.updateCategoryStats) {
-        state.updateCategoryStats();
-      }
-      if (state.updateCustomerStats) {
-        state.updateCustomerStats();
-      }
-      if (state.filterCustomers) {
-        state.filterCustomers();
-      }
     } catch (error) {
       console.error('获取客户列表失败:', error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : '获取客户列表失败'
+        error: error instanceof Error ? error.message : '获取客户列表失败',
       });
     }
   },
@@ -56,13 +56,13 @@ export const coreSlice: StateCreator<
       const customer = await customerAPI.getCustomerDetail(sessionId);
       set({
         currentCustomer: customer,
-        loading: false
+        loading: false,
       });
     } catch (error) {
       console.error('获取客户详情失败:', error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : '获取客户详情失败'
+        error: error instanceof Error ? error.message : '获取客户详情失败',
       });
     }
   },
@@ -71,10 +71,10 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const newCustomer = await customerAPI.createCustomer(data);
-      set(state => ({
+      set((state) => ({
         customers: [newCustomer, ...state.customers],
         total: state.total + 1,
-        loading: false
+        loading: false,
       }));
 
       // 刷新相关数据
@@ -89,7 +89,7 @@ export const coreSlice: StateCreator<
       console.error('创建客户失败:', error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : '创建客户失败'
+        error: error instanceof Error ? error.message : '创建客户失败',
       });
     }
   },
@@ -100,13 +100,13 @@ export const coreSlice: StateCreator<
       await customerAPI.updateCustomer(sessionId, data);
 
       // 更新本地状态
-      set(state => ({
-        customers: state.customers.map(customer =>
+      set((state) => ({
+        customers: state.customers.map((customer) =>
           customer.session.id === sessionId
             ? { ...customer, ...data }
             : customer
         ),
-        loading: false
+        loading: false,
       }));
 
       // 如果更新的是当前客户，也更新当前客户状态
@@ -124,7 +124,7 @@ export const coreSlice: StateCreator<
       console.error('更新客户失败:', error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : '更新客户失败'
+        error: error instanceof Error ? error.message : '更新客户失败',
       });
     }
   },
@@ -135,12 +135,12 @@ export const coreSlice: StateCreator<
       await customerAPI.deleteCustomer(sessionId);
 
       // 更新本地状态
-      set(state => ({
-        customers: state.customers.filter(customer =>
-          customer.session.id !== sessionId
+      set((state) => ({
+        customers: state.customers.filter(
+          (customer) => customer.session.id !== sessionId
         ),
         total: state.total - 1,
-        loading: false
+        loading: false,
       }));
 
       // 如果删除的是当前客户，清除当前客户状态
@@ -161,7 +161,7 @@ export const coreSlice: StateCreator<
       console.error('删除客户失败:', error);
       set({
         loading: false,
-        error: error instanceof Error ? error.message : '删除客户失败'
+        error: error instanceof Error ? error.message : '删除客户失败',
       });
     }
   },

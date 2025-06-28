@@ -1,15 +1,20 @@
-import { AgentItem } from '@/services/agents';
+import { SessionStatGroupedByAgentItem } from '@/services/sessions';
 
-// ========== 分类功能状态接口 ==========
+const ALL_CATEGORY_ID = 'ALL';
+
 export interface CategoryState {
-  selectedCategory: string;
-  categoryStats: Record<string, number>;
-  agents: AgentItem[];
+  page: number;
+  pageSize: number;
+  selectedCategory: SessionStatGroupedByAgentItem;
+  categoryStats: SessionStatGroupedByAgentItem[];
 }
 
-// ========== 分类功能初始状态 ==========
 export const categoryInitialState: CategoryState = {
-  selectedCategory: 'all',
-  categoryStats: {},
-  agents: [],
+  page: 1,
+  pageSize: 20,
+  selectedCategory: {
+    agent: { id: ALL_CATEGORY_ID, title: '全部' },
+    count: 0,
+  },
+  categoryStats: [],
 };

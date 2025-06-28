@@ -1,81 +1,89 @@
 import { StateCreator } from 'zustand/vanilla';
-import agentsAPI, { AgentItem } from '@/services/agents';
 import { CustomerState } from '../../initialState';
+import { sessionsAPI } from '@/services';
+import { SessionStatGroupedByAgentItem } from '@/services/sessions';
+import { CoreAction } from '../core/action';
 
 // ========== 分类功能Action接口 ==========
 export interface CategoryAction {
-  setSelectedCategory: (categoryId: string) => void;
-  updateCategoryStats: () => void;
-  fetchAgents: () => Promise<void>;
-  setAgents: (agents: AgentItem[]) => void;
-  clearCategoryData: () => void;
+  setPagination: (page: number, pageSize: number) => void;
+  setSelectedCategory: (category: SessionStatGroupedByAgentItem) => void;
+  fetchCategoryStats: () => Promise<void>;
 }
 
 // ========== 分类功能Slice ==========
 export const categorySlice: StateCreator<
-  CustomerState & CategoryAction,
+  CustomerState & CategoryAction & CoreAction,
   [],
   [],
   CategoryAction
 > = (set, get) => ({
-  setSelectedCategory: (categoryId) => {
-    set({ selectedCategory: categoryId, currentPage: 1 });
+  setPagination: (page: number, pageSize: number) => {
+    set({ page, pageSize });
 
-    // 触发搜索slice的过滤方法
-    const state = get() as any;
-    if (state.filterCustomers) {
-      state.filterCustomers();
+    // 调用 core slice 中的 fetchCustomers action，传递当前分类参数
+    const state = get();
+    if (state.selectedCategory) {
+      const params = {
+        page,
+        pageSize,
+        ...(state.selectedCategory.agent?.id !== 'ALL'
+          ? { agentId: state.selectedCategory.agent?.id }
+          : {})
+      };
+
+      state.fetchCustomers(params);
     }
   },
 
-  updateCategoryStats: () => {
-    const { customers, agents } = get();
+  setSelectedCategory: (category) => {
+    set({ selectedCategory: category, page: 1 });
 
-    const categoryStats: Record<string, number> = {};
+    // 调用 core slice 中的 fetchCustomers action
+    const state = get();
+    // 根据选中的分类获取客户列表
+    const params = {
+      page: 1,
+      pageSize: state.pageSize || 10,
+      ...(category.agent?.id !== 'ALL'
+        ? { agentId: category.agent?.id }
+        : {})
+    };
 
-    // 初始化所有Agent类别为0
-    agents.forEach(agent => {
-      categoryStats[agent.id] = 0;
-    });
+    state.fetchCustomers(params);
+  },
 
-    // 统计未分类客户
-    categoryStats['unclassified'] = 0;
+  fetchCategoryStats: async () => {
+    const data = await sessionsAPI.getSessionsGroupedByAgent();
 
-    // 遍历客户进行分类统计
-    customers.forEach(customer => {
-      const agentId = customer.session.agentId;
-      if (agentId && categoryStats.hasOwnProperty(agentId)) {
-        categoryStats[agentId]++;
-      } else {
-        categoryStats['unclassified']++;
-      }
-    });
+    const categoryStats: SessionStatGroupedByAgentItem[] = [
+      {
+        agent: { id: 'ALL', title: '全部' },
+        count: data.reduce((acc, item) => acc + item.count, 0),
+      },
+      ...data,
+    ];
 
     set({ categoryStats });
-  },
 
-  fetchAgents: async () => {
-    try {
-      const agents = await agentsAPI.getAgentList();
-      set({ agents });
+    // 检查URL参数中的category字段
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryFromUrl = urlParams.get('category');
 
-      // 更新分类统计
-      get().updateCategoryStats();
-    } catch (error) {
-      console.error('获取Agent列表失败:', error);
+    let selectedCategory: SessionStatGroupedByAgentItem;
+
+    if (categoryFromUrl) {
+      // 从URL中获取category值，查找对应的分类
+      const foundCategory = categoryStats.find(
+        (item) => item.agent?.id === categoryFromUrl
+      );
+      selectedCategory = foundCategory || categoryStats[0]; // 如果找不到则使用"全部"
+    } else {
+      // URL中没有category字段，使用"全部"分类
+      selectedCategory = categoryStats[0];
     }
-  },
 
-  setAgents: (agents) => {
-    set({ agents });
-    get().updateCategoryStats();
-  },
-
-  clearCategoryData: () => {
-    set({
-      selectedCategory: 'all',
-      categoryStats: {},
-      agents: [],
-    });
+    const state = get();
+    state.setSelectedCategory(selectedCategory);
   },
 });

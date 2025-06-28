@@ -15,10 +15,13 @@ export interface SessionItem {
   groupId?: string;
   clientId?: string;
   pinned?: boolean;
-  // 关联的智能体完整信息
-  agent?: AgentItem;
   // 关联的员工完整信息
   user?: UserItem;
+  // 关联的智能体
+  agentsToSessions?: {
+    agent: AgentItem;
+  }[];
+  messageCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -26,6 +29,13 @@ export interface SessionItem {
 export interface SessionListRequest {
   page?: number;
   pageSize?: number;
+  userId?: string;
+  agentId?: string;
+}
+
+export interface SessionListResponse {
+  sessions: SessionItem[];
+  total: number;
 }
 
 export interface SessionSearchRequest {
@@ -57,16 +67,33 @@ export interface SessionUpdateRequest {
   pinned?: boolean;
 }
 
+export interface BatchSessionUpdateRequest {
+  sessions: SessionUpdateRequest[];
+}
+
+export interface SessionStatGroupedByAgentItem {
+  agent?: Partial<AgentItem>;
+  count: number;
+}
+
 /**
  * 获取会话列表
  * @description 获取会话列表，支持分页和筛选
  * @param params SessionListRequest
- * @returns SessionItem[]
+ * @returns SessionListResponse
  */
-function getSessionList(params?: SessionListRequest) {
-  return http.get<SessionItem[]>('/api/v1/sessions', params);
+function getSessionList(
+  params?: SessionListRequest
+): Promise<SessionListResponse> {
+  return http.get<SessionListResponse>('/api/v1/sessions', params);
 }
 
+/**
+ * 搜索会话列表
+ * @description 搜索会话列表
+ * @param params SessionSearchRequest
+ * @returns SessionItem[]
+ */
 function searchSessionList(params: SessionSearchRequest) {
   return http.get<SessionItem[]>('/api/v1/sessions/search', params);
 }
@@ -114,24 +141,36 @@ function updateSession(id: string, data: SessionUpdateRequest) {
   return http.put<SessionItem>(`/api/v1/sessions/${id}`, data);
 }
 /**
-   * 获取按Agent分组的会话列表
-   * GET /api/v1/sessions/grouped-by-agent
-   * @param c Hono Context
-   * @returns 按Agent分组的会话列表响应
-   */
-  function getSessionsGroupedByAgent() {
-    return http.get<SessionItem[]>('/api/v1/sessions/grouped-by-agent');
-  }
+ * 获取按Agent分组的会话列表
+ * GET /api/v1/sessions/grouped-by-agent
+ * @param c Hono Context
+ * @returns 按Agent分组的会话列表响应
+ */
+function getSessionsGroupedByAgent() {
+  return http.get<SessionStatGroupedByAgentItem[]>(
+    '/api/v1/sessions/grouped-by-agent'
+  );
+}
 
- /**
-   * 批量更新会话
-   * PUT /api/v1/sessions/batch-update
-   * @param c Hono Context
-   * @returns 批量更新结果响应
-   */
-  function batchUpdateSessions(data: SessionUpdateRequest[]) {
-    return http.put<SessionItem[]>('/api/v1/sessions/batch-update', data);
-  }
+/**
+ * 批量更新会话
+ * PUT /api/v1/sessions/batch-update
+ * @param c Hono Context
+ * @returns 批量更新结果响应
+ */
+function batchUpdateSessions(data: SessionUpdateRequest[]) {
+  return http.put<SessionItem[]>('/api/v1/sessions/batch-update', data);
+}
+
+/**
+ * 删除会话
+ * @description 删除会话
+ * @param id string
+ * @returns void
+ */
+function deleteSession(id: string) {
+  return http.delete<SessionItem>(`/api/v1/sessions/${id}`);
+}
 
 export default {
   getSessionList,
@@ -142,4 +181,5 @@ export default {
   updateSession,
   getSessionsGroupedByAgent,
   batchUpdateSessions,
+  deleteSession,
 };

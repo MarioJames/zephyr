@@ -1,17 +1,11 @@
 'use client';
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Input,
   Button,
   Table,
   Space,
-  Card,
   Typography,
   Popover,
   List,
@@ -20,23 +14,21 @@ import {
   App,
   Spin,
   Alert,
+  Select,
 } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import zhCN from 'antd/locale/zh_CN';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import type { SortOrder } from 'antd/es/table/interface';
-import {
-  customerAPI,
-  type CustomerItem,
-  type CustomerListRequest,
-} from '@/services';
+import type { ColumnsType } from 'antd/es/table';
+import { sessionsAPI, type CustomerItem } from '@/services';
 import { UserItem } from '@/services/user';
 import { useEmployeeStore } from '@/store/employee';
-import { customerSelectors, useCustomerStore } from '@/store/customer';
+import { useCustomerStore } from '@/store/customer';
+import { useRequest } from 'ahooks';
+import dayjs from 'dayjs';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 // 客户显示类型（扁平化结构用于表格）
 interface CustomerDisplayItem {
@@ -50,24 +42,10 @@ interface CustomerDisplayItem {
   lastContactTime: string;
   conversations: number;
   assignee?: string;
-  avatar?: string;
-  // 扩展字段
-  gender?: string;
-  age?: number;
-  position?: string;
-  email?: string;
-  wechat?: string;
-  industry?: string;
-  scale?: string;
-  province?: string;
-  city?: string;
-  district?: string;
-  address?: string;
-  notes?: string;
 }
 
 // 创建样式
-const useStyles = createStyles(({ css, token }) => ({
+const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   pageContainer: css`
     padding: 24px;
     background-color: ${token.colorBgContainer};
@@ -91,6 +69,7 @@ const useStyles = createStyles(({ css, token }) => ({
     margin-bottom: 24px;
   `,
   statsBox: css`
+    cursor: pointer;
     flex: 1;
     border: 1px solid ${token.colorText};
     padding: 12px;
@@ -98,15 +77,17 @@ const useStyles = createStyles(({ css, token }) => ({
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s ease;
+    border-radius: ${token.borderRadius}px;
 
     &:hover {
-      border-color: ${token.colorPrimary};
-      background-color: ${token.colorPrimaryBg};
+      background: ${token.colorFill};
     }
   `,
   statsBoxActive: css`
     border-color: ${token.colorPrimary} !important;
-    background-color: ${token.colorPrimaryBg} !important;
+    background: ${isDarkMode
+      ? token.colorFillSecondary
+      : token.colorFillTertiary};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   `,
   statsTitle: css`
@@ -123,8 +104,16 @@ const useStyles = createStyles(({ css, token }) => ({
     border-radius: 8px;
   `,
   searchBox: css`
-    width: 240px;
+    width: 280px;
     margin-right: 16px;
+
+    .ant-select-dropdown {
+      max-height: 400px;
+    }
+
+    .ant-select-item-option-content {
+      padding: 8px 0;
+    }
   `,
   actionButton: css`
     margin-left: 8px;
@@ -139,32 +128,28 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 // 数据转换工具函数
-const transformCustomerToDisplayItem = (customer: CustomerItem, agentTitle?: string): CustomerDisplayItem => ({
-  key: customer.session.id,
-  sessionId: customer.session.id,
-  name: customer.session.title,
-  company: customer.extend?.company || '',
-  type: agentTitle || '未分类',
-  phone: customer.extend?.phone || '',
-  createTime: customer.session.createdAt || '',
-  lastContactTime: customer.session.updatedAt || '',
-  conversations: 0, // 需要从其他API获取
-  assignee: '', // 需要从员工分配关系获取
-  avatar: customer.session.avatar,
-  // 扩展字段
-  gender: customer.extend?.gender || undefined,
-  age: customer.extend?.age || undefined,
-  position: customer.extend?.position || undefined,
-  email: customer.extend?.email || undefined,
-  wechat: customer.extend?.wechat || undefined,
-  industry: customer.extend?.industry || undefined,
-  scale: customer.extend?.scale || undefined,
-  province: customer.extend?.province || undefined,
-  city: customer.extend?.city || undefined,
-  district: customer.extend?.district || undefined,
-  address: customer.extend?.address || undefined,
-  notes: customer.extend?.notes || undefined,
-});
+const transformCustomerToDisplayItem = (
+  customer: CustomerItem
+): CustomerDisplayItem => {
+  const { user, agentsToSessions } = customer.session;
+
+  const agentTitle = agentsToSessions?.[0]?.agent?.title;
+
+  return {
+    key: customer.session.id,
+    sessionId: customer.session.id,
+    name: customer.session.title || '',
+    company: customer.extend?.company || '',
+    type: agentTitle || '未分类',
+    phone: customer.extend?.phone || '',
+    createTime:
+      dayjs(customer.session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    lastContactTime:
+      dayjs(customer.session.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    conversations: customer.session.messageCount || 0,
+    assignee: user?.fullName || user?.username || '',
+  };
+};
 
 export default function Customer() {
   const { styles, theme } = useStyles();
@@ -172,35 +157,28 @@ export default function Customer() {
   const router = useRouter();
 
   // Store hooks
-  const { employees, fetchEmployees } = useEmployeeStore();
+  const { employees } = useEmployeeStore();
   const {
     // 数据
     customers,
-    agents,
     loading,
     error,
-    total,
-    currentPage,
-    pageSize,
-    searchQuery,
     selectedCategory,
     categoryStats,
 
     // Actions
-    fetchCustomers,
-    fetchAgents,
-    setSearchQuery,
-    setCurrentPage,
-    setPageSize,
     setSelectedCategory,
-    setSorting,
     updateCustomer,
     deleteCustomer,
+    fetchCategoryStats,
 
-    // Selectors (通过useCustomerStore.getState()获取)
+    // 分页
+    page,
+    pageSize,
+    setPagination,
   } = useCustomerStore();
 
-  const fullStats = customerSelectors.getFullStats(useCustomerStore.getState());
+  // const fullStats = customerSelectors.getFullStats(useCustomerStore.getState());
 
   // 本地状态（只保留必要的UI状态）
   const [employeeSearchText, setEmployeeSearchText] = useState('');
@@ -208,34 +186,33 @@ export default function Customer() {
     useState<CustomerDisplayItem | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  // 计算显示用的客户数据
-  const displayCustomers = useMemo(() => {
-    return customers.map(customer => {
-      const agentTitle = agents.find(agent => agent.id === customer.session.agentId)?.title;
-      return transformCustomerToDisplayItem(customer, agentTitle);
-    });
-  }, [customers, agents]);
+  // 防抖搜索
+  const {
+    loading: searchLoading,
+    run: searchSessions,
+    data: searchResults,
+  } = useRequest(
+    (keyword: string) => {
+      if (!keyword) return Promise.resolve([]);
 
-  // 处理类别切换
-  const handleCategoryChange = useCallback(
-    (categoryId: string) => {
-      setSelectedCategory(categoryId);
+      return sessionsAPI.searchSessionList({
+        keyword: keyword,
+      });
     },
-    [setSelectedCategory]
+    {
+      debounceWait: 500,
+    }
   );
 
-  // 初始化数据
-  useEffect(() => {
-    fetchEmployees();
-    fetchAgents();
-  }, [fetchEmployees, fetchAgents]);
+  // 计算显示用的客户数据
+  const displayCustomers = useMemo(() => {
+    return customers.map(transformCustomerToDisplayItem);
+  }, [customers]);
 
-  // 当agents加载完成后获取客户数据
+  // 进入页面时获取分类统计数据
   useEffect(() => {
-    if (agents.length > 0) {
-      fetchCustomers();
-    }
-  }, [agents, fetchCustomers]);
+    fetchCategoryStats();
+  }, []);
 
   // 员工搜索过滤
   const filteredEmployees = useMemo(() => {
@@ -297,13 +274,13 @@ export default function Customer() {
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
-    router.push('/customer/edit');
+    router.push('/customer/form');
   }, [router]);
 
   // 跳转到编辑客户页面
   const handleEditCustomer = useCallback(
     (record: CustomerDisplayItem) => {
-      router.push(`/customer/edit?id=${record.key}`);
+      router.push(`/customer/form/edit/${record.key}`);
     },
     [router]
   );
@@ -312,6 +289,14 @@ export default function Customer() {
   const handleViewCustomerDetail = useCallback(
     (record: CustomerDisplayItem) => {
       router.push(`/customer/detail?id=${record.key}`);
+    },
+    [router]
+  );
+
+  // 跳转到对话页面
+  const handleViewConversations = useCallback(
+    (record: CustomerDisplayItem) => {
+      router.push(`/chat?sessionId=${record.sessionId}`);
     },
     [router]
   );
@@ -362,7 +347,14 @@ export default function Customer() {
       title: '对话记录',
       dataIndex: 'conversations',
       key: 'conversations',
-      render: (text: number) => `${text}条`,
+      render: (text: number, record: CustomerDisplayItem) => (
+        <a
+          onClick={() => handleViewConversations(record)}
+          style={{ color: theme.colorPrimary }}
+        >
+          {text}条
+        </a>
+      ),
     },
     {
       title: '对接人',
@@ -426,18 +418,14 @@ export default function Customer() {
   // 处理表格变化
   const handleTableChange = useCallback(
     (pagination: any, filters: any, sorter: any) => {
-      if (pagination.current !== currentPage) {
-        setCurrentPage(pagination.current);
+      if (pagination.current !== page) {
+        setPagination(pagination.current, pagination.pageSize);
       }
       if (pagination.pageSize !== pageSize) {
-        setPageSize(pagination.pageSize);
-      }
-
-      if (sorter.field) {
-        setSorting(sorter.field, sorter.order);
+        setPagination(pagination.current, pagination.pageSize);
       }
     },
-    [currentPage, pageSize, setCurrentPage, setPageSize, setSorting]
+    [page, pageSize, setPagination]
   );
 
   return (
@@ -449,12 +437,35 @@ export default function Customer() {
             客户管理
           </Title>
           <Space>
-            <Input
+            <Select
+              showSearch
+              allowClear
               placeholder='搜索客户'
-              prefix={<SearchOutlined />}
+              suffixIcon={<SearchOutlined />}
               className={styles.searchBox}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onSearch={searchSessions}
+              onChange={(value) => {
+                if (value) {
+                  // 直接跳转到客户详情页
+                  router.push(`/customer/detail?id=${value}`);
+                }
+              }}
+              options={searchResults?.map((item) => ({
+                label: item.title,
+                value: item.id,
+              }))}
+              onClear={() => searchSessions('')}
+              filterOption={false}
+              notFoundContent={
+                searchLoading ? (
+                  <Spin size='small' />
+                ) : searchResults?.length === 0 ? (
+                  '暂无匹配的客户'
+                ) : (
+                  '请输入关键词搜索客户'
+                )
+              }
+              style={{ minWidth: 240 }}
             />
             <Button className={styles.actionButton}>客户模版配置</Button>
             <Button
@@ -469,52 +480,20 @@ export default function Customer() {
 
         {/* 统计区域/类别Tab */}
         <div className={styles.statsContainer}>
-          {/* 全部客户 */}
-          <div
-            className={`${styles.statsBox} ${
-              selectedCategory === 'all' ? styles.statsBoxActive : ''
-            }`}
-            style={{ cursor: 'pointer' }}
-            onClick={() => handleCategoryChange('all')}
-          >
-            <div className={styles.statsTitle}>全部客户</div>
-            <div className={styles.statsValue}>{total}</div>
-          </div>
-
-          {/* 动态Agent类别 */}
-          {agents.map((agent) => (
+          {categoryStats.map((item) => (
             <div
-              key={agent.id}
+              key={item.agent?.id}
+              onClick={() => setSelectedCategory(item)}
               className={`${styles.statsBox} ${
-                selectedCategory === agent.id ? styles.statsBoxActive : ''
+                selectedCategory.agent?.id === item.agent?.id
+                  ? styles.statsBoxActive
+                  : ''
               }`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleCategoryChange(agent.id)}
             >
-              <div className={styles.statsTitle}>
-                {agent.title || '未命名类别'}
-              </div>
-              <div className={styles.statsValue}>
-                {fullStats.byCategory[agent.id] || 0}
-              </div>
+              <div className={styles.statsTitle}>{item.agent?.title}</div>
+              <div className={styles.statsValue}>{item.count}</div>
             </div>
           ))}
-
-          {/* 未分类客户 */}
-          {fullStats.byCategory['unclassified'] > 0 && (
-            <div
-              className={`${styles.statsBox} ${
-                selectedCategory === 'unclassified' ? styles.statsBoxActive : ''
-              }`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleCategoryChange('unclassified')}
-            >
-              <div className={styles.statsTitle}>未分类</div>
-              <div className={styles.statsValue}>
-                {fullStats.byCategory['unclassified']}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* 表格区域 */}
@@ -533,9 +512,9 @@ export default function Customer() {
             dataSource={displayCustomers}
             loading={loading}
             pagination={{
-              current: currentPage,
+              current: page,
               pageSize: pageSize,
-              total: total,
+              total: selectedCategory.count,
               showSizeChanger: true,
               showQuickJumper: false,
               showTotal: (total) => `共 ${total} 条记录`,

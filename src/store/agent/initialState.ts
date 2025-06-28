@@ -10,7 +10,7 @@ export interface AgentChatConfig {
   enableReasoning?: boolean;
   historyCount?: number;
   temperature?: number;
-  displayMode?: 'chat' | 'docs';
+  displayMode?: string;
   enableHistoryDivider?: boolean;
 }
 
@@ -18,14 +18,14 @@ export interface AgentState extends ModelState {
   // 智能体列表
   agents: AgentItem[];
   agentsInit: boolean;
-  
+
   // 当前活跃的智能体
   currentAgentId?: string;
   currentAgent?: AgentItem;
-  
+
   // 智能体配置
   agentConfig: AgentChatConfig;
-  
+
   // 加载状态
   isLoading: boolean;
   isAgentConfigLoading: boolean;
@@ -35,14 +35,14 @@ export interface AgentState extends ModelState {
 export const initialState: AgentState = {
   // Model state
   ...initialModelState,
-  
+
   // Agent state
   agents: [],
   agentsInit: false,
-  
+
   currentAgentId: undefined,
   currentAgent: undefined,
-  
+
   agentConfig: {
     autoCreateTopicThreshold: 4,
     enableAutoCreateTopic: true,
@@ -55,7 +55,7 @@ export const initialState: AgentState = {
     displayMode: 'chat',
     enableHistoryDivider: true,
   },
-  
+
   isLoading: false,
   isAgentConfigLoading: false,
   error: undefined,
