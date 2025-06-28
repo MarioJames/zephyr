@@ -17,7 +17,6 @@ import {
 import {
   SearchOutlined,
   DownOutlined,
-  CheckCircleFilled,
   UploadOutlined,
   PlusOutlined,
   EditOutlined,
@@ -31,6 +30,7 @@ import { useEmployeeStore } from '@/store/employee';
 import { UserItem } from '@/services/user';
 import { adminList } from '@/const/role';
 import { RoleItem } from '@/services/roles';
+import { CircleCheck } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -99,11 +99,7 @@ const useStyles = createStyles(({ css, token }) => ({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 16px;
     cursor: pointer;
-    &:hover {
-      background-color: ${token.colorBgTextHover};
-    }
   `,
   roleDropdown: css`
     width: 154px;
@@ -111,7 +107,19 @@ const useStyles = createStyles(({ css, token }) => ({
     background: #fff;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     z-index: 1050;
-    padding: 4px 0;
+    padding: 8px !important;
+    & .ant-dropdown-menu-item {
+      height: 36px;
+      line-height: 36px;
+      padding: 0 16px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    & .ant-dropdown-menu-item:hover {
+      background: #f5f5f5 !important;
+    }
   `,
   loginGuideCard: css`
     padding: 16px;
@@ -435,7 +443,7 @@ export default function EmployeePage() {
             alignItems: 'center',
           }}
         >
-          {count == null || count === '' ? (
+          {count === undefined || count === null ? (
             '-'
           ) : (
             <>
@@ -466,7 +474,7 @@ export default function EmployeePage() {
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
-                {isAdmin && <CheckCircleFilled />}
+                {isAdmin && <CircleCheck size={16} />}
               </div>
             ),
           },
@@ -475,7 +483,7 @@ export default function EmployeePage() {
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
-                {!isAdmin && <CheckCircleFilled />}
+                {!isAdmin && <CircleCheck size={16} />}
               </div>
             ),
           },
@@ -503,9 +511,9 @@ export default function EmployeePage() {
       key: 'messages',
       render: (_, record) => (
         <span className={styles.blackText}>
-          {employeeMessageCount[record.id] == null || employeeMessageCount[record.id] === ''
-            ? '-'
-            : employeeMessageCount[record.id]}
+          {employeeMessageCount[record.id] === undefined || employeeMessageCount[record.id] === null ? (
+            '-'
+          ) : employeeMessageCount[record.id]}
         </span>
       ),
     },
