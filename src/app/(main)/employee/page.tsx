@@ -29,6 +29,8 @@ import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { useEmployeeStore } from '@/store/employee';
 import { UserItem } from '@/services/user';
+import { adminList } from '@/const/role';
+import { RoleItem } from '@/services/roles';
 
 const { Title, Text } = Typography;
 
@@ -449,12 +451,14 @@ export default function EmployeePage() {
     },
     {
       title: '权限',
-      dataIndex: 'role',
-      key: 'role',
-      render: (role: string, record: UserItem) => {
-        const roleText = role === 'admin' ? '管理员' : '员工';
+      dataIndex: 'roles',
+      key: 'roles',
+      render: (roles: RoleItem[], record: UserItem) => {
+        console.log('role1', roles,record);
+        const role = roles[0];
+        const isAdmin = adminList.includes(role?.name);
+        const roleText = isAdmin ? '管理员' : '员工';
         const displayRole = roleText || '-';
-        const roleName = record.roles?.[0]?.name;
 
         const roleMenuItems = [
           {
@@ -462,7 +466,7 @@ export default function EmployeePage() {
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
-                {roleName === 'admin' && <CheckCircleFilled />}
+                {isAdmin && <CheckCircleFilled />}
               </div>
             ),
           },
@@ -471,7 +475,7 @@ export default function EmployeePage() {
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
-                {roleName === 'employee' && <CheckCircleFilled />}
+                {!isAdmin && <CheckCircleFilled />}
               </div>
             ),
           },

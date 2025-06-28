@@ -6,6 +6,7 @@ export { oidcUserSelectors } from './slices/user/selectors';
 // 可以在这里添加跨slice的复合选择器
 import { OIDCStore } from './store';
 import { RoleItem } from '@/services/roles';
+import { adminList } from '@/const/role';
 
 /**
  * 跨slice的复合选择器
@@ -38,6 +39,6 @@ export const oidcSelectors = {
   // 判断当前账号是否为管理员账号
   isCurrentUserAdmin: (s: OIDCStore) => {
     const roles = s.userInfo?.roles || [];
-    return Array.isArray(roles) && roles.some((r) => (r as RoleItem)?.name === 'super_admin' || (r as RoleItem)?.name === 'admin');
+    return Array.isArray(roles) && roles.some((r) => adminList.includes((r as RoleItem)?.name));
   },
 };

@@ -1,0 +1,1 @@
+export const adminList = ['admin', 'super_admin'];
