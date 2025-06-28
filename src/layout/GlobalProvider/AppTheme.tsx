@@ -20,7 +20,6 @@ import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { GlobalStyle } from '@/styles';
 import { setCookie } from '@/utils/client';
-import zhCN from 'antd/locale/zh_CN';
 
 const useStyles = createStyles(({ css, token }) => ({
   app: css`
@@ -120,7 +119,6 @@ const AppTheme = memo<AppThemeProps>(
         <GlobalStyle />
         <AntdStaticMethods />
         <ConfigProvider
-          locale={zhCN}
           config={{
             aAs: Link,
             imgAs: Image,

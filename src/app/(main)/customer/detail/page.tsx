@@ -15,19 +15,15 @@ import {
   Row,
   Col,
   message,
-  ConfigProvider,
   Spin
 } from 'antd';
 import {
   ArrowLeftOutlined,
   DownOutlined,
   SearchOutlined,
-  DeleteOutlined,
-  EditOutlined
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter, useSearchParams } from 'next/navigation';
-import zhCN from 'antd/locale/zh_CN';
 import { useCustomerStore } from '@/store/customer';
 import { AgentItem } from '@/services/agents';
 import { SessionItem } from '@/services/sessions';
@@ -333,13 +329,11 @@ export default function CustomerDetail() {
 
   if (loading || !currentCustomer) {
     return (
-      <ConfigProvider locale={zhCN}>
         <div className={styles.pageContainer}>
           <Spin size="large" style={{ display: 'flex', justifyContent: 'center', marginTop: '20%' }}>
             <div style={{ marginTop: 8 }}>加载中...</div>
           </Spin>
         </div>
-      </ConfigProvider>
     );
   }
 
@@ -347,7 +341,6 @@ export default function CustomerDetail() {
   const assignedAgent = session.agent;
 
   return (
-    <ConfigProvider locale={zhCN}>
       <div className={styles.pageContainer}>
         {/* 顶部导航 */}
         <div className={styles.header}>
@@ -516,6 +509,5 @@ export default function CustomerDetail() {
           />
         </div>
       </div>
-    </ConfigProvider>
   );
 }

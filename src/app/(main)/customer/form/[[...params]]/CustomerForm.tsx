@@ -13,7 +13,7 @@ import {
   Row,
   Col,
   Cascader,
-  ConfigProvider
+  
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -21,7 +21,6 @@ import {
   UploadOutlined
 } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
-import zhCN from 'antd/locale/zh_CN';
 import {
   type CustomerFormProps,
   type CustomerFormData,
@@ -210,7 +209,6 @@ export default function CustomerForm({
   };
 
   return (
-    <ConfigProvider locale={zhCN}>
       <div className={styles.pageContainer}>
         {/* 顶部返回导航 */}
         <div className={styles.header}>
@@ -443,6 +441,5 @@ export default function CustomerForm({
           </Form>
         </div>
       </div>
-    </ConfigProvider>
   );
 }

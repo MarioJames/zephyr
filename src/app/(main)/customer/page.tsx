@@ -10,7 +10,6 @@ import {
   Popover,
   List,
   Modal,
-  ConfigProvider,
   App,
   Spin,
   Alert,
@@ -19,7 +18,6 @@ import {
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
-import zhCN from 'antd/locale/zh_CN';
 import type { ColumnsType } from 'antd/es/table';
 import { sessionsAPI, type CustomerItem } from '@/services';
 import { UserItem } from '@/services/user';
@@ -429,7 +427,6 @@ export default function Customer() {
   );
 
   return (
-    <ConfigProvider locale={zhCN}>
       <div className={styles.pageContainer}>
         {/* 顶部区域 */}
         <div className={styles.header}>
@@ -545,6 +542,5 @@ export default function Customer() {
           <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
         </Modal>
       </div>
-    </ConfigProvider>
   );
 }

@@ -10,7 +10,7 @@ export interface SearchAction {
   buildRoleMap: () => void;
   getRoleName: (roleId: string) => string;
   clearSearch: () => void;
-  searchEmployees: (keyword: string) => Promise<void>;
+  searchEmployees: (keyword: string, pageSize?: number) => Promise<void>;
 }
 
 // ========== 搜索功能Slice ==========
@@ -67,7 +67,7 @@ export const searchSlice: StateCreator<
     set({ searchQuery: '', filteredEmployees: [] });
   },
 
-  searchEmployees: async (keyword: string) => {
+  searchEmployees: async (keyword: string, pageSize: number = 10) => {
     set({ loading: true, searchQuery: keyword });
     try {
       if (!keyword.trim()) {
@@ -75,7 +75,7 @@ export const searchSlice: StateCreator<
         return;
       }
       // 远程搜索用户
-      const res = await userService.searchUsers({ keyword, page: 1, pageSize: 100 });
+      const res = await userService.searchUsers({ keyword, page: 1, pageSize });
       set({ filteredEmployees: res, loading: false });
     } catch (e: any) {
       set({ filteredEmployees: [], loading: false });

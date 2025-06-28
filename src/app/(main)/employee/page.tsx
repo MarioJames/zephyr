@@ -573,7 +573,7 @@ export default function EmployeePage() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
-    searchEmployees(value);
+    searchEmployees(value, pagination.pageSize);
   };
 
   const handleTableChange = (paginationConfig) => {

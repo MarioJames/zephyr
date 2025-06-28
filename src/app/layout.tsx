@@ -3,6 +3,8 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import GlobalProvider from '@/layout/GlobalProvider';
 import { OIDCInitializer } from '@/components/OIDCInitializer';
 import SystemStatusInitializer from '@/components/SystemStatusInitializer';
+import { ConfigProvider } from 'antd';
+import zh_CN from 'antd/locale/zh_CN';
 import type { Metadata } from 'next';
 import { DynamicLayoutProps } from '@/types/next';
 import { RouteVariants } from '@/utils/routeVariants';
@@ -26,6 +28,7 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
       <body>
         <OIDCInitializer />
         <NuqsAdapter>
+        <ConfigProvider locale={zh_CN}>
           <GlobalProvider
             appearance={theme}
             locale={locale}
@@ -36,6 +39,7 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
             {children}
             {modal}
           </GlobalProvider>
+          </ConfigProvider>
         </NuqsAdapter>
       </body>
     </html>
