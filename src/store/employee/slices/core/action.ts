@@ -5,7 +5,8 @@ import { EmployeeState } from '../../initialState';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
-  fetchEmployees: () => Promise<void>;
+  fetchEmployees: (options?: { skipStats?: boolean }) => Promise<void>;
+  fetchEmployeesWithStats: () => Promise<void>;
   fetchRoles: () => Promise<void>;
   addEmployee: (data: UserCreateRequest) => Promise<void>;
   updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
@@ -19,7 +20,8 @@ export const coreSlice: StateCreator<
   [],
   CoreAction
 > = (set, get) => ({
-  fetchEmployees: async () => {
+  fetchEmployees: async (options = {}) => {
+    const { skipStats = false } = options;
     set({ loading: true, error: null });
     try {
       const res = await userService.getAllUsers();
@@ -27,9 +29,12 @@ export const coreSlice: StateCreator<
 
       // 获取其他slice的方法并调用
       const state = get() as any;
-      if (state.fetchAllEmployeeStats) {
+
+      // 根据skipStats参数决定是否获取统计数据
+      if (!skipStats && state.fetchAllEmployeeStats) {
         await state.fetchAllEmployeeStats();
       }
+
       if (state.filterEmployees) {
         state.filterEmployees();
       }
@@ -38,6 +43,11 @@ export const coreSlice: StateCreator<
     } finally {
       set({ loading: false });
     }
+  },
+
+  fetchEmployeesWithStats: async () => {
+    // 带统计数据的员工获取方法
+    await get().fetchEmployees({ skipStats: false });
   },
 
   fetchRoles: async () => {

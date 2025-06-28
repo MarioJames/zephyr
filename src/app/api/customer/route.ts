@@ -4,50 +4,32 @@ import {
   CustomerModel,
   CreateCustomerSessionParams,
 } from '@/database/models/customer';
-import sessionsAPI, {
-  SessionItem,
-  SessionCreateRequest,
-  SessionUpdateRequest,
-  SessionListRequest,
-} from '@/services/sessions';
 
-// 定义合并后的客户详情类型
-interface CustomerDetailResponse {
-  session: SessionItem;
-  extend?: {
-    id: number;
-    sessionId: string;
-    gender?: string | null;
-    age?: number | null;
-    position?: string | null;
-    phone?: string | null;
-    email?: string | null;
-    wechat?: string | null;
-    company?: string | null;
-    industry?: string | null;
-    scale?: string | null;
-    province?: string | null;
-    city?: string | null;
-    district?: string | null;
-    address?: string | null;
-    notes?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+// 客户扩展信息类型
+interface CustomerExtendInfo {
+  id: number;
+  sessionId: string;
+  gender?: string | null;
+  age?: number | null;
+  position?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  wechat?: string | null;
+  company?: string | null;
+  industry?: string | null;
+  scale?: string | null;
+  province?: string | null;
+  city?: string | null;
+  district?: string | null;
+  address?: string | null;
+  notes?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-// 客户创建请求类型
-export interface CustomerCreateRequest {
-  // 外部系统字段（sessions）
-  title: string;
-  description?: string;
-  avatar?: string;
-  backgroundColor?: string;
-  groupId?: string;
-  agentId?: string;
-
-  // 内部扩展字段（customerSessions）
-  customerId?: number;
+// 客户扩展信息创建请求类型
+export interface CustomerExtendCreateRequest {
+  sessionId: string;
   gender?: string;
   age?: number;
   position?: string;
@@ -64,66 +46,65 @@ export interface CustomerCreateRequest {
   notes?: string;
 }
 
-// 客户更新请求类型
-export interface CustomerUpdateRequest extends Partial<CustomerCreateRequest> {}
+// 客户扩展信息更新请求类型
+export type CustomerExtendUpdateRequest = Partial<
+  Omit<CustomerExtendCreateRequest, 'sessionId'>
+>;
 
 /**
- * GET /api/customer - 获取客户详情或客户列表
+ * GET /api/customer - 获取客户扩展信息
  * 支持两种查询方式：
- * 1. 通过 sessionId 获取客户详情: ?sessionId=xxx
- * 2. 获取客户列表: 使用分页和过滤参数 ?page=1&pageSize=10
+ * 1. 通过 sessionId 获取单个客户扩展信息: ?sessionId=xxx
+ * 2. 通过 sessionIds 批量获取客户扩展信息: ?sessionIds=id1,id2,id3
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
+    const sessionIds = searchParams.get('sessionIds');
 
     const db = await getServerDB();
     const customerModel = new CustomerModel(db);
 
     if (sessionId) {
-      const sessionResponse = await sessionsAPI.getSessionDetail(sessionId);
-      const customerSession = await customerModel.findBySessionId(sessionId);
-
+      // 获取单个客户扩展信息
+      const customerExtend = await customerModel.findBySessionId(sessionId);
       return NextResponse.json({
         success: true,
-        data: { session: sessionResponse, extend: customerSession },
+        data: customerExtend,
         timestamp: Date.now(),
       });
     }
 
-    const page = searchParams.get('page') || 1;
-    const pageSize = searchParams.get('pageSize') || 10;
-
-    const params: SessionListRequest = {
-      page: Number(page),
-      pageSize: Number(pageSize),
-    };
-
-    const sessionList = await sessionsAPI.getSessionList(params);
-
-    const sessionIds = sessionList.map((item) => item.id);
-
-    // 从内部数据库获取扩展信息
-    const customerSessionList = await customerModel.findBySessionIds(
-      sessionIds
-    );
-
-    // 合并扩展信息
-    const result: CustomerDetailResponse[] = sessionList.map((item) => {
-      const customerSession = customerSessionList.find(
-        (customer) => customer.sessionId === item.id
+    if (sessionIds) {
+      // 批量获取客户扩展信息
+      const sessionIdList = sessionIds.split(',').filter(Boolean);
+      const customerExtendList = await customerModel.findBySessionIds(
+        sessionIdList
       );
-      return { session: item, extend: customerSession };
-    });
+      return NextResponse.json({
+        success: true,
+        data: customerExtendList,
+        timestamp: Date.now(),
+      });
+    }
 
-    // 获取总数量
+    // 获取所有客户扩展信息（可能需要分页）
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '50');
+
+    const customerExtendList = await customerModel.list({
+      page,
+      pageSize,
+    });
     const total = await customerModel.count();
 
     return NextResponse.json({
-      total,
       success: true,
-      data: result,
+      data: customerExtendList,
+      total,
+      page,
+      pageSize,
       timestamp: Date.now(),
     });
   } catch (error) {
@@ -131,7 +112,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: '获取客户信息失败',
+        error: '获取客户扩展信息失败',
         message: error instanceof Error ? error.message : '未知错误',
         timestamp: Date.now(),
       },
@@ -141,30 +122,18 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/customer - 创建客户
- * 先在外部系统创建会话，然后在内部数据库存储扩展信息
+ * POST /api/customer - 创建客户扩展信息
+ * 只负责在内部数据库创建客户扩展信息，Session 的创建由 services/customer 处理
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: CustomerCreateRequest = await request.json();
+    const body: CustomerExtendCreateRequest = await request.json();
 
-    // 1. 先在外部系统创建会话
-    const sessionData: SessionCreateRequest = {
-      title: body.title,
-      description: body.description,
-      avatar: body.avatar,
-      agentId: body.agentId,
-    };
-
-    const sessionResponse = await sessionsAPI.createSession(sessionData);
-    const sessionId = sessionResponse.id;
-
-    // 2. 在内部数据库存储扩展信息
     const db = await getServerDB();
     const customerModel = new CustomerModel(db);
 
     const customerSessionData: CreateCustomerSessionParams = {
-      sessionId,
+      sessionId: body.sessionId,
       gender: body.gender,
       age: body.age,
       position: body.position,
@@ -181,21 +150,16 @@ export async function POST(request: NextRequest) {
       notes: body.notes,
     };
 
-    // 创建客户拓展信息
+    // 创建客户扩展信息
     await customerModel.create(customerSessionData);
 
-    // 查询客户拓展信息
-    const customerSession = await customerModel.findBySessionId(sessionId);
-
-    const result: CustomerDetailResponse = {
-      session: sessionResponse,
-      extend: customerSession,
-    };
+    // 查询创建的客户扩展信息
+    const customerExtend = await customerModel.findBySessionId(body.sessionId);
 
     return NextResponse.json({
       success: true,
-      data: result,
-      message: '客户创建成功',
+      data: customerExtend,
+      message: '客户扩展信息创建成功',
       timestamp: Date.now(),
     });
   } catch (error) {
@@ -203,7 +167,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: '创建客户失败',
+        error: '创建客户扩展信息失败',
         message: error instanceof Error ? error.message : '未知错误',
         timestamp: Date.now(),
       },
@@ -213,14 +177,14 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * PUT /api/customer?sessionId=xxx - 更新客户
- * 分别更新外部系统的会话信息和内部数据库的扩展信息
+ * PUT /api/customer?sessionId=xxx - 更新客户扩展信息
+ * 只负责更新内部数据库的扩展信息，Session 的更新由 services/customer 处理
  */
 export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
-    const body: CustomerUpdateRequest = await request.json();
+    const body: CustomerExtendUpdateRequest = await request.json();
 
     if (!sessionId) {
       return NextResponse.json(
@@ -236,33 +200,19 @@ export async function PUT(request: NextRequest) {
     const db = await getServerDB();
     const customerModel = new CustomerModel(db);
 
-    // 根据sessionId更新
-    const customerSession = await customerModel.findBySessionId(sessionId);
-    if (!customerSession) {
+    // 根据sessionId查找客户扩展信息
+    const customerExtend = await customerModel.findBySessionId(sessionId);
+    if (!customerExtend) {
       return NextResponse.json(
         {
           success: false,
-          error: '客户信息不存在',
+          error: '客户扩展信息不存在',
         },
         { status: 404 }
       );
     }
 
-    // 1. 更新外部系统的会话信息
-    const sessionUpdateData: SessionUpdateRequest = {
-      title: body.title,
-      description: body.description,
-      avatar: body.avatar,
-      agentId: body.agentId,
-    };
-
-    let updatedSession: SessionItem | null = null;
-    updatedSession = await sessionsAPI.updateSession(
-      sessionId,
-      sessionUpdateData
-    );
-
-    // 2. 更新内部数据库的扩展信息
+    // 更新客户扩展信息
     const customerUpdateData: Partial<CreateCustomerSessionParams> = {
       sessionId,
       gender: body.gender,
@@ -281,12 +231,17 @@ export async function PUT(request: NextRequest) {
       notes: body.notes,
     };
 
-    await customerModel.update(customerSession.id, customerUpdateData);
+    await customerModel.update(customerExtend.id, customerUpdateData);
+
+    // 返回更新后的扩展信息
+    const updatedCustomerExtend = await customerModel.findBySessionId(
+      sessionId
+    );
 
     return NextResponse.json({
       success: true,
-      data: null,
-      message: '客户更新成功',
+      data: updatedCustomerExtend,
+      message: '客户扩展信息更新成功',
       timestamp: Date.now(),
     });
   } catch (error) {
@@ -294,7 +249,65 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: '更新客户失败',
+        error: '更新客户扩展信息失败',
+        message: error instanceof Error ? error.message : '未知错误',
+        timestamp: Date.now(),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/customer?sessionId=xxx - 删除客户扩展信息
+ * 只负责删除内部数据库的扩展信息，Session 的删除由 services/customer 处理
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get('sessionId');
+
+    if (!sessionId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: '参数错误',
+          message: 'sessionId 是必需的',
+        },
+        { status: 400 }
+      );
+    }
+
+    const db = await getServerDB();
+    const customerModel = new CustomerModel(db);
+
+    // 根据sessionId查找客户扩展信息
+    const customerExtend = await customerModel.findBySessionId(sessionId);
+    if (!customerExtend) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: '客户扩展信息不存在',
+        },
+        { status: 404 }
+      );
+    }
+
+    // 删除客户扩展信息
+    await customerModel.deleteBySessionId(sessionId);
+
+    return NextResponse.json({
+      success: true,
+      data: null,
+      message: '客户扩展信息删除成功',
+      timestamp: Date.now(),
+    });
+  } catch (error) {
+    console.error('DELETE /api/customer error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: '删除客户扩展信息失败',
         message: error instanceof Error ? error.message : '未知错误',
         timestamp: Date.now(),
       },

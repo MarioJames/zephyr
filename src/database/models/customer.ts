@@ -8,7 +8,9 @@ import { CustomerSessionSelect, customerSessions } from '../schemas';
 export interface CustomerSessionListParams {
   page?: number;
   pageSize?: number;
-  search?: string;
+  keyword?: string;
+  agentId?: string;
+  userId?: string;
   sortBy?: 'createdAt' | 'updatedAt' | 'phone' | 'company';
   sortOrder?: 'asc' | 'desc';
 }
@@ -106,5 +108,75 @@ export class CustomerModel {
       .select({ count: sql<number>`count(*)` })
       .from(customerSessions);
     return result[0]?.count || 0;
+  };
+
+  // ========== 列表查询操作 ==========
+
+  list = async (
+    params: CustomerSessionListParams
+  ): Promise<CustomerSessionSelect[]> => {
+    const {
+      page = 1,
+      pageSize = 50,
+      keyword,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = params;
+
+    // 构建查询条件
+    const conditions = [];
+
+    // 添加搜索条件
+    if (keyword && keyword.trim()) {
+      const searchTerm = `%${keyword.trim()}%`;
+      conditions.push(
+        or(
+          like(customerSessions.company, searchTerm),
+          like(customerSessions.phone, searchTerm),
+          like(customerSessions.email, searchTerm),
+          like(customerSessions.wechat, searchTerm),
+          like(customerSessions.notes, searchTerm)
+        )
+      );
+    }
+
+    // 构建排序条件
+    let orderByClause;
+    const sortDirection = sortOrder === 'asc' ? asc : desc;
+
+    switch (sortBy) {
+      case 'createdAt':
+        orderByClause = sortDirection(customerSessions.createdAt);
+        break;
+      case 'updatedAt':
+        orderByClause = sortDirection(customerSessions.updatedAt);
+        break;
+      case 'phone':
+        orderByClause = sortDirection(customerSessions.phone);
+        break;
+      case 'company':
+        orderByClause = sortDirection(customerSessions.company);
+        break;
+      default:
+        orderByClause = desc(customerSessions.createdAt);
+    }
+
+    // 构建基础查询 - 使用与count方法相似的语法
+    if (conditions.length > 0) {
+      return this.db
+        .select()
+        .from(customerSessions)
+        .where(and(...conditions))
+        .orderBy(orderByClause)
+        .offset((page - 1) * pageSize)
+        .limit(pageSize);
+    } else {
+      return this.db
+        .select()
+        .from(customerSessions)
+        .orderBy(orderByClause)
+        .offset((page - 1) * pageSize)
+        .limit(pageSize);
+    }
   };
 }

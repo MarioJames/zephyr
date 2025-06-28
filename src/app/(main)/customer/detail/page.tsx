@@ -1,25 +1,26 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Button, 
-  Card, 
-  Typography, 
-  Avatar, 
-  Space, 
-  Divider, 
-  Table, 
-  Popover, 
-  Input, 
+import {
+  Button,
+  Card,
+  Typography,
+  Avatar,
+  Space,
+  Divider,
+  Table,
+  Popover,
+  Input,
   List,
   Row,
   Col,
   message,
-  ConfigProvider
+  ConfigProvider,
+  Spin
 } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  DownOutlined, 
+import {
+  ArrowLeftOutlined,
+  DownOutlined,
   SearchOutlined,
   DeleteOutlined,
   EditOutlined
@@ -27,6 +28,10 @@ import {
 import { createStyles } from 'antd-style';
 import { useRouter, useSearchParams } from 'next/navigation';
 import zhCN from 'antd/locale/zh_CN';
+import { useCustomerStore } from '@/store/customer';
+import { AgentItem } from '@/services/agents';
+import { SessionItem } from '@/services/sessions';
+import { TopicItem } from '@/services/topics';
 
 const { Title, Text } = Typography;
 
@@ -145,187 +150,201 @@ const useStyles = createStyles(({ css, token }) => ({
   `
 }));
 
-// 模拟客户数据
-const mockCustomerData = {
-  id: '1',
-  name: '张三',
-  gender: '男',
-  age: '35',
-  position: '技术总监',
-  phone: '13800138000',
-  email: 'zhangsan@example.com',
-  wechat: 'zhangsan123',
-  company: '阿里巴巴',
-  industry: '互联网',
-  scale: '10000人以上',
-  province: '浙江省',
-  city: '杭州市',
-  district: '西湖区',
-  address: '余杭塘路866号',
-  notes: '重要客户，需要重点跟进',
-  type: 'A',
-  avatar: '',
-  createTime: '2023-05-15 10:30:22',
-  assignee: '李四'
-};
-
-// 模拟消息记录数据
-const mockMessages = [
-  {
-    key: '1',
-    topic: '产品介绍',
-    messageCount: 15,
-    recordTime: '2023-06-20 14:25:10',
-    assignee: '李四'
-  },
-  {
-    key: '2',
-    topic: '需求沟通',
-    messageCount: 8,
-    recordTime: '2023-06-18 11:45:20',
-    assignee: '李四'
-  },
-  {
-    key: '3',
-    topic: '价格谈判',
-    messageCount: 12,
-    recordTime: '2023-06-15 10:30:00',
-    assignee: '王五'
-  },
-  {
-    key: '4',
-    topic: '合同确认',
-    messageCount: 5,
-    recordTime: '2023-06-10 09:20:15',
-    assignee: '李四'
-  },
-  {
-    key: '5',
-    topic: '售后服务',
-    messageCount: 20,
-    recordTime: '2023-06-05 16:45:30',
-    assignee: '赵六'
-  },
-];
-
-// 模拟员工数据
-const mockEmployees = [
-  { id: 1, name: '李四' },
-  { id: 2, name: '赵六' },
-  { id: 3, name: '王九' },
-  { id: 4, name: '张十' },
-  { id: 5, name: '刘备' },
-  { id: 6, name: '关羽' },
-  { id: 7, name: '张飞' },
-];
-
 export default function CustomerDetail() {
   const { styles } = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // 获取URL参数
-  const id = searchParams.get('id');
-  
-  // 状态管理
-  const [customer, setCustomer] = useState(mockCustomerData);
-  const [loading, setLoading] = useState(false);
+  const sessionId = searchParams.get('id');
+
+  // 从 Store 获取状态和方法
+  const {
+    currentCustomer,
+    loading,
+    agents,
+    fetchCustomerDetail,
+    updateCustomer,
+    deleteCustomer,
+    fetchAgents,
+    setCurrentCustomer
+  } = useCustomerStore();
+
+  // 本地状态
   const [employeeSearchText, setEmployeeSearchText] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortOrder, setSortOrder] = useState('');
-  
-  // 加载客户数据
+  const [topics, setTopics] = useState<TopicItem[]>([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
+  // 加载客户数据和相关信息
   useEffect(() => {
-    if (id) {
-      // 实际项目中，这里应该调用API获取客户数据
-      // 这里使用模拟数据
-      setLoading(true);
-      
-      // 模拟API请求延迟
-      setTimeout(() => {
-        setCustomer(mockCustomerData);
-        setLoading(false);
-      }, 500);
+    const loadData = async () => {
+      if (!sessionId) {
+        message.error('缺少客户ID参数');
+        router.push('/customer');
+        return;
+      }
+
+      try {
+        // 并行加载客户详情、话题列表和代理列表
+        await Promise.all([
+          fetchCustomerDetail(sessionId),
+          loadTopics(sessionId),
+          fetchAgents()
+        ]);
+      } catch (error) {
+        console.error('加载数据失败:', error);
+        message.error('加载客户数据失败');
+      }
+    };
+
+    loadData();
+  }, [sessionId, fetchCustomerDetail, fetchAgents, router]);
+
+  // 加载话题列表
+  const loadTopics = async (sessionId: string) => {
+    setTopicsLoading(true);
+    try {
+      // 这里应该调用话题服务获取该客户的话题列表
+      // 暂时使用空数组，等待话题服务接口实现
+      setTopics([]);
+    } catch (error) {
+      console.error('加载话题失败:', error);
+      message.error('加载话题列表失败');
+    } finally {
+      setTopicsLoading(false);
     }
-  }, [id]);
-  
+  };
+
+  // 清理当前客户数据
+  useEffect(() => {
+    return () => {
+      setCurrentCustomer(undefined);
+    };
+  }, [setCurrentCustomer]);
+
   // 处理返回
   const handleBack = () => {
     router.push('/customer');
   };
-  
+
   // 处理编辑
   const handleEdit = () => {
-    router.push(`/customer/edit?id=${id}`);
+    router.push(`/customer/form/edit/${sessionId}`);
   };
-  
+
   // 处理删除
-  const handleDelete = () => {
-    // 实际项目中，这里应该调用API删除客户
-    message.success('客户删除成功！');
-    router.push('/customer');
+  const handleDelete = async () => {
+    if (!sessionId || !currentCustomer) return;
+
+    setDeleting(true);
+    try {
+      await deleteCustomer(sessionId);
+      message.success('客户删除成功！');
+      router.push('/customer');
+    } catch (error) {
+      console.error('删除客户失败:', error);
+      message.error('删除客户失败，请重试');
+    } finally {
+      setDeleting(false);
+    }
   };
-  
+
   // 员工搜索过滤
-  const filteredEmployees = mockEmployees.filter(
-    emp => emp.name.toLowerCase().includes(employeeSearchText.toLowerCase())
+  const filteredEmployees = agents.filter(
+    agent => (agent.title || '').toLowerCase().includes(employeeSearchText.toLowerCase())
   );
-  
+
   // 处理员工分配
-  const handleAssignEmployee = (employee) => {
-    message.success(`已将客户 ${customer.name} 分配给 ${employee.name}`);
-    // 实际项目中这里会调用API更新数据
+  const handleAssignEmployee = async (agent: AgentItem) => {
+    if (!sessionId || !currentCustomer) return;
+
+    setUpdating(true);
+    try {
+      // 暂时显示成功消息，等待接口实现
+      message.success(`已将客户 ${currentCustomer.session.title || '客户'} 分配给 ${agent.title}`);
+      
+      // TODO: 实现真实的员工分配逻辑
+      // const updateData = {
+      //   ...currentCustomer.session,
+      //   agent: agent
+      // };
+      // await updateCustomer(sessionId, updateData);
+      // await fetchCustomerDetail(sessionId);
+    } catch (error) {
+      console.error('分配员工失败:', error);
+      message.error('分配员工失败，请重试');
+    } finally {
+      setUpdating(false);
+    }
   };
-  
-  // 消息记录表格列定义
+
+  // 话题记录表格列定义
   const columns = [
     {
       title: '主题',
-      dataIndex: 'topic',
-      key: 'topic',
+      dataIndex: 'title',
+      key: 'title',
     },
     {
       title: '消息数量',
       dataIndex: 'messageCount',
       key: 'messageCount',
+      render: (count: number) => count || 0
     },
     {
-      title: '记录时间',
-      dataIndex: 'recordTime',
-      key: 'recordTime',
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       sorter: true,
-      sortOrder: sortField === 'recordTime' ? sortOrder : null,
+      sortOrder: sortField === 'createdAt' ? (sortOrder as any) : null,
+      render: (date: string) => date ? new Date(date).toLocaleString('zh-CN') : '-'
     },
     {
-      title: '对接人',
-      dataIndex: 'assignee',
-      key: 'assignee',
+      title: '更新时间',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (date: string) => date ? new Date(date).toLocaleString('zh-CN') : '-'
     },
     {
       title: '操作',
       key: 'action',
-      render: (_, record) => (
-        <Button type="text">查看</Button>
+      render: (_: any, record: any) => (
+        <Button 
+          type="text" 
+          onClick={() => router.push(`/chat?session=${sessionId}&topic=${record.id}`)}
+        >
+          查看
+        </Button>
       ),
     },
   ];
-  
+
   // 处理表格变化
-  const handleTableChange = (pagination, filters, sorter) => {
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     if (sorter.field) {
       setSortField(sorter.field);
       setSortOrder(sorter.order);
     }
   };
 
-  if (loading || !customer) {
-    console.log('loading', loading,customer);
+  if (loading || !currentCustomer) {
     return (
       <ConfigProvider locale={zhCN}>
-        <div className={styles.pageContainer}>加载中...</div>
+        <div className={styles.pageContainer}>
+          <Spin size="large" style={{ display: 'flex', justifyContent: 'center', marginTop: '20%' }}>
+            <div style={{ marginTop: 8 }}>加载中...</div>
+          </Spin>
+        </div>
       </ConfigProvider>
     );
   }
+
+  const { session, extend } = currentCustomer;
+  const assignedAgent = session.agent;
 
   return (
     <ConfigProvider locale={zhCN}>
@@ -337,14 +356,16 @@ export default function CustomerDetail() {
             <span>返回客户管理</span>
           </div>
           <Space>
-            <Button 
+            <Button
               className={styles.actionButton}
               onClick={handleDelete}
+              loading={deleting}
+              danger
             >
               删除
             </Button>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               className={styles.actionButton}
               onClick={handleEdit}
             >
@@ -352,7 +373,7 @@ export default function CustomerDetail() {
             </Button>
           </Space>
         </div>
-        
+
         {/* 客户信息卡片 */}
         <Card className={styles.customerCard}>
           <Row>
@@ -360,13 +381,13 @@ export default function CustomerDetail() {
               <div className={styles.customerInfo}>
                 <div className={styles.customerAvatar}>
                   <Avatar size={64} style={{ backgroundColor: '#1890ff' }}>
-                    {customer.name.charAt(0)}
+                    {(session.title || '客户').charAt(0)}
                   </Avatar>
                 </div>
                 <div>
-                  <div className={styles.customerName}>{customer.name}</div>
-                  <div className={styles.customerMeta}>创建时间：{customer.createTime}</div>
-                  <div className={styles.customerNotes}>备注：{customer.notes || '-'}</div>
+                  <div className={styles.customerName}>{session.title || '未命名客户'}</div>
+                  <div className={styles.customerMeta}>创建时间：{session.createdAt ? new Date(session.createdAt).toLocaleString('zh-CN') : '-'}</div>
+                  <div className={styles.customerNotes}>备注：{extend?.notes || '-'}</div>
                 </div>
               </div>
             </Col>
@@ -390,11 +411,11 @@ export default function CustomerDetail() {
                         size="small"
                         dataSource={filteredEmployees}
                         renderItem={item => (
-                          <List.Item 
+                          <List.Item
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleAssignEmployee(item)}
                           >
-                            {item.name}
+                            {item.title}
                           </List.Item>
                         )}
                         style={{ height: '150px', overflow: 'auto' }}
@@ -403,14 +424,14 @@ export default function CustomerDetail() {
                   }
                 >
                   <div className={styles.assigneeValue}>
-                    {customer.assignee} <DownOutlined style={{ fontSize: '12px', marginLeft: '4px' }} />
+                    {assignedAgent?.title || '未分配'} <DownOutlined style={{ fontSize: '12px', marginLeft: '4px' }} />
                   </div>
                 </Popover>
               </div>
             </Col>
           </Row>
         </Card>
-        
+
         {/* 详细信息区域 */}
         <div className={styles.infoContainer}>
           {/* 联系方式 */}
@@ -418,64 +439,65 @@ export default function CustomerDetail() {
             <div className={styles.infoTitle}>联系方式</div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>手机号：</div>
-              <div className={styles.infoValue}>{customer.phone || '-'}</div>
+              <div className={styles.infoValue}>{extend?.phone || '-'}</div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>邮箱：</div>
-              <div className={styles.infoValue}>{customer.email || '-'}</div>
+              <div className={styles.infoValue}>{extend?.email || '-'}</div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>微信号：</div>
-              <div className={styles.infoValue}>{customer.wechat || '-'}</div>
+              <div className={styles.infoValue}>{extend?.wechat || '-'}</div>
             </div>
           </div>
-          
+
           {/* 公司信息 */}
           <div className={styles.infoBox}>
             <div className={styles.infoTitle}>公司信息</div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>公司名称：</div>
-              <div className={styles.infoValue}>{customer.company || '-'}</div>
+              <div className={styles.infoValue}>{extend?.company || '-'}</div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>行业：</div>
-              <div className={styles.infoValue}>{customer.industry || '-'}</div>
+              <div className={styles.infoValue}>{extend?.industry || '-'}</div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>规模：</div>
-              <div className={styles.infoValue}>{customer.scale || '-'}</div>
+              <div className={styles.infoValue}>{extend?.scale || '-'}</div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>职位：</div>
-              <div className={styles.infoValue}>{customer.position || '-'}</div>
+              <div className={styles.infoValue}>{extend?.position || '-'}</div>
             </div>
           </div>
-          
+
           {/* 地址信息 */}
           <div className={styles.infoBox}>
             <div className={styles.infoTitle}>地址信息</div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>省市区：</div>
               <div className={styles.infoValue}>
-                {customer.province && customer.city && customer.district
-                  ? `${customer.province} ${customer.city} ${customer.district}`
+                {extend?.province && extend?.city && extend?.district
+                  ? `${extend.province} ${extend.city} ${extend.district}`
                   : '-'}
               </div>
             </div>
             <div className={styles.infoItem}>
               <div className={styles.infoLabel}>详细地址：</div>
-              <div className={styles.infoValue}>{customer.address || '-'}</div>
+              <div className={styles.infoValue}>{extend?.address || '-'}</div>
             </div>
           </div>
         </div>
-        
-        {/* 消息记录 */}
-        <div className={styles.messagesTitle}>消息记录</div>
+
+        {/* 话题记录 */}
+        <div className={styles.messagesTitle}>话题记录</div>
         <div className={styles.messagesTable}>
-          <Table 
-            columns={columns} 
-            dataSource={mockMessages}
-            pagination={{ 
+          <Table
+            columns={columns}
+            dataSource={topics}
+            loading={topicsLoading}
+            pagination={{
               pageSize: 5,
               showTotal: (total) => `共 ${total} 条记录`,
               locale: {
@@ -488,11 +510,12 @@ export default function CustomerDetail() {
             locale={{
               triggerDesc: '点击降序排列',
               triggerAsc: '点击升序排列',
-              cancelSort: '取消排序'
+              cancelSort: '取消排序',
+              emptyText: '暂无话题记录'
             }}
           />
         </div>
       </div>
     </ConfigProvider>
   );
-} 
+}
