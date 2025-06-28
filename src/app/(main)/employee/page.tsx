@@ -390,6 +390,16 @@ export default function EmployeePage() {
     // 其余情况已在beforeUpload处理
   };
 
+  // 关闭客户管理弹窗时清空相关状态
+  const handleCustomerModalClose = () => {
+    setCustomerModalVisible(false);
+    setSessionList([]);
+    setEmployeeCustomers([]);
+    setSelectedLeft([]);
+    setSelectedRight([]);
+    setCurrentCustomerEmployee(null);
+  };
+
   // 打开客户管理弹窗
   const handleCustomerManage = async (employee: UserItem) => {
     setCurrentCustomerEmployee(employee);
@@ -400,7 +410,6 @@ export default function EmployeePage() {
     try {
       const list = await fetchSessionList();
       setSessionList(list);
-      // 右侧为当前员工的sessions
       setEmployeeCustomers((employee.sessions || []).map((s) => s.id));
     } finally {
       setSessionLoading(false);
@@ -582,7 +591,7 @@ export default function EmployeePage() {
     searchEmployees(value, pagination.pageSize);
   };
 
-  const handleTableChange = (paginationConfig) => {
+  const handleTableChange = (paginationConfig: any) => {
     setPagination({ current: paginationConfig.current, pageSize: paginationConfig.pageSize });
     fetchEmployees({ page: paginationConfig.current, pageSize: paginationConfig.pageSize });
   };
@@ -775,7 +784,7 @@ export default function EmployeePage() {
         title={null}
         open={customerModalVisible}
         footer={null}
-        onCancel={() => setCustomerModalVisible(false)}
+        onCancel={handleCustomerModalClose}
         width={680}
         style={{ top: 60 }}
         styles={{
@@ -1038,7 +1047,7 @@ export default function EmployeePage() {
               color: "#000",
               border: "1px solid #ccc",
             }}
-            onClick={() => setCustomerModalVisible(false)}
+            onClick={handleCustomerModalClose}
           >
             取消
           </Button>
@@ -1051,7 +1060,7 @@ export default function EmployeePage() {
               try {
                 await updateEmployeeSessions(currentCustomerEmployee.id, employeeCustomers);
                 message.success("保存成功");
-                setCustomerModalVisible(false);
+                handleCustomerModalClose();
               } catch (e: any) {
                 message.error(e.message || "保存失败");
               } finally {
