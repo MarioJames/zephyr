@@ -38,6 +38,12 @@ export interface UserUpdateRequest {
   roleId?: string;
 }
 
+export interface UserSearchRequest {
+  keyword: string;
+  page?: number;
+  pageSize?: number;
+}
+
 /**
  * 获取当前用户信息
  * @description 获取当前登录用户的详细信息
@@ -99,6 +105,16 @@ function deleteUser(id: string) {
   return http.delete<void>(`/api/v1/users/${id}`);
 }
 
+/**
+ * 搜索用户
+ * @description 支持关键词搜索
+ * @param params UserSearchRequest
+ * @returns UserItem[]
+ */
+function searchUsers(params: UserSearchRequest) {
+  return http.get<UserItem[]>('/api/v1/users/search', params);
+}
+
 export default {
   getCurrentUser,
   getAllUsers,
@@ -106,4 +122,5 @@ export default {
   getUserDetail,
   updateUser,
   deleteUser,
+  searchUsers,
 };

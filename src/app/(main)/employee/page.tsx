@@ -25,6 +25,7 @@ import { createStyles } from "antd-style";
 import type { ColumnsType } from "antd/es/table";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useEmployeeStore } from "@/store/employee";
+import { employeeSelectors } from "@/store/employee/selectors";
 import { UserItem } from "@/services/user";
 import { adminList } from "@/const/role";
 import { RoleItem } from "@/services/roles";
@@ -237,7 +238,7 @@ export default function EmployeePage() {
     updateEmployee,
     deleteEmployee,
   } = useEmployeeStore();
-  console.log("employees", employees);
+  const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
 
   // 页面状态
   const [searchValue, setSearchValue] = useState("");
@@ -332,15 +333,27 @@ export default function EmployeePage() {
     try {
       const values = await form.validateFields();
       if (isEditMode && currentEmployee) {
-        await updateEmployee(currentEmployee.id, {
-          ...values,
-          avatar: avatarFile?.url,
-        });
+        try {
+          await updateEmployee(currentEmployee.id, {
+            ...values,
+            avatar: avatarFile?.url,
+          });
+          message.success('修改员工成功');
+        } catch (e) {
+          message.error('修改员工失败');
+          return;
+        }
       } else {
-        await addEmployee({
-          ...values,
-          avatar: avatarFile?.url,
-        });
+        try {
+          await addEmployee({
+            ...values,
+            avatar: avatarFile?.url,
+          });
+          message.success('添加员工成功');
+        } catch (e) {
+          message.error('添加员工失败');
+          return;
+        }
       }
       handleEmployeeModalCancel();
     } catch (info) {
@@ -554,6 +567,12 @@ export default function EmployeePage() {
     },
   ];
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    searchEmployees(value);
+  };
+
   return (
     <div className={styles.container}>
       {/* 顶部标题和搜索区 */}
@@ -566,7 +585,7 @@ export default function EmployeePage() {
             placeholder="搜索员工"
             prefix={<SearchOutlined />}
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={handleSearchChange}
             style={{ width: 240 }}
           />
           <Button className={styles.addButton} onClick={showAddEmployeeModal}>
@@ -584,8 +603,8 @@ export default function EmployeePage() {
           loading={loading}
           pagination={{
             pageSize: 10,
-            showSizeChanger: false,
-            showQuickJumper: true,
+            showSizeChanger: true,
+            showQuickJumper: false,
           }}
         />
       </div>

@@ -1,5 +1,7 @@
 import { StateCreator } from 'zustand/vanilla';
 import { EmployeeState } from '../../initialState';
+import customerAPI from '@/services/customer';
+import userService from '@/services/user';
 
 // ========== 搜索功能Action接口 ==========
 export interface SearchAction {
@@ -8,6 +10,7 @@ export interface SearchAction {
   buildRoleMap: () => void;
   getRoleName: (roleId: string) => string;
   clearSearch: () => void;
+  searchEmployees: (keyword: string) => Promise<void>;
 }
 
 // ========== 搜索功能Slice ==========
@@ -62,5 +65,20 @@ export const searchSlice: StateCreator<
 
   clearSearch: () => {
     set({ searchQuery: '', filteredEmployees: [] });
+  },
+
+  searchEmployees: async (keyword: string) => {
+    set({ loading: true, searchQuery: keyword });
+    try {
+      if (!keyword.trim()) {
+        set({ filteredEmployees: get().employees, loading: false });
+        return;
+      }
+      // 远程搜索用户
+      const res = await userService.searchUsers({ keyword, page: 1, pageSize: 100 });
+      set({ filteredEmployees: res, loading: false });
+    } catch (e: any) {
+      set({ filteredEmployees: [], loading: false });
+    }
   },
 });
