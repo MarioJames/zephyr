@@ -246,10 +246,7 @@ export default function EmployeePage() {
   const [customerTab, setCustomerTab] = useState("all");
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
-  const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([
-    "c1",
-    "c3",
-  ]);
+  const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([]);
   const [currentCustomerEmployee, setCurrentCustomerEmployee] =
     useState<UserItem | null>(null);
   const [sessionList, setSessionList] = useState<any[]>([]);
@@ -423,7 +420,6 @@ export default function EmployeePage() {
     );
     setSelectedRight([]);
   };
-
   // 左侧客户列表过滤
   const leftList = sessionList.filter((c) => {
     if (customerTab === "all") return !employeeCustomers.includes(c.id);
@@ -433,7 +429,6 @@ export default function EmployeePage() {
   });
   // 右侧客户列表
   const rightList = sessionList.filter((c) => employeeCustomers.includes(c.id));
-
   const columns: ColumnsType<UserItem> = [
     {
       title: "员工姓名",
@@ -466,7 +461,6 @@ export default function EmployeePage() {
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
         const count = customerList?.length;
-        console.log("count", count, record);
 
         return (
           <span
@@ -497,7 +491,6 @@ export default function EmployeePage() {
       dataIndex: "roles",
       key: "roles",
       render: (roles: RoleItem[], record: UserItem) => {
-        console.log("role1", roles, record);
         const role = roles[0];
         const isAdmin = adminList.includes(role?.name);
         const roleText = isAdmin ? "管理员" : "员工";
@@ -546,7 +539,6 @@ export default function EmployeePage() {
       dataIndex: "messageCount",
       key: "messageCount",
       render: (text: number) => {
-        console.log("text", text);
         if (text === undefined || text === null) {
           return "-";
         }
