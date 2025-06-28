@@ -219,7 +219,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   const [form, setForm] = React.useState({
     title: "",
     description: "",
-    model: "",
+    model: modelOptions?.[0]?.value || "",
     temperature: 0.5,
     maxTokens: 2048,
     prompt: "",
@@ -232,7 +232,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       setForm({
         title: initialValues.title || "",
         description: initialValues.description || "",
-        model: initialValues.model || "",
+        model: initialValues.model || modelOptions?.[0]?.value || "",
         temperature: initialValues.temperature ?? 0.5,
         maxTokens: initialValues.maxTokens ?? 2048,
         prompt: initialValues.prompt || "",
@@ -242,14 +242,14 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       setForm({
         title: "",
         description: "",
-        model: "",
+        model: modelOptions?.[0]?.value || "",
         temperature: 0.5,
         maxTokens: 2048,
         prompt: "",
         avatar: "",
       });
     }
-  }, [initialValues, open]);
+  }, [initialValues, open, modelOptions]);
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));

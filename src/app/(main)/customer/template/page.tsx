@@ -280,6 +280,8 @@ export default function CustomerTemplatePage() {
         loading={submitting}
         initialValues={editing?.initial}
         modelOptions={[
+          { label: 'claude-3.5-sonnet', value: 'claude-3.5-sonnet' },
+          { label: 'gemini-2.0-flash', value: 'gemini-2.0-flash' },
           { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
           { label: 'gpt-4', value: 'gpt-4' },
         ]}
