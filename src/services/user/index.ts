@@ -1,5 +1,6 @@
 import { http } from '../request';
 import { RoleItem } from '../roles';
+import { SessionItem } from '../sessions';
 
 // 用户相关类型定义
 export interface UserItem {
@@ -18,6 +19,7 @@ export interface UserItem {
   createdAt?: string;
   updatedAt?: string;
   roles?: RoleItem[];
+  sessions?: SessionItem[];
 }
 
 export interface UserCreateRequest {

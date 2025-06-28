@@ -113,6 +113,25 @@ function createSession(data: SessionCreateRequest) {
 function updateSession(id: string, data: SessionUpdateRequest) {
   return http.put<SessionItem>(`/api/v1/sessions/${id}`, data);
 }
+/**
+   * 获取按Agent分组的会话列表
+   * GET /api/v1/sessions/grouped-by-agent
+   * @param c Hono Context
+   * @returns 按Agent分组的会话列表响应
+   */
+  function getSessionsGroupedByAgent() {
+    return http.get<SessionItem[]>('/api/v1/sessions/grouped-by-agent');
+  }
+
+ /**
+   * 批量更新会话
+   * PUT /api/v1/sessions/batch-update
+   * @param c Hono Context
+   * @returns 批量更新结果响应
+   */
+  function batchUpdateSessions(data: SessionUpdateRequest[]) {
+    return http.put<SessionItem[]>('/api/v1/sessions/batch-update', data);
+  }
 
 export default {
   getSessionList,
@@ -121,4 +140,6 @@ export default {
   getSessionDetail,
   createSession,
   updateSession,
+  getSessionsGroupedByAgent,
+  batchUpdateSessions,
 };

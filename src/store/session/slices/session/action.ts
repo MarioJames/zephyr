@@ -45,6 +45,10 @@ export interface SessionAction {
   addToRecentSessions: (sessionId: string) => void;
   // 从最近客户移除（加入黑名单）
   removeFromRecentSessions: (sessionId: string) => void;
+  // 获取按Agent分组的会话列表
+  fetchSessionsGroupedByAgent: () => Promise<SessionItem[]>;
+  // 批量更新会话
+  batchUpdateSessions: (data: SessionUpdateRequest[]) => Promise<SessionItem[]>;
 }
 
 export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
@@ -288,5 +292,52 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
     set((state) => ({
       recentSessionBlacklist: [...state.recentSessionBlacklist, sessionId],
     }));
+  },
+
+  // 获取按Agent分组的会话列表
+  fetchSessionsGroupedByAgent: async () => {
+    set({ isLoading: true, error: undefined });
+    try {
+      const sessions = await sessionService.getSessionsGroupedByAgent();
+      set({
+        sessions,
+        isLoading: false,
+        lastUpdated: Date.now(),
+        initialized: true,
+      });
+      return sessions;
+    } catch (error) {
+      console.error('获取按Agent分组的会话列表失败:', error);
+      set({
+        isLoading: false,
+        error: error instanceof Error ? error.message : '获取按Agent分组的会话列表失败',
+      });
+      return [];
+    }
+  },
+
+  // 批量更新会话
+  batchUpdateSessions: async (data: SessionUpdateRequest[]) => {
+    set({ isUpdating: true, error: undefined });
+    try {
+      const updatedSessions = await sessionService.batchUpdateSessions(data);
+      // 用返回的会话数据更新本地 sessions
+      const currentSessions = get().sessions;
+      const updatedSessionMap = new Map(updatedSessions.map(s => [s.id, s]));
+      const mergedSessions = currentSessions.map(s => updatedSessionMap.get(s.id) || s);
+      set({
+        sessions: mergedSessions,
+        isUpdating: false,
+        lastUpdated: Date.now(),
+      });
+      return updatedSessions;
+    } catch (error) {
+      console.error('批量更新会话失败:', error);
+      set({
+        isUpdating: false,
+        error: error instanceof Error ? error.message : '批量更新会话失败',
+      });
+      return [];
+    }
   },
 });
