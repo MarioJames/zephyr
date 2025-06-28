@@ -64,6 +64,7 @@ export interface SessionUpdateRequest {
   backgroundColor?: string;
   groupId?: string;
   agentId?: string;
+  userId?: string;
   pinned?: boolean;
 }
 
@@ -159,7 +160,7 @@ function getSessionsGroupedByAgent() {
  * @returns 批量更新结果响应
  */
 function batchUpdateSessions(data: SessionUpdateRequest[]) {
-  return http.put<SessionItem[]>('/api/v1/sessions/batch-update', data);
+  return http.put<SessionItem[]>('/api/v1/sessions/batch-update', { sessions: data });
 }
 
 /**

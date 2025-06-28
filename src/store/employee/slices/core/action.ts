@@ -130,8 +130,9 @@ export const coreSlice: StateCreator<
   },
 
   updateEmployeeSessions: async (userId, sessionIds) => {
-    // 直接更新user的sessionIds字段（假设后端支持）
-    await userService.updateUser(userId, { sessionIds });
+    // 用batchUpdateSessions批量更新session的userId，参数为SessionUpdateRequest[]
+    const updateList = sessionIds.map((id) => ({ id, userId }));
+    await sessionsService.batchUpdateSessions(updateList);
     await get().fetchEmployees();
   },
 });
