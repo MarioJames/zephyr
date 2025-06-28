@@ -1,8 +1,4 @@
-import {
-  CustomerItem,
-  CustomerCreateRequest,
-  CustomerUpdateRequest,
-} from '@/services/customer';
+import { CustomerCreateRequest, CustomerItem } from '@/services/customer';
 import { CustomerFormData } from './CustomerForm';
 import { AgentItem } from '@/services/agents';
 
@@ -23,6 +19,10 @@ export function customerItemToFormData(
   return {
     ...session,
     ...extend,
+    agentId: session.agent.id,
+    description: session.description || '',
+    sessionId: session.id,
+    extendId: extend?.id,
     region: region.length > 0 ? region : undefined,
   };
 }
@@ -33,28 +33,42 @@ export function customerItemToFormData(
 export function formDataToCreateRequest(
   formData: CustomerFormData
 ): CustomerCreateRequest {
-  return {
-    // Session字段
-    title: formData.title || '',
-    description: formData.description,
-    avatar: formData.avatar,
-    agentId: undefined, // 可以根据type映射到具体的agentId
+  // 提取extend字段，剩下的是session字段
+  const {
+    sessionId,
+    age,
+    gender,
+    position,
+    phone,
+    email,
+    wechat,
+    company,
+    industry,
+    scale,
+    province,
+    city,
+    district,
+    address,
+    ...session
+  } = formData;
 
-    // 扩展字段
-    gender: formData.gender || undefined,
-    age: formData.age || undefined,
-    position: formData.position || undefined,
-    phone: formData.phone || undefined,
-    email: formData.email || undefined,
-    wechat: formData.wechat || undefined,
-    company: formData.company || undefined,
-    industry: formData.industry || undefined,
-    scale: formData.scale || undefined,
-    province: formData.region?.[0],
-    city: formData.region?.[1],
-    district: formData.region?.[2],
-    address: formData.address || undefined,
-    notes: formData.notes || undefined,
+  return {
+    extend: {
+      gender,
+      age,
+      position,
+      phone,
+      email,
+      wechat,
+      company,
+      industry,
+      scale,
+      province,
+      city,
+      district,
+      address,
+    },
+    session,
   };
 }
 
@@ -63,7 +77,7 @@ export function formDataToCreateRequest(
  */
 export function formDataToUpdateRequest(
   formData: CustomerFormData
-): CustomerUpdateRequest {
+): CustomerCreateRequest {
   // 更新请求和创建请求结构相同，都是Partial类型
   return formDataToCreateRequest(formData);
 }

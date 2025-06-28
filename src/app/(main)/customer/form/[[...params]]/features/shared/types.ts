@@ -18,6 +18,6 @@ export interface AvatarUploaderProps {
 // 表单操作按钮接口
 export interface FormActionsProps {
   mode: 'create' | 'edit';
-  submitting: boolean;
+  submitting?: boolean;
   onCancel: () => void;
 }

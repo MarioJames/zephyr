@@ -6,6 +6,7 @@ import { memo, useEffect } from 'react';
 import { useOIDCStore } from '@/store/oidc';
 
 import { AppLoadingStage } from './stage';
+import { useAgentStore } from '@/store/agent';
 
 interface RedirectProps {
   setLoadingStage: (value: AppLoadingStage) => void;
@@ -14,6 +15,7 @@ interface RedirectProps {
 const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
   const router = useRouter();
   const [isAuthenticated] = useOIDCStore((s) => [s.isAuthenticated]);
+  const { agentsInit, fetchAgents } = useAgentStore();
 
   const navToChat = () => {
     setLoadingStage(AppLoadingStage.GoToChat);
@@ -23,13 +25,20 @@ const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
   useEffect(() => {
     // if user state not init, wait for loading
     if (!isAuthenticated) {
-      setLoadingStage(AppLoadingStage.InitUser);
+      setLoadingStage(AppLoadingStage.Initializing);
+      return;
+    }
+
+    if (!agentsInit) {
+      setLoadingStage(AppLoadingStage.InitializingAgents);
+
+      fetchAgents();
       return;
     }
 
     // finally go to chat
     navToChat();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, agentsInit]);
 
   return null;
 });

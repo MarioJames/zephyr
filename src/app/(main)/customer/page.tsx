@@ -129,22 +129,23 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 const transformCustomerToDisplayItem = (
   customer: CustomerItem
 ): CustomerDisplayItem => {
-  const { user, agentsToSessions } = customer.session;
+  const { session, extend } = customer || {};
+
+  const { user, agentsToSessions } = session || {};
 
   const agentTitle = agentsToSessions?.[0]?.agent?.title;
 
   return {
-    key: customer.session.id,
-    sessionId: customer.session.id,
-    name: customer.session.title || '',
-    company: customer.extend?.company || '',
+    key: session.id,
+    sessionId: session.id,
+    name: session.title || '',
+    company: extend?.company || '',
     type: agentTitle || '未分类',
-    phone: customer.extend?.phone || '',
-    createTime:
-      dayjs(customer.session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    phone: extend?.phone || '',
+    createTime: dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
-      dayjs(customer.session.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
-    conversations: customer.session.messageCount || 0,
+      dayjs(session.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    conversations: session.messageCount || 0,
     assignee: user?.fullName || user?.username || '',
   };
 };
@@ -233,8 +234,8 @@ export default function Customer() {
 
       try {
         // 调用store的updateCustomer方法
-        await updateCustomer(currentRecord.sessionId, {
-          agentId: employee.id,
+        await sessionsAPI.updateSession(currentRecord.sessionId, {
+          userId: employee.id,
         });
 
         const employeeName =
@@ -408,12 +409,18 @@ export default function Customer() {
       key: 'action',
       render: (_: any, record: CustomerDisplayItem) => (
         <Space size='middle'>
-          <Button type='text' onClick={() => handleEditCustomer(record)}>
+          <a
+            style={{ color: theme.colorPrimary }}
+            onClick={() => handleEditCustomer(record)}
+          >
             编辑
-          </Button>
-          <Button type='text' onClick={() => handleDelete(record)}>
+          </a>
+          <a
+            style={{ color: theme.colorPrimary }}
+            onClick={() => handleDelete(record)}
+          >
             删除
-          </Button>
+          </a>
         </Space>
       ),
     },
@@ -433,120 +440,120 @@ export default function Customer() {
   );
 
   return (
-      <div className={styles.pageContainer}>
-        {/* 顶部区域 */}
-        <div className={styles.header}>
-          <Title level={4} style={{ margin: 0 }}>
-            客户管理
-          </Title>
-          <Space>
-            <Select
-              showSearch
-              allowClear
-              placeholder='搜索客户'
-              suffixIcon={<SearchOutlined />}
-              className={styles.searchBox}
-              onSearch={searchSessions}
-              onChange={(value) => {
-                if (value) {
-                  // 直接跳转到客户详情页
-                  router.push(`/customer/detail?id=${value}`);
-                }
-              }}
-              options={searchResults?.map((item) => ({
-                label: item.title,
-                value: item.id,
-              }))}
-              onClear={() => searchSessions('')}
-              filterOption={false}
-              notFoundContent={
-                searchLoading ? (
-                  <Spin size='small' />
-                ) : searchResults?.length === 0 ? (
-                  '暂无匹配的客户'
-                ) : (
-                  '请输入关键词搜索客户'
-                )
+    <div className={styles.pageContainer}>
+      {/* 顶部区域 */}
+      <div className={styles.header}>
+        <Title level={4} style={{ margin: 0 }}>
+          客户管理
+        </Title>
+        <Space>
+          <Select
+            showSearch
+            allowClear
+            placeholder='搜索客户'
+            suffixIcon={<SearchOutlined />}
+            className={styles.searchBox}
+            onSearch={searchSessions}
+            onChange={(value) => {
+              if (value) {
+                // 直接跳转到客户详情页
+                router.push(`/customer/detail?id=${value}`);
               }
-              style={{ minWidth: 240 }}
-            />
-            <Button className={styles.actionButton}>客户模版配置</Button>
-            <Button
-              type='primary'
-              className={styles.actionButton}
-              onClick={handleAddCustomer}
-            >
-              添加客户
-            </Button>
-          </Space>
-        </div>
-
-        {/* 统计区域/类别Tab */}
-        <div className={styles.statsContainer}>
-          {categoryStats.map((item) => (
-            <div
-              key={item.agent?.id}
-              onClick={() => setSelectedCategory(item)}
-              className={`${styles.statsBox} ${
-                selectedCategory.agent?.id === item.agent?.id
-                  ? styles.statsBoxActive
-                  : ''
-              }`}
-            >
-              <div className={styles.statsTitle}>{item.agent?.title}</div>
-              <div className={styles.statsValue}>{item.count}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* 表格区域 */}
-        <div className={styles.tableContainer}>
-          {error && (
-            <Alert
-              message='加载客户数据失败'
-              description={error}
-              type='error'
-              style={{ marginBottom: 16 }}
-              closable
-            />
-          )}
-          <Table
-            columns={columns}
-            dataSource={displayCustomers}
-            loading={loading}
-            pagination={{
-              current: page,
-              pageSize: pageSize,
-              total: selectedCategory.count,
-              showSizeChanger: true,
-              showQuickJumper: false,
-              showTotal: (total) => `共 ${total} 条记录`,
-              locale: {
-                items_per_page: '条/页',
-                jump_to: '跳至',
-                page: '页',
-              },
             }}
-            onChange={handleTableChange}
-            locale={{
-              triggerDesc: '点击降序排列',
-              triggerAsc: '点击升序排列',
-              cancelSort: '取消排序',
-            }}
+            options={searchResults?.map((item) => ({
+              label: item.title,
+              value: item.id,
+            }))}
+            onClear={() => searchSessions('')}
+            filterOption={false}
+            notFoundContent={
+              searchLoading ? (
+                <Spin size='small' />
+              ) : searchResults?.length === 0 ? (
+                '暂无匹配的客户'
+              ) : (
+                '请输入关键词搜索客户'
+              )
+            }
+            style={{ minWidth: 240 }}
           />
-        </div>
-
-        {/* 删除确认弹窗 */}
-        <Modal
-          title='确认删除'
-          open={deleteModalVisible}
-          onOk={confirmDelete}
-          onCancel={() => setDeleteModalVisible(false)}
-          okText='确认'
-          cancelText='取消'
-        >
-          <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
-        </Modal>
+          <Button className={styles.actionButton}>客户模版配置</Button>
+          <Button
+            type='primary'
+            className={styles.actionButton}
+            onClick={handleAddCustomer}
+          >
+            添加客户
+          </Button>
+        </Space>
       </div>
+
+      {/* 统计区域/类别Tab */}
+      <div className={styles.statsContainer}>
+        {categoryStats.map((item) => (
+          <div
+            key={item.agent?.id}
+            onClick={() => setSelectedCategory(item)}
+            className={`${styles.statsBox} ${
+              selectedCategory.agent?.id === item.agent?.id
+                ? styles.statsBoxActive
+                : ''
+            }`}
+          >
+            <div className={styles.statsTitle}>{item.agent?.title}</div>
+            <div className={styles.statsValue}>{item.count}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* 表格区域 */}
+      <div className={styles.tableContainer}>
+        {error && (
+          <Alert
+            message='加载客户数据失败'
+            description={error}
+            type='error'
+            style={{ marginBottom: 16 }}
+            closable
+          />
+        )}
+        <Table
+          columns={columns}
+          dataSource={displayCustomers}
+          loading={loading}
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            total: selectedCategory.count,
+            showSizeChanger: true,
+            showQuickJumper: false,
+            showTotal: (total) => `共 ${total} 条记录`,
+            locale: {
+              items_per_page: '条/页',
+              jump_to: '跳至',
+              page: '页',
+            },
+          }}
+          onChange={handleTableChange}
+          locale={{
+            triggerDesc: '点击降序排列',
+            triggerAsc: '点击升序排列',
+            cancelSort: '取消排序',
+          }}
+        />
+      </div>
+
+      {/* 删除确认弹窗 */}
+      <Modal
+        title='确认删除'
+        open={deleteModalVisible}
+        onOk={confirmDelete}
+        onCancel={() => setDeleteModalVisible(false)}
+        okText='确认'
+        cancelText='取消'
+      >
+        <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
+      </Modal>
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export default function BasicInfoSection() {
       <Row gutter={24}>
         <Col span={6}>
           <Form.Item
-            name='name'
+            name='title'
             label='姓名'
             rules={[{ required: true, message: '请输入姓名' }]}
           >

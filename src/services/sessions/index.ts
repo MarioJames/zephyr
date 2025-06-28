@@ -6,7 +6,7 @@ import { UserItem } from '../user';
 export interface SessionItem {
   id: string;
   slug: string;
-  title?: string;
+  title: string;
   description?: string;
   avatar?: string;
   backgroundColor?: string;
@@ -18,9 +18,7 @@ export interface SessionItem {
   // 关联的员工完整信息
   user?: UserItem;
   // 关联的智能体
-  agentsToSessions?: {
-    agent: AgentItem;
-  }[];
+  agent: AgentItem;
   messageCount?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -66,6 +64,7 @@ export interface SessionUpdateRequest {
   agentId?: string;
   userId?: string;
   pinned?: boolean;
+  userId?: string;
 }
 
 export interface BatchSessionUpdateRequest {

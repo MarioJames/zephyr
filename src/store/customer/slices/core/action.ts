@@ -3,22 +3,18 @@ import customerAPI, {
   type CustomerItem,
   type CustomerListRequest,
   type CustomerCreateRequest,
-  type CustomerUpdateRequest,
 } from '@/services/customer';
 import { CustomerState } from '../../initialState';
-import { sessionsAPI } from '@/services';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
   fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
-  fetchCustomerDetail: (sessionId: string) => Promise<void>;
   createCustomer: (data: CustomerCreateRequest) => Promise<void>;
   updateCustomer: (
     sessionId: string,
-    data: CustomerUpdateRequest
+    data: CustomerCreateRequest
   ) => Promise<void>;
   deleteCustomer: (sessionId: string) => Promise<void>;
-  setCurrentCustomer: (customer?: CustomerItem) => void;
   clearError: () => void;
 }
 
@@ -46,23 +42,6 @@ export const coreSlice: StateCreator<
       set({
         loading: false,
         error: error instanceof Error ? error.message : '获取客户列表失败',
-      });
-    }
-  },
-
-  fetchCustomerDetail: async (sessionId) => {
-    set({ loading: true, error: null });
-    try {
-      const customer = await customerAPI.getCustomerDetail(sessionId);
-      set({
-        currentCustomer: customer,
-        loading: false,
-      });
-    } catch (error) {
-      console.error('获取客户详情失败:', error);
-      set({
-        loading: false,
-        error: error instanceof Error ? error.message : '获取客户详情失败',
       });
     }
   },
@@ -97,29 +76,17 @@ export const coreSlice: StateCreator<
   updateCustomer: async (sessionId, data) => {
     set({ loading: true, error: null });
     try {
-      await customerAPI.updateCustomer(sessionId, data);
+      const updatedCustomer = await customerAPI.updateCustomer(sessionId, data);
 
       // 更新本地状态
       set((state) => ({
         customers: state.customers.map((customer) =>
           customer.session.id === sessionId
-            ? { ...customer, ...data }
+            ? { ...customer, ...updatedCustomer }
             : customer
         ),
         loading: false,
       }));
-
-      // 如果更新的是当前客户，也更新当前客户状态
-      const state = get();
-      if (state.currentCustomer?.session.id === sessionId) {
-        set({ currentCustomer: { ...state.currentCustomer, ...data } });
-      }
-
-      // 刷新相关数据
-      const stateWithActions = get() as any;
-      if (stateWithActions.updateCategoryStats) {
-        stateWithActions.updateCategoryStats();
-      }
     } catch (error) {
       console.error('更新客户失败:', error);
       set({
@@ -142,21 +109,6 @@ export const coreSlice: StateCreator<
         total: state.total - 1,
         loading: false,
       }));
-
-      // 如果删除的是当前客户，清除当前客户状态
-      const state = get();
-      if (state.currentCustomer?.session.id === sessionId) {
-        set({ currentCustomer: undefined });
-      }
-
-      // 刷新相关数据
-      const stateWithActions = get() as any;
-      if (stateWithActions.updateCategoryStats) {
-        stateWithActions.updateCategoryStats();
-      }
-      if (stateWithActions.updateCustomerStats) {
-        stateWithActions.updateCustomerStats();
-      }
     } catch (error) {
       console.error('删除客户失败:', error);
       set({
@@ -164,10 +116,6 @@ export const coreSlice: StateCreator<
         error: error instanceof Error ? error.message : '删除客户失败',
       });
     }
-  },
-
-  setCurrentCustomer: (customer) => {
-    set({ currentCustomer: customer });
   },
 
   clearError: () => {

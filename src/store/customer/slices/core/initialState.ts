@@ -4,7 +4,6 @@ import { CustomerItem } from '@/services/customer';
 export interface CoreState {
   customers: CustomerItem[];
   total: number;
-  currentCustomer?: CustomerItem;
   loading: boolean;
   error: string | null;
 }
@@ -13,7 +12,6 @@ export interface CoreState {
 export const coreInitialState: CoreState = {
   customers: [],
   total: 0,
-  currentCustomer: undefined,
   loading: false,
   error: null,
 };

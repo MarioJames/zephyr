@@ -64,9 +64,9 @@ export default function CallbackPage() {
         const errorObj = error instanceof Error ? error : new Error(message);
         setError(errorObj);
 
-        // 错误后 3 秒自动跳转到首页
+        // 错误后 3 秒自动跳转到聊天页面
         setTimeout(() => {
-          router.replace('/');
+          router.replace('/chat');
         }, 3000);
       } finally {
         setLoading(false);

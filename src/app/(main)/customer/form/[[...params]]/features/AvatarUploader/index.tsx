@@ -9,14 +9,14 @@ import filesService from '@/services/files';
 const { Title } = Typography;
 
 export default function AvatarUploader({
-  disabled = false
+  disabled = false,
 }: AvatarUploaderProps) {
   const { styles } = useAvatarUploaderStyles();
   const { message } = App.useApp();
 
   const form = Form.useFormInstance();
 
-  const avatarUrl = form.getFieldValue('avatar');
+  const avatarUrl = Form.useWatch('avatar', form);
 
   const [uploading, setUploading] = useState(false);
 
@@ -70,6 +70,7 @@ export default function AvatarUploader({
   return (
     <>
       <Title level={5}>头像</Title>
+      <Form.Item name='avatar' hidden />
       <div className={styles.avatarContainer}>
         <div className={styles.avatarCircle}>
           {avatarUrl ? (
@@ -89,7 +90,6 @@ export default function AvatarUploader({
           )}
         </div>
         <Upload
-          name='avatar'
           showUploadList={false}
           beforeUpload={beforeUpload}
           customRequest={handleCustomRequest}

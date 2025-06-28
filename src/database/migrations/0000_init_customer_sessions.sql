@@ -16,7 +16,6 @@ CREATE TABLE "customer_sessions" (
 	"city" varchar(50),
 	"district" varchar(50),
 	"address" text,
-	"notes" text,
 	"accessed_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,

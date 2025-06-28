@@ -58,6 +58,7 @@ const extractTokenInfo = (user: User) => {
   };
 };
 
+
 /**
  * 创建OIDC认证slice
  */
@@ -160,6 +161,7 @@ export const createOIDCAuthSlice: StateCreator<
 
   clearState: () => {
     get().clearRefreshTimer();
+    
     set({
       user: null,
       isLoading: false,

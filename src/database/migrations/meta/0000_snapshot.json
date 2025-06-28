@@ -122,12 +122,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "accessed_at": {
           "name": "accessed_at",
           "type": "timestamp with time zone",

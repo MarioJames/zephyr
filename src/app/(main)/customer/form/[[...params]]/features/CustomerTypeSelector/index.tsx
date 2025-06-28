@@ -11,7 +11,7 @@ export default function CustomerTypeSelector({
 }: CustomerTypeSelectorProps) {
   const form = Form.useFormInstance();
 
-  const agentId = form.getFieldValue('agentId');
+  const agentId = Form.useWatch('agentId', form);
 
   const { styles } = useCustomerTypeSelectorStyles();
 

@@ -34,7 +34,7 @@ const ErrorCapture = memo<ErrorCaptureProps>(({ reset }) => {
       <p style={{ marginBottom: '2em' }}>{'待会来试试，或者回到已知的世界'}</p>
       <Flexbox gap={12} horizontal style={{ marginBottom: '1em' }}>
         <Button onClick={() => reset()}>重新加载</Button>
-        <Link href="/">
+        <Link href="/chat">
           <Button type={'primary'}>返回首页</Button>
         </Link>
       </Flexbox>

@@ -32,7 +32,7 @@ const NotFound = memo(() => {
         <br />
         <div style={{ textAlign: 'center' }}>请检查你的 URL 是否正确</div>
       </p>
-      <Link href="/">
+      <Link href="/chat">
         <Button type={'primary'}>返回首页</Button>
       </Link>
     </Flexbox>

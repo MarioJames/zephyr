@@ -41,9 +41,6 @@ export const customerSessions = pgTable(
     district: varchar('district', { length: 50 }), // 区县
     address: text('address'), // 详细地址
 
-    // 备注信息
-    notes: text('notes'), // 备注
-
     // 系统字段
     ...timestamps,
   },
