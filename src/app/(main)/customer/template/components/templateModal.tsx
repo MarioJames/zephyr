@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, Input, Button, Select, Slider, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { SliderWithInput } from '@lobehub/ui';
 import { createStyles } from "antd-style";
 
 const { TextArea } = Input;
@@ -37,7 +38,7 @@ const useStyles = createStyles(({ css, token }) => ({
     border: none;
     border-radius: 12px;
     font-size: 16px;
-    padding: 24px;
+    padding: 12px 16px;
     color: #222;
     font-weight: 500;
     line-height: 1.8;
@@ -48,6 +49,7 @@ const useStyles = createStyles(({ css, token }) => ({
     &:hover, &:focus, &:active {
       border: none !important;
       box-shadow: none !important;
+      background: #eaeaea !important;
     }
   `,
   right: css`
@@ -286,6 +288,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           flexDirection: "column",
         },
       }}
+      style={{ background: "#F4F4F4" }}
       centered
     >
       <div className={styles.layout}>
@@ -294,7 +297,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           <TextArea
             value={form.prompt}
             onChange={(e) => handleChange("prompt", e.target.value)}
-            placeholder="请输入Prompt内容"
+            placeholder="请输入系统提示词"
             className={styles.textarea}
           />
         </div>
@@ -331,35 +334,33 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           </div>
           <div>
             <div className={styles.label}>温度</div>
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabel}></span>
-              <Slider
-                min={0}
-                max={1}
-                step={0.1}
-                value={form.temperature}
-                onChange={(v) => handleChange("temperature", v)}
-                className={styles.slider}
-              />
-              <span className={styles.sliderValue}>
-                {form.temperature.toFixed(1)}
-              </span>
-            </div>
+            <SliderWithInput
+              min={0}
+              max={1}
+              step={0.1}
+              value={form.temperature}
+              onChange={(v) => handleChange("temperature", v)}
+              styles={{
+                root: { display: 'flex', alignItems: 'center', gap: 8 },
+                slider: { width: 190 },
+                input: { width: 45 },
+              }}
+            />
           </div>
           <div>
             <div className={styles.label}>最大令牌数</div>
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabelWide}></span>
-              <Slider
-                min={256}
-                max={4096}
-                step={1}
-                value={form.maxTokens}
-                onChange={(v) => handleChange("maxTokens", v)}
-                className={styles.slider}
-              />
-              <span className={styles.sliderValue}>{form.maxTokens}</span>
-            </div>
+            <SliderWithInput
+              min={256}
+              max={4096}
+              step={1}
+              value={form.maxTokens}
+              onChange={(v) => handleChange("maxTokens", v)}
+              styles={{
+                root: { display: 'flex', alignItems: 'center', gap: 8 },
+                slider: { width: 190 },
+                input: { width: 45 },
+              }}
+            />
           </div>
           <div>
             <div className={styles.label}>示例图</div>
