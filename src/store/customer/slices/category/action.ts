@@ -27,9 +27,7 @@ export const categorySlice: StateCreator<
       const params = {
         page,
         pageSize,
-        ...(state.selectedCategory.agent?.id !== 'ALL'
-          ? { agentId: state.selectedCategory.agent?.id }
-          : {})
+        agentId: state.selectedCategory.agent?.id,
       };
 
       state.fetchCustomers(params);
@@ -41,13 +39,12 @@ export const categorySlice: StateCreator<
 
     // 调用 core slice 中的 fetchCustomers action
     const state = get();
+
     // 根据选中的分类获取客户列表
     const params = {
       page: 1,
       pageSize: state.pageSize || 10,
-      ...(category.agent?.id !== 'ALL'
-        ? { agentId: category.agent?.id }
-        : {})
+      agentId: category?.agent?.id,
     };
 
     state.fetchCustomers(params);

@@ -73,10 +73,13 @@ function getAllUsers(params?: UserListRequest) {
  * 根据关键字搜索用户
  * @description 根据关键字搜索用户
  * @param keyword string
+ * @param pageSize number
  * @returns UserItem[]
  */
-function searchUsers(keyword: string) {
-  return http.get<UserItem[]>(`/api/v1/users/search?keyword=${keyword}`);
+function searchUsers(keyword: string, pageSize?: number) {
+  return http.get<UserItem[]>(
+    `/api/v1/users/search?keyword=${keyword}&pageSize=${pageSize}`
+  );
 }
 
 /**

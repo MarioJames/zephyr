@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 import {
   Button,
   Input,
@@ -10,41 +10,24 @@ import {
   Modal,
   Form,
   Upload,
-  message,
-  Tabs,
-  Checkbox,
-} from "antd";
+  App,
+} from 'antd';
 import {
   SearchOutlined,
   UploadOutlined,
   PlusOutlined,
-  DoubleRightOutlined,
-  DoubleLeftOutlined,
-} from "@ant-design/icons";
-import { createStyles } from "antd-style";
-import type { ColumnsType } from "antd/es/table";
-import type { UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useEmployeeStore } from "@/store/employee";
-import { employeeSelectors } from "@/store/employee/selectors";
-import { UserItem } from "@/services/user";
-import { adminList } from "@/const/role";
-import { RoleItem } from "@/services/roles";
-import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
-import SkeletonList from "./components/SkeletonList";
-import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
+} from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import type { ColumnsType } from 'antd/es/table';
+import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { useEmployeeStore } from '@/store/employee';
+import { UserItem } from '@/services/user';
+import { adminList } from '@/const/role';
+import { RoleItem } from '@/services/roles';
+import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
+import EmployeeCustomerModal from './components/EmployeeCustomerModal';
 
-const { Title, Text } = Typography;
-
-// mock 客户数据
-const allCustomers = [
-  { id: "c1", customerName: "客户A", employeeName: "张三",userId: "1" },
-  { id: "c2", customerName: "客户B", employeeName: "李四",userId: "2" },
-  { id: "c3", customerName: "客户C", employeeName: "王五",userId: "3" },
-  { id: "c4", customerName: "客户D", employeeName: "赵六",userId: "4" },
-  { id: "c5", customerName: "客户E", employeeName: "钱七",userId: "5" },
-  { id: "c6", customerName: "客户F", employeeName: "未分配",userId: "6" },
-  { id: "c7", customerName: "客户G", employeeName: "未分配",userId: "7" },
-];
+const { Title } = Typography;
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -76,12 +59,12 @@ const useStyles = createStyles(({ css, token }) => ({
     flex: 1;
   `,
   addButton: css`
-    background-color: #000;
-    color: #fff;
+    background-color: ${token.colorPrimary};
+    color: ${token.colorPrimaryText};
+
     &:hover,
     &:focus {
-      background-color: #333;
-      color: #fff;
+      background-color: ${token.colorPrimaryHover};
     }
   `,
   roleItem: css`
@@ -124,12 +107,12 @@ const useStyles = createStyles(({ css, token }) => ({
     border: 1px solid rgba(0, 0, 0, 0.15);
   `,
   confirmButton: css`
-    background-color: #000;
-    color: #fff;
+    background-color: ${token.colorPrimary};
+    color: ${token.colorPrimaryText};
+
     &:hover,
     &:focus {
-      background-color: #333;
-      color: #fff;
+      background-color: ${token.colorPrimaryHover};
     }
   `,
   operationButton: css`
@@ -139,7 +122,7 @@ const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
     .ant-modal-content {
       border-radius: 8px;
-      background: #f4f4f4;
+      background: ${token.colorBgContainer};
       padding: 24px;
     }
   `,
@@ -162,7 +145,7 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #f0f0f0;
+    background: ${token.colorBgContainer};
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -185,7 +168,7 @@ const useStyles = createStyles(({ css, token }) => ({
     }
   `,
   formContainer: css`
-    background-color: #fff;
+    background-color: ${token.colorPrimary};
     padding: 16px;
     border-radius: 8px;
   `,
@@ -203,11 +186,11 @@ const useStyles = createStyles(({ css, token }) => ({
     margin-top: 24px;
   `,
   blackText: css`
-    color: #000 !important;
+    color: ${token.colorPrimary} !important;
   `,
   customInput: css`
     border-radius: 6px !important;
-    background: #eaeaea !important;
+    background: ${token.colorBgContainer} !important;
     height: 32px !important;
     border: none !important;
     box-shadow: none !important;
@@ -215,15 +198,14 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 export default function EmployeePage() {
+  const { message } = App.useApp();
+
   const { styles } = useStyles();
   // 使用store
   const {
     employees,
-    roles,
     loading,
-    error,
     fetchEmployees,
-    fetchRoles,
     addEmployee,
     updateEmployee,
     deleteEmployee,
@@ -231,13 +213,14 @@ export default function EmployeePage() {
     fetchSessionList,
     updateEmployeeSessions,
   } = useEmployeeStore();
+
   const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
 
   // 分页状态
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   // 页面状态
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<UserItem | null>(null);
@@ -245,7 +228,7 @@ export default function EmployeePage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [customerTab, setCustomerTab] = useState("all");
+  const [customerTab, setCustomerTab] = useState('all');
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
   const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([]);
@@ -257,7 +240,6 @@ export default function EmployeePage() {
   // 页面初始化加载员工和角色
   React.useEffect(() => {
     fetchEmployees({ page: pagination.current, pageSize: pagination.pageSize });
-    fetchRoles();
   }, [pagination.current, pagination.pageSize]);
 
   // 处理角色变更
@@ -289,9 +271,9 @@ export default function EmployeePage() {
       setAvatarFile(
         employee.avatar
           ? {
-              uid: "-1",
-              name: "avatar.png",
-              status: "done",
+              uid: '-1',
+              name: 'avatar.png',
+              status: 'done',
               url: employee.avatar,
             }
           : null
@@ -358,14 +340,14 @@ export default function EmployeePage() {
 
   // 头像上传前处理
   const beforeUpload = async (file: File) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error("只能上传 JPG/PNG 格式的图片!");
+      message.error('只能上传 JPG/PNG 格式的图片!');
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("图片大小不能超过 2MB!");
+      message.error('图片大小不能超过 2MB!');
       return false;
     }
     try {
@@ -373,19 +355,19 @@ export default function EmployeePage() {
       setAvatarFile({
         uid: `${Date.now()}_${file.name}`,
         name: file.name,
-        status: "done",
+        status: 'done',
         url,
       });
-      message.success("头像上传成功");
+      message.success('头像上传成功');
     } catch (e: any) {
-      message.error(e.message || "头像上传失败");
+      message.error(e.message || '头像上传失败');
     }
     // 阻止Upload组件自动上传
     return false;
   };
 
   // 头像上传变更处理
-  const handleAvatarChange: UploadProps["onChange"] = ({ fileList }) => {
+  const handleAvatarChange: UploadProps['onChange'] = ({ fileList }) => {
     if (fileList.length === 0) {
       setAvatarFile(null);
     }
@@ -433,42 +415,45 @@ export default function EmployeePage() {
   };
   // 左侧客户列表过滤
   const leftList = sessionList.filter((c) => {
-    if (customerTab === "all") return !employeeCustomers.includes(c.id);
-    if (customerTab === "unassigned")
-      return (!c.username || c.username === "未分配") && !employeeCustomers.includes(c.id);
+    if (customerTab === 'all') return !employeeCustomers.includes(c.id);
+    if (customerTab === 'unassigned')
+      return (
+        (!c.username || c.username === '未分配') &&
+        !employeeCustomers.includes(c.id)
+      );
     return false;
   });
   // 右侧客户列表
   const rightList = sessionList.filter((c) => employeeCustomers.includes(c.id));
   const columns: ColumnsType<UserItem> = [
     {
-      title: "员工姓名",
-      dataIndex: "username",
-      key: "username",
-      render: (text) => text || "-",
+      title: '员工姓名',
+      dataIndex: 'username',
+      key: 'username',
+      render: (text) => text || '-',
     },
     {
-      title: "登录邮箱",
-      dataIndex: "email",
-      key: "email",
-      render: (text) => text || "-",
+      title: '登录邮箱',
+      dataIndex: 'email',
+      key: 'email',
+      render: (text) => text || '-',
     },
     {
-      title: "联系电话",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text) => text || "-",
+      title: '联系电话',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (text) => text || '-',
     },
     {
-      title: "账户ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => text || "-",
+      title: '账户ID',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text) => text || '-',
     },
     {
-      title: "客户数量",
-      dataIndex: "customerCount",
-      key: "customerCount",
+      title: '客户数量',
+      dataIndex: 'customerCount',
+      key: 'customerCount',
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
         const count = customerList?.length;
@@ -476,13 +461,13 @@ export default function EmployeePage() {
         return (
           <span
             style={{
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
             }}
           >
             {count === undefined || count === null ? (
-              "-"
+              '-'
             ) : (
               <>
                 {count}
@@ -498,18 +483,18 @@ export default function EmployeePage() {
       },
     },
     {
-      title: "权限",
-      dataIndex: "roles",
-      key: "roles",
+      title: '权限',
+      dataIndex: 'roles',
+      key: 'roles',
       render: (roles: RoleItem[], record: UserItem) => {
         const role = roles[0];
         const isAdmin = adminList.includes(role?.name);
-        const roleText = isAdmin ? "管理员" : "员工";
-        const displayRole = roleText || "-";
+        const roleText = isAdmin ? '管理员' : '员工';
+        const displayRole = roleText || '-';
 
         const roleMenuItems = [
           {
-            key: "admin",
+            key: 'admin',
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
@@ -518,7 +503,7 @@ export default function EmployeePage() {
             ),
           },
           {
-            key: "employee",
+            key: 'employee',
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
@@ -533,10 +518,10 @@ export default function EmployeePage() {
             menu={{
               items: roleMenuItems,
               onClick: ({ key }) =>
-                handleRoleChange(record.id, key as "admin" | "employee"),
+                handleRoleChange(record.id, key as 'admin' | 'employee'),
               className: styles.roleDropdown,
             }}
-            trigger={["click"]}
+            trigger={['click']}
           >
             <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
               {displayRole} <ChevronDown size={16} />
@@ -546,37 +531,37 @@ export default function EmployeePage() {
       },
     },
     {
-      title: "员工消息记录",
-      dataIndex: "messageCount",
-      key: "messageCount",
+      title: '员工消息记录',
+      dataIndex: 'messageCount',
+      key: 'messageCount',
       render: (text: number) => {
         if (text === undefined || text === null) {
-          return "-";
+          return '-';
         }
         return <span className={styles.blackText}>{text}</span>;
-      }
+      },
     },
     {
-      title: "操作",
-      key: "action",
+      title: '操作',
+      key: 'action',
       render: (_, record) => (
-        <Space size="middle">
+        <Space size='middle'>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
           >
             发送登录引导
           </Button>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
           >
             编辑
           </Button>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleDelete(record.id)}
           >
@@ -594,8 +579,14 @@ export default function EmployeePage() {
   };
 
   const handleTableChange = (paginationConfig: any) => {
-    setPagination({ current: paginationConfig.current, pageSize: paginationConfig.pageSize });
-    fetchEmployees({ page: paginationConfig.current, pageSize: paginationConfig.pageSize });
+    setPagination({
+      current: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+    });
+    fetchEmployees({
+      page: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+    });
   };
 
   return (
@@ -607,7 +598,7 @@ export default function EmployeePage() {
         </Title>
         <div className={styles.headerRight}>
           <Input
-            placeholder="搜索员工"
+            placeholder='搜索员工'
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={handleSearchChange}
@@ -624,7 +615,7 @@ export default function EmployeePage() {
         <Table
           columns={columns}
           dataSource={employees}
-          rowKey="id"
+          rowKey='id'
           loading={loading}
           pagination={{
             current: pagination.current,
@@ -638,7 +629,7 @@ export default function EmployeePage() {
 
       {/* 登录引导弹窗 */}
       <Modal
-        title="发送邮件引导员工登录系统"
+        title='发送邮件引导员工登录系统'
         open={loginGuideVisible}
         footer={null}
         onCancel={() => setLoginGuideVisible(false)}
@@ -679,11 +670,11 @@ export default function EmployeePage() {
         width={414}
         className={styles.addEmployeeModal}
         closable={true}
-        closeIcon={<span style={{ fontSize: 20, color: "#999" }}>×</span>}
+        closeIcon={<span style={{ fontSize: 20, color: '#999' }}>×</span>}
       >
         <div>
           <div className={styles.modalTitle}>
-            {isEditMode ? "编辑员工" : "添加员工"}
+            {isEditMode ? '编辑员工' : '添加员工'}
           </div>
 
           {/* 头像上传区域 */}
@@ -697,14 +688,14 @@ export default function EmployeePage() {
                     (avatarFile.originFileObj &&
                       URL.createObjectURL(avatarFile.originFileObj))
                   }
-                  alt="头像"
+                  alt='头像'
                 />
               ) : (
-                <PlusOutlined style={{ fontSize: 24, color: "#ccc" }} />
+                <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
               )}
             </div>
             <Upload
-              name="avatar"
+              name='avatar'
               showUploadList={false}
               beforeUpload={beforeUpload}
               onChange={handleAvatarChange}
@@ -718,45 +709,45 @@ export default function EmployeePage() {
 
           {/* 基本信息表单 */}
           <div className={styles.sectionTitle}>基本信息</div>
-          <Form form={form} layout="vertical" requiredMark={true} colon={true}>
+          <Form form={form} layout='vertical' requiredMark={true} colon={true}>
             <Form.Item
-              name="username"
-              label="员工姓名"
-              rules={[{ required: true, message: "请输入员工姓名" }]}
+              name='username'
+              label='员工姓名'
+              rules={[{ required: true, message: '请输入员工姓名' }]}
               className={styles.formItem}
             >
               <Input
-                placeholder="请输入员工姓名"
+                placeholder='请输入员工姓名'
                 className={styles.customInput}
               />
             </Form.Item>
 
             <Form.Item
-              name="email"
-              label="邮箱"
+              name='email'
+              label='邮箱'
               rules={[
-                { required: true, message: "请输入员工邮箱" },
-                { type: "email", message: "请输入有效的邮箱地址" },
+                { required: true, message: '请输入员工邮箱' },
+                { type: 'email', message: '请输入有效的邮箱地址' },
               ]}
               className={styles.formItem}
             >
               <Input
-                placeholder="请输入员工邮箱"
+                placeholder='请输入员工邮箱'
                 className={styles.customInput}
               />
             </Form.Item>
 
             <Form.Item
-              name="phone"
-              label="手机号"
+              name='phone'
+              label='手机号'
               rules={[
-                { required: true, message: "请输入员工手机号" },
-                { pattern: /^1[3-9]\d{9}$/, message: "请输入有效的手机号" },
+                { required: true, message: '请输入员工手机号' },
+                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
               ]}
               className={styles.formItem}
             >
               <Input
-                placeholder="请输入员工手机号"
+                placeholder='请输入员工手机号'
                 className={styles.customInput}
               />
             </Form.Item>
@@ -775,7 +766,7 @@ export default function EmployeePage() {
               onClick={handleEmployeeSubmit}
               loading={loading}
             >
-              {isEditMode ? "保存修改" : "添加员工"}
+              {isEditMode ? '保存修改' : '添加员工'}
             </Button>
           </div>
         </div>
@@ -792,11 +783,14 @@ export default function EmployeePage() {
           if (!currentCustomerEmployee) return;
           setSessionLoading(true);
           try {
-            await updateEmployeeSessions(currentCustomerEmployee.id, employeeCustomers);
-            message.success("保存成功");
+            await updateEmployeeSessions(
+              currentCustomerEmployee.id,
+              employeeCustomers
+            );
+            message.success('保存成功');
             handleCustomerModalClose();
           } catch (e: any) {
-            message.error(e.message || "保存失败");
+            message.error(e.message || '保存失败');
           } finally {
             setSessionLoading(false);
           }

@@ -1,16 +1,10 @@
 import { StateCreator } from 'zustand/vanilla';
 import { EmployeeState } from '../../initialState';
-import customerAPI from '@/services/customer';
-import userService from '@/services/user';
+import { userAPI } from '@/services';
 
 // ========== 搜索功能Action接口 ==========
 export interface SearchAction {
-  setSearchQuery: (query: string) => void;
-  filterEmployees: () => void;
-  buildRoleMap: () => void;
-  getRoleName: (roleId: string) => string;
-  clearSearch: () => void;
-  searchEmployees: (keyword: string, pageSize?: number) => Promise<void>;
+  searchEmployees: (keyword: string, pageSize: number) => Promise<void>;
 }
 
 // ========== 搜索功能Slice ==========
@@ -20,65 +14,45 @@ export const searchSlice: StateCreator<
   [],
   SearchAction
 > = (set, get) => ({
-  setSearchQuery: (query) => {
-    set({ searchQuery: query });
-    get().filterEmployees();
-  },
-
-  filterEmployees: () => {
-    const { employees, searchQuery } = get();
-
-    if (!searchQuery.trim()) {
-      set({ filteredEmployees: employees });
+  searchEmployees: async (keyword: string, pageSize: number) => {
+    // 创建请求键用于去重
+    const searchKey = `${keyword || ''}:${pageSize}`;
+    const state = get();
+    
+    // 如果已有相同的请求在进行中，直接返回
+    if (state.pendingSearchKeys.has(searchKey)) {
       return;
     }
 
-    const filtered = employees.filter((employee) => {
-      const searchTerm = searchQuery.toLowerCase();
-      return (
-        employee.fullName?.toLowerCase().includes(searchTerm) ||
-        employee.username?.toLowerCase().includes(searchTerm) ||
-        employee.email?.toLowerCase().includes(searchTerm) ||
-        employee.phone?.toLowerCase().includes(searchTerm) ||
-        employee.id.toLowerCase().includes(searchTerm)
-      );
+    // 标记请求开始
+    const newPendingKeys = new Set(state.pendingSearchKeys);
+    newPendingKeys.add(searchKey);
+    set({ 
+      loading: true, 
+      searchQuery: keyword,
+      pendingSearchKeys: newPendingKeys
     });
 
-    set({ filteredEmployees: filtered });
-  },
-
-  buildRoleMap: () => {
-    const { roles } = get();
-    const roleMap: Record<string, string> = {};
-
-    roles.forEach((role) => {
-      roleMap[role.id] = role.name;
-    });
-
-    set({ roleMap });
-  },
-
-  getRoleName: (roleId) => {
-    const { roleMap } = get();
-    return roleMap[roleId] || '未知角色';
-  },
-
-  clearSearch: () => {
-    set({ searchQuery: '', filteredEmployees: [] });
-  },
-
-  searchEmployees: async (keyword: string, pageSize: number = 10) => {
-    set({ loading: true, searchQuery: keyword });
     try {
-      if (!keyword.trim()) {
-        set({ filteredEmployees: get().employees, loading: false });
-        return;
-      }
-      // 远程搜索用户
-      const res = await userService.searchUsers(keyword);
-      set({ filteredEmployees: res, loading: false });
+      const employees = await userAPI.searchUsers(keyword || '', pageSize);
+
+      // 移除请求标记并更新结果
+      const finalPendingKeys = new Set(get().pendingSearchKeys);
+      finalPendingKeys.delete(searchKey);
+      set({ 
+        searchedEmployees: employees, 
+        loading: false,
+        pendingSearchKeys: finalPendingKeys
+      });
     } catch (e: any) {
-      set({ filteredEmployees: [], loading: false });
+      // 移除请求标记
+      const finalPendingKeys = new Set(get().pendingSearchKeys);
+      finalPendingKeys.delete(searchKey);
+      set({ 
+        searchedEmployees: [], 
+        loading: false,
+        pendingSearchKeys: finalPendingKeys
+      });
     }
   },
 });

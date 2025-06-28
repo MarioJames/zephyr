@@ -29,6 +29,7 @@ export default function CustomerFormPage({ params }: CustomerFormPageProps) {
     error,
     handleSubmit,
     handleCancel,
+    submitLoading,
   } = useCustomerForm({ params: urlParams?.params, form: form });
 
   // 渲染表单
@@ -47,6 +48,7 @@ export default function CustomerFormPage({ params }: CustomerFormPageProps) {
           agents={agents}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          submitLoading={submitLoading}
         />
       )}
     </div>

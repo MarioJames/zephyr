@@ -9,11 +9,6 @@ const FormSkeleton = memo(() => {
 
   return (
     <div className={styles.container}>
-      {/* 顶部返回导航 */}
-      <div className={styles.headerSection}>
-        <Skeleton.Button active size='default' style={{ width: 120 }} />
-      </div>
-
       {/* 表单容器 */}
       <div className={styles.formContainer}>
         {/* 客户类型选择区域 */}

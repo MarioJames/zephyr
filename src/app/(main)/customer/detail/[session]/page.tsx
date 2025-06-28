@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import { Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCustomerDetail } from './hooks/useCustomerDetail';
 import {
   CustomerDetailHeader,
@@ -13,7 +13,6 @@ import {
   CustomerAddressInfo,
   TopicRecordsTable,
 } from './components';
-import { useAgentStore } from '@/store/agent';
 
 // 创建样式
 const useStyles = createStyles(({ css, token }) => ({
@@ -31,30 +30,22 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-export default function CustomerDetail() {
+export default function CustomerDetail({
+  params,
+}: {
+  params: Promise<{ session: string }>;
+}) {
   const { styles } = useStyles();
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // 获取URL参数
-  const sessionId = searchParams.get('id');
+  const router = useRouter();
+
+  const { session: sessionId } = use(params);
 
   // 使用自定义hook管理客户详情数据
-  const {
-    customerDetail,
-    loading,
-    error,
-    deleting,
-    updating,
-    fetchCustomerDetail,
-    deleteCustomer,
-    assignEmployee,
-  } = useCustomerDetail();
+  const { deleting, customerDetail, fetchCustomerDetail, deleteCustomer } =
+    useCustomerDetail(sessionId);
 
-  // 从agent store获取agents数据
-  const { agents, fetchAgents } = useAgentStore();
-
-  // 加载客户数据和相关信息
+  // 加载客户数据
   useEffect(() => {
     const loadData = async () => {
       if (!sessionId) {
@@ -63,20 +54,11 @@ export default function CustomerDetail() {
         return;
       }
 
-      try {
-        // 并行加载客户详情和代理列表
-        await Promise.all([
-          fetchCustomerDetail(sessionId),
-          fetchAgents(),
-        ]);
-      } catch (error) {
-        console.error('加载数据失败:', error);
-        message.error('加载客户数据失败');
-      }
+      fetchCustomerDetail();
     };
 
     loadData();
-  }, [sessionId, fetchCustomerDetail, fetchAgents, router]);
+  }, [sessionId, fetchCustomerDetail, router]);
 
   // 处理返回
   const handleBack = () => {
@@ -91,20 +73,15 @@ export default function CustomerDetail() {
   // 处理删除
   const handleDelete = async () => {
     if (!sessionId) return;
+
     await deleteCustomer(sessionId);
   };
 
-  // 处理员工分配
-  const handleAssignEmployee = async (agent: any) => {
-    if (!sessionId) return;
-    await assignEmployee(sessionId, agent);
-  };
-
-  if (loading || !customerDetail) {
+  if (!customerDetail) {
     return (
       <div className={styles.pageContainer}>
         <Spin
-          size="large"
+          size='large'
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -133,9 +110,7 @@ export default function CustomerDetail() {
       {/* 客户信息卡片 */}
       <CustomerInfoCard
         customer={customerDetail}
-        agents={agents}
-        onAssignEmployee={handleAssignEmployee}
-        updating={updating}
+        onAssignSuccess={fetchCustomerDetail}
       />
 
       {/* 详细信息区域 */}
