@@ -13,7 +13,7 @@ import { useInitAgentConfig } from '@/hooks/useInitAgentConfig';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session/selectors';
+import { sessionSelectors, sessionMetaSelectors } from '@/store/session/selectors';
 
 import TogglePanelButton from '@/app/(main)/chat/features/TogglePanelButton';
 
@@ -84,6 +84,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
     router.push(`/customer/edit?id=${sessionId}`);
   };
 
+  const sessionTitle = useSessionStore(sessionMetaSelectors.currentSessionTitle);
   const popoverContent = (
     <div className={styles.popoverItem} onClick={handleEditCustomer}>
       <PencilLine size={16} />
@@ -101,7 +102,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
         size={32}
         title={title}
       /> */}
-      <div className={styles.avatar}>{'客'}</div>
+      <div className={styles.avatar}>{sessionTitle?.[0] || ''}</div>
       <Flexbox align={'center'} className={styles.container} gap={8} horizontal>
         <Popover
           content={popoverContent}
@@ -116,7 +117,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
           }}
         >
           <div className={styles.title}>
-            客户名称
+            {sessionTitle || '客户名称'}
             <ChevronDown size={14} />
           </div>
         </Popover>

@@ -47,9 +47,12 @@ export const navigationSlice: StateCreator<
       }
 
       // 设置新的当前会话
+      const sessions = get().sessions;
+      const currentSession = sessions.find((s) => s.id === sessionId);
       set({
         previousSessionId: currentSessionId,
         currentSessionId: sessionId,
+        currentSession: currentSession,
         isSwitching: false,
       });
 
@@ -65,7 +68,6 @@ export const navigationSlice: StateCreator<
       }
 
       // 获取会话详情并加载相关的智能体和模型信息
-      const sessions = get().sessions;
       const existingSession = sessions.find((s) => s.id === sessionId);
 
       if (sessionId !== INBOX_SESSION_ID) {
