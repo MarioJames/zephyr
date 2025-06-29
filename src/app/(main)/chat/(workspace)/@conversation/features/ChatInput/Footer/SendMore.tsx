@@ -31,6 +31,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
 
   // 本地状态管理发送方式偏好，默认使用 Enter 发送
   const addAIMessage = useChatStore((s) => s.addAIMessage);
+  const inputMessage = useChatStore((s) => s.inputMessage);
 
   const { send: sendMessage } = useSendMessage();
 
@@ -44,7 +45,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
             key: 'addAi',
             label: '添加一条 AI 消息',
             onClick: () => {
-              addAIMessage('1');
+              addAIMessage(inputMessage || '');
             },
           },
           {
@@ -56,7 +57,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
               </Flexbox>
             ),
             onClick: () => {
-              sendMessage({ onlyAddUserMessage: true });
+              sendMessage();
             },
           },
         ],
