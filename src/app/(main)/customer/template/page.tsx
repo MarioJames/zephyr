@@ -157,11 +157,16 @@ export default function CustomerTemplatePage() {
   };
 
   // 删除弹窗确认
-  const handleDeleteModalOk = async (transferToId: string) => {
+  const handleDeleteModalOk = async (transferToId: string, deleteId: string) => {
     setDeleteModalOpen(false);
     setDeleteTargetId(null);
-    // TODO: 这里可实现转移逻辑
-    message.success('转移并删除成功（仅UI，逻辑待实现）');
+    try {
+      await deleteAgent(deleteId);
+      message.success('转移并删除成功');
+      // TODO: 这里可实现转移逻辑
+    } catch {
+      message.error('删除失败');
+    }
   };
 
   // 删除弹窗取消

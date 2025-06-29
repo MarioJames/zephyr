@@ -13,7 +13,7 @@ interface AgentItem {
 interface DeleteModalProps {
   open: boolean;
   onCancel: () => void;
-  onOk: (transferToId: string) => void;
+  onOk: (transferToId: string, deleteId: string) => void;
   agents: AgentItem[];
   currentId: string; // 当前要删除的 agent id
 }
@@ -138,7 +138,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ open, onCancel, onOk, agents,
           <Button
             type="primary"
             disabled={!selectedId}
-            onClick={() => selectedId && onOk(selectedId)}
+            onClick={() => selectedId && onOk(selectedId, currentId)}
           >
             转移并删除
           </Button>
