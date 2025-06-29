@@ -1,7 +1,6 @@
 import { Flexbox } from 'react-layout-kit';
 
 import { LayoutProps } from './type';
-import ChatHeader from './ChatHeader';
 import SessionPanel from './SessionPanel';
 import SlotPanel from './SlotPanel';
 

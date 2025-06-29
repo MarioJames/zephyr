@@ -17,8 +17,6 @@ const ChatConversation = (props: DynamicLayoutProps) => {
   const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
   const activeTopicId = useChatStore((s) => s.activeTopicId);
   const fetchMessagesByTopic = useChatStore((s) => s.fetchMessagesByTopic);
-  const messages = useChatStore((s) => s.messages);
-  const isLoading = useChatStore((s) => s.isLoading);
 
   useEffect(() => {
     if (activeTopicId) {
@@ -40,12 +38,6 @@ const ChatConversation = (props: DynamicLayoutProps) => {
       <ChatList />
       <ChatInput/>
       <ChatHydration />
-      <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
-        {isLoading && <div>加载中...</div>}
-        {messages.map(msg => (
-          <div key={msg.id} style={{ marginBottom: 12 }}>{msg.content}</div>
-        ))}
-      </div>
     </>
   );
 };
