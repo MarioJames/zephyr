@@ -229,15 +229,17 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
-    if (initialValues) {
-      setForm({
-        ...agentFormDefault,
-        ...initialValues,
-      });
-    } else {
-      setForm({ ...agentFormDefault });
+    if (open) {
+      if (initialValues) {
+        setForm({
+          ...agentFormDefault,
+          ...initialValues,
+        });
+      } else {
+        setForm({ ...agentFormDefault });
+      }
     }
-  }, [initialValues, open, modelOptions]);
+  }, [open, initialValues]);
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
