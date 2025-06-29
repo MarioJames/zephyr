@@ -4,6 +4,8 @@ import { FileClock, X } from 'lucide-react';
 import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
 import { useHistoryStyles } from './style';
 import dayjs from 'dayjs';
 
@@ -11,18 +13,19 @@ const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
   const { styles } = useHistoryStyles();
 
-  // 获取当前 sessionId 和 fetchTopics action
-  const sessionId = useChatStore((s) => s.activeId);
+  // 获取当前 currentSessionId 和 fetchTopics action
+  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
   const fetchTopics = useChatStore((s) => s.fetchTopics);
   // 获取话题列表
   const topics = useChatStore(topicSelectors.topics);
+  const switchTopic = useChatStore((s) => s.switchTopic);
 
   useEffect(() => {
-    if (sessionId) {
-      fetchTopics(sessionId);
+    if (currentSessionId) {
+      fetchTopics(currentSessionId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  }, [currentSessionId]);
 
   return (
     <Flexbox height="100%" className={styles.panelBg}>
@@ -58,6 +61,8 @@ const HistoryPanel = () => {
               distribution="space-between"
               align="center"
               className={styles.historyItem}
+              onClick={() => switchTopic(item.id)}
+              style={{ cursor: 'pointer' }}
             >
               <Flexbox>
                 <div className={styles.historyTitle}>{item.title}</div>
