@@ -145,7 +145,7 @@ const Item = memo<ChatListItemProps>(
             error={error}
             errorMessage={errorMessage}
             markdownProps={markdownProps}
-            message={item}
+            message={item.content}
             messageExtra={messageExtra}
             placement={
               type === 'chat'
