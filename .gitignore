@@ -11,6 +11,8 @@
 !.yarn/versions
 bun.lock
 package-lock.json
+pnpm-lock.yaml
+bun.lock
 
 # testing
 /coverage

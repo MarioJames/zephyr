@@ -58,7 +58,10 @@ src/
 ├── features/              # 功能模块
 ├── hooks/                 # 自定义 Hooks
 ├── libs/                  # 核心库
-│   └── model-runtime/     # AI 模型运行时
+│   ├── model-runtime/     # AI 模型运行时
+│   ├── aliyun-mail.ts     # 阿里云邮件推送服务
+│   ├── clerk-backend.ts   # Clerk 后端集成
+│   └── swr.ts            # SWR 配置
 ├── store/                 # Zustand 状态管理
 ├── types/                 # TypeScript 类型定义
 └── utils/                 # 工具函数
@@ -83,8 +86,9 @@ src/
 
 1. **Services API 集成**: `/src/services/`
    - 提供标准化的 API 接口
-   - 包含用户、角色、智能体、会话、话题、消息等模块
+   - 包含用户、角色、智能体、会话、话题、消息、邮件等模块
    - 支持完整的 TypeScript 类型定义
+   - 邮件服务支持单发、批量发送和系统通知
 
 2. **多 AI 提供商支持**: `/src/libs/model-runtime/`
    - 支持 OpenAI、Anthropic、Google、Azure 等多家提供商
@@ -129,6 +133,25 @@ src/
 - `APP_URL` - 应用访问地址
 - `ACCESS_CODE` - 访问控制码
 - AI 提供商 API 密钥
+
+#### 邮件服务配置
+支持阿里云邮件推送服务（DirectMail），提供 SMTP 和 API 两种集成方式：
+
+**SMTP 方式配置（推荐）：**
+- `ALIYUN_MAIL_SMTP_HOST` - SMTP 服务器地址（默认：smtpdm.aliyun.com）
+- `ALIYUN_MAIL_SMTP_PORT` - SMTP 端口（默认：25）
+- `ALIYUN_MAIL_SMTP_SECURE` - 是否使用 SSL/TLS（默认：false）
+- `ALIYUN_MAIL_SMTP_USER` - SMTP 用户名（发信邮箱）
+- `ALIYUN_MAIL_SMTP_PASS` - SMTP 密码
+
+**API 方式配置（可选）：**
+- `ALIYUN_ACCESS_KEY_ID` - 阿里云 Access Key ID
+- `ALIYUN_ACCESS_KEY_SECRET` - 阿里云 Access Key Secret
+- `ALIYUN_MAIL_ENDPOINT` - API 端点（默认：https://dm.aliyuncs.com）
+
+**其他配置：**
+- `ALIYUN_MAIL_DEFAULT_FROM` - 默认发信邮箱
+- `APP_NAME` - 应用名称（用于邮件模板）
 
 ### 特殊注意事项
 1. 项目使用中文作为主要界面语言

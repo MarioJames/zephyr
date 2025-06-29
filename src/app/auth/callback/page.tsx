@@ -9,7 +9,7 @@ import { XCircle } from 'lucide-react';
 import { Alert, Typography } from 'antd';
 import { Center, Flexbox } from 'react-layout-kit';
 import { useTheme } from 'antd-style';
-import Initializing from '../../loading';
+import Initializing from '@/components/Initializing';
 
 const { Title, Text } = Typography;
 
@@ -40,17 +40,20 @@ export default function CallbackPage() {
         const user = await userManager.signinRedirectCallback();
 
         if (user && user.access_token) {
-          console.log('OIDC: Callback successful, user authenticated', user.profile);
+          console.log(
+            'OIDC: Callback successful, user authenticated',
+            user.profile
+          );
           setUser(user);
-          
+
           // 认证成功，处理返回地址
           const returnUrl = sessionStorage.getItem('oidc_return_url');
           sessionStorage.removeItem('oidc_return_url');
-          
+
           // 如果有有效的返回地址且不是根路径，跳转到返回地址
           // 否则跳转到默认的聊天页面
-          const finalUrl = (returnUrl && returnUrl !== '/') ? returnUrl : '/chat';
-          
+          const finalUrl = returnUrl && returnUrl !== '/' ? returnUrl : '/chat';
+
           console.log('OIDC Callback: 认证成功，跳转到', finalUrl);
           router.replace(finalUrl);
         } else {
@@ -59,7 +62,8 @@ export default function CallbackPage() {
       } catch (error) {
         console.error('OIDC: Callback error', error);
         setStatus('error');
-        const message = error instanceof Error ? error.message : '认证过程中发生未知错误';
+        const message =
+          error instanceof Error ? error.message : '认证过程中发生未知错误';
         setErrorMessage(message);
         const errorObj = error instanceof Error ? error : new Error(message);
         setError(errorObj);
@@ -106,21 +110,21 @@ export default function CallbackPage() {
           <Center gap={24}>
             <Icon
               icon={XCircle}
-              size="large"
+              size='large'
               style={{ color: theme.colorError, fontSize: 48 }}
             />
-            <Flexbox gap={16} align="center">
+            <Flexbox gap={16} align='center'>
               <Title level={3} style={{ margin: 0, color: theme.colorError }}>
                 登录失败
               </Title>
               <Alert
-                message="认证错误"
+                message='认证错误'
                 description={errorMessage}
-                type="error"
+                type='error'
                 showIcon
                 style={{ textAlign: 'left' }}
               />
-              <Text type="secondary" style={{ fontSize: 12 }}>
+              <Text type='secondary' style={{ fontSize: 12 }}>
                 3 秒后自动跳转到登录页...
               </Text>
             </Flexbox>

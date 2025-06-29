@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button, Tabs, Checkbox } from "antd";
+import { createStyles } from "antd-style";
 import SkeletonList from "./SkeletonList";
 import { DoubleRightOutlined, DoubleLeftOutlined } from "@ant-design/icons";
 
@@ -30,6 +31,113 @@ interface EmployeeCustomerModalProps {
   rightList: Customer[];
 }
 
+const useStyles = createStyles(({ css, token }) => ({
+  modalBody: css`
+    border-radius: 8px;
+    background: ${token.colorFillSecondary};
+    padding: 24px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+  `,
+  title: css`
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    color: ${token.colorText};
+  `,
+  mainContainer: css`
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  `,
+  leftPanel: css`
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 24px;
+    min-height: 0;
+  `,
+  rightPanel: css`
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  `,
+  panelContainer: css`
+    background: ${token.colorBgContainer};
+    flex: 1;
+    border-radius: 6px;
+    overflow: auto;
+    border: 1px solid ${token.colorBorder};
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  `,
+  panelHeader: css`
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid ${token.colorBorder};
+    padding: 0 12px;
+    height: 40px;
+    font-weight: 500;
+    flex-shrink: 0;
+  `,
+  panelContent: css`
+    flex: 1;
+    overflow: auto;
+  `,
+  customerItem: css`
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid ${token.colorBorder};
+    padding: 0 12px;
+    height: 40px;
+  `,
+  arrowContainer: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    width: 60px;
+  `,
+  arrowButton: css`
+    width: 36px;
+    height: 36px;
+    border: 1px solid ${token.colorBorderSecondary};
+    background: ${token.colorBgContainer};
+    color: ${token.colorText};
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `,
+  footer: css`
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+  `,
+  cancelButton: css`
+    background: ${token.colorBgContainer};
+    color: ${token.colorText};
+    border: 1px solid ${token.colorBorderSecondary};
+  `,
+  saveButton: css`
+    background: ${token.colorText};
+    color: ${token.colorBgContainer};
+    border: none;
+  `,
+  panelTitle: css`
+    font-weight: 500;
+    margin-bottom: 8px;
+    height: 24px;
+    flex-shrink: 0;
+    color: ${token.colorText};
+  `,
+}));
+
 const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
   open,
   onClose,
@@ -49,43 +157,31 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
   leftList,
   rightList,
 }) => {
+  const { styles } = useStyles();
   return (
-    <Modal
-      title={null}
-      open={open}
-      footer={null}
-      onCancel={onClose}
-      width={680}
-      style={{ top: 60 }}
-      styles={{
-        body: {
-          borderRadius: 8,
-          background: "#F4F4F4",
-          padding: 24,
-          height: 500,
-          display: "flex",
-          flexDirection: "column",
-        },
-      }}
-      closable={false}
-    >
+          <Modal
+        title={null}
+        open={open}
+        footer={null}
+        onCancel={onClose}
+        width={680}
+        style={{ top: 60 }}
+        classNames={{
+          body: styles.modalBody,
+        }}
+        closable={false}
+      >
       {loading ? (
         <SkeletonList />
       ) : (
         <>
-          <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 24 }}>
+          <div className={styles.title}>
             员工对接客户管理
           </div>
-          <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+          <div className={styles.mainContainer}>
             {/* 左侧 */}
             <div
-              style={{
-                width: 220,
-                display: "flex",
-                flexDirection: "column",
-                marginRight: 24,
-                minHeight: 0,
-              }}
+              className={styles.leftPanel}
             >
               <Tabs
                 activeKey={customerTab}
@@ -97,28 +193,11 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                 style={{ marginBottom: 8 }}
               />
               <div
-                style={{
-                  background: "#fff",
-                  flex: 1,
-                  borderRadius: 6,
-                  overflow: "auto",
-                  border: "1px solid #eee",
-                  display: "flex",
-                  flexDirection: "column",
-                  minHeight: 0,
-                }}
+                className={styles.panelContainer}
               >
                 {/* 标题栏 */}
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    borderBottom: "1px solid #eee",
-                    padding: "0 12px",
-                    height: 40,
-                    fontWeight: 500,
-                    flexShrink: 0,
-                  }}
+                  className={styles.panelHeader}
                 >
                   <Checkbox
                     checked={
@@ -140,17 +219,11 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                   <span style={{ width: 60 }}>对接人</span>
                 </div>
                 {/* 客户项 */}
-                <div style={{ flex: 1, overflow: "auto" }}>
+                <div className={styles.panelContent}>
                   {leftList.map((c) => (
                     <div
                       key={c.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        borderBottom: "1px solid #eee",
-                        padding: "0 12px",
-                        height: 40,
-                      }}
+                      className={styles.customerItem}
                     >
                       <Checkbox
                         checked={selectedLeft.includes(c.id)}
@@ -172,43 +245,16 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             </div>
             {/* 中间双箭头 */}
             <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 16,
-                width: 60,
-              }}
+              className={styles.arrowContainer}
             >
               <Button
-                style={{
-                  width: 36,
-                  height: 36,
-                  border: "1px solid #ccc",
-                  background: "#fff",
-                  color: "#000",
-                  borderRadius: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                className={styles.arrowButton}
                 icon={<DoubleRightOutlined />}
                 disabled={selectedLeft.length === 0}
                 onClick={moveToRight}
               />
               <Button
-                style={{
-                  width: 36,
-                  height: 36,
-                  border: "1px solid #ccc",
-                  background: "#fff",
-                  color: "#000",
-                  borderRadius: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                className={styles.arrowButton}
                 icon={<DoubleLeftOutlined />}
                 disabled={selectedRight.length === 0}
                 onClick={moveToLeft}
@@ -216,46 +262,19 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             </div>
             {/* 右侧 */}
             <div
-              style={{
-                width: 320,
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 0,
-              }}
+              className={styles.rightPanel}
             >
               <div
-                style={{
-                  fontWeight: 500,
-                  marginBottom: 8,
-                  height: 24,
-                  flexShrink: 0,
-                }}
+                className={styles.panelTitle}
               >
                 员工客户
               </div>
               <div
-                style={{
-                  background: "#fff",
-                  flex: 1,
-                  borderRadius: 6,
-                  overflow: "auto",
-                  border: "1px solid #eee",
-                  display: "flex",
-                  flexDirection: "column",
-                  minHeight: 0,
-                }}
+                className={styles.panelContainer}
               >
                 {/* 标题栏 */}
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    borderBottom: "1px solid #eee",
-                    padding: "0 12px",
-                    height: 40,
-                    fontWeight: 500,
-                    flexShrink: 0,
-                  }}
+                  className={styles.panelHeader}
                 >
                   <Checkbox
                     checked={
@@ -276,17 +295,11 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                   <span style={{ flex: 1 }}>客户名称</span>
                 </div>
                 {/* 客户项 */}
-                <div style={{ flex: 1, overflow: "auto" }}>
+                <div className={styles.panelContent}>
                   {rightList.map((c) => (
                     <div
                       key={c.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        borderBottom: "1px solid #eee",
-                        padding: "0 12px",
-                        height: 40,
-                      }}
+                      className={styles.customerItem}
                     >
                       <Checkbox
                         checked={selectedRight.includes(c.id)}
@@ -307,26 +320,15 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             </div>
           </div>
           {/* 底部按钮 */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 12,
-              marginTop: 24,
-            }}
-          >
+          <div className={styles.footer}>
             <Button
-              style={{
-                background: "#fff",
-                color: "#000",
-                border: "1px solid #ccc",
-              }}
+              className={styles.cancelButton}
               onClick={onClose}
             >
               取消
             </Button>
             <Button
-              style={{ background: "#000", color: "#fff", border: "none" }}
+              className={styles.saveButton}
               loading={loading}
               onClick={onSave}
             >
@@ -339,4 +341,4 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
   );
 };
 
-export default EmployeeCustomerModal; 
+export default EmployeeCustomerModal;
