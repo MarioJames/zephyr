@@ -14,6 +14,11 @@ interface TranslateProps extends ChatTranslate {
   loading?: boolean;
 }
 
+const langMap: Record<string, string> = {
+  'zh-CN': '简体中文',
+  'ko-KR': '韩语',
+};
+
 const Translate = memo<TranslateProps>(({ content = '', from, to, id, loading }) => {
   const theme = useTheme();
   const [show, setShow] = useState(true);
@@ -25,9 +30,9 @@ const Translate = memo<TranslateProps>(({ content = '', from, to, id, loading })
       <Flexbox align={'center'} horizontal justify={'space-between'}>
         <div>
           <Flexbox gap={4} horizontal>
-            <Tag style={{ margin: 0 }}>{from || '...'}</Tag>
+            <Tag style={{ margin: 0 }}>{langMap[from || ''] || from || '...'}</Tag>
             <Icon color={theme.colorTextTertiary} icon={ChevronsRight} />
-            <Tag>{to}</Tag>
+            <Tag>{langMap[to || ''] || to}</Tag>
           </Flexbox>
         </div>
         <Flexbox horizontal>
