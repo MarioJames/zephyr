@@ -350,6 +350,10 @@ export default function Customer() {
     },
   ];
 
+  const goCustomerTemplate = () => {
+    router.push('/customer/template');
+  }
+
   // 处理表格变化
   const handleTableChange = useCallback(
     (pagination: any, filters: any, sorter: any) => {
@@ -401,7 +405,7 @@ export default function Customer() {
             }
             style={{ minWidth: 240 }}
           />
-          <Button className={styles.actionButton}>客户模版配置</Button>
+          <Button onClick={goCustomerTemplate} className={styles.actionButton}>客户模版配置</Button>
           <Button
             type='primary'
             className={styles.actionButton}
