@@ -234,6 +234,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
         setForm({
           ...agentFormDefault,
           ...initialValues,
+          prompt: initialValues.systemRole ?? agentFormDefault.prompt,
+          temperature: initialValues.chatConfig?.temperature ?? agentFormDefault.temperature,
+          maxTokens: initialValues.params?.maxTokens ?? agentFormDefault.maxTokens,
         });
       } else {
         setForm({ ...agentFormDefault });
