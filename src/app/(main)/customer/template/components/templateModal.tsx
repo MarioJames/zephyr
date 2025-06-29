@@ -215,18 +215,14 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   loading,
   initialValues,
   modelOptions,
-  onUploadImage,
 }) => {
   const { styles } = useStyles();
-  const createAgent = useAgentStore((s) => s.createAgent);
-  const updateAgent = useAgentStore((s) => s.updateAgent);
   const uploadAvatar = useAgentStore((s) => s.uploadAvatar);
 
   const [form, setForm] = React.useState({
     ...agentFormDefault,
   });
   const [uploading, setUploading] = React.useState(false);
-  const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
     if (open) {
@@ -385,7 +381,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           </div>
           <div className={styles.footer}>
             <Button onClick={onCancel} className={styles.cancelBtn}>取消</Button>
-            <Button type="primary" onClick={handleOk} loading={loading || saving} className={styles.saveBtn}>保存</Button>
+            <Button type="primary" onClick={handleOk} loading={loading} className={styles.saveBtn}>保存</Button>
           </div>
         </div>
       </div>

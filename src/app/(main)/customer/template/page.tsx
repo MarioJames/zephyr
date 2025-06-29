@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Form, Input, message, Spin, Empty, Modal } from 'antd';
+import { Button, Col, Row, Tooltip, Typography, Form, message, Spin, Empty } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ import { agentSelectors } from '@/store/agent/selectors';
 import TemplateModal from './components/templateModal';
 import DeleteModal from './components/deleteModal';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -120,6 +120,7 @@ export default function CustomerTemplatePage() {
   const createAgent = useAgentStore((s) => s.createAgent);
   const updateAgent = useAgentStore((s) => s.updateAgent);
   const deleteAgent = useAgentStore((s) => s.deleteAgent);
+  const transferSessionsToAgent = useAgentStore((s) => s.transferSessionsToAgent);
 
   // 弹窗表单相关
   const [modalOpen, setModalOpen] = useState(false);
@@ -158,12 +159,12 @@ export default function CustomerTemplatePage() {
 
   // 删除弹窗确认
   const handleDeleteModalOk = async (transferToId: string, deleteId: string) => {
-    setDeleteModalOpen(false);
-    setDeleteTargetId(null);
     try {
+      await transferSessionsToAgent(deleteId, transferToId);
       await deleteAgent(deleteId);
+      setDeleteModalOpen(false);
+      setDeleteTargetId(null);
       message.success('转移并删除成功');
-      // TODO: 这里可实现转移逻辑
     } catch {
       message.error('删除失败');
     }
@@ -300,17 +301,17 @@ export default function CustomerTemplatePage() {
           { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
           { label: 'gpt-4', value: 'gpt-4' },
         ]}
-        onUploadImage={async (file) => {
-          // 这里需要你实现上传逻辑，返回图片url
-          // 示例：return await uploadImage(file);
-          return '';
-        }}
       />
       <DeleteModal
         open={deleteModalOpen}
         onCancel={handleDeleteModalCancel}
         onOk={handleDeleteModalOk}
-        agents={agents}
+        agents={agents.map(a => ({
+          id: a.id,
+          title: a.title || '',
+          description: a.description || '',
+          avatar: a.avatar || '',
+        }))}
         currentId={deleteTargetId || ''}
       />
     </div>

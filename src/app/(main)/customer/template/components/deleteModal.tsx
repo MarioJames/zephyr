@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Modal, Button, List, Avatar } from 'antd';
-import { CheckCircleFilled } from '@ant-design/icons';
-import { createStyles } from 'antd-style';
+import React, { useState } from "react";
+import { Modal, Button, List, Avatar } from "antd";
+import { CircleCheck } from "lucide-react";
+import { createStyles } from "antd-style";
 
 interface AgentItem {
   id: string;
@@ -23,7 +23,6 @@ const useStyles = createStyles(({ css, token }) => ({
     height: 600px;
     display: flex;
     flex-direction: column;
-    padding: 32px;
   `,
   title: css`
     font-size: 16px;
@@ -33,24 +32,24 @@ const useStyles = createStyles(({ css, token }) => ({
   list: css`
     flex: 1;
     overflow: auto;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
   `,
   item: css`
     width: 100%;
     height: 64px;
     padding: 8px;
     border-radius: 8px;
-    border: 1px solid rgba(0,0,0,0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
-    background: #F7F7F7;
+    margin-bottom: 8px;
+    background: #f7f7f7;
     cursor: pointer;
     position: relative;
     transition: background 0.2s;
   `,
   itemSelected: css`
-    background: #FFF !important;
+    background: #fff !important;
   `,
   avatar: css`
     width: 112px !important;
@@ -69,15 +68,17 @@ const useStyles = createStyles(({ css, token }) => ({
   itemTitle: css`
     font-weight: 500;
     font-size: 16px;
-    color: #222;
+    color: #000;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   `,
   itemDesc: css`
-    font-size: 13px;
-    color: #888;
-    margin-top: 4px;
+    font-size: 14px;
+    margin-top: 8px;
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -85,14 +86,20 @@ const useStyles = createStyles(({ css, token }) => ({
   footer: css`
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 8px;
   `,
 }));
 
-const DeleteModal: React.FC<DeleteModalProps> = ({ open, onCancel, onOk, agents, currentId }) => {
+const DeleteModal: React.FC<DeleteModalProps> = ({
+  open,
+  onCancel,
+  onOk,
+  agents,
+  currentId,
+}) => {
   const { styles, cx } = useStyles();
   // 过滤掉当前要删除的 agent
-  const filteredAgents = agents.filter(a => a.id !== currentId);
+  const filteredAgents = agents.filter((a) => a.id !== currentId);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   return (
@@ -101,18 +108,19 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ open, onCancel, onOk, agents,
       title="删除客户类型"
       onCancel={onCancel}
       footer={null}
-      width={470}
+      width={450}
       centered
-      bodyStyle={{ padding: 0 }}
+      style={{
+        borderRadius: 8,
+        background: "#f4f4f4",
+      }}
     >
       <div className={styles.modalBody}>
-        <div className={styles.title}>
-          请将该客户类型客户转移到其他类型
-        </div>
+        <div className={styles.title}>请将该客户类型客户转移到其他类型</div>
         <div className={styles.list}>
           <List
             dataSource={filteredAgents}
-            renderItem={item => {
+            renderItem={(item) => {
               const selected = selectedId === item.id;
               return (
                 <div
@@ -120,14 +128,17 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ open, onCancel, onOk, agents,
                   className={cx(styles.item, selected && styles.itemSelected)}
                   onClick={() => setSelectedId(item.id)}
                 >
-                  <Avatar src={item.avatar || '/test.png'} shape="square" size={48} className={styles.avatar} />
+                  <Avatar
+                    src={item.avatar || "/test.png"}
+                    shape="square"
+                    size={48}
+                    className={styles.avatar}
+                  />
                   <div className={styles.itemContent}>
                     <div className={styles.itemTitle}>{item.title}</div>
                     <div className={styles.itemDesc}>{item.description}</div>
                   </div>
-                  {selected && (
-                    <CheckCircleFilled style={{ color: '#518ded', fontSize: 22, position: 'absolute', right: 16, top: 16 }} />
-                  )}
+                  {selected && <CircleCheck size={16} />}
                 </div>
               );
             }}

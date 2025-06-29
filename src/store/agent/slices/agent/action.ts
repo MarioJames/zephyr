@@ -6,6 +6,7 @@ import agentService, {
 } from '@/services/agents';
 import { AgentStore } from '../../store';
 import filesService from '@/services/files';
+import sessionsService from '@/services/sessions';
 
 export interface AgentAction {
   // 智能体CRUD操作
@@ -28,6 +29,13 @@ export interface AgentAction {
    * @returns Promise<string> 图片URL
    */
   uploadAvatar: (file: File) => Promise<string>;
+
+  /**
+   * 转移客户类型下所有会话到新类型
+   * @param fromAgentId 当前要删除的 agentId
+   * @param toAgentId 目标 agentId
+   */
+  transferSessionsToAgent: (fromAgentId: string, toAgentId: string) => Promise<void>;
 }
 
 export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
@@ -227,5 +235,20 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
     } catch (e: any) {
       throw new Error(e?.message || '头像上传失败');
     }
+  },
+
+  /**
+   * 转移客户类型下所有会话到新类型
+   * @param fromAgentId 当前要删除的 agentId
+   * @param toAgentId 目标 agentId
+   */
+  transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
+    // 1. 查找当前 agent 下所有 session
+    const res = await sessionsService.getSessionList({ agentId: fromAgentId, page: 1, pageSize: 100 });
+    const sessionIds = res.sessions.map((s: any) => s.id);
+    if (!sessionIds.length) return;
+    // 2. 批量更新 session 的 agentId
+    const updateList = sessionIds.map((id: string) => ({ id, agentId: toAgentId }));
+    await sessionsService.batchUpdateSessions(updateList);
   },
 });
