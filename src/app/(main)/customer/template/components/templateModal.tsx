@@ -14,7 +14,7 @@ import { SliderWithInput } from '@lobehub/ui';
 import Image from 'next/image';
 import { createStyles } from 'antd-style';
 import { useAgentStore } from '@/store/agent';
-import { agentFormDefault } from '@/store/agent/slices/agent/initialState';
+import { AGAENT_DEFAULT_CONFIG } from '@/const/agent';
 import { isValidImageUrl } from '@/utils/avatar';
 
 const { TextArea } = Input;
@@ -249,10 +249,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   useEffect(() => {
     if (open) {
       form.setFieldsValue({
-        ...agentFormDefault,
+        ...AGAENT_DEFAULT_CONFIG,
         ...initialValues,
         params: {
-          ...agentFormDefault.params,
+          ...AGAENT_DEFAULT_CONFIG.params,
           ...initialValues.params,
         },
       });

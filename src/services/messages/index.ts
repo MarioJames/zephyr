@@ -1,4 +1,7 @@
 import { http } from '../request';
+import { SessionItem } from '../sessions';
+import { TopicItem } from '../topics';
+import { UserItem } from '../user';
 
 // 消息相关类型定义
 export interface MessageItem {
@@ -25,6 +28,9 @@ export interface MessageItem {
   agentId?: string;
   createdAt?: string;
   updatedAt?: string;
+  topic?: TopicItem;
+  user?: UserItem;
+  session?: SessionItem;
 }
 
 export interface MessagesQueryByTopicRequest {

@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand/vanilla';
 
 import API, { UserItem } from '@/services/user';
+import { useRoleStore } from '@/store/role';
 import { OIDCStore } from '../../store';
 
 /**
@@ -32,7 +33,11 @@ export const createOIDCUserSlice: StateCreator<
   [],
   OIDCUserAction
 > = (set, get) => ({
-  setUserInfo: (userInfo) => set({ userInfo }),
+  setUserInfo: (userInfo) => {
+    set({ userInfo });
+
+    useRoleStore.getState().setCurrentRole(userInfo?.roles?.[0] || null);
+  },
 
   setLoadingUserInfo: (isLoadingUserInfo) => set({ isLoadingUserInfo }),
 
