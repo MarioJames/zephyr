@@ -132,7 +132,7 @@ const Item = memo<ChatListItemProps>(
       [item]
     );
     const messageExtra = useMemo(
-      () => item && <MessageExtra data={item} />,
+        ()=>item && <MessageExtra data={{ ...(item as any), extra: item.metadata }} />,
       [item]
     );
 

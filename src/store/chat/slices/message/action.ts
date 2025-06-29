@@ -42,6 +42,8 @@ export interface MessageAction {
   setArtifactMessageId: (id: string | undefined) => void;
   openArtifact: (params: { id: string }) => void;
   closeArtifact: () => void;
+
+  clearTranslate: (id: string) => void;
 }
 
 export const messageSlice: StateCreator<
@@ -195,15 +197,20 @@ export const messageSlice: StateCreator<
         fromLanguage: 'auto', // 自动检测源语言
       });
 
-      if (response.content) {
-        // 更新消息内容为翻译后的内容
+      const translated = (response as any).translatedText || response.content;
+      if (translated) {
+        // 自动推断 from 语言
+        let fromLang = 'zh-CN';
+        if (targetLanguage === 'zh-CN') fromLang = 'ko-KR';
+        if (targetLanguage === 'ko-KR') fromLang = 'zh-CN';
         get().updateMessage(id, {
-          content: response.content,
           metadata: {
             ...message.metadata,
-            originalContent: message.content,
-            translatedTo: targetLanguage,
-            translatedAt: new Date().toISOString(),
+            translate: {
+              content: translated,
+              from: fromLang,
+              to: targetLanguage,
+            },
           },
         });
       }
@@ -229,4 +236,20 @@ export const messageSlice: StateCreator<
   setArtifactMessageId: (id) => set({ artifactMessageId: id }),
   openArtifact: ({ id }) => set({ artifactMessageId: id }),
   closeArtifact: () => set({ artifactMessageId: undefined }),
+
+  clearTranslate: (id: string) => {
+    set((state) => ({
+      messages: state.messages.map((msg) =>
+        msg.id === id
+          ? {
+              ...msg,
+              metadata: {
+                ...msg.metadata,
+                translate: undefined,
+              },
+            }
+          : msg
+      ),
+    }));
+  },
 });
