@@ -5,8 +5,6 @@ export interface SessionManagementState {
   sessions: SessionItem[];
   // 搜索结果
   searchResults: SessionItem[];
-  // 置顶会话列表
-  pinnedSessions: SessionItem[];
   // 分页信息
   pagination: {
     page: number;
@@ -32,7 +30,6 @@ export interface SessionManagementState {
 export const sessionManagementInitialState: SessionManagementState = {
   sessions: [],
   searchResults: [],
-  pinnedSessions: [],
   pagination: {
     page: 1,
     pageSize: 20,

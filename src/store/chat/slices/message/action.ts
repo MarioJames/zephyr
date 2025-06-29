@@ -29,11 +29,13 @@ export interface MessageAction {
   // 移除AI生成相关方法，因为我们的对话都是确定内容
   
   // 发送消息
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (params: { content: string; sessionId: string; topicId: string; }) => Promise<void>;
   
   // 消息操作
   copyMessage: (id: string, content?: string) => Promise<void>;
   translateMessage: (id: string, targetLanguage: string) => Promise<void>;
+
+  fetchMessagesByTopic: (topicId: string) => Promise<void>;
 }
 
 export const messageSlice: StateCreator<
@@ -129,56 +131,20 @@ export const messageSlice: StateCreator<
     set({ inputMessage: '' });
   },
 
-  sendMessage: async (content: string) => {
-    const state = get();
-    
-    // 构建用户消息
-    const userMessage: MessagesCreateRequest = {
-      content,
-      role: 'user',
-      sessionId: state.activeId,
-      topicId: state.activeTopicId,
-    };
-
+  sendMessage: async ({ content, sessionId, topicId }) => {
+    set({ isLoading: true });
     try {
-      set({ isLoading: true, error: undefined });
-      
-      // 创建用户消息
-      const createdUserMessage = await messageService.createMessage(userMessage);
-      get().addMessage(createdUserMessage);
-      
-      // 记录 parentMessageId 用于后续存储建议
-      const parentMessageId = createdUserMessage.id;
-      
-      // 生成AI建议并存储到 suggestions slice 中
-      const suggestion = await get().generateAISuggestion(content, parentMessageId);
-      
-      // 如果生成了建议，创建对应的AI消息
-      if (suggestion) {
-        const aiMessage: MessagesCreateRequest = {
-          content: suggestion.content,
-          role: 'assistant',
-          sessionId: state.activeId,
-          topicId: state.activeTopicId,
-          model: suggestion.model,
-          provider: suggestion.provider,
-        };
-
-        const createdAIMessage = await messageService.createMessage(aiMessage);
-        get().addMessage(createdAIMessage);
-      }
-
-      // 清空输入
-      get().clearInputMessage();
-      set({ isLoading: false });
-      
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      set({ 
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to send message' 
+      await messageService.createMessageWithReply({
+        content,
+        role: 'user',
+        sessionId,
+        topicId,
       });
-      throw error;
+      // 发送后自动刷新
+      await get().fetchMessagesByTopic(topicId);
+      set({ isLoading: false });
+    } catch (e: any) {
+      set({ isLoading: false, error: e?.message || '消息发送失败' });
     }
   },
 
@@ -239,6 +205,16 @@ export const messageSlice: StateCreator<
       console.error('Failed to translate message:', error);
       set({ error: error instanceof Error ? error.message : 'Failed to translate message' });
       throw error;
+    }
+  },
+
+  fetchMessagesByTopic: async (topicId) => {
+    set({ isLoading: true });
+    try {
+      const messages = await messageService.queryByTopic(topicId);
+      set({ messages, isLoading: false });
+    } catch (e: any) {
+      set({ isLoading: false, error: e?.message || '消息获取失败' });
     }
   },
 });

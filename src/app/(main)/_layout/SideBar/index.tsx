@@ -3,7 +3,6 @@
 import { SideNav } from "@lobehub/ui";
 import { Suspense, memo } from "react";
 import Avatar from "./Avatar";
-// import PinList from "./PinList";
 import TopActions from "./TopActions";
 import { SidebarTabKey } from "@/store/global/initialState";
 import { usePathname } from 'next/navigation';
@@ -21,8 +20,6 @@ const Top = () => {
 };
 
 const Nav = memo(() => {
-  const showPinList = false;
-
   return (
     <SideNav
       avatar={
@@ -38,7 +35,6 @@ const Nav = memo(() => {
       topActions={
         <Suspense>
             <Top />
-            {/* {showPinList && <PinList />} */}
         </Suspense>
       }
       bottomActions={<></>}

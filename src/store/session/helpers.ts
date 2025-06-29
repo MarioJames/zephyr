@@ -108,7 +108,8 @@ export const sessionHelpers = {
       groupId?: string;
     }
   ): SessionItem[] => {
-    return sessions.filter((session) => {
+    console.log('sessions', sessions);
+    return (sessions || []).filter((session) => {
       if (filters.type && session.type !== filters.type) return false;
       if (filters.pinned !== undefined && !!session.pinned !== filters.pinned)
         return false;

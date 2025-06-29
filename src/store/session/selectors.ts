@@ -11,9 +11,6 @@ export const sessionSelectors = {
   // 获取当前会话详情
   currentSession: (state: SessionStore) => state.currentSession,
 
-  // 获取置顶会话列表
-  pinnedSessions: (state: SessionStore) => state.pinnedSessions,
-
   // 获取搜索结果
   searchResults: (state: SessionStore) => state.searchResults,
 
@@ -86,9 +83,6 @@ export const sessionMetaSelectors = {
 
   // 会话总数
   sessionsCount: (state: SessionStore) => state.sessions.length,
-
-  // 置顶会话总数
-  pinnedSessionsCount: (state: SessionStore) => state.pinnedSessions.length,
 
   // 搜索结果总数
   searchResultsCount: (state: SessionStore) => state.searchResults.length,

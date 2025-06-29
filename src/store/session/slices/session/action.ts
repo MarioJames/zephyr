@@ -1,4 +1,4 @@
-import { StateCreator } from 'zustand';
+import { StateCreator } from "zustand";
 import sessionService, {
   SessionItem,
   SessionListRequest,
@@ -6,8 +6,8 @@ import sessionService, {
   SessionCreateRequest,
   SessionUpdateRequest,
   BatchSessionListRequest,
-} from '@/services/sessions';
-import { SessionStore } from '@/store/session';
+} from "@/services/sessions";
+import { SessionStore } from "@/store/session";
 
 export interface SessionAction {
   // 获取会话列表
@@ -56,13 +56,11 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
   fetchSessions: async (params?: SessionListRequest) => {
     set({ isLoading: true, error: undefined });
     try {
-      const sessions = await sessionService.getSessionList(params);
-
-      const pinnedSessions = sessions.filter((session) => session.pinned);
-
+      const { sessions = [], total = 0 } = await sessionService.getSessionList(
+        params
+      );
       set({
         sessions,
-        pinnedSessions,
         isLoading: false,
         lastUpdated: Date.now(),
         initialized: true,
@@ -70,15 +68,15 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
           ...get().pagination,
           page: params?.page || 1,
           pageSize: params?.pageSize || 20,
-          total: sessions.length,
+          total,
           hasMore: sessions.length === (params?.pageSize || 20),
         },
       });
     } catch (error) {
-      console.error('获取会话列表失败:', error);
+      console.error("获取会话列表失败:", error);
       set({
         isLoading: false,
-        error: error instanceof Error ? error.message : '获取会话列表失败',
+        error: error instanceof Error ? error.message : "获取会话列表失败",
       });
     }
   },
@@ -93,10 +91,10 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
         isSearching: false,
       });
     } catch (error) {
-      console.error('搜索会话失败:', error);
+      console.error("搜索会话失败:", error);
       set({
         isSearching: false,
-        searchError: error instanceof Error ? error.message : '搜索会话失败',
+        searchError: error instanceof Error ? error.message : "搜索会话失败",
       });
     }
   },
@@ -113,10 +111,10 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
         lastUpdated: Date.now(),
       });
     } catch (error) {
-      console.error('批量获取会话失败:', error);
+      console.error("批量获取会话失败:", error);
       set({
         isLoading: false,
-        error: error instanceof Error ? error.message : '批量获取会话失败',
+        error: error instanceof Error ? error.message : "批量获取会话失败",
       });
     }
   },
@@ -139,9 +137,9 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
 
       return session;
     } catch (error) {
-      console.error('获取会话详情失败:', error);
+      console.error("获取会话详情失败:", error);
       set({
-        error: error instanceof Error ? error.message : '获取会话详情失败',
+        error: error instanceof Error ? error.message : "获取会话详情失败",
       });
       return undefined;
     }
@@ -161,10 +159,10 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
 
       return newSession;
     } catch (error) {
-      console.error('创建会话失败:', error);
+      console.error("创建会话失败:", error);
       set({
         isCreating: false,
-        error: error instanceof Error ? error.message : '创建会话失败',
+        error: error instanceof Error ? error.message : "创建会话失败",
       });
       return undefined;
     }
@@ -180,14 +178,8 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
         session.id === id ? updatedSession : session
       );
 
-      // 更新置顶会话列表
-      const pinnedSessions = updatedSessions.filter(
-        (session) => session.pinned
-      );
-
       set({
         sessions: updatedSessions,
-        pinnedSessions,
         currentSession:
           get().currentSessionId === id ? updatedSession : get().currentSession,
         isUpdating: false,
@@ -196,10 +188,10 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
 
       return updatedSession;
     } catch (error) {
-      console.error('更新会话失败:', error);
+      console.error("更新会话失败:", error);
       set({
         isUpdating: false,
-        error: error instanceof Error ? error.message : '更新会话失败',
+        error: error instanceof Error ? error.message : "更新会话失败",
       });
       return undefined;
     }
@@ -214,13 +206,9 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
       const updatedSessions = currentSessions.filter(
         (session) => session.id !== id
       );
-      const pinnedSessions = updatedSessions.filter(
-        (session) => session.pinned
-      );
 
       set({
         sessions: updatedSessions,
-        pinnedSessions,
         currentSession:
           get().currentSessionId === id ? undefined : get().currentSession,
         currentSessionId:
@@ -229,9 +217,9 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
       });
       get().removeFromRecentSessions(id);
     } catch (error) {
-      console.error('删除会话失败:', error);
+      console.error("删除会话失败:", error);
       set({
-        error: error instanceof Error ? error.message : '删除会话失败',
+        error: error instanceof Error ? error.message : "删除会话失败",
       });
     }
   },
@@ -243,14 +231,14 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
     try {
       await get().updateSession(id, { pinned: !session.pinned });
     } catch (error) {
-      console.error('切换置顶状态失败:', error);
+      console.error("切换置顶状态失败:", error);
     }
   },
 
   clearSearchResults: () => {
     set({
       searchResults: [],
-      searchKeyword: '',
+      searchKeyword: "",
       searchError: undefined,
       inSearchMode: false,
     });
@@ -310,10 +298,10 @@ export const sessionSlice: StateCreator<SessionStore, [], [], SessionAction> = (
       });
       return updatedSessions;
     } catch (error) {
-      console.error('批量更新会话失败:', error);
+      console.error("批量更新会话失败:", error);
       set({
         isUpdating: false,
-        error: error instanceof Error ? error.message : '批量更新会话失败',
+        error: error instanceof Error ? error.message : "批量更新会话失败",
       });
       return [];
     }
