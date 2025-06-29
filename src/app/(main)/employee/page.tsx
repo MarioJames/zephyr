@@ -24,6 +24,7 @@ import { useEmployeeStore } from '@/store/employee';
 import { UserItem } from '@/services/user';
 import { adminList } from '@/const/role';
 import { RoleItem } from '@/services/roles';
+import { mailAPI } from '@/services';
 import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
 import EmployeeCustomerModal from './components/EmployeeCustomerModal';
 
@@ -57,15 +58,6 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   tableContainer: css`
     flex: 1;
-  `,
-  addButton: css`
-    background-color: ${token.colorPrimary};
-    color: ${token.colorPrimaryText};
-
-    &:hover,
-    &:focus {
-      background-color: ${token.colorPrimaryHover};
-    }
   `,
   roleItem: css`
     display: flex;
@@ -105,15 +97,6 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   cancelButton: css`
     border: 1px solid rgba(0, 0, 0, 0.15);
-  `,
-  confirmButton: css`
-    background-color: ${token.colorPrimary};
-    color: ${token.colorPrimaryText};
-
-    &:hover,
-    &:focus {
-      background-color: ${token.colorPrimaryHover};
-    }
   `,
   operationButton: css`
     padding: 0;
@@ -200,7 +183,7 @@ const useStyles = createStyles(({ css, token }) => ({
 export default function EmployeePage() {
   const { message } = App.useApp();
 
-  const { styles } = useStyles();
+  const { styles, theme } = useStyles();
   // 使用store
   const {
     employees,
@@ -222,6 +205,7 @@ export default function EmployeePage() {
   // 页面状态
   const [searchValue, setSearchValue] = useState('');
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
+  const [loginGuideLoading, setLoginGuideLoading] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<UserItem | null>(null);
   const [avatarFile, setAvatarFile] = useState<UploadFile | null>(null);
@@ -253,6 +237,37 @@ export default function EmployeePage() {
   const handleSendLoginGuide = (employee: UserItem) => {
     setCurrentEmployee(employee);
     setLoginGuideVisible(true);
+  };
+
+  // 确认发送登录引导邮件
+  const handleConfirmSendLoginGuide = async () => {
+    if (!currentEmployee) {
+      message.error('员工信息不存在');
+      return;
+    }
+
+    if (!currentEmployee.email) {
+      message.error('员工邮箱不存在，无法发送登录引导');
+      return;
+    }
+
+    setLoginGuideLoading(true);
+    try {
+      await mailAPI.sendLoginGuideMail(
+        currentEmployee.id,
+        currentEmployee.email,
+        currentEmployee.username || currentEmployee.fullName || '员工'
+      );
+
+      message.success('登录引导邮件发送成功');
+
+      setLoginGuideVisible(false);
+    } catch (error: any) {
+      console.error('发送登录引导邮件失败:', error);
+      message.error(error.message || '登录引导邮件发送失败');
+    } finally {
+      setLoginGuideLoading(false);
+    }
   };
 
   // 处理编辑员工
@@ -604,7 +619,7 @@ export default function EmployeePage() {
             onChange={handleSearchChange}
             style={{ width: 240 }}
           />
-          <Button className={styles.addButton} onClick={showAddEmployeeModal}>
+          <Button type='primary' onClick={showAddEmployeeModal}>
             添加员工
           </Button>
         </div>
@@ -632,28 +647,43 @@ export default function EmployeePage() {
         title='发送邮件引导员工登录系统'
         open={loginGuideVisible}
         footer={null}
-        onCancel={() => setLoginGuideVisible(false)}
+        onCancel={() => {
+          setLoginGuideVisible(false);
+          setLoginGuideLoading(false);
+        }}
         width={400}
         closable={false}
       >
         <div>
+          <p>将向员工发送登录引导邮件，包含系统访问地址和登录说明。</p>
           <p>
-            将发送一条包含"系统地址"以及员工个人登录的账号信息（邮箱&密码）的邮件，到员工邮箱。
+            <strong>收件邮箱：</strong>
+            <span
+              style={{
+                color: currentEmployee?.email ? theme.colorText : '#ff4d4f',
+              }}
+            >
+              {currentEmployee?.email || '邮箱地址不存在'}
+            </span>
           </p>
-          <p>{currentEmployee?.email}</p>
+          <p>
+            <strong>员工姓名：</strong>
+            {currentEmployee?.username || currentEmployee?.fullName || '未设置'}
+          </p>
           <div className={styles.cardActions}>
             <Button
               className={styles.cancelButton}
-              onClick={() => setLoginGuideVisible(false)}
+              onClick={() => {
+                setLoginGuideVisible(false);
+                setLoginGuideLoading(false);
+              }}
             >
               取消
             </Button>
             <Button
-              className={styles.confirmButton}
-              onClick={() => {
-                console.log(`发送登录引导邮件到 ${currentEmployee?.email}`);
-                setLoginGuideVisible(false);
-              }}
+              loading={loginGuideLoading}
+              disabled={!currentEmployee?.email}
+              onClick={handleConfirmSendLoginGuide}
             >
               确认发送
             </Button>
@@ -762,7 +792,7 @@ export default function EmployeePage() {
               取消
             </Button>
             <Button
-              className={styles.confirmButton}
+              type='primary'
               onClick={handleEmployeeSubmit}
               loading={loading}
             >

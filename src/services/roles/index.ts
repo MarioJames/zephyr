@@ -1,13 +1,16 @@
-import { http } from "../request";
+import { http } from '../request';
 
 // 角色相关类型定义
 export interface RoleItem {
   id: string;
   name: string;
+  displayName?: string;
   description?: string;
   permissions?: string[];
   createdAt?: string;
   updatedAt?: string;
+  isActive?: boolean;
+  isSystem?: boolean;
 }
 
 /**
@@ -28,6 +31,17 @@ function getAllRoles() {
  */
 function getActiveRoles() {
   return http.get<RoleItem[]>('/api/v1/roles/active');
+}
+
+/**
+ * 更新角色信息
+ * @description 更新指定用户的角色
+ * @param userId string
+ * @param roleIds string[]
+ * @returns void
+ */
+function updateRole(roleId: string, role: RoleItem) {
+  return http.put<void>(`/api/v1/roles/${roleId}`, role);
 }
 
 /**
@@ -55,6 +69,5 @@ export default {
   getActiveRoles,
   getRoleById,
   getRolePermissions,
-  // 保持向后兼容
-  getRoleList: getAllRoles,
-}; 
+  updateRole,
+};

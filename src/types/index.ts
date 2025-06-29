@@ -31,3 +31,6 @@ export type OptionalTimestamps<T> = Omit<T, 'createdAt' | 'updatedAt'> & {
   createdAt?: T extends { createdAt: infer U } ? U : never;
   updatedAt?: T extends { updatedAt: infer U } ? U : never;
 };
+
+// 导出邮件相关类型
+export * from './mail';

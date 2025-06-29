@@ -10,6 +10,7 @@ export { default as chatAPI } from './chat';
 export { default as filesAPI } from './files';
 export { default as modelsAPI } from './models';
 export { default as customerAPI } from './customer';
+export { default as mailAPI } from './mail';
 
 // 导出类型定义
 export type { UserItem, UserCreateRequest, UserUpdateRequest } from './user';
