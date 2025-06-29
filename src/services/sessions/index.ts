@@ -64,7 +64,6 @@ export interface SessionUpdateRequest {
   agentId?: string;
   userId?: string;
   pinned?: boolean;
-  userId?: string;
 }
 
 export interface BatchSessionUpdateRequest {

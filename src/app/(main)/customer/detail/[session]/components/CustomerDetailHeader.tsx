@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Space } from 'antd';
+import { Button, Popconfirm, Space } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 
@@ -47,19 +47,22 @@ export const CustomerDetailHeader: React.FC<CustomerDetailHeaderProps> = ({
         <span>返回客户管理</span>
       </div>
       <Space>
-        <Button
-          className={styles.actionButton}
-          onClick={onDelete}
-          loading={deleting}
-          danger
+        <Popconfirm
+          title='确定删除该客户吗？'
+          onConfirm={onDelete}
+          okText='确定'
+          cancelText='取消'
         >
-          删除
-        </Button>
-        <Button
-          type="primary"
-          className={styles.actionButton}
-          onClick={onEdit}
-        >
+          <Button
+            danger
+            type='primary'
+            loading={deleting}
+            className={styles.actionButton}
+          >
+            删除
+          </Button>
+        </Popconfirm>
+        <Button type='primary' className={styles.actionButton} onClick={onEdit}>
           编辑
         </Button>
       </Space>

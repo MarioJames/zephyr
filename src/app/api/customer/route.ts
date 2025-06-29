@@ -203,13 +203,19 @@ export async function PUT(request: NextRequest) {
     // 根据sessionId查找客户扩展信息
     const customerExtend = await customerModel.findBySessionId(sessionId);
     if (!customerExtend) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '客户扩展信息不存在',
-        },
-        { status: 404 }
-      );
+      console.log('客户拓展信息不存在，创建新客户拓展信息');
+
+      const newCustomerExtend = await customerModel.create({
+        sessionId,
+        ...body,
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: newCustomerExtend,
+        message: '客户扩展信息创建成功',
+        timestamp: Date.now(),
+      });
     }
 
     // 更新客户扩展信息

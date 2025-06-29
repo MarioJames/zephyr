@@ -3,7 +3,7 @@ import { Card, Row, Col, Avatar } from 'antd';
 import { createStyles } from 'antd-style';
 import { CustomerItem } from '@/services/customer';
 import { EmployeeAssignmentPanel } from './EmployeeAssignmentPanel';
-import { AgentItem } from '@/services/agents';
+import { UserItem } from '@/services/user';
 
 const useStyles = createStyles(({ css, token }) => ({
   customerCard: css`
@@ -33,21 +33,18 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export interface CustomerInfoCardProps {
   customer: CustomerItem;
-  agents: AgentItem[];
-  onAssignEmployee: (agent: AgentItem) => void;
-  updating: boolean;
+  onAssignSuccess?: (employee: UserItem) => void;
+  onAssignError?: (error: any) => void;
 }
 
 export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   customer,
-  agents,
-  onAssignEmployee,
-  updating,
+  onAssignSuccess,
+  onAssignError,
 }) => {
   const { styles } = useStyles();
 
   const { session, extend } = customer;
-  const assignedAgent = session.agentsToSessions?.[0]?.agent;
 
   return (
     <Card className={styles.customerCard}>
@@ -77,10 +74,9 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
         </Col>
         <Col span={6}>
           <EmployeeAssignmentPanel
-            assignedAgent={assignedAgent}
-            agents={agents}
-            onAssign={onAssignEmployee}
-            updating={updating}
+            session={session}
+            onAssignSuccess={onAssignSuccess}
+            onAssignError={onAssignError}
           />
         </Col>
       </Row>

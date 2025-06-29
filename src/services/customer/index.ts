@@ -36,7 +36,6 @@ export interface CustomerListRequest {
   pageSize?: number;
   keyword?: string;
   agentId?: string;
-  userId?: string;
 }
 
 export interface CustomerListResponse {
@@ -173,10 +172,10 @@ async function createCustomer(
     const createdSession = await sessionsAPI.createSession(session);
 
     // 2. 创建客户扩展信息
-    const createdExtend = await http.post<CustomerExtendInfo>(
-      '/api/customer',
-      extend
-    );
+    const createdExtend = await http.post<CustomerExtendInfo>('/api/customer', {
+      sessionId: createdSession.id,
+      ...extend,
+    });
 
     return {
       session: createdSession,

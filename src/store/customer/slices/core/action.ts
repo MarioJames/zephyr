@@ -9,6 +9,7 @@ import { CustomerState } from '../../initialState';
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
   fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
+  refreshCustomers: () => Promise<void>;
   createCustomer: (data: CustomerCreateRequest) => Promise<void>;
   updateCustomer: (
     sessionId: string,
@@ -36,6 +37,7 @@ export const coreSlice: StateCreator<
         customers: response.data,
         total: response.total,
         loading: false,
+        latestSearchParams: params,
       });
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -46,24 +48,21 @@ export const coreSlice: StateCreator<
     }
   },
 
+  refreshCustomers: async () => {
+    const state = get();
+    await state.fetchCustomers(state.latestSearchParams);
+  },
+
   createCustomer: async (data) => {
     set({ loading: true, error: null });
     try {
       const newCustomer = await customerAPI.createCustomer(data);
+
       set((state) => ({
         customers: [newCustomer, ...state.customers],
         total: state.total + 1,
         loading: false,
       }));
-
-      // 刷新相关数据
-      const state = get() as any;
-      if (state.updateCategoryStats) {
-        state.updateCategoryStats();
-      }
-      if (state.updateCustomerStats) {
-        state.updateCustomerStats();
-      }
     } catch (error) {
       console.error('创建客户失败:', error);
       set({

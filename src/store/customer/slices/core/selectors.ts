@@ -5,9 +5,6 @@ export const coreSelectors = {
   // 获取所有客户
   customers: (state: CustomerState) => state.customers,
 
-  // 获取当前客户
-  currentCustomer: (state: CustomerState) => state.currentCustomer,
-
   // 获取加载状态
   loading: (state: CustomerState) => state.loading,
 
@@ -19,11 +16,13 @@ export const coreSelectors = {
 
   // 根据sessionId获取客户
   getCustomerBySessionId: (state: CustomerState) => (sessionId: string) =>
-    state.customers.find(customer => customer.session.id === sessionId),
+    state.customers.find((customer) => customer.session.id === sessionId),
 
   // 根据agentId获取客户列表
   getCustomersByAgentId: (state: CustomerState) => (agentId: string) =>
-    state.customers.filter(customer => customer.session.agentId === agentId),
+    state.customers.filter(
+      (customer) => customer.session.agent?.id === agentId
+    ),
 
   // 获取客户总数
   customerCount: (state: CustomerState) => state.customers.length,

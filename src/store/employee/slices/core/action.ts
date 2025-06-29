@@ -1,5 +1,9 @@
 import { StateCreator } from 'zustand/vanilla';
-import userService, { UserItem, UserCreateRequest, UserUpdateRequest } from '@/services/user';
+import userService, {
+  UserItem,
+  UserCreateRequest,
+  UserUpdateRequest,
+} from '@/services/user';
 import rolesService from '@/services/roles';
 import filesService from '@/services/files';
 import sessionsService from '@/services/sessions';
@@ -7,15 +11,28 @@ import { EmployeeState } from '../../initialState';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
-  fetchEmployees: (options?: { page?: number; pageSize?: number; skipStats?: boolean }) => Promise<void>;
+  fetchEmployees: (options?: {
+    page?: number;
+    pageSize?: number;
+    skipStats?: boolean;
+  }) => Promise<void>;
   fetchEmployeesWithStats: () => Promise<void>;
-  fetchRoles: () => Promise<void>;
   addEmployee: (data: UserCreateRequest) => Promise<void>;
   updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
-  fetchSessionList: () => Promise<Array<{ id: string; customerName: string; employeeName: string; userId: string }>>;
-  updateEmployeeSessions: (userId: string, sessionIds: string[]) => Promise<void>;
+  fetchSessionList: () => Promise<
+    Array<{
+      id: string;
+      customerName: string;
+      employeeName: string;
+      userId: string;
+    }>
+  >;
+  updateEmployeeSessions: (
+    userId: string,
+    sessionIds: string[]
+  ) => Promise<void>;
 }
 
 // ========== 核心功能Slice ==========
@@ -53,24 +70,6 @@ export const coreSlice: StateCreator<
   fetchEmployeesWithStats: async () => {
     // 带统计数据的员工获取方法
     await get().fetchEmployees({ skipStats: false });
-  },
-
-  fetchRoles: async () => {
-    set({ loading: true, error: null });
-    try {
-      const res = await rolesService.getAllRoles();
-      set({ roles: res });
-
-      // 获取搜索slice的方法并调用
-      const state = get() as any;
-      if (state.buildRoleMap) {
-        state.buildRoleMap();
-      }
-    } catch (e: any) {
-      set({ error: e?.message || '获取角色列表失败' });
-    } finally {
-      set({ loading: false });
-    }
   },
 
   addEmployee: async (data) => {
@@ -111,7 +110,10 @@ export const coreSlice: StateCreator<
 
   uploadAvatar: async (file) => {
     try {
-      const res = await filesService.uploadPublic({ file, directory: 'avatar' });
+      const res = await filesService.uploadPublic({
+        file,
+        directory: 'avatar',
+      });
       return res.url;
     } catch (e: any) {
       throw new Error(e?.message || '头像上传失败');
@@ -119,8 +121,12 @@ export const coreSlice: StateCreator<
   },
 
   fetchSessionList: async () => {
-    const res = await sessionsService.getSessionList({ page: 1, pageSize: 100, userId: 'ALL' });
-    
+    const res = await sessionsService.getSessionList({
+      page: 1,
+      pageSize: 100,
+      userId: 'ALL',
+    });
+
     // 格式化为{id, customerName, employeeName, userId}
     return res.sessions.map((s: any) => ({
       id: s.id,

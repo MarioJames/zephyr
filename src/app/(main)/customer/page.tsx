@@ -2,13 +2,10 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Input,
   Button,
   Table,
   Space,
   Typography,
-  Popover,
-  List,
   Modal,
   App,
   Spin,
@@ -21,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import type { ColumnsType } from 'antd/es/table';
 import { sessionsAPI, type CustomerItem } from '@/services';
 import { UserItem } from '@/services/user';
-import { useEmployeeStore } from '@/store/employee';
+import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
 import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
@@ -40,6 +37,8 @@ interface CustomerDisplayItem {
   lastContactTime: string;
   conversations: number;
   assignee?: string;
+  assigneeId?: string; // 对接人用户ID
+  session: any; // 完整的session对象，用于传递给组件
 }
 
 // 创建样式
@@ -65,10 +64,11 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
     display: flex;
     gap: 16px;
     margin-bottom: 24px;
+    overflow-x: auto;
   `,
   statsBox: css`
+    flex: 1 0 280px;
     cursor: pointer;
-    flex: 1;
     border: 1px solid ${token.colorBorderSecondary};
     padding: 12px;
     display: flex;
@@ -116,13 +116,6 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   actionButton: css`
     margin-left: 8px;
   `,
-  popoverContent: css`
-    width: 197px;
-    height: 214px;
-  `,
-  popoverSearch: css`
-    margin-bottom: 8px;
-  `,
 }));
 
 // 数据转换工具函数
@@ -131,22 +124,22 @@ const transformCustomerToDisplayItem = (
 ): CustomerDisplayItem => {
   const { session, extend } = customer || {};
 
-  const { user, agentsToSessions } = session || {};
-
-  const agentTitle = agentsToSessions?.[0]?.agent?.title;
+  const { user, agent } = session || {};
 
   return {
     key: session.id,
     sessionId: session.id,
     name: session.title || '',
     company: extend?.company || '',
-    type: agentTitle || '未分类',
+    type: agent?.title || '未分类',
     phone: extend?.phone || '',
     createTime: dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
       dayjs(session.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
     conversations: session.messageCount || 0,
     assignee: user?.fullName || user?.username || '',
+    assigneeId: user?.id,
+    session: session, // 保存完整的session对象
   };
 };
 
@@ -156,7 +149,6 @@ export default function Customer() {
   const router = useRouter();
 
   // Store hooks
-  const { employees } = useEmployeeStore();
   const {
     // 数据
     customers,
@@ -167,9 +159,9 @@ export default function Customer() {
 
     // Actions
     setSelectedCategory,
-    updateCustomer,
     deleteCustomer,
     fetchCategoryStats,
+    refreshCustomers,
 
     // 分页
     page,
@@ -177,10 +169,7 @@ export default function Customer() {
     setPagination,
   } = useCustomerStore();
 
-  // const fullStats = customerSelectors.getFullStats(useCustomerStore.getState());
-
   // 本地状态（只保留必要的UI状态）
-  const [employeeSearchText, setEmployeeSearchText] = useState('');
   const [currentRecord, setCurrentRecord] =
     useState<CustomerDisplayItem | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -213,44 +202,6 @@ export default function Customer() {
     fetchCategoryStats();
   }, []);
 
-  // 员工搜索过滤
-  const filteredEmployees = useMemo(() => {
-    return employees.filter((emp: UserItem) =>
-      (emp.fullName || emp.username || '')
-        .toLowerCase()
-        .includes(employeeSearchText.toLowerCase())
-    );
-  }, [employees, employeeSearchText]);
-
-  // 处理员工分配相关
-  const handleAssigneeClick = useCallback((record: CustomerDisplayItem) => {
-    setCurrentRecord(record);
-  }, []);
-
-  // 处理员工分配
-  const handleAssignEmployee = useCallback(
-    async (employee: UserItem) => {
-      if (!currentRecord) return;
-
-      try {
-        // 调用store的updateCustomer方法
-        await sessionsAPI.updateSession(currentRecord.sessionId, {
-          userId: employee.id,
-        });
-
-        const employeeName =
-          employee.fullName || employee.username || '未知员工';
-        message.success(
-          `已将客户 ${currentRecord.name} 分配给 ${employeeName}`
-        );
-      } catch (error) {
-        message.error('分配员工失败');
-        console.error('分配员工失败:', error);
-      }
-    },
-    [currentRecord, updateCustomer, message]
-  );
-
   // 处理删除
   const handleDelete = useCallback((record: CustomerDisplayItem) => {
     setCurrentRecord(record);
@@ -265,6 +216,7 @@ export default function Customer() {
       message.success(`已删除客户: ${currentRecord.name}`);
       setDeleteModalVisible(false);
       setCurrentRecord(null);
+      refreshCustomers();
     } catch (error) {
       message.error('删除客户失败');
       console.error('删除客户失败:', error);
@@ -293,7 +245,7 @@ export default function Customer() {
   // 跳转到客户详情页
   const handleViewCustomerDetail = useCallback(
     (record: CustomerDisplayItem) => {
-      router.push(`/customer/detail?id=${record.key}`);
+      router.push(`/customer/detail/${record.key}`);
     },
     [router]
   );
@@ -366,42 +318,14 @@ export default function Customer() {
       dataIndex: 'assignee',
       key: 'assignee',
       render: (text: string, record: CustomerDisplayItem) => (
-        <Popover
-          trigger='click'
-          placement='right'
-          title='选择对接人'
-          content={
-            <div className={styles.popoverContent}>
-              <Input
-                placeholder='搜索员工'
-                className={styles.popoverSearch}
-                value={employeeSearchText}
-                onChange={(e) => setEmployeeSearchText(e.target.value)}
-                prefix={<SearchOutlined />}
-              />
-              <List
-                size='small'
-                dataSource={filteredEmployees}
-                renderItem={(item: UserItem) => (
-                  <List.Item
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleAssignEmployee(item)}
-                  >
-                    {item.fullName || item.username || '未知员工'}
-                  </List.Item>
-                )}
-                style={{ height: '150px', overflow: 'auto' }}
-              />
-            </div>
-          }
-        >
-          <a
-            onClick={() => handleAssigneeClick(record)}
-            style={{ color: theme.colorText }}
-          >
-            {text}
-          </a>
-        </Popover>
+        <CustomerAssignee
+          session={record.session}
+          title=''
+          placeholder='未分配'
+          popoverPlacement='right'
+          onAssignSuccess={refreshCustomers}
+          style={{ fontSize: '14px' }}
+        />
       ),
     },
     {
