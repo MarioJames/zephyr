@@ -9,6 +9,8 @@ import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session';
 import AIHintPanel from './SlotPanelAIHint';
 import HistoryPanel from './SlotPanelHistory';
 
@@ -34,9 +36,9 @@ const SlotPanel = memo(() => {
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
 
-  // 获取当前激活的 session
-  const activeSessionId = useChatStore((s) => s.activeSessionId);
-  const hasActiveSession = activeSessionId && activeSessionId.length > 0;
+  // 获取当前激活的 session（从 session store 获取）
+  const activeSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  const hasActiveSession = !!activeSessionId;
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
 
