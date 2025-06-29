@@ -4,6 +4,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { SliderWithInput } from '@lobehub/ui';
 import { createStyles } from "antd-style";
 import { useAgentStore } from '@/store/agent';
+import { agentFormDefault } from '@/store/agent/slices/agent/initialState';
 
 const { TextArea } = Input;
 
@@ -222,39 +223,19 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   const uploadAvatar = useAgentStore((s) => s.uploadAvatar);
 
   const [form, setForm] = React.useState({
-    title: "",
-    description: "",
-    model: modelOptions?.[0]?.value || "",
-    temperature: 0.5,
-    maxTokens: 2048,
-    prompt: "",
-    avatar: "",
+    ...agentFormDefault,
   });
   const [uploading, setUploading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
-    console.log("initialValues变化了", initialValues);
     if (initialValues) {
       setForm({
-        title: initialValues.title || "",
-        description: initialValues.description || "",
-        model: initialValues.model || modelOptions?.[0]?.value || "",
-        temperature: initialValues.temperature ?? 0.5,
-        maxTokens: initialValues.maxTokens ?? 2048,
-        prompt: initialValues.prompt || "",
-        avatar: initialValues.avatar || "",
+        ...agentFormDefault,
+        ...initialValues,
       });
     } else {
-      setForm({
-        title: "",
-        description: "",
-        model: modelOptions?.[0]?.value || "",
-        temperature: 0.5,
-        maxTokens: 2048,
-        prompt: "",
-        avatar: "",
-      });
+      setForm({ ...agentFormDefault });
     }
   }, [initialValues, open, modelOptions]);
 

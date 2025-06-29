@@ -15,3 +15,13 @@ export const initialAgentListState: AgentListState = {
   isLoading: false,
   error: undefined,
 };
+
+export const agentFormDefault = {
+  title: '',
+  description: '',
+  model: 'claude-3.5-sonnet',
+  temperature: 0.5,
+  maxTokens: 2048,
+  prompt: '',
+  avatar: '',
+};
