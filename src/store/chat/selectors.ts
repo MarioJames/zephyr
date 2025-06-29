@@ -3,7 +3,7 @@ import { MessageItem } from '@/services/messages';
 import { TopicItem } from '@/services/topics';
 
 // 基础选择器
-const activeId = (s: ChatState) => s.activeId;
+const activeId = (s: ChatState) => s.activeSessionId;
 const activeTopicId = (s: ChatState) => s.activeTopicId;
 const inputMessage = (s: ChatState) => s.inputMessage;
 const isLoading = (s: ChatState) => s.isLoading;
@@ -83,6 +83,12 @@ const groupedTopicsSelector = (s: ChatState) => {
   return groups.filter((group) => group.topics.length > 0);
 };
 
+// 判断某条消息是否正在编辑
+const isMessageEditing = (id: string) => (s: ChatState) => s.editingMessageId === id;
+
+// 判断某条消息是否正在生成中
+const isMessageGenerating = (id: string) => (s: ChatState) => s.generatingMessageId === id;
+
 // 聊天相关选择器
 export const chatSelectors = {
   activeId,
@@ -96,6 +102,8 @@ export const chatSelectors = {
   isCurrentChatLoaded,
   mainDisplayChatIDs,
   showInboxWelcome,
+  isMessageEditing,
+  isMessageGenerating,
 };
 
 // 话题相关选择器

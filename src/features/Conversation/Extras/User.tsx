@@ -8,14 +8,14 @@ import { RenderMessageExtra } from '../types';
 import ExtraContainer from './ExtraContainer';
 import Translate from './Translate';
 
-export const UserMessageExtra: RenderMessageExtra = memo<ChatMessage>(({ extra, id, content }) => {
+export const UserMessageExtra: RenderMessageExtra = memo<ChatMessage & { extra?: any }>(({ extra, id, content }) => {
   const loading = useChatStore(chatSelectors.isMessageGenerating(id));
 
   const showTranslate = !!extra?.translate;
 
   const showExtra = showTranslate;
 
-  if (!showExtra) return;
+  if (!showExtra) return null;
 
   return (
     <div style={{ marginTop: 8 }}>

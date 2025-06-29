@@ -36,6 +36,12 @@ export interface MessageAction {
   translateMessage: (id: string, targetLanguage: string) => Promise<void>;
 
   fetchMessagesByTopic: (topicId: string) => Promise<void>;
+
+  setEditingMessageId: (id: string | undefined) => void;
+  setGeneratingMessageId: (id: string | undefined) => void;
+  setArtifactMessageId: (id: string | undefined) => void;
+  openArtifact: (params: { id: string }) => void;
+  closeArtifact: () => void;
 }
 
 export const messageSlice: StateCreator<
@@ -93,7 +99,7 @@ export const messageSlice: StateCreator<
       role: 'assistant',
       content,
       userId: '', // 会在实际使用时填入
-      sessionId: state.activeId,
+      sessionId: state.activeSessionId,
       topicId: state.activeTopicId,
       createdAt: new Date().toISOString(),
     };
@@ -217,4 +223,10 @@ export const messageSlice: StateCreator<
       set({ isLoading: false, error: e?.message || '消息获取失败' });
     }
   },
+
+  setEditingMessageId: (id) => set({ editingMessageId: id }),
+  setGeneratingMessageId: (id) => set({ generatingMessageId: id }),
+  setArtifactMessageId: (id) => set({ artifactMessageId: id }),
+  openArtifact: ({ id }) => set({ artifactMessageId: id }),
+  closeArtifact: () => set({ artifactMessageId: undefined }),
 });

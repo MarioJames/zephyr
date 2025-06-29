@@ -62,21 +62,21 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
   const str = ((children as string) || '').toString?.();
 
   const { message } = App.useApp();
-  const [isGenerating, openArtifact, closeArtifact] = useChatStore((s) => {
+  const [isGenerating, openArtifact, closeArtifact, artifactMessageId] = useChatStore((s) => {
     return [
       chatSelectors.isMessageGenerating(id)(s),
       s.openArtifact,
       s.closeArtifact,
+      s.artifactMessageId,
     ];
   });
 
   const openArtifactUI = () => {
-    openArtifact({ id, identifier, language, title, type });
+    openArtifact({ id });
   };
 
   useEffect(() => {
     if (!hasChildren || !isGenerating) return;
-
     openArtifactUI();
   }, [isGenerating, hasChildren, str, identifier, title, type, id, language]);
 
@@ -85,8 +85,7 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
       className={styles.container}
       gap={16}
       onClick={() => {
-        const currentArtifactMessageId = useChatStore.getState().artifactMessageId;
-        if (currentArtifactMessageId === id) {
+        if (artifactMessageId === id) {
           closeArtifact();
         } else {
           openArtifactUI();

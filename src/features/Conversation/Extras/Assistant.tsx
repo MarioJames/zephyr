@@ -9,19 +9,17 @@ import { RenderMessageExtra } from '../types';
 import ExtraContainer from './ExtraContainer';
 import Translate from './Translate';
 
-export const AssistantMessageExtra: RenderMessageExtra = memo<ChatMessage>(
+export const AssistantMessageExtra: RenderMessageExtra = memo<ChatMessage & { extra?: any }>(
   ({ extra, id, tools }) => {
     const loading = useChatStore(chatSelectors.isMessageGenerating(id));
 
     return (
       <Flexbox gap={8} style={{ marginTop: !!tools?.length ? 8 : 4 }}>
-        <>
-          {!!extra?.translate && (
-            <ExtraContainer>
-              <Translate id={id} loading={loading} {...extra?.translate} />
-            </ExtraContainer>
-          )}
-        </>
+        {!!extra?.translate && (
+          <ExtraContainer>
+            <Translate id={id} loading={loading} {...extra?.translate} />
+          </ExtraContainer>
+        )}
       </Flexbox>
     );
   },
