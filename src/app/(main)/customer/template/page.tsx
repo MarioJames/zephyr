@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Form, Input, message, Spin, Empty } from 'antd';
+import { Button, Card, Col, Row, Tooltip, Typography, Space, Divider, Form, Input, message, Spin, Empty, Modal } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useAgentStore } from '@/store/agent/store';
 import { agentSelectors } from '@/store/agent/selectors';
 import TemplateModal from './components/templateModal';
+import DeleteModal from './components/deleteModal';
 
 const { Title, Paragraph } = Typography;
 
@@ -126,6 +127,10 @@ export default function CustomerTemplatePage() {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
+  // 删除弹窗相关
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
   // 拉取 agent 列表
   useEffect(() => { fetchAgents(); }, [fetchAgents]);
 
@@ -145,19 +150,24 @@ export default function CustomerTemplatePage() {
     setModalOpen(true);
   };
 
-  // 删除
-  const handleDelete = async (id: string) => {
-    Modal.confirm({
-      title: '确认删除该客户模版？',
-      onOk: async () => {
-        try {
-          await deleteAgent(id);
-          message.success('删除成功');
-        } catch {
-          message.error('删除失败');
-        }
-      },
-    });
+  // 删除（弹出转移弹窗）
+  const handleDelete = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteModalOpen(true);
+  };
+
+  // 删除弹窗确认
+  const handleDeleteModalOk = async (transferToId: string) => {
+    setDeleteModalOpen(false);
+    setDeleteTargetId(null);
+    // TODO: 这里可实现转移逻辑
+    message.success('转移并删除成功（仅UI，逻辑待实现）');
+  };
+
+  // 删除弹窗取消
+  const handleDeleteModalCancel = () => {
+    setDeleteModalOpen(false);
+    setDeleteTargetId(null);
   };
 
   // 提交表单（合并新增/编辑）
@@ -290,6 +300,13 @@ export default function CustomerTemplatePage() {
           // 示例：return await uploadImage(file);
           return '';
         }}
+      />
+      <DeleteModal
+        open={deleteModalOpen}
+        onCancel={handleDeleteModalCancel}
+        onOk={handleDeleteModalOk}
+        agents={agents}
+        currentId={deleteTargetId || ''}
       />
     </div>
   );
