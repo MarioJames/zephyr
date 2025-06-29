@@ -5,6 +5,7 @@ import agentService, {
   UpdateAgentRequest,
 } from '@/services/agents';
 import { AgentStore } from '../../store';
+import filesService from '@/services/files';
 
 export interface AgentAction {
   // 智能体CRUD操作
@@ -20,6 +21,13 @@ export interface AgentAction {
   // 状态管理
   setAgentsLoading: (loading: boolean) => void;
   setAgentsError: (error?: string) => void;
+
+  /**
+   * 上传智能体头像（公共图片）
+   * @param file File
+   * @returns Promise<string> 图片URL
+   */
+  uploadAvatar: (file: File) => Promise<string>;
 }
 
 export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
@@ -47,10 +55,27 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
     }
   },
 
-  createAgent: async (data: CreateAgentRequest) => {
+  createAgent: async (data: any) => {
     set({ isLoading: true, error: undefined });
     try {
-      const newAgent = await agentService.createAgent(data);
+      // 组装为 CreateAgentRequest
+      const req: CreateAgentRequest = {
+        title: data.title,
+        description: data.description,
+        avatar: data.avatar,
+        model: data.model,
+        // prompt 字段映射到 systemRole
+        systemRole: data.prompt,
+        // 组装 chatConfig
+        chatConfig: {
+          temperature: data.temperature,
+          autoCreateTopicThreshold: 4, // 可根据需要调整
+        },
+        params: {
+          maxTokens: data.maxTokens,
+        },
+      };
+      const newAgent = await agentService.createAgent(req);
       set((state) => ({
         agents: [newAgent, ...state.agents],
         isLoading: false,
@@ -68,10 +93,26 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
     }
   },
 
-  updateAgent: async (id: string, data: UpdateAgentRequest) => {
+  updateAgent: async (id: string, data: any) => {
     set({ isLoading: true, error: undefined });
     try {
-      const updatedAgent = await agentService.updateAgent(id, data);
+      // 组装为 UpdateAgentRequest
+      const req: UpdateAgentRequest = {
+        id,
+        title: data.title,
+        description: data.description,
+        avatar: data.avatar,
+        model: data.model,
+        systemRole: data.prompt,
+        chatConfig: {
+          temperature: data.temperature,
+          autoCreateTopicThreshold: 4, // 可根据需要调整
+        },
+        params: {
+          maxTokens: data.maxTokens,
+        },
+      };
+      const updatedAgent = await agentService.updateAgent(id, req);
       set((state) => ({
         agents: state.agents.map((agent) =>
           agent.id === id ? updatedAgent : agent
@@ -172,5 +213,19 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
 
   setAgentsError: (error?: string) => {
     set({ error });
+  },
+
+  /**
+   * 上传智能体头像（公共图片）
+   * @param file File
+   * @returns Promise<string> 图片URL
+   */
+  uploadAvatar: async (file: File) => {
+    try {
+      const res = await filesService.uploadPublic({ file, directory: 'avatar' });
+      return res.url;
+    } catch (e: any) {
+      throw new Error(e?.message || '头像上传失败');
+    }
   },
 });
