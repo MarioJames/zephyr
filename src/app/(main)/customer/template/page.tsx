@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Tooltip, Typography, Form, message, Spin, Empty } from 'antd';
+import {
+  Button,
+  Col,
+  Row,
+  Tooltip,
+  Typography,
+  Form,
+  message,
+  Spin,
+  Empty,
+} from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
@@ -10,6 +20,7 @@ import { useAgentStore } from '@/store/agent/store';
 import { agentSelectors } from '@/store/agent/selectors';
 import TemplateModal from './components/templateModal';
 import DeleteModal from './components/deleteModal';
+import { CreateAgentRequest } from '@/services';
 
 const { Title } = Typography;
 
@@ -41,12 +52,13 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     cursor: pointer;
     font-size: 16px;
+    color: ${token.colorText} !important;
   `,
   cardGrid: css`
     margin-top: 16px;
   `,
   card: css`
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid ${token.colorBorder};
     border-radius: 8px;
     overflow: hidden;
     height: 280px;
@@ -84,7 +96,7 @@ const useStyles = createStyles(({ css, token }) => ({
     display: flex;
     align-items: center;
     justify-content: space-around;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid ${token.colorBorder};
   `,
   footerButton: css`
     color: ${token.colorText};
@@ -97,14 +109,15 @@ const useStyles = createStyles(({ css, token }) => ({
   footerDivider: css`
     height: 20px;
     width: 1px;
-    background-color: rgba(0, 0, 0, 0.06);
+    background-color: ${token.colorBorder};
   `,
   addButton: css`
-    background-color: #000;
-    color: #fff;
-    &:hover, &:focus {
-      background-color: #333;
-      color: #fff;
+    background-color: ${token.colorPrimary};
+    color: ${token.colorBgContainer};
+    &:hover,
+    &:focus {
+      background-color: ${token.colorPrimaryHover};
+      color: ${token.colorBgContainer};
     }
   `,
 }));
@@ -113,19 +126,24 @@ export default function CustomerTemplatePage() {
   const { styles } = useStyles();
 
   // agent store hooks
-  const agents = useAgentStore(agentSelectors.agents);
-  const isLoading = useAgentStore(agentSelectors.isLoading);
-  const error = useAgentStore(agentSelectors.error);
-  const fetchAgents = useAgentStore((s) => s.fetchAgents);
-  const createAgent = useAgentStore((s) => s.createAgent);
-  const updateAgent = useAgentStore((s) => s.updateAgent);
-  const deleteAgent = useAgentStore((s) => s.deleteAgent);
-  const transferSessionsToAgent = useAgentStore((s) => s.transferSessionsToAgent);
+  const {
+    agents,
+    isLoading,
+    error,
+
+    // actions
+    fetchAgents,
+    createAgent,
+    updateAgent,
+    deleteAgent,
+    transferSessionsToAgent,
+  } = useAgentStore();
 
   // 弹窗表单相关
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<{id?: string, initial?: any}|null>(null);
-  const [form] = Form.useForm();
+  const [editing, setEditing] = useState<{ id?: string; initial?: any } | null>(
+    null
+  );
   const [submitting, setSubmitting] = useState(false);
 
   // 删除弹窗相关
@@ -133,20 +151,16 @@ export default function CustomerTemplatePage() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   // 拉取 agent 列表
-  useEffect(() => { fetchAgents(); }, [fetchAgents]);
+  useEffect(() => {
+    fetchAgents();
+  }, [fetchAgents]);
 
   // 合并新增/编辑弹窗逻辑
   const openModal = (agent?: any) => {
     if (agent) {
       setEditing({ id: agent.id, initial: agent });
-      form.setFieldsValue({
-        title: agent.title,
-        description: agent.description,
-        avatar: agent.avatar,
-      });
     } else {
       setEditing(null);
-      form.resetFields();
     }
     setModalOpen(true);
   };
@@ -158,7 +172,10 @@ export default function CustomerTemplatePage() {
   };
 
   // 删除弹窗确认
-  const handleDeleteModalOk = async (transferToId: string, deleteId: string) => {
+  const handleDeleteModalOk = async (
+    transferToId: string,
+    deleteId: string
+  ) => {
     try {
       await transferSessionsToAgent(deleteId, transferToId);
       await deleteAgent(deleteId);
@@ -177,9 +194,8 @@ export default function CustomerTemplatePage() {
   };
 
   // 提交表单（合并新增/编辑）
-  const handleModalOk = async () => {
+  const handleModalOk = async (values: CreateAgentRequest) => {
     try {
-      const values = await form.validateFields();
       setSubmitting(true);
       if (editing?.id) {
         await updateAgent(editing.id, { id: editing.id, ...values });
@@ -190,7 +206,6 @@ export default function CustomerTemplatePage() {
       }
       setModalOpen(false);
       setEditing(null);
-      form.resetFields();
     } catch (e) {
       // 校验失败或接口异常
     } finally {
@@ -202,14 +217,13 @@ export default function CustomerTemplatePage() {
   const handleModalCancel = () => {
     setModalOpen(false);
     setEditing(null);
-    form.resetFields();
   };
 
   return (
     <div className={styles.container}>
       {/* 顶部导航 */}
       <div className={styles.header}>
-        <Link href="/customer" className={styles.backButton}>
+        <Link href='/customer' className={styles.backButton}>
           <ArrowLeftOutlined style={{ marginRight: 8 }} />
           返回客户管理
         </Link>
@@ -217,29 +231,47 @@ export default function CustomerTemplatePage() {
 
       {/* 子标题和添加按钮 */}
       <div className={styles.subHeader}>
-        <Title level={4} style={{ margin: 0 }}>客户模版配置</Title>
+        <Title level={4} style={{ margin: 0 }}>
+          客户模版配置
+        </Title>
         <Button className={styles.addButton} onClick={() => openModal()}>
           添加客户类型
         </Button>
       </div>
 
       {/* 卡片网格/数据区，撑满高度，支持溢出滚动 */}
-      <Spin spinning={isLoading} tip="加载中...">
+      <Spin spinning={isLoading} tip='加载中...'>
         <div style={{ minHeight: '60vh' }}>
           {error ? (
-            <Empty description={error} style={{ minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+            <Empty
+              description={error}
+              style={{
+                minHeight: 300,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
           ) : agents.length === 0 ? (
-            <Empty description="暂无客户模版" style={{ minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+            <Empty
+              description='暂无客户模版'
+              style={{
+                minHeight: 300,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
           ) : (
             <Row gutter={[16, 16]} className={styles.cardGrid}>
               {agents.map((agent) => (
                 <Col xs={24} sm={12} md={8} lg={6} xl={4.8} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
-                      <img 
+                      <img
                         src={'/test.png'}
                         alt={agent.title}
-                        className={styles.cardImage} 
+                        className={styles.cardImage}
                       />
                       <div className={styles.cardTitle}>{agent.title}</div>
                       <Tooltip title={agent.description}>
@@ -249,15 +281,15 @@ export default function CustomerTemplatePage() {
                       </Tooltip>
                     </div>
                     <div className={styles.cardFooter}>
-                      <span 
-                        className={styles.footerButton} 
+                      <span
+                        className={styles.footerButton}
                         onClick={() => openModal(agent)}
                       >
                         编辑
                       </span>
                       <div className={styles.footerDivider} />
-                      <span 
-                        className={styles.footerButton} 
+                      <span
+                        className={styles.footerButton}
                         onClick={() => handleDelete(agent.id)}
                       >
                         删除
@@ -274,39 +306,35 @@ export default function CustomerTemplatePage() {
       <TemplateModal
         open={modalOpen}
         onCancel={handleModalCancel}
-        onOk={async (values) => {
-          setSubmitting(true);
-          try {
-            if (editing?.id) {
-              await updateAgent(editing.id, { id: editing.id, ...values });
-              message.success('编辑成功');
-            } else {
-              await createAgent(values);
-              message.success('添加成功');
-            }
-            setModalOpen(false);
-            setEditing(null);
-            form.resetFields();
-          } catch (e) {
-            // 校验失败或接口异常
-          } finally {
-            setSubmitting(false);
-          }
-        }}
+        onOk={handleModalOk}
         loading={submitting}
         initialValues={editing?.initial}
         modelOptions={[
-          { label: 'claude-3.5-sonnet', value: 'claude-3.5-sonnet' },
-          { label: 'gemini-2.0-flash', value: 'gemini-2.0-flash' },
-          { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
-          { label: 'gpt-4', value: 'gpt-4' },
+          {
+            label: 'OpenAI',
+            options: [
+              { label: 'gpt-4o', value: 'gpt-4o' },
+              { label: 'gpt-4o-mini', value: 'gpt-4o-mini' },
+            ],
+          },
+          {
+            label: 'Gemini',
+            options: [{ label: 'gemini-2.0-flash', value: 'gemini-2.0-flash' }],
+          },
+          {
+            label: 'Anthropic',
+            options: [
+              { label: 'claude-3.5-haiku', value: 'claude-3.5-haiku' },
+              { label: 'claude-3.5-sonnet', value: 'claude-3.5-sonnet' },
+            ],
+          },
         ]}
       />
       <DeleteModal
         open={deleteModalOpen}
         onCancel={handleDeleteModalCancel}
         onOk={handleDeleteModalOk}
-        agents={agents.map(a => ({
+        agents={agents.map((a) => ({
           id: a.id,
           title: a.title || '',
           description: a.description || '',

@@ -35,7 +35,10 @@ export interface AgentAction {
    * @param fromAgentId 当前要删除的 agentId
    * @param toAgentId 目标 agentId
    */
-  transferSessionsToAgent: (fromAgentId: string, toAgentId: string) => Promise<void>;
+  transferSessionsToAgent: (
+    fromAgentId: string,
+    toAgentId: string
+  ) => Promise<void>;
 }
 
 export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
@@ -63,27 +66,10 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
     }
   },
 
-  createAgent: async (data: any) => {
+  createAgent: async (data: CreateAgentRequest) => {
     set({ isLoading: true, error: undefined });
     try {
-      // 组装为 CreateAgentRequest
-      const req: CreateAgentRequest = {
-        title: data.title,
-        description: data.description,
-        avatar: data.avatar,
-        model: data.model,
-        // prompt 字段映射到 systemRole
-        systemRole: data.prompt,
-        // 组装 chatConfig
-        chatConfig: {
-          temperature: data.temperature,
-          autoCreateTopicThreshold: 2
-        },
-        params: {
-          maxTokens: data.maxTokens,
-        },
-      };
-      const newAgent = await agentService.createAgent(req);
+      const newAgent = await agentService.createAgent(data);
       set((state) => ({
         agents: [newAgent, ...state.agents],
         isLoading: false,
@@ -101,26 +87,10 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
     }
   },
 
-  updateAgent: async (id: string, data: any) => {
+  updateAgent: async (id: string, data: UpdateAgentRequest) => {
     set({ isLoading: true, error: undefined });
     try {
-      // 组装为 UpdateAgentRequest
-      const req: UpdateAgentRequest = {
-        id,
-        title: data.title,
-        description: data.description,
-        avatar: data.avatar,
-        model: data.model,
-        systemRole: data.prompt,
-        chatConfig: {
-          temperature: data.temperature,
-          autoCreateTopicThreshold: 2
-        },
-        params: {
-          maxTokens: data.maxTokens,
-        },
-      };
-      const updatedAgent = await agentService.updateAgent(id, req);
+      const updatedAgent = await agentService.updateAgent(id, data);
       set((state) => ({
         agents: state.agents.map((agent) =>
           agent.id === id ? updatedAgent : agent
@@ -230,7 +200,10 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
    */
   uploadAvatar: async (file: File) => {
     try {
-      const res = await filesService.uploadPublic({ file, directory: 'avatar' });
+      const res = await filesService.uploadPublic({
+        file,
+        directory: 'avatar',
+      });
       return res.url;
     } catch (e: any) {
       throw new Error(e?.message || '头像上传失败');
@@ -244,11 +217,18 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
    */
   transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
     // 1. 查找当前 agent 下所有 session
-    const res = await sessionsService.getSessionList({ agentId: fromAgentId, page: 1, pageSize: 100 });
+    const res = await sessionsService.getSessionList({
+      agentId: fromAgentId,
+      page: 1,
+      pageSize: 100,
+    });
     const sessionIds = res.sessions.map((s: any) => s.id);
     if (!sessionIds.length) return;
     // 2. 批量更新 session 的 agentId
-    const updateList = sessionIds.map((id: string) => ({ id, agentId: toAgentId }));
+    const updateList = sessionIds.map((id: string) => ({
+      id,
+      agentId: toAgentId,
+    }));
     await sessionsService.batchUpdateSessions(updateList);
   },
 });

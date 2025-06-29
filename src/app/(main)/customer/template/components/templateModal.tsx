@@ -1,18 +1,28 @@
-import React, { useEffect } from "react";
-import { Modal, Input, Button, Select, Slider, Upload, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useEffect } from 'react';
+import {
+  Modal,
+  Input,
+  Button,
+  Select,
+  Upload,
+  message,
+  SelectProps,
+  Form,
+} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { SliderWithInput } from '@lobehub/ui';
-import { createStyles } from "antd-style";
+import Image from 'next/image';
+import { createStyles } from 'antd-style';
 import { useAgentStore } from '@/store/agent';
 import { agentFormDefault } from '@/store/agent/slices/agent/initialState';
+import { isValidImageUrl } from '@/utils/avatar';
 
 const { TextArea } = Input;
 
 const useStyles = createStyles(({ css, token }) => ({
   modalBody: css`
-    height: 560px;
     padding: 24px;
-    background: #fff;
+    background: ${token.colorBgContainer};
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -23,68 +33,84 @@ const useStyles = createStyles(({ css, token }) => ({
     display: flex;
     flex: 1 1 0;
     min-height: 0;
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
   `,
   left: css`
     flex: 1;
     margin-right: 32px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     min-width: 0;
   `,
   textarea: css`
     flex: 1 1 0;
-    min-height: 0;
-    background: #eaeaea;
+    height: 600px !important;
+    background: ${token.colorFillTertiary};
     resize: none !important;
     border: none;
     border-radius: 12px;
     font-size: 16px;
     padding: 12px 16px;
-    color: #222;
+    color: ${token.colorText};
     font-weight: 500;
     line-height: 1.8;
     box-sizing: border-box;
     width: 100%;
     overflow: auto;
     box-shadow: none !important;
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       border: none !important;
       box-shadow: none !important;
-      background: #eaeaea !important;
+      background: ${token.colorFillTertiary} !important;
     }
   `,
   right: css`
     width: 260px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
     position: relative;
-    height: 100%;
+    height: 600px;
+    overflow-y: hidden;
+  `,
+  contentArea: css`
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    height: 200px;
+    padding-bottom: 24px;
   `,
   label: css`
     font-size: 14px;
     font-weight: 400;
-    color: #000;
+    color: ${token.colorText};
     margin-bottom: 4px;
     line-height: 1.2;
   `,
   input: css`
-    background: #eaeaea !important;
+    background: ${token.colorFillTertiary} !important;
     border: none !important;
     border-radius: 6px !important;
     margin-bottom: 8px;
     font-size: 15px;
     height: 32px !important;
-    color: #222 !important;
+    color: ${token.colorText} !important;
     box-shadow: none !important;
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       border: none !important;
       box-shadow: none !important;
     }
   `,
   select: css`
-    background: #eaeaea !important;
+    background: ${token.colorFillTertiary} !important;
     border: none !important;
     border-radius: 6px !important;
     margin-bottom: 8px;
@@ -93,7 +119,7 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 100%;
     box-shadow: none !important;
     .ant-select-selector {
-      background: #eaeaea !important;
+      background: ${token.colorFillTertiary} !important;
       border: none !important;
       border-radius: 6px !important;
       height: 32px !important;
@@ -101,7 +127,9 @@ const useStyles = createStyles(({ css, token }) => ({
       box-shadow: none !important;
       align-items: center;
     }
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       border: none !important;
       box-shadow: none !important;
     }
@@ -115,29 +143,29 @@ const useStyles = createStyles(({ css, token }) => ({
   sliderLabel: css`
     width: 48px;
     font-size: 15px;
-    color: #222;
+    color: ${token.colorText};
   `,
   sliderLabelWide: css`
     width: 72px;
     font-size: 15px;
-    color: #222;
+    color: ${token.colorText};
   `,
   slider: css`
     width: 190px;
-    background: #d9d9d9;
+    background: ${token.colorFill};
     .ant-slider-track {
-      background: #518ded !important;
+      background: ${token.colorPrimary} !important;
       height: 4px;
       border-radius: 2px;
     }
     .ant-slider-rail {
-      background: #d9d9d9 !important;
+      background: ${token.colorFill} !important;
       height: 4px;
       border-radius: 2px;
     }
     .ant-slider-handle {
-      border-color: #518ded !important;
-      background: #fff !important;
+      border-color: ${token.colorPrimary} !important;
+      background: ${token.colorBgContainer} !important;
       width: 16px;
       height: 16px;
       margin-top: -6px;
@@ -147,12 +175,12 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 45px;
     text-align: right;
     font-size: 15px;
-    color: #222;
+    color: ${token.colorText};
   `,
   exampleImg: css`
     width: 112px;
     height: 62px;
-    background: #eaeaea;
+    background: ${token.colorFillTertiary};
     margin: 8px 0;
     display: flex;
     align-items: center;
@@ -162,38 +190,34 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   uploadBtn: css`
     padding: 0;
-    color: #518ded !important;
+    color: ${token.colorPrimary} !important;
     font-weight: 500;
     font-size: 15px;
     height: 32px;
     line-height: 32px;
   `,
   footer: css`
-    height: 36px;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    background: #fff;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    padding-bottom: 0;
-    z-index: 2;
+    padding: 16px 0 0 0;
+    margin-top: auto;
   `,
   cancelBtn: css`
+    flex: 1;
     border-radius: 6px;
     font-size: 14px;
     height: 36px;
-    color: #222;
-    background: #fff;
-    border: 1px solid #eaeaea;
+    color: ${token.colorText};
+    background: ${token.colorBgContainer};
+    border: 1px solid ${token.colorBorder};
   `,
   saveBtn: css`
+    flex: 1;
     border-radius: 6px;
     font-size: 14px;
     height: 36px;
-    background: #000;
+    background: ${token.colorText};
     border: none;
   `,
 }));
@@ -204,7 +228,7 @@ interface TemplateModalProps {
   onOk: (values: any) => void;
   loading?: boolean;
   initialValues?: any;
-  modelOptions: { label: string; value: string }[];
+  modelOptions: SelectProps['options'];
   onUploadImage?: (file: File) => Promise<string>;
 }
 
@@ -216,54 +240,47 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   initialValues,
   modelOptions,
 }) => {
-  const { styles } = useStyles();
+  const { styles, theme } = useStyles();
   const uploadAvatar = useAgentStore((s) => s.uploadAvatar);
 
-  const [form, setForm] = React.useState({
-    ...agentFormDefault,
-  });
+  const [form] = Form.useForm();
   const [uploading, setUploading] = React.useState(false);
 
   useEffect(() => {
     if (open) {
-      if (initialValues) {
-        setForm({
-          ...agentFormDefault,
-          ...initialValues,
-          prompt: initialValues.systemRole ?? agentFormDefault.prompt,
-          temperature: initialValues.chatConfig?.temperature ?? agentFormDefault.temperature,
-          maxTokens: initialValues.params?.maxTokens ?? agentFormDefault.maxTokens,
-        });
-      } else {
-        setForm({ ...agentFormDefault });
-      }
+      form.setFieldsValue({
+        ...agentFormDefault,
+        ...initialValues,
+        params: {
+          ...agentFormDefault.params,
+          ...initialValues.params,
+        },
+      });
     }
   }, [open, initialValues]);
-
-  const handleChange = (key: string, value: any) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
 
   const handleUpload = async ({ file }: any) => {
     setUploading(true);
     try {
       const url = await uploadAvatar(file);
-      setForm((prev) => ({ ...prev, avatar: url }));
-      message.success("上传成功");
+
+      form.setFieldValue('avatar', url);
+      message.success('上传成功');
     } catch {
-      message.error("上传失败");
+      message.error('上传失败');
     } finally {
       setUploading(false);
     }
   };
 
   const handleOk = () => {
-    onOk(form);
+    const values = form.getFieldsValue();
+    onOk(values);
   };
 
   return (
     <Modal
-      title="客户类型"
+      title='客户类型'
       open={open}
       onCancel={onCancel}
       footer={null}
@@ -272,119 +289,140 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
         body: {
           height: 600,
           marginTop: 16,
-          display: "flex",
-          flexDirection: "column",
+          display: 'flex',
+          flexDirection: 'column',
         },
       }}
-      style={{ background: "#F4F4F4" }}
+      style={{ background: theme.colorBgLayout }}
       centered
     >
-      <div className={styles.layout}>
-        {/* 左侧大文本编辑区 */}
-        <div className={styles.left}>
-          <TextArea
-            value={form.prompt}
-            onChange={(e) => handleChange("prompt", e.target.value)}
-            placeholder="请输入系统提示词"
-            className={styles.textarea}
-          />
-        </div>
-        {/* 右侧表单区 */}
-        <div className={styles.right}>
-          <div>
-            <div className={styles.label}>命名</div>
-            <Input
-              value={form.title}
-              onChange={(e) => handleChange("title", e.target.value)}
-              placeholder="请输入名称"
-              className={styles.input}
-            />
+      <Form layout='vertical' form={form}>
+        <div className={styles.layout}>
+          {/* 左侧大文本编辑区 */}
+          <div className={styles.left}>
+            <Form.Item name='prompt'>
+              <TextArea
+                placeholder='请输入系统提示词'
+                className={styles.textarea}
+              />
+            </Form.Item>
           </div>
-          <div>
-            <div className={styles.label}>简介</div>
-            <Input
-              value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              placeholder="请输入简介"
-              className={styles.input}
-            />
-          </div>
-          <div>
-            <div className={styles.label}>模型</div>
-            <Select
-              value={form.model}
-              onChange={(v) => handleChange("model", v)}
-              placeholder="请选择模型"
-              options={modelOptions}
-              className={styles.select}
-              dropdownStyle={{ background: "#EAEAEA" }}
-            />
-          </div>
-          <div>
-            <div className={styles.label}>温度</div>
-            <SliderWithInput
-              min={0}
-              max={1}
-              step={0.1}
-              value={form.temperature}
-              onChange={(v) => handleChange("temperature", v)}
-              styles={{
-                root: { display: 'flex', alignItems: 'center', gap: 8 },
-                slider: { width: 190 },
-                input: { width: 45 },
-              }}
-            />
-          </div>
-          <div>
-            <div className={styles.label}>最大令牌数</div>
-            <SliderWithInput
-              min={256}
-              max={4096}
-              step={1}
-              value={form.maxTokens}
-              onChange={(v) => handleChange("maxTokens", v)}
-              styles={{
-                root: { display: 'flex', alignItems: 'center', gap: 8 },
-                slider: { width: 190 },
-                input: { width: 45 },
-              }}
-            />
-          </div>
-          <div>
-            <div className={styles.label}>示例图</div>
-            <div className={styles.exampleImg}>
-              {form.avatar ? (
-                <img
-                  src={form.avatar}
-                  alt="示例图"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          {/* 右侧表单区 */}
+          <div className={styles.right}>
+            <div className={styles.contentArea}>
+              <Form.Item label='命名' name='title'>
+                <Input placeholder='请输入名称' className={styles.input} />
+              </Form.Item>
+              <Form.Item label='简介' name='description'>
+                <Input placeholder='请输入简介' className={styles.input} />
+              </Form.Item>
+              <Form.Item label='模型' name='model'>
+                <Select
+                  placeholder='请选择模型'
+                  options={modelOptions}
+                  className={styles.select}
                 />
-              ) : null}
+              </Form.Item>
+              <Form.Item
+                label='温度'
+                name={['params', 'temperature']}
+                tooltip='温度越高，模型越随机，温度越低，模型越确定'
+              >
+                <SliderWithInput min={0} max={2} step={0.1} />
+              </Form.Item>
+              <Form.Item
+                label='最大令牌数'
+                name={['params', 'maxTokens']}
+                tooltip='最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短'
+              >
+                <SliderWithInput min={256} max={4096} step={1} />
+              </Form.Item>
+              <Form.Item
+                label='思维开放度'
+                name={['params', 'topP']}
+                tooltip='思维开放度越高，模型越随机，思维开放度越低，模型越确定'
+              >
+                <SliderWithInput min={0} max={1} step={0.1} />
+              </Form.Item>
+              <Form.Item
+                label='表达发散度'
+                name={['params', 'presencePenalty']}
+                tooltip='表达发散度越高，模型越随机，表达发散度越低，模型越确定'
+              >
+                <SliderWithInput min={-2} max={2} step={0.1} />
+              </Form.Item>
+              <Form.Item
+                label='词汇丰富度'
+                name={['params', 'frequencyPenalty']}
+                tooltip='词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定'
+              >
+                <SliderWithInput min={-2} max={2} step={0.1} />
+              </Form.Item>
+              <Form.Item name='avatar' hidden>
+                <Input />
+              </Form.Item>
+              <Form.Item label='示例图' shouldUpdate>
+                {({ getFieldValue }) => {
+                  const avatar = getFieldValue('avatar');
+
+                  if (!avatar || !isValidImageUrl(avatar)) {
+                    return (
+                      <div
+                        style={{
+                          width: 112,
+                          height: 62,
+                          background: theme.colorFillTertiary,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '28px',
+                          borderRadius: '8px',
+                        }}
+                      >
+                        {avatar}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Image src={avatar} alt='示例图' width={112} height={62} />
+                  );
+                }}
+              </Form.Item>
+              <div>
+                <Upload
+                  customRequest={handleUpload}
+                  showUploadList={false}
+                  accept='image/*'
+                  disabled={uploading}
+                >
+                  <Button
+                    type='link'
+                    icon={<UploadOutlined />}
+                    className={styles.uploadBtn}
+                    loading={uploading}
+                  >
+                    上传图片
+                  </Button>
+                </Upload>
+              </div>
+            </div>
+            <div className={styles.footer}>
+              <Button onClick={onCancel} className={styles.cancelBtn}>
+                取消
+              </Button>
+              <Button
+                type='primary'
+                onClick={handleOk}
+                loading={loading}
+                className={styles.saveBtn}
+              >
+                保存
+              </Button>
             </div>
           </div>
-          <div>
-            <Upload
-              customRequest={handleUpload}
-              showUploadList={false}
-              accept="image/*"
-              disabled={uploading}
-            >
-              <Button
-                type="link"
-                icon={<UploadOutlined />}
-                className={styles.uploadBtn}
-                loading={uploading}
-              >
-                上传图片
-              </Button>
-            </Upload>
-          </div>
-          <div className={styles.footer}>
-            <Button onClick={onCancel} className={styles.cancelBtn}>取消</Button>
-            <Button type="primary" onClick={handleOk} loading={loading} className={styles.saveBtn}>保存</Button>
-          </div>
         </div>
-      </div>
+      </Form>
     </Modal>
   );
 };

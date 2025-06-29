@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Typography, Upload, Button, App, Form } from 'antd';
+import { Typography, Upload, Button, App, Form, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import { AvatarUploaderProps } from '../shared/types';
 import { useAvatarUploaderStyles } from './styles';
 import filesService from '@/services/files';
+import { isValidImageUrl } from '@/utils/avatar';
 
 const { Title } = Typography;
 
@@ -70,21 +71,39 @@ export default function AvatarUploader({
   return (
     <>
       <Title level={5}>头像</Title>
-      <Form.Item name='avatar' hidden />
+      <Form.Item name='avatar' hidden>
+        <Input />
+      </Form.Item>
       <div className={styles.avatarContainer}>
         <div className={styles.avatarCircle}>
           {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt='avatar'
-              width={80}
-              height={80}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
+            isValidImageUrl(avatarUrl) ? (
+              <Image
+                src={avatarUrl}
+                alt='avatar'
+                width={80}
+                height={80}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  color: '#333',
+                  fontSize: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%',
+                }}
+              >
+                {avatarUrl}
+              </div>
+            )
           ) : (
             <div style={{ color: '#999' }}>头像</div>
           )}
