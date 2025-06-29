@@ -25,9 +25,9 @@ const VirtualizedList = memo<VirtualizedListProps>(({ dataSource, itemContent })
   const [atBottom, setAtBottom] = useState(true);
   const [isScrolling, setIsScrolling] = useState(false);
 
-  const [id, isFirstLoading, isCurrentChatLoaded] = useChatStore((s) => [
-    chatSelectors.currentChatKey(s),
-    chatSelectors.currentChatLoadingState(s),
+  const [activeTopicId, isFirstLoading, isCurrentChatLoaded] = useChatStore((s) => [
+    chatSelectors.activeTopicId(s),
+    chatSelectors.isLoading(s),
     chatSelectors.isCurrentChatLoaded(s),
   ]);
 
@@ -35,7 +35,7 @@ const VirtualizedList = memo<VirtualizedListProps>(({ dataSource, itemContent })
     if (virtuosoRef.current) {
       virtuosoRef.current.scrollToIndex({ align: 'end', behavior: 'auto', index: 'LAST' });
     }
-  }, [id]);
+  }, [activeTopicId]);
 
   const prevDataLengthRef = useRef(dataSource.length);
 

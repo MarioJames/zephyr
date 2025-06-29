@@ -1,7 +1,7 @@
 'use client';
 
 import { createStyles } from 'antd-style';
-import { ReactNode, memo, useCallback, useMemo } from 'react';
+import { ReactNode, memo, useCallback, useMemo, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import ChatItem from '@/features/ChatItem';
@@ -47,7 +47,7 @@ const Item = memo<ChatListItemProps>(
   ({ className, id, actionBar, endRender }) => {
     const { styles, cx } = useStyles();
 
-    const type = useAgentStore(agentChatConfigSelectors.displayMode);
+    const type = useAgentStore((s) => s.agentChatConfig.displayMode === 'docs' ? 'docs' : 'chat');
     const item = useChatStore(chatSelectors.getMessageById(id));
 
     const renderMessage = useCallback(

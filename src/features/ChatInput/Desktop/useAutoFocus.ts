@@ -5,7 +5,7 @@ import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 
 export const useAutoFocus = (inputRef: RefObject<TextAreaRef>) => {
-  const chatKey = useChatStore(chatSelectors.currentChatKey);
+  const chatKey = useChatStore(chatSelectors.activeTopicId);
 
   useEffect(() => {
     inputRef.current?.focus();
