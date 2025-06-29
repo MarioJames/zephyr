@@ -250,10 +250,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     if (open) {
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
-        ...initialValues,
+        ...(initialValues || {}),
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
-          ...initialValues.params,
+          ...(initialValues?.params || {}),
         },
       });
     }

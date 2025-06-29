@@ -22,6 +22,7 @@ import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
 import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 
 const { Title } = Typography;
 
@@ -401,7 +402,9 @@ export default function Customer() {
             }
             style={{ minWidth: 240 }}
           />
-          <Button className={styles.actionButton}>客户模版配置</Button>
+          <Link href='/customer/template'>
+            <Button className={styles.actionButton}>客户模版配置</Button>
+          </Link>
           <Button
             type='primary'
             className={styles.actionButton}
