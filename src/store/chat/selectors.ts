@@ -23,6 +23,7 @@ const isCurrentChatLoaded = (s: ChatState): boolean => s.messagesInit;
 const mainDisplayChatIDs = (s: ChatState): string[] =>
   s.messages
     .filter((msg) => msg.topicId === s.activeTopicId)
+    .sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime())
     .map((msg) => msg.id);
 
 const showInboxWelcome = (s: ChatState): boolean =>
