@@ -261,25 +261,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     }
   };
 
-  const handleOk = async () => {
-    setSaving(true);
-    try {
-      if (initialValues && initialValues.id) {
-        await updateAgent(initialValues.id, {
-          ...initialValues,
-          ...form,
-        });
-      } else {
-        await createAgent({
-          ...form,
-        });
-      }
-      onOk(form);
-    } catch (e: any) {
-      message.error(e?.message || "保存失败");
-    } finally {
-      setSaving(false);
-    }
+  const handleOk = () => {
+    onOk(form);
   };
 
   return (
