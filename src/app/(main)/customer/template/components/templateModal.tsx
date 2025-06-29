@@ -3,6 +3,7 @@ import { Modal, Input, Button, Select, Slider, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { SliderWithInput } from '@lobehub/ui';
 import { createStyles } from "antd-style";
+import { useAgentStore } from '@/store/agent';
 
 const { TextArea } = Input;
 
@@ -216,6 +217,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   onUploadImage,
 }) => {
   const { styles } = useStyles();
+  const createAgent = useAgentStore((s) => s.createAgent);
+  const updateAgent = useAgentStore((s) => s.updateAgent);
+  const uploadAvatar = useAgentStore((s) => s.uploadAvatar);
+
   const [form, setForm] = React.useState({
     title: "",
     description: "",
@@ -226,8 +231,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     avatar: "",
   });
   const [uploading, setUploading] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
 
   useEffect(() => {
+    console.log("initialValues变化了", initialValues);
     if (initialValues) {
       setForm({
         title: initialValues.title || "",
@@ -256,10 +263,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   };
 
   const handleUpload = async ({ file }: any) => {
-    if (!onUploadImage) return;
     setUploading(true);
     try {
-      const url = await onUploadImage(file);
+      const url = await uploadAvatar(file);
       setForm((prev) => ({ ...prev, avatar: url }));
       message.success("上传成功");
     } catch {
@@ -269,8 +275,25 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     }
   };
 
-  const handleOk = () => {
-    onOk(form);
+  const handleOk = async () => {
+    setSaving(true);
+    try {
+      if (initialValues && initialValues.id) {
+        await updateAgent(initialValues.id, {
+          ...initialValues,
+          ...form,
+        });
+      } else {
+        await createAgent({
+          ...form,
+        });
+      }
+      onOk(form);
+    } catch (e: any) {
+      message.error(e?.message || "保存失败");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -393,7 +416,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           </div>
           <div className={styles.footer}>
             <Button onClick={onCancel} className={styles.cancelBtn}>取消</Button>
-            <Button type="primary" onClick={handleOk} loading={loading} className={styles.saveBtn}>保存</Button>
+            <Button type="primary" onClick={handleOk} loading={loading || saving} className={styles.saveBtn}>保存</Button>
           </div>
         </div>
       </div>

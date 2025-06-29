@@ -69,7 +69,7 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
         // 组装 chatConfig
         chatConfig: {
           temperature: data.temperature,
-          autoCreateTopicThreshold: 4, // 可根据需要调整
+          autoCreateTopicThreshold: 2
         },
         params: {
           maxTokens: data.maxTokens,
@@ -106,7 +106,7 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
         systemRole: data.prompt,
         chatConfig: {
           temperature: data.temperature,
-          autoCreateTopicThreshold: 4, // 可根据需要调整
+          autoCreateTopicThreshold: 2
         },
         params: {
           maxTokens: data.maxTokens,
