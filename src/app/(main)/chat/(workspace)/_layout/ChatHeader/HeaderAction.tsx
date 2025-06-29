@@ -51,7 +51,7 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     gap: 4px;
     transition: background-color 0.2s ease;
-    background-color: ${token.colorPrimary} !important;
+    background-color: '#AEBBFF' !important;
 
     &:hover {
       background-color: ${token.colorPrimary} !important;
