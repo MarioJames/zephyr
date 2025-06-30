@@ -66,6 +66,7 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
             loading={loading}
             disabled={!employee?.email}
             onClick={onSend}
+            type="primary"
           >
             确认发送
           </Button>

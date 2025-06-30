@@ -273,12 +273,14 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             <div className={styles.arrowContainer}>
               <Button
                 className={styles.arrowButton}
+                shadow
                 icon={<DoubleRightOutlined />}
                 disabled={selectedLeft.length === 0}
                 onClick={moveToRight}
               />
               <Button
                 className={styles.arrowButton}
+                shadow
                 icon={<DoubleLeftOutlined />}
                 disabled={selectedRight.length === 0}
                 onClick={moveToLeft}
@@ -340,13 +342,15 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
           </div>
           {/* 底部按钮 */}
           <div className={styles.footer}>
-            <Button className={styles.cancelButton} onClick={onClose}>
+            <Button className={styles.cancelButton} onClick={onClose} shadow>
               取消
             </Button>
             <Button
               className={styles.saveButton}
               loading={loading}
               onClick={onSave}
+              type="primary"
+              shadow
             >
               保存
             </Button>
