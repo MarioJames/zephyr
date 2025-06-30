@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Modal, List, Avatar } from "antd";
-import { Button } from "@lobehub/ui";
+import { List, Avatar } from "antd";
+import { Button, Modal } from "@lobehub/ui";
 import { CircleCheck } from "lucide-react";
 import { createStyles } from "antd-style";
 

@@ -5,13 +5,10 @@ import {
   Table,
   Space,
   Typography,
-  Modal,
   App,
   Spin,
-  Alert,
-  Select,
 } from 'antd';
-import { Button } from '@lobehub/ui';
+import { Button, Modal, Select,Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';

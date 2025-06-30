@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Modal, Upload, message, SelectProps, Form } from "antd";
-import { Button, TextArea, Input, Select } from "@lobehub/ui";
+import { Upload, message, SelectProps, Form } from "antd";
+import { Button, TextArea, Input, Select, Modal } from "@lobehub/ui";
 import { UploadOutlined } from "@ant-design/icons";
 import { SliderWithInput } from "@lobehub/ui";
 import Image from "next/image";

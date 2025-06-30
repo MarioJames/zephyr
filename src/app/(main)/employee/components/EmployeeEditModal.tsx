@@ -1,6 +1,6 @@
 import React from "react";
-import { Modal, Form, Upload } from "antd";
-import { Button, Input } from '@lobehub/ui';
+import { Form, Upload } from "antd";
+import { Button, Input, Modal } from "@lobehub/ui";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 
@@ -66,11 +66,11 @@ const useStyles = createStyles(({ css, token }) => ({
     margin-top: 24px;
   `,
   customInput: css`
-    border-radius: 6px !important;
-    background: ${token.colorBgContainer} !important;
-    height: 32px !important;
-    border: none !important;
-    box-shadow: none !important;
+    border-radius: 6px;
+    background: ${token.colorBgContainer};
+    height: 32px;
+    border: none;
+    box-shadow: none;
   `,
   cancelButton: css`
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -192,17 +192,10 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
         </Form>
         {/* 底部按钮 */}
         <div className={styles.modalFooter}>
-          <Button
-            className={styles.cancelButton}
-            onClick={onCancel}
-          >
+          <Button className={styles.cancelButton} onClick={onCancel}>
             取消
           </Button>
-          <Button
-            type="primary"
-            onClick={onSubmit}
-            loading={loading}
-          >
+          <Button type="primary" onClick={onSubmit} loading={loading}>
             {isEditMode ? "保存修改" : "添加员工"}
           </Button>
         </div>
@@ -211,4 +204,4 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   );
 };
 
-export default EmployeeEditModal; 
+export default EmployeeEditModal;
