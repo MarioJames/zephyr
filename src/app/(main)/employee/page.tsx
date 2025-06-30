@@ -27,6 +27,8 @@ import { RoleItem } from "@/services/roles";
 import { mailAPI } from "@/services";
 import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
 import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
+import EmployeeEditModal from "./components/EmployeeEditModal";
+import SendLoginGuideModal from "./components/SendLoginGuideModal";
 
 const { Title } = Typography;
 
@@ -388,6 +390,23 @@ export default function EmployeePage() {
     }
   };
 
+  const onSaveRelation = async () => {
+    if (!currentCustomerEmployee) return;
+    setSessionLoading(true);
+    try {
+      await updateEmployeeSessions(
+        currentCustomerEmployee.id,
+        employeeCustomers
+      );
+      message.success("保存成功");
+      handleCustomerModalClose();
+    } catch (e: any) {
+      message.error(e.message || "保存失败");
+    } finally {
+      setSessionLoading(false);
+    }
+  }
+
   // 关闭客户管理弹窗时清空相关状态
   const handleCustomerModalClose = () => {
     setCustomerModalVisible(false);
@@ -641,164 +660,31 @@ export default function EmployeePage() {
       </div>
 
       {/* 登录引导弹窗 */}
-      <Modal
-        title="发送邮件引导员工登录系统"
+      <SendLoginGuideModal
         open={loginGuideVisible}
-        footer={null}
+        loading={loginGuideLoading}
+        employee={currentEmployee}
+        theme={theme}
         onCancel={() => {
           setLoginGuideVisible(false);
           setLoginGuideLoading(false);
         }}
-        width={400}
-        closable={false}
-      >
-        <div>
-          <p>将向员工发送登录引导邮件，包含系统访问地址和登录说明。</p>
-          <p>
-            <strong>收件邮箱：</strong>
-            <span
-              style={{
-                color: currentEmployee?.email ? theme.colorText : "#ff4d4f",
-              }}
-            >
-              {currentEmployee?.email || "邮箱地址不存在"}
-            </span>
-          </p>
-          <p>
-            <strong>员工姓名：</strong>
-            {currentEmployee?.username || currentEmployee?.fullName || "未设置"}
-          </p>
-          <div className={styles.cardActions}>
-            <Button
-              className={styles.cancelButton}
-              onClick={() => {
-                setLoginGuideVisible(false);
-                setLoginGuideLoading(false);
-              }}
-            >
-              取消
-            </Button>
-            <Button
-              loading={loginGuideLoading}
-              disabled={!currentEmployee?.email}
-              onClick={handleConfirmSendLoginGuide}
-            >
-              确认发送
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onSend={handleConfirmSendLoginGuide}
+      />
 
       {/* 员工弹窗（新增/编辑） */}
-      <Modal
-        title={null}
+      <EmployeeEditModal
         open={employeeModalVisible}
-        footer={null}
+        isEditMode={isEditMode}
+        loading={loading}
+        form={form}
+        avatarFile={avatarFile}
         onCancel={handleEmployeeModalCancel}
-        width={414}
-        className={styles.addEmployeeModal}
-        closable={true}
-        closeIcon={<span style={{ fontSize: 20, color: "#999" }}>×</span>}
-      >
-        <div>
-          <div className={styles.modalTitle}>
-            {isEditMode ? "编辑员工" : "添加员工"}
-          </div>
-
-          {/* 头像上传区域 */}
-          <div className={styles.sectionTitle}>头像</div>
-          <div className={styles.avatarUploader}>
-            <div className={styles.avatarCircle}>
-              {avatarFile ? (
-                <img
-                  src={
-                    avatarFile.url ||
-                    (avatarFile.originFileObj &&
-                      URL.createObjectURL(avatarFile.originFileObj))
-                  }
-                  alt="头像"
-                />
-              ) : (
-                <PlusOutlined style={{ fontSize: 24, color: "#ccc" }} />
-              )}
-            </div>
-            <Upload
-              name="avatar"
-              showUploadList={false}
-              beforeUpload={beforeUpload}
-              onChange={handleAvatarChange}
-            >
-              <div className={styles.uploadText}>
-                <UploadOutlined />
-                <span>上传头像</span>
-              </div>
-            </Upload>
-          </div>
-
-          {/* 基本信息表单 */}
-          <div className={styles.sectionTitle}>基本信息</div>
-          <Form form={form} layout="vertical" requiredMark={true} colon={true}>
-            <Form.Item
-              name="username"
-              label="员工姓名"
-              rules={[{ required: true, message: "请输入员工姓名" }]}
-              className={styles.formItem}
-            >
-              <Input
-                placeholder="请输入员工姓名"
-                className={styles.customInput}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="email"
-              label="邮箱"
-              rules={[
-                { required: true, message: "请输入员工邮箱" },
-                { type: "email", message: "请输入有效的邮箱地址" },
-              ]}
-              className={styles.formItem}
-            >
-              <Input
-                placeholder="请输入员工邮箱"
-                className={styles.customInput}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="phone"
-              label="手机号"
-              rules={[
-                { required: true, message: "请输入员工手机号" },
-                { pattern: /^1[3-9]\d{9}$/, message: "请输入有效的手机号" },
-              ]}
-              className={styles.formItem}
-            >
-              <Input
-                placeholder="请输入员工手机号"
-                className={styles.customInput}
-              />
-            </Form.Item>
-          </Form>
-
-          {/* 底部按钮 */}
-          <div className={styles.modalFooter}>
-            <Button
-              className={styles.cancelButton}
-              onClick={handleEmployeeModalCancel}
-            >
-              取消
-            </Button>
-            <Button
-              type="primary"
-              onClick={handleEmployeeSubmit}
-              loading={loading}
-            >
-              {isEditMode ? "保存修改" : "添加员工"}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onSubmit={handleEmployeeSubmit}
+        beforeUpload={beforeUpload}
+        onAvatarChange={handleAvatarChange}
+        setAvatarFile={setAvatarFile}
+      />
 
       {/* 员工对接客户管理弹窗 */}
       <EmployeeCustomerModal
@@ -807,22 +693,7 @@ export default function EmployeePage() {
         employee={currentCustomerEmployee}
         sessionList={sessionList}
         employeeCustomers={employeeCustomers}
-        onSave={async () => {
-          if (!currentCustomerEmployee) return;
-          setSessionLoading(true);
-          try {
-            await updateEmployeeSessions(
-              currentCustomerEmployee.id,
-              employeeCustomers
-            );
-            message.success("保存成功");
-            handleCustomerModalClose();
-          } catch (e: any) {
-            message.error(e.message || "保存失败");
-          } finally {
-            setSessionLoading(false);
-          }
-        }}
+        onSave={onSaveRelation}
         loading={sessionLoading}
         customerTab={customerTab}
         setCustomerTab={setCustomerTab}
