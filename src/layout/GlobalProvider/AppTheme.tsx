@@ -15,6 +15,7 @@ import { ReactNode, memo } from 'react';
 import AntdStaticMethods from '@/components/AntdStaticMethods';
 import {
   LOBE_THEME_APPEARANCE,
+  customThemeToken,
 } from '@/const/theme';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
@@ -113,6 +114,7 @@ const AppTheme = memo<AppThemeProps>(
         }}
         theme={{
           cssVar: true,
+          token: customThemeToken,
         }}
         themeMode={themeMode}
       >
