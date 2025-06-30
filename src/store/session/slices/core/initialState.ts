@@ -3,6 +3,7 @@ import { SessionItem } from '@/services/sessions';
 export interface SessionCoreState {
   // 会话列表
   sessions: SessionItem[];
+
   // 搜索结果
   searchResults: SessionItem[];
 

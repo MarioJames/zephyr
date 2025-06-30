@@ -2,9 +2,7 @@ import { createStyles } from 'antd-style';
 
 export const useHistoryStyles = createStyles(({ css, token, isDarkMode }) => ({
   panelBg: css`
-    background: ${isDarkMode
-      ? token.colorFillSecondary
-      : token.colorFillTertiary};
+    background: ${token.colorBgContainer};
     transition: background 200ms ${token.motionEaseOut};
   `,
   header: css`
@@ -48,7 +46,7 @@ export const useHistoryStyles = createStyles(({ css, token, isDarkMode }) => ({
 
 export const useAIHintStyles = createStyles(({ css, token }) => ({
   panelBg: css`
-    background: ${token.colorFillSecondary};
+    background: ${token.colorBgContainer};
   `,
   header: css`
     height: 56px;

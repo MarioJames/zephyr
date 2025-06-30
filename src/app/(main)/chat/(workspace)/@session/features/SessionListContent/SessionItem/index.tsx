@@ -9,7 +9,9 @@ import SessionContent from './SessionContent';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   active: css`
-    background: ${isDarkMode ? token.colorFillSecondary : token.colorFillTertiary};
+    background: ${isDarkMode
+      ? token.colorFillSecondary
+      : token.colorFillTertiary};
     transition: background 200ms ${token.motionEaseOut};
 
     &:hover {
@@ -45,47 +47,55 @@ export interface ConfigCellProps {
   user?: { username?: string };
 }
 
-const SessionItem = memo<ConfigCellProps>(({ title, active, id, isRecent, user }) => {
-  const { styles, cx } = useStyles();
-  const [currentSessionId, switchSession] = useSessionStore((s) => [s.currentSessionId, s.switchSession]);
-  const [isHover, setHovering] = useState(false);
-  const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
-  const showSlotPanel = useGlobalStore((s) => s.status.showSlotPanel);
+const SessionItem = memo<ConfigCellProps>(
+  ({ title, active, id, isRecent, user }) => {
+    const { styles, cx } = useStyles();
+    const [activeSessionId, switchSession] = useSessionStore((s) => [
+      s.activeSessionId,
+      s.switchSession,
+    ]);
+    const [isHover, setHovering] = useState(false);
+    const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
+    const showSlotPanel = useGlobalStore((s) => s.status.showSlotPanel);
 
-  return (
-    <Flexbox style={{ position: 'relative' }}>
-      <Flexbox
-        align={'center'}
-        className={cx(styles.container, 'topic-item', active && styles.active)}
-        distribution={'space-between'}
-        horizontal
-        onClick={() => {
-          if (currentSessionId === id) {
-            useSessionStore.setState({ currentSessionId: undefined });
-            if (typeof window !== 'undefined') {
-              const url = new URL(window.location.href);
-              url.searchParams.delete('session');
-              window.history.replaceState(null, '', url.toString());
+    return (
+      <Flexbox style={{ position: 'relative' }}>
+        <Flexbox
+          align={'center'}
+          className={cx(
+            styles.container,
+            'topic-item',
+            active && styles.active
+          )}
+          distribution={'space-between'}
+          horizontal
+          onClick={() => {
+            if (activeSessionId !== id) {
+              switchSession(id);
+
+              if (!showSlotPanel) {
+                toggleSlotPanel(true);
+              }
             }
-            toggleSlotPanel(false);
-          } else {
-            switchSession(id);
-            if (!showSlotPanel) {
-              toggleSlotPanel(true);
-            }
-          }
-        }}
-        onMouseEnter={() => {
-          setHovering(true);
-        }}
-        onMouseLeave={() => {
-          setHovering(false);
-        }}
-      >
-        <SessionContent id={id} showMore={isHover} title={title} isRecent={isRecent} employeeName={user?.username} />
+          }}
+          onMouseEnter={() => {
+            setHovering(true);
+          }}
+          onMouseLeave={() => {
+            setHovering(false);
+          }}
+        >
+          <SessionContent
+            id={id}
+            showMore={isHover}
+            title={title}
+            isRecent={isRecent}
+            employeeName={user?.username}
+          />
+        </Flexbox>
       </Flexbox>
-    </Flexbox>
-  );
-});
+    );
+  }
+);
 
 export default SessionItem;

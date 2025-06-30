@@ -4,12 +4,15 @@ import sessionService, {
   SessionSearchRequest,
 } from '@/services/sessions';
 import { SessionStore } from '@/store/session';
+import qs from 'query-string';
+import { topicsAPI } from '@/services';
+import { useChatStore } from '@/store/chat';
 
 export interface SessionCoreAction {
-  // 从URL参数初始化session和topic
-  initFromUrlParams: () => Promise<void>;
   // 获取会话列表
   fetchSessions: (params?: SessionListRequest) => Promise<void>;
+  // 切换会话
+  switchSession: (sessionId: string, topicId?: string) => Promise<void>;
   // 搜索会话
   searchSessions: (params: SessionSearchRequest) => Promise<void>;
   // 清除搜索结果
@@ -28,104 +31,6 @@ export const sessionCoreAction: StateCreator<
   [],
   SessionCoreAction
 > = (set, get) => ({
-  initFromUrlParams: async () => {
-    // 只在浏览器环境中执行
-    if (typeof window === 'undefined') return;
-
-    try {
-      // 获取URL参数
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionParam = urlParams.get('session');
-      const topicParam = urlParams.get('topic');
-      const openHistoryParam = urlParams.get('openHistory');
-
-      console.log('URL参数初始化:', {
-        session: sessionParam,
-        topic: topicParam,
-        openHistory: openHistoryParam,
-      });
-
-      // 如果有session参数，初始化session
-      if (sessionParam) {
-        const currentSessionId = get().currentSessionId;
-        const sessions = get().sessions;
-
-        // 验证sessionId是否存在于会话列表中
-        const sessionExists = sessions.some(
-          (session) => session.id === sessionParam
-        );
-
-        if (!sessionExists) {
-          console.warn('Session不存在于会话列表中:', sessionParam);
-          // 移除无效的session参数，自动切换到最后对话的会话
-          const newUrl = new URL(window.location.href);
-          newUrl.searchParams.delete('session');
-          newUrl.searchParams.delete('topic'); // 同时移除topic参数
-          window.history.replaceState(null, '', newUrl.toString());
-          await get().autoSwitchToLastSession();
-          return;
-        }
-
-        // 如果当前session与URL参数不同，切换session
-        if (currentSessionId !== sessionParam) {
-          console.log('初始化切换到session:', sessionParam);
-          await get().switchSession(sessionParam);
-        }
-
-        // 如果有topic参数，需要等待session切换完成后初始化topic
-        if (topicParam) {
-          // 获取chat store并设置activeTopicId
-          const chatStore = useChatStore.getState();
-          if (chatStore) {
-            console.log('初始化设置topic:', topicParam);
-            // 设置活跃的topic ID
-            chatStore.activeTopicId = topicParam;
-
-            // 确保topic存在于topics列表中
-            // 如果topics还未加载，先加载topics
-            if (!chatStore.topicsInit) {
-              console.log('加载topics列表以验证topic存在性');
-              await chatStore.fetchTopics(sessionParam);
-            }
-
-            // 验证topic是否存在
-            const topicExists = chatStore.topics.some(
-              (t) => t.id === topicParam
-            );
-            if (!topicExists) {
-              console.warn('Topic不存在于当前session中:', topicParam);
-              // 清除无效的topic参数
-              chatStore.activeTopicId = undefined;
-              // 可选：更新URL移除无效的topic参数
-              const newUrl = new URL(window.location.href);
-              newUrl.searchParams.delete('topic');
-              window.history.replaceState(null, '', newUrl.toString());
-            } else {
-              console.log('Topic初始化成功:', topicParam);
-            }
-          }
-        }
-      } else {
-        // 如果没有session参数，执行自动切换到最后对话的逻辑
-        await get().autoSwitchToLastSession();
-      }
-
-      // 处理openHistory参数
-      if (openHistoryParam === 'true') {
-        console.log('检测到openHistory=true，打开历史面板');
-        const globalStore = useGlobalStore.getState();
-        if (globalStore) {
-          // 设置面板类型为历史模式
-          globalStore.setSlotPanelType('history');
-          // 确保面板是打开状态
-          globalStore.toggleSlotPanel(true);
-        }
-      }
-    } catch (error) {
-      console.error('URL参数初始化失败:', error);
-    }
-  },
-
   fetchSessions: async (params?: SessionListRequest) => {
     set({ isLoading: true, error: undefined });
     try {
@@ -135,15 +40,6 @@ export const sessionCoreAction: StateCreator<
       set({
         sessions,
         isLoading: false,
-        lastUpdated: Date.now(),
-        initialized: true,
-        pagination: {
-          ...get().pagination,
-          page: params?.page || 1,
-          pageSize: params?.pageSize || 20,
-          total,
-          hasMore: sessions.length === (params?.pageSize || 20),
-        },
       });
     } catch (error) {
       console.error('获取会话列表失败:', error);
@@ -152,6 +48,37 @@ export const sessionCoreAction: StateCreator<
         error: error instanceof Error ? error.message : '获取会话列表失败',
       });
     }
+  },
+
+  switchSession: async (sessionId: string, topicId?: string) => {
+    let activeTopicId = topicId;
+
+    // 如果没有传入话题ID，则获取会话下的所有话题
+    if (!activeTopicId) {
+      const topics = await topicsAPI.getTopicList(sessionId);
+
+      activeTopicId = topics?.[0]?.id;
+    }
+
+    // 设置当前会话和话题
+    set({
+      activeTopicId,
+      activeSessionId: sessionId,
+    });
+
+    // 设置URL参数
+    const url = new URL(window.location.href);
+    url.searchParams.set('session', sessionId);
+    url.searchParams.set('topic', activeTopicId);
+    window.history.replaceState(null, '', url.toString());
+
+    // 重置聊天状态
+    useChatStore.setState({
+      messages: [],
+      messagesInit: false,
+      topics: [],
+      topicsInit: false,
+    });
   },
 
   searchSessions: async (params: SessionSearchRequest) => {

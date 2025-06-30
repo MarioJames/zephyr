@@ -5,7 +5,6 @@ import { StateCreator } from 'zustand/vanilla';
 
 import { MessageAction, messageSlice } from './slices/message/action';
 import { TopicAction, topicSlice } from './slices/topic/action';
-import { SessionAction, sessionSlice } from './slices/session/action';
 import { AgentSuggestionsAction, agentSuggestionsSlice } from './slices/agent_suggestions/action';
 import { ChatState, initialState } from './initialState';
 import { UploadAction } from './slices/upload/action';
@@ -16,7 +15,6 @@ export interface ChatStore
   extends ChatState,
     MessageAction,
     TopicAction,
-    SessionAction,
     UploadAction,
     AgentSuggestionsAction {}
 
@@ -24,7 +22,6 @@ const createStore: StateCreator<ChatStore, [['zustand/devtools', never]]> = (...
   ...initialState,
   ...messageSlice(...parameters),
   ...topicSlice(...parameters),
-  ...sessionSlice(...parameters),
   ...uploadSlice(...parameters),
   ...agentSuggestionsSlice(...parameters),
 });

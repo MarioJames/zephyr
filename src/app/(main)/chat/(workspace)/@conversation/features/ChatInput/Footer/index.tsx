@@ -2,18 +2,14 @@ import { Button } from '@lobehub/ui';
 import { Space } from 'antd';
 import { createStyles } from 'antd-style';
 import { rgba } from 'polished';
-import { Suspense, memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import StopLoadingIcon from '@/components/StopLoading';
-import { useSendMessage } from '@/features/ChatInput/useSend';
-import { useChatStore } from '@/store/chat';
-import { chatSelectors } from '@/store/chat/selectors';
 import { isMacOS } from '@/utils/platform';
 
-import MessageFromUrl from './MessageFromUrl';
 import SendMore from './SendMore';
 import ShortcutHint from './ShortcutHint';
+import { useChatStore } from '@/store/chat';
 
 const useStyles = createStyles(({ css, prefixCls, token }) => {
   return {
@@ -50,10 +46,7 @@ interface FooterProps {
 const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
   const { styles } = useStyles();
 
-  // 移除AI生成状态，因为我们的对话都是确定内容，没有流式生成
-  const isLoading = useChatStore((s) => s.isLoading);
-
-  const { send: sendMessage, canSend } = useSendMessage();
+  const { sendMessage, isLoading } = useChatStore();
 
   const [isMac, setIsMac] = useState<boolean>();
 
@@ -63,9 +56,6 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
 
   return (
     <>
-      <Suspense>
-        <MessageFromUrl />
-      </Suspense>
       <Flexbox
         align={'center'}
         className={styles.overrideAntdIcon}
@@ -77,17 +67,17 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         <ShortcutHint />
         <Space.Compact>
           <Button
-            disabled={!canSend || isLoading}
+            disabled={isLoading}
             loading={isLoading}
             onClick={() => {
-              sendMessage();
+              sendMessage('user');
               onExpandChange?.(false);
             }}
             type={'primary'}
           >
             {'发送'}
           </Button>
-          <SendMore disabled={!canSend || isLoading} isMac={isMac} />
+          <SendMore disabled={isLoading} isMac={isMac} />
         </Space.Compact>
       </Flexbox>
     </>

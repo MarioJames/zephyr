@@ -4,9 +4,10 @@ import messageService, {
   MessagesCreateRequest,
 } from '@/services/messages';
 import chatService from '@/services/chat';
-import agentSuggestionsService from '@/services/agent_suggestions';
 import { ChatStore } from '../../store';
 import { PLACEHOLDER_MESSAGE } from '@/const/message';
+import { useSessionStore } from '@/store/session';
+import messageTranslateService from '@/services/message_translates';
 
 // 将消息转换为AI模型消费的格式
 const formatMessagesForAI = (messages: MessageItem[]) => {
@@ -23,27 +24,22 @@ const formatMessagesForAI = (messages: MessageItem[]) => {
 export interface MessageAction {
   // 消息CRUD操作
   fetchMessages: (topicId?: string) => Promise<void>;
-  addMessage: (message: Partial<MessageItem>) => void;
-  addAIMessage: (content: string) => void;
-  updateMessage: (id: string, data: Partial<MessageItem>) => void;
+  updateMessage: (id: string, data: Partial<MessageItem>) => Promise<void>;
   deleteMessage: (id: string) => Promise<void>;
 
   // 输入管理
   updateInputMessage: (message: string) => void;
   clearInputMessage: () => void;
 
-  // 移除AI生成相关方法，因为我们的对话都是确定内容
-
   // 发送消息
-  sendMessage: (params: {
-    content: string;
-    sessionId: string;
-    topicId: string;
-  }) => Promise<void>;
+  sendMessage: (role: 'user' | 'assistant') => Promise<void>;
 
   // 消息操作
   copyMessage: (id: string, content?: string) => Promise<void>;
-  translateMessage: (id: string, targetLanguage: string) => Promise<void>;
+  translateMessage: (
+    id: string,
+    params: { from: string; to: string }
+  ) => Promise<void>;
 
   fetchMessagesByTopic: (topicId: string) => Promise<void>;
 
@@ -54,7 +50,7 @@ export interface MessageAction {
   closeArtifact: () => void;
 
   clearTranslate: (id: string) => void;
-  
+
   // 翻译状态管理
   addTranslatingMessage: (id: string) => void;
   removeTranslatingMessage: (id: string) => void;
@@ -91,46 +87,38 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     }
   },
 
-  addMessage: (message: Partial<MessageItem>) => {
-    const newMessage: MessageItem = {
-      id: message.id || Date.now().toString(),
-      role: message.role || 'user',
-      content: message.content || '',
-      userId: message.userId || '',
-      sessionId: message.sessionId,
-      topicId: message.topicId,
-      createdAt: new Date().toISOString(),
-      ...message,
-    };
+  updateMessage: async (id: string, data: Partial<MessageItem>) => {
+    try {
+      // 先更新本地状态
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.id === id ? { ...msg, ...data } : msg
+        ),
+      }));
 
-    set((state) => ({
-      messages: [...state.messages, newMessage],
-    }));
-  },
-
-  addAIMessage: (content: string) => {
-    const state = get();
-    const newMessage: MessageItem = {
-      id: Date.now().toString(),
-      role: 'assistant',
-      content,
-      userId: '', // 会在实际使用时填入
-      sessionId: state.activeSessionId,
-      topicId: state.activeTopicId,
-      createdAt: new Date().toISOString(),
-    };
-
-    set((state) => ({
-      messages: [...state.messages, newMessage],
-    }));
-  },
-
-  updateMessage: (id: string, data: Partial<MessageItem>) => {
-    set((state) => ({
-      messages: state.messages.map((msg) =>
-        msg.id === id ? { ...msg, ...data } : msg
-      ),
-    }));
+      // 然后调用API保存到数据库（只传递API支持的字段）
+      const updateData = {
+        content: data.content,
+        role: data.role,
+        model: data.model,
+        provider: data.provider,
+        sessionId: data.sessionId,
+        topicId: data.topicId,
+        threadId: data.threadId,
+        parentId: data.parentId,
+        quotaId: data.quotaId,
+        agentId: data.agentId,
+        metadata: data.metadata,
+      };
+      await messageService.updateMessage(id, updateData);
+    } catch (error) {
+      console.error('Failed to update message:', error);
+      // 如果API调用失败，恢复本地状态
+      set((state) => ({
+        messages: state.messages.map((msg) => (msg.id === id ? msg : msg)),
+      }));
+      throw error;
+    }
   },
 
   deleteMessage: async (id: string) => {
@@ -153,8 +141,15 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ inputMessage: '' });
   },
 
-  sendMessage: async ({ content, sessionId, topicId }) => {
+  sendMessage: async (role: 'user' | 'assistant') => {
+    const { inputMessage } = get();
+
+    const { activeSessionId, activeTopicId } = useSessionStore.getState();
+
+    if (!inputMessage || !activeSessionId || !activeTopicId) return;
+
     set({ isLoading: true });
+
     try {
       // 新增一条占位消息
       set((state) => ({
@@ -162,10 +157,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       }));
 
       const createdMessage = await messageService.createMessage({
-        content,
-        role: 'user',
-        sessionId,
-        topicId,
+        role,
+        content: inputMessage,
+        sessionId: activeSessionId,
+        topicId: activeTopicId,
       });
 
       // 更新占位消息
@@ -176,7 +171,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       }));
 
       // 发送后自动刷新
-      set({ isLoading: false });
+      set({ isLoading: false, inputMessage: '' });
 
       // 🆕 自动触发翻译
       if (createdMessage.id) {
@@ -213,11 +208,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     }
   },
 
-  translateMessage: async (id: string, targetLanguage: string) => {
+  translateMessage: async (
+    id: string,
+    params: { from: string; to: string }
+  ) => {
     try {
       // 添加到翻译中状态
       get().addTranslatingMessage(id);
-      
+
       const state = get();
       const message = state.messages.find((msg) => msg.id === id);
 
@@ -225,30 +223,18 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         throw new Error('Message content not found');
       }
 
-      // 调用翻译接口
-      const response = await chatService.translate({
-        text: message.content,
-        toLanguage: targetLanguage,
-        fromLanguage: 'auto', // 自动检测源语言
+      // 调用翻译接口，返回翻译结果
+      const translationResult = await messageTranslateService.translateMessage({
+        ...params,
+        messageId: id,
       });
 
-      const translated = (response as any).translatedText || response.content;
-      if (translated) {
-        // 自动推断 from 语言
-        let fromLang = 'zh-CN';
-        if (targetLanguage === 'zh-CN') fromLang = 'ko-KR';
-        if (targetLanguage === 'ko-KR') fromLang = 'zh-CN';
-        get().updateMessage(id, {
-          metadata: {
-            ...message.metadata,
-            translate: {
-              content: translated,
-              from: fromLang,
-              to: targetLanguage,
-            },
-          },
-        });
-      }
+      // 更新消息的 translation 字段
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.id === id ? { ...msg, translation: translationResult } : msg
+        ),
+      }));
     } catch (error) {
       console.error('Failed to translate message:', error);
       set({
@@ -286,10 +272,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         msg.id === id
           ? {
               ...msg,
-              metadata: {
-                ...msg.metadata,
-                translate: undefined,
-              },
+              translation: undefined,
             }
           : msg
       ),
@@ -305,7 +288,9 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
   removeTranslatingMessage: (id: string) => {
     set((state) => ({
-      translatingMessageIds: state.translatingMessageIds.filter((msgId) => msgId !== id),
+      translatingMessageIds: state.translatingMessageIds.filter(
+        (msgId) => msgId !== id
+      ),
     }));
   },
 
@@ -313,7 +298,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     try {
       const state = get();
       const message = state.messages.find((msg) => msg.id === messageId);
-      
+
       if (!message?.content) {
         console.warn('Message not found or has no content:', messageId);
         return;
@@ -322,18 +307,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       // 检测消息语言并选择目标翻译语言
       const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(message.content);
       const isChinese = /[\u4e00-\u9fff]/.test(message.content);
-      
-      let targetLanguage = 'ko-KR'; // 默认翻译为韩语
-      
-      // 根据消息角色和内容确定翻译方向
-      if (message.role === 'assistant' || isKorean) {
-        targetLanguage = 'zh-CN'; // AI消息或韩文内容翻译为中文
-      } else if (message.role === 'user' || isChinese) {
-        targetLanguage = 'ko-KR'; // 用户消息或中文内容翻译为韩语
-      }
+      console.log('isKorean', isKorean);
+      console.log('isChinese', isChinese);
+
+      const from = isChinese ? 'zh-CN' : isKorean ? 'ko-KR' : '自动判断';
+      const to = isChinese ? 'ko-KR' : isKorean ? 'zh-CN' : '自动判断';
 
       // 执行翻译
-      await get().translateMessage(messageId, targetLanguage);
+      await get().translateMessage(messageId, { from, to });
     } catch (error) {
       console.error('Auto translate failed:', error);
     }

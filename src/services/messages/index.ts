@@ -2,6 +2,7 @@ import { http } from '../request';
 import { SessionItem } from '../sessions';
 import { TopicItem } from '../topics';
 import { UserItem } from '../user';
+import { MessageTranslateItem } from '../message_translates';
 
 // 消息相关类型定义
 export interface MessageItem {
@@ -31,6 +32,7 @@ export interface MessageItem {
   topic?: TopicItem;
   user?: UserItem;
   session?: SessionItem;
+  translation?: MessageTranslateItem;
 }
 
 export interface MessagesQueryByTopicRequest {

@@ -61,7 +61,6 @@ const Render = memo<ArtifactProps>(({ identifier, title, type, language, childre
   const hasChildren = !!children;
   const str = ((children as string) || '').toString?.();
 
-  const { message } = App.useApp();
   const [isGenerating, openArtifact, closeArtifact, artifactMessageId] = useChatStore((s) => {
     return [
       chatSelectors.isMessageGenerating(id)(s),

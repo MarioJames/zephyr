@@ -1,24 +1,20 @@
-"use client";
+'use client';
 
 // import { Avatar } from '@lobehub/ui';
-import { Skeleton, Popover } from "antd";
-import { createStyles } from "antd-style";
-import { parseAsBoolean, useQueryState } from "nuqs";
-import { Suspense, memo } from "react";
-import { Flexbox } from "react-layout-kit";
-import { ChevronDown, PencilLine } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Skeleton, Popover } from 'antd';
+import { createStyles } from 'antd-style';
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import { Suspense, memo } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { ChevronDown, PencilLine } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-import { useInitAgentConfig } from "@/hooks/useInitAgentConfig";
-import { useGlobalStore } from "@/store/global";
-import { systemStatusSelectors } from "@/store/global/selectors";
-import { useSessionStore } from "@/store/session";
-import {
-  sessionSelectors,
-  sessionMetaSelectors,
-} from "@/store/session/selectors";
+import { useGlobalStore } from '@/store/global';
+import { systemStatusSelectors } from '@/store/global/selectors';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session/selectors';
 
-import TogglePanelButton from "@/app/(main)/chat/features/TogglePanelButton";
+import TogglePanelButton from '@/app/(main)/chat/features/TogglePanelButton';
 
 const useStyles = createStyles(({ css }) => ({
   container: css`
@@ -76,8 +72,8 @@ const Main = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
   const router = useRouter();
   const sessionId = useSessionStore(sessionSelectors.currentSessionId);
-  useInitAgentConfig();
-  const [isPinned] = useQueryState("pinned", parseAsBoolean);
+  const currentSession = useSessionStore(sessionSelectors.currentSession);
+  const [isPinned] = useQueryState('pinned', parseAsBoolean);
 
   const showSessionPanel = useGlobalStore(
     systemStatusSelectors.showSessionPanel
@@ -87,9 +83,6 @@ const Main = memo<{ className?: string }>(({ className }) => {
     router.push(`/customer/edit?id=${sessionId}`);
   };
 
-  const sessionTitle = useSessionStore(
-    sessionMetaSelectors.currentSessionTitle
-  );
   const popoverContent = (
     <div className={styles.popoverItem} onClick={handleEditCustomer}>
       <PencilLine size={16} />
@@ -98,7 +91,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
   );
 
   return (
-    <Flexbox align={"center"} className={className} gap={12} horizontal>
+    <Flexbox align={'center'} className={className} gap={12} horizontal>
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
       {/* <Avatar
         avatar={avatar}
@@ -107,25 +100,25 @@ const Main = memo<{ className?: string }>(({ className }) => {
         size={32}
         title={title}
       /> */}
-      <div className={styles.avatar}>{sessionTitle?.[0] || ""}</div>
-      <Flexbox align={"center"} className={styles.container} gap={8} horizontal>
+      <div className={styles.avatar}>{currentSession?.avatar}</div>
+      <Flexbox align={'center'} className={styles.container} gap={8} horizontal>
         <Popover
           content={popoverContent}
-          trigger="click"
-          placement="bottomLeft"
+          trigger='click'
+          placement='bottomLeft'
           arrow={false}
           styles={{
             root: {
-              padding: "8px",
-              borderRadius: "8px",
+              padding: '8px',
+              borderRadius: '8px',
             },
             body: {
-              padding: "8px",
+              padding: '8px',
             },
           }}
         >
           <div className={styles.title}>
-            {sessionTitle || "客户名称"}
+            {currentSession?.title || '客户名称'}
             <ChevronDown size={14} />
           </div>
         </Popover>
@@ -139,7 +132,7 @@ export default memo<{ className?: string }>(({ className }) => (
     fallback={
       <Skeleton
         active
-        avatar={{ shape: "circle", size: "default" }}
+        avatar={{ shape: 'circle', size: 'default' }}
         paragraph={false}
         title={{ style: { margin: 0, marginTop: 8 }, width: 200 }}
       />

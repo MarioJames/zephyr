@@ -8,6 +8,10 @@ export const sessionSelectors = {
   // 获取当前会话ID
   currentSessionId: (state: SessionStore) => state.activeSessionId,
 
+  // 当前会话
+  currentSession: (state: SessionStore) =>
+    state.sessions.find((session) => session.id === state.activeSessionId),
+
   // 获取搜索结果
   searchResults: (state: SessionStore) => state.searchResults,
 

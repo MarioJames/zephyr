@@ -7,9 +7,9 @@ import { Flexbox } from 'react-layout-kit';
 
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { useChatStore } from '@/store/chat';
-import { ChatTranslate } from '@/types/message';
+import { MessageTranslateItem } from '@/services/message_translates';
 
-interface TranslateProps extends ChatTranslate {
+interface TranslateProps extends Partial<MessageTranslateItem> {
   id: string;
   loading?: boolean;
 }
@@ -44,14 +44,6 @@ const Translate = memo<TranslateProps>(({ content = '', from, to, id, loading })
             }}
             size={'small'}
             title={'复制'}
-          />
-          <ActionIcon
-            icon={TrashIcon}
-            onClick={() => {
-              clearTranslate(id);
-            }}
-            size={'small'}
-            title={'删除翻译'}
           />
           <ActionIcon
             icon={show ? ChevronDown : ChevronUp}

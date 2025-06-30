@@ -1,11 +1,11 @@
-import { http } from "../request";
+import { http } from '../request';
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
   id: string;
-  content?: string;
-  from?: string;
-  to?: string;
+  content: string;
+  from: string;
+  to: string;
   clientId?: string;
   userId: string;
 }
@@ -16,7 +16,8 @@ export interface MessageTranslateQueryRequest {
 
 export interface MessageTranslateTriggerRequest {
   messageId: string; // 翻译的消息ID
-  targetLanguage: string; // 目标语言
+  from: string; // 源语言
+  to: string; // 目标语言
 }
 
 /**
@@ -26,7 +27,7 @@ export interface MessageTranslateTriggerRequest {
  * @returns MessageTranslateItem
  */
 function getMessageTranslate(params: MessageTranslateQueryRequest) {
-  return http.get<MessageTranslateItem>("/api/v1/message-translates", params);
+  return http.get<MessageTranslateItem>('/api/v1/message-translates', params);
 }
 
 /**
@@ -36,13 +37,10 @@ function getMessageTranslate(params: MessageTranslateQueryRequest) {
  * @returns MessageTranslateItem
  */
 function translateMessage(data: MessageTranslateTriggerRequest) {
-  return http.post<MessageTranslateItem>("/api/v1/message-translates", data);
+  return http.post<MessageTranslateItem>('/api/v1/message-translates', data);
 }
 
 export default {
   getMessageTranslate,
   translateMessage,
-  // 保持向后兼容
-  queryTranslate: getMessageTranslate,
-  triggerTranslate: translateMessage,
-}; 
+};

@@ -8,16 +8,15 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
-import { sessionMetaSelectors } from '@/store/session';
 
 import { SkeletonList } from '../../SkeletonList';
 import SessionItem from '../SessionItem';
 
 const SearchResult = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [currentSessionId, isSearching] = useSessionStore((s) => [
-    s.currentSessionId,
-    sessionMetaSelectors.isSearching(s),
+  const [activeSessionId, isSearching] = useSessionStore((s) => [
+    s.activeSessionId,
+    s.isSearching,
   ]);
   const sessions = useSessionStore(sessionSelectors.searchResults, isEqual);
 
@@ -25,13 +24,13 @@ const SearchResult = memo(() => {
     (index: number, item: any) => {
       const title = item?.title && item.title.trim() !== '' ? item.title : '默认客户';
       return (
-        <SessionItem active={currentSessionId === item.id} id={item.id} key={item.id} title={title} />
+        <SessionItem active={activeSessionId === item.id} id={item.id} key={item.id} title={title} />
       );
     },
-    [currentSessionId],
+    [activeSessionId],
   );
 
-  const activeIndex = sessions.findIndex((session) => session.id === currentSessionId);
+  const activeIndex = sessions.findIndex((session) => session.id === activeSessionId);
 
   if (isSearching) return <SkeletonList />;
 

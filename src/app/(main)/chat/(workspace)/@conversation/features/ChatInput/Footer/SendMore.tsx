@@ -8,7 +8,6 @@ import {
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useSendMessage } from '@/features/ChatInput/useSend';
 import { useChatStore } from '@/store/chat';
 
 const useStyles = createStyles(({ css, prefixCls }) => {
@@ -30,10 +29,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
   const { styles } = useStyles();
 
   // 本地状态管理发送方式偏好，默认使用 Enter 发送
-  const addAIMessage = useChatStore((s) => s.addAIMessage);
-  const inputMessage = useChatStore((s) => s.inputMessage);
-
-  const { send: sendMessage } = useSendMessage();
+  const { sendMessage } = useChatStore();
 
   return (
     <Dropdown
@@ -45,7 +41,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
             key: 'addAi',
             label: '添加一条 AI 消息',
             onClick: () => {
-              sendMessage();
+              sendMessage('assistant');
             },
           },
           {
@@ -57,7 +53,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
               </Flexbox>
             ),
             onClick: () => {
-              addAIMessage(inputMessage || '');
+              sendMessage('user');
             },
           },
         ],

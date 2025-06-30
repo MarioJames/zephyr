@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
-import { sessionMetaSelectors } from '@/store/session';
 import { useOIDCStore } from '@/store/oidc';
 import { oidcSelectors } from '@/store/oidc/selectors';
 
@@ -40,36 +39,31 @@ const useStyles = createStyles(({ css, token }) => ({
 const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
-  const initialized = useSessionStore(sessionMetaSelectors.initialized);
-  const sessionLength = useSessionStore(sessionMetaSelectors.sessionsCount);
-  const isLoading = useSessionStore(sessionMetaSelectors.isLoading);
-  const isInSearchMode = useSessionStore((s) => s.inSearchMode);
-  const isUndefinedSessions = useSessionStore((s) =>
-    !sessionMetaSelectors.initialized(s) && sessionSelectors.sessions(s).length === 0
-  );
-  const fetchSessions = useSessionStore((s) => s.fetchSessions);
-  const initFromUrlParams = useSessionStore((s) => s.initFromUrlParams);
   const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
 
+  const {
+    // state
+    sessions,
+    isLoading,
+    inSearchMode,
+    searchResults,
+
+    // actions
+    fetchSessions,
+    initFromUrlParams,
+  } = useSessionStore();
+
   useEffect(() => {
-    if (!initialized) {
-      fetchSessions().then(() => {
-        // 会话列表获取完成后，从URL参数初始化session和topic
-        console.log('会话列表获取完成，开始初始化URL参数');
-        initFromUrlParams();
-      }).catch((error) => {
-        console.error('获取会话列表失败:', error);
-        // 即使获取失败，也尝试URL参数初始化（可能是自动切换到最后会话的逻辑）
-        initFromUrlParams();
-      });
-    }
-  }, [initialized, fetchSessions, initFromUrlParams]);
+    fetchSessions();
+    initFromUrlParams();
+  }, []);
 
   const handleAddCustomer = () => {
-    router.push('/customer/edit');
+    router.push('/customer/form');
   };
-  if (isInSearchMode) return <SearchResult />;
-  if (isLoading || isUndefinedSessions) return <SkeletonList />;
+
+  if (inSearchMode) return <SearchResult />;
+  if (isLoading) return <SkeletonList />;
 
   return (
     <>
@@ -95,7 +89,7 @@ const SessionListContent = memo(() => {
           创建客户
         </Button>
       </Flexbox>
-      {sessionLength === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
+      {sessions.length === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
       {<ShowMode />}
     </>
   );

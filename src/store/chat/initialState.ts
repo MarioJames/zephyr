@@ -1,19 +1,14 @@
-import { MessageItem } from '@/services';
-import { TopicItem } from '@/services/topics';
 import { initialUploadState } from './slices/upload/initialState';
-import { initialSessionState } from './slices/session/initialState';
 import { initialMessageState } from './slices/message/initialState';
 import { initialTopicState } from './slices/topic/initialState';
 import { initialAgentSuggestionsState } from './slices/agent_suggestions/initialState';
-import { SessionState } from './slices/session/initialState';
 import { MessageState } from './slices/message/initialState';
 import { TopicState } from './slices/topic/initialState';
 import { UploadState } from './slices/upload/initialState';
 import { AgentSuggestionsState } from './slices/agent_suggestions/initialState';
 
 export interface ChatState
-  extends SessionState,
-    MessageState,
+  extends MessageState,
     TopicState,
     UploadState,
     AgentSuggestionsState {
@@ -23,7 +18,6 @@ export interface ChatState
 }
 
 export const initialState: ChatState = {
-  ...initialSessionState,
   ...initialMessageState,
   ...initialUploadState,
   ...initialTopicState,
