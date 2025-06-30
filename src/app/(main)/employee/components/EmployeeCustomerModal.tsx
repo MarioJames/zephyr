@@ -176,6 +176,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
   rightList,
 }) => {
   const { styles } = useStyles();
+
   return (
     <Modal
       title={null}
@@ -190,7 +191,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
       }}
       closable={false}
     >
-      {loading ? (
+      {loading && sessionList.length === 0 ? (
         <SkeletonList />
       ) : (
         <>
