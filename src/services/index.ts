@@ -64,7 +64,6 @@ export type {
 
 export type {
   FileMetadata,
-  FileUploadResponse,
   FileUploadRequest,
   BatchUploadRequest,
   BatchUploadResponse,
