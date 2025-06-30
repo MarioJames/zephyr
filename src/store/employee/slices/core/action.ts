@@ -17,7 +17,7 @@ export interface CoreAction {
     skipStats?: boolean;
   }) => Promise<void>;
   fetchEmployeesWithStats: () => Promise<void>;
-  addEmployee: (data: UserCreateRequest) => Promise<void>;
+  addEmployee: (data: UserCreateRequest) => Promise<UserItem>;
   updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
@@ -75,10 +75,12 @@ export const coreSlice: StateCreator<
   addEmployee: async (data) => {
     set({ loading: true, error: null });
     try {
-      await userService.createUser(data);
+      const createdUser = await userService.createUser(data);
       await get().fetchEmployees();
+      return createdUser;
     } catch (e: any) {
       set({ error: e?.message || '添加员工失败' });
+      throw e;
     } finally {
       set({ loading: false });
     }

@@ -1,14 +1,20 @@
 import { StateCreator } from 'zustand';
-import messageService, { MessageItem, MessagesCreateRequest } from '@/services/messages';
+import messageService, {
+  MessageItem,
+  MessagesCreateRequest,
+} from '@/services/messages';
 import chatService from '@/services/chat';
 import agentSuggestionsService from '@/services/agent_suggestions';
 import { ChatStore } from '../../store';
+import { PLACEHOLDER_MESSAGE } from '@/const/message';
 
 // 将消息转换为AI模型消费的格式
 const formatMessagesForAI = (messages: MessageItem[]) => {
   return messages
-    .filter(msg => msg.content && ['user', 'assistant', 'system'].includes(msg.role))
-    .map(msg => ({
+    .filter(
+      (msg) => msg.content && ['user', 'assistant', 'system'].includes(msg.role)
+    )
+    .map((msg) => ({
       role: msg.role as 'user' | 'assistant' | 'system',
       content: msg.content!,
     }));
@@ -21,16 +27,20 @@ export interface MessageAction {
   addAIMessage: (content: string) => void;
   updateMessage: (id: string, data: Partial<MessageItem>) => void;
   deleteMessage: (id: string) => Promise<void>;
-  
+
   // 输入管理
   updateInputMessage: (message: string) => void;
   clearInputMessage: () => void;
-  
+
   // 移除AI生成相关方法，因为我们的对话都是确定内容
-  
+
   // 发送消息
-  sendMessage: (params: { content: string; sessionId: string; topicId: string; }) => Promise<void>;
-  
+  sendMessage: (params: {
+    content: string;
+    sessionId: string;
+    topicId: string;
+  }) => Promise<void>;
+
   // 消息操作
   copyMessage: (id: string, content?: string) => Promise<void>;
   translateMessage: (id: string, targetLanguage: string) => Promise<void>;
@@ -44,14 +54,17 @@ export interface MessageAction {
   closeArtifact: () => void;
 
   clearTranslate: (id: string) => void;
+  
+  // 翻译状态管理
+  addTranslatingMessage: (id: string) => void;
+  removeTranslatingMessage: (id: string) => void;
+  autoTranslateMessage: (messageId: string) => Promise<void>;
 }
 
-export const messageSlice: StateCreator<
-  ChatStore,
-  [],
-  [],
-  MessageAction
-> = (set, get) => ({
+export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
+  set,
+  get
+) => ({
   fetchMessages: async (topicId?: string) => {
     if (!topicId) {
       set({ messagesInit: true });
@@ -61,18 +74,19 @@ export const messageSlice: StateCreator<
     set({ isLoading: true, error: undefined });
     try {
       const messages = await messageService.queryByTopic(topicId);
-      set({ 
-        messages, 
-        messagesInit: true, 
+      set({
+        messages,
+        messagesInit: true,
         isLoading: false,
-        error: undefined 
+        error: undefined,
       });
     } catch (error) {
       console.error('Failed to fetch messages:', error);
-      set({ 
-        isLoading: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch messages',
-        messagesInit: true 
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch messages',
+        messagesInit: true,
       });
     }
   },
@@ -113,7 +127,7 @@ export const messageSlice: StateCreator<
 
   updateMessage: (id: string, data: Partial<MessageItem>) => {
     set((state) => ({
-      messages: state.messages.map(msg =>
+      messages: state.messages.map((msg) =>
         msg.id === id ? { ...msg, ...data } : msg
       ),
     }));
@@ -123,7 +137,7 @@ export const messageSlice: StateCreator<
     try {
       await messageService.deleteMessage(id);
       set((state) => ({
-        messages: state.messages.filter(msg => msg.id !== id),
+        messages: state.messages.filter((msg) => msg.id !== id),
       }));
     } catch (error) {
       console.error('Failed to delete message:', error);
@@ -142,15 +156,33 @@ export const messageSlice: StateCreator<
   sendMessage: async ({ content, sessionId, topicId }) => {
     set({ isLoading: true });
     try {
-      await messageService.createMessageWithReply({
+      // 新增一条占位消息
+      set((state) => ({
+        messages: [...state.messages, PLACEHOLDER_MESSAGE],
+      }));
+
+      const createdMessage = await messageService.createMessage({
         content,
         role: 'user',
         sessionId,
         topicId,
       });
+
+      // 更新占位消息
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.id === PLACEHOLDER_MESSAGE.id ? createdMessage : msg
+        ),
+      }));
+
       // 发送后自动刷新
-      await get().fetchMessagesByTopic(topicId);
       set({ isLoading: false });
+
+      // 🆕 自动触发翻译
+      if (createdMessage.id) {
+        console.log('消息发送成功，开始自动翻译:', createdMessage.id);
+        get().autoTranslateMessage(createdMessage.id);
+      }
     } catch (e: any) {
       set({ isLoading: false, error: e?.message || '消息发送失败' });
     }
@@ -159,9 +191,9 @@ export const messageSlice: StateCreator<
   copyMessage: async (id: string, content?: string) => {
     try {
       const state = get();
-      const message = state.messages.find(msg => msg.id === id);
+      const message = state.messages.find((msg) => msg.id === id);
       const textToCopy = content || message?.content || '';
-      
+
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy);
       } else {
@@ -183,9 +215,12 @@ export const messageSlice: StateCreator<
 
   translateMessage: async (id: string, targetLanguage: string) => {
     try {
-      const state = get();
-      const message = state.messages.find(msg => msg.id === id);
+      // 添加到翻译中状态
+      get().addTranslatingMessage(id);
       
+      const state = get();
+      const message = state.messages.find((msg) => msg.id === id);
+
       if (!message?.content) {
         throw new Error('Message content not found');
       }
@@ -216,8 +251,16 @@ export const messageSlice: StateCreator<
       }
     } catch (error) {
       console.error('Failed to translate message:', error);
-      set({ error: error instanceof Error ? error.message : 'Failed to translate message' });
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to translate message',
+      });
       throw error;
+    } finally {
+      // 无论成功还是失败都移除翻译状态
+      get().removeTranslatingMessage(id);
     }
   },
 
@@ -251,5 +294,48 @@ export const messageSlice: StateCreator<
           : msg
       ),
     }));
+  },
+
+  // 翻译状态管理
+  addTranslatingMessage: (id: string) => {
+    set((state) => ({
+      translatingMessageIds: [...state.translatingMessageIds, id],
+    }));
+  },
+
+  removeTranslatingMessage: (id: string) => {
+    set((state) => ({
+      translatingMessageIds: state.translatingMessageIds.filter((msgId) => msgId !== id),
+    }));
+  },
+
+  autoTranslateMessage: async (messageId: string) => {
+    try {
+      const state = get();
+      const message = state.messages.find((msg) => msg.id === messageId);
+      
+      if (!message?.content) {
+        console.warn('Message not found or has no content:', messageId);
+        return;
+      }
+
+      // 检测消息语言并选择目标翻译语言
+      const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(message.content);
+      const isChinese = /[\u4e00-\u9fff]/.test(message.content);
+      
+      let targetLanguage = 'ko-KR'; // 默认翻译为韩语
+      
+      // 根据消息角色和内容确定翻译方向
+      if (message.role === 'assistant' || isKorean) {
+        targetLanguage = 'zh-CN'; // AI消息或韩文内容翻译为中文
+      } else if (message.role === 'user' || isChinese) {
+        targetLanguage = 'ko-KR'; // 用户消息或中文内容翻译为韩语
+      }
+
+      // 执行翻译
+      await get().translateMessage(messageId, targetLanguage);
+    } catch (error) {
+      console.error('Auto translate failed:', error);
+    }
   },
 });

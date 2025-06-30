@@ -7,6 +7,7 @@ export interface MessageState {
   editingMessageId?: string;
   generatingMessageId?: string;
   artifactMessageId?: string;
+  translatingMessageIds: string[]; // 正在翻译的消息ID列表
 }
 
 export const initialMessageState: MessageState = {
@@ -16,4 +17,5 @@ export const initialMessageState: MessageState = {
   editingMessageId: undefined,
   generatingMessageId: undefined,
   artifactMessageId: undefined,
+  translatingMessageIds: [],
 };

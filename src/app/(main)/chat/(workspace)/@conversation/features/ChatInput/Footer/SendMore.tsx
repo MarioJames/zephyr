@@ -45,7 +45,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
             key: 'addAi',
             label: '添加一条 AI 消息',
             onClick: () => {
-              addAIMessage(inputMessage || '');
+              sendMessage();
             },
           },
           {
@@ -57,7 +57,7 @@ const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
               </Flexbox>
             ),
             onClick: () => {
-              sendMessage();
+              addAIMessage(inputMessage || '');
             },
           },
         ],

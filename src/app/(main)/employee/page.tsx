@@ -16,6 +16,9 @@ import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
 import EmployeeEditModal from "./components/EmployeeEditModal";
 import SendLoginGuideModal from "./components/SendLoginGuideModal";
 
+import { ChatConfirmModal } from '@/components/ChatConfirmModal';
+import userService from '@/services/user';
+
 const { Title } = Typography;
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -203,6 +206,14 @@ export default function EmployeePage() {
   const [customerTab, setCustomerTab] = useState("all");
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
+  
+  // 对话确认弹窗状态
+  const [chatModalVisible, setChatModalVisible] = useState(false);
+  const [chatModalData, setChatModalData] = useState<{
+    sessionId: string;
+    topicId: string;
+    username: string;
+  } | null>(null);
   const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([]);
   const [currentCustomerEmployee, setCurrentCustomerEmployee] =
     useState<UserItem | null>(null);
@@ -308,6 +319,12 @@ export default function EmployeePage() {
     setIsEditMode(false);
   };
 
+  // 显示对话确认弹窗
+  const showChatConfirmModal = (sessionId: string, topicId: string, username: string) => {
+    setChatModalData({ sessionId, topicId, username });
+    setChatModalVisible(true);
+  };
+
   // 处理员工表单提交
   const handleEmployeeSubmit = async () => {
     try {
@@ -324,8 +341,9 @@ export default function EmployeePage() {
           return;
         }
       } else {
+        let createdUser;
         try {
-          await addEmployee({
+          createdUser = await addEmployee({
             ...values,
             avatar: avatarFile?.url,
           });
@@ -333,6 +351,25 @@ export default function EmployeePage() {
         } catch (e) {
           message.error("添加员工失败");
           return;
+        }
+
+        // 🆕 为新创建的用户创建默认 Topic
+        try {
+          const defaultTopicData = await userService.createDefaultTopicForUser(
+            values.username,
+            createdUser.id
+          );
+          
+          // 显示对话确认弹窗
+          showChatConfirmModal(
+            defaultTopicData.sessionId,
+            defaultTopicData.topicId,
+            values.username
+          );
+        } catch (e) {
+          console.error('创建默认Topic失败:', e);
+          // 用户创建成功但Topic创建失败，不影响主流程
+          message.warning('用户创建成功，但创建默认对话主题失败');
         }
       }
       handleEmployeeModalCancel();
@@ -692,6 +729,17 @@ export default function EmployeePage() {
         leftList={leftList}
         rightList={rightList}
       />
+
+      {/* 对话确认弹窗 */}
+      {chatModalData && (
+        <ChatConfirmModal
+          visible={chatModalVisible}
+          onCancel={() => setChatModalVisible(false)}
+          sessionId={chatModalData.sessionId}
+          topicId={chatModalData.topicId}
+          username={chatModalData.username}
+        />
+      )}
     </div>
   );
 }

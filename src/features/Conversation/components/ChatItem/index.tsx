@@ -150,11 +150,11 @@ const Item = memo<ChatListItemProps>(
             placement={
               type === 'chat'
                 ? item.role === 'user'
-                  ? 'right'
-                  : 'left'
+                  ? 'left'
+                  : 'right'
                 : 'left'
             }
-            primary={item.role === 'user'}
+            primary={item.role === 'assistant'}
             renderMessage={renderMessage}
             time={new Date(item.createdAt!).getTime()}
             variant={type === 'chat' ? 'bubble' : 'docs'}

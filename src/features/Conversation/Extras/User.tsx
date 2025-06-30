@@ -11,12 +11,13 @@ import Translate from "./Translate";
 export const UserMessageExtra: RenderMessageExtra = memo<
   ChatMessage & { extra?: any }
 >(({ extra, id, content }) => {
-  const loading = useChatStore(chatSelectors.isMessageGenerating(id));
+  const isTranslating = useChatStore(chatSelectors.isMessageTranslating(id));
+  
   return (
     <div style={{ marginTop: 8 }}>
-      {!!extra?.translate && (
+      {(!!extra?.translate || isTranslating) && (
         <ExtraContainer>
-          <Translate id={id} {...extra?.translate} loading={loading} />
+          <Translate id={id} {...extra?.translate} loading={isTranslating} />
         </ExtraContainer>
       )}
     </div>
