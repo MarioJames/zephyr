@@ -8,7 +8,7 @@ const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
     .ant-modal-content {
       border-radius: 8px;
-      background: ${token.colorBgContainer};
+      background: ${token.colorBgElevated};
       padding: 24px;
     }
   `,
@@ -67,10 +67,17 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   customInput: css`
     border-radius: 6px;
-    background: ${token.colorBgContainer};
+    background: ${token.colorFillQuaternary};
     height: 32px;
     border: none;
     box-shadow: none;
+    &:hover,
+    &:focus,
+    &:active {
+      background: ${token.colorFillQuaternary} !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
   `,
   cancelButton: css`
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -112,7 +119,6 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
       width={414}
       className={styles.addEmployeeModal}
       closable={true}
-      closeIcon={<span style={{ fontSize: 20, color: "#999" }}>×</span>}
     >
       <div>
         <div className={styles.modalTitle}>
