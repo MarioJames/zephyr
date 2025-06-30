@@ -12,12 +12,13 @@ import Translate from "./Translate";
 export const AssistantMessageExtra: RenderMessageExtra = memo<
   ChatMessage & { extra?: any }
 >(({ extra, id, tools }) => {
-  const loading = useChatStore(chatSelectors.isMessageGenerating(id));
+  const isTranslating = useChatStore(chatSelectors.isMessageTranslating(id));
+  
   return (
     <Flexbox gap={8} style={{ marginTop: !!tools?.length ? 8 : 4 }}>
-      {!!extra?.translate && (
+      {(!!extra?.translate || isTranslating) && (
         <ExtraContainer>
-          <Translate id={id} loading={loading} {...extra?.translate} />
+          <Translate id={id} loading={isTranslating} {...extra?.translate} />
         </ExtraContainer>
       )}
     </Flexbox>

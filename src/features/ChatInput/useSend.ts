@@ -10,12 +10,8 @@ export type UseSendMessageParams = Pick<
 >;
 
 export const useSendMessage = () => {
-  const sendMessage = useChatStore((s) => s.sendMessage);
-  const updateInputMessage = useChatStore((s) => s.updateInputMessage);
-  const inputMessage = useChatStore((s) => s.inputMessage);
-  const isLoading = useChatStore((s) => s.isLoading);
-  const createTopic = useChatStore((s) => s.createTopic);
-  const switchTopic = useChatStore((s) => s.switchTopic);
+  const { sendMessage, updateInputMessage, inputMessage, isLoading } =
+    useChatStore();
 
   const canSend = !!inputMessage && !isLoading;
 
@@ -25,22 +21,12 @@ export const useSendMessage = () => {
     if (!store.inputMessage) return;
     if (!store.activeSessionId) return;
 
-    let topicId = store.activeTopicId;
-    // 如果没有 activeTopicId，先创建一个新话题
-    if (!topicId) {
-      const topic = await createTopic({
-        title: store.inputMessage,
-        sessionId: store.activeSessionId,
-      });
-      topicId = topic.id;
-      switchTopic(topicId);
-    }
-
     await sendMessage({
       content: store.inputMessage,
       sessionId: store.activeSessionId,
-      topicId,
+      topicId: store.activeTopicId || '',
     });
+
     updateInputMessage('');
   }, []);
 

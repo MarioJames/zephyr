@@ -1,23 +1,19 @@
-"use client";
+'use client';
 
-import React, { memo, useCallback, useMemo, useRef } from "react";
-import { GroupedVirtuoso, VirtuosoHandle } from "react-virtuoso";
+import React, { memo, useCallback, useMemo, useRef } from 'react';
+import { GroupedVirtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
-import { sessionHelpers } from '@/store/session';
 
-import SessionItem from "../SessionItem";
-import SessionGroupItem from "./GroupItem";
+import SessionItem from '../SessionItem';
+import SessionGroupItem from './GroupItem';
 
 const ShowMode = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [currentSessionId] = useSessionStore((s) => [s.currentSessionId]);
-  // 获取所有会话并排序
-  const sessions = useSessionStore(sessionSelectors.sessions);
-  const sortedSessions = useMemo(() => sessionHelpers.sortSessions(sessions, 'updatedAt'), [sessions]);
+  const [currentSessionId] = useSessionStore((s) => [s.activeSessionId]);
 
-  // 分组逻辑：最近客户（前7个），全部客户（所有）
+  // 分组逻辑：最近客户（前5个），全部客户（所有）
   const recentSessions = useSessionStore(sessionSelectors.recentSessions);
   const allSessions = useSessionStore(sessionSelectors.sessions);
   const groups = [
@@ -33,7 +29,10 @@ const ShowMode = memo(() => {
       // 判断属于哪个分组
       const isRecent = index < recentSessions.length;
       const session = flatSessions[index];
-      const title = session?.title && session.title.trim() !== '' ? session.title : `默认客户${index + 1}`;
+      const title =
+        session?.title && session.title.trim() !== ''
+          ? session.title
+          : `默认客户${index + 1}`;
       return (
         <SessionItem
           active={currentSessionId === session.id}
@@ -52,7 +51,8 @@ const ShowMode = memo(() => {
     (index: number) => {
       const sessionGroup = groups[index];
       // 只有"全部客户"分组才展示数量
-      const count = sessionGroup.id === 'all' ? sessionGroup.children.length : undefined;
+      const count =
+        sessionGroup.id === 'all' ? sessionGroup.children.length : undefined;
       return <SessionGroupItem {...sessionGroup} count={count} />;
     },
     [groups]
@@ -67,6 +67,6 @@ const ShowMode = memo(() => {
   );
 });
 
-ShowMode.displayName = "ShowMode";
+ShowMode.displayName = 'ShowMode';
 
 export default ShowMode;

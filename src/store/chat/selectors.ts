@@ -90,6 +90,11 @@ const isMessageEditing = (id: string) => (s: ChatState) => s.editingMessageId ==
 // 判断某条消息是否正在生成中
 const isMessageGenerating = (id: string) => (s: ChatState) => s.generatingMessageId === id;
 
+// 翻译状态相关选择器
+const translatingMessageIds = (s: ChatState) => s.translatingMessageIds;
+const isMessageTranslating = (id: string) => (s: ChatState) => 
+  s.translatingMessageIds.includes(id);
+
 // 聊天相关选择器
 export const chatSelectors = {
   activeId,
@@ -105,6 +110,8 @@ export const chatSelectors = {
   showInboxWelcome,
   isMessageEditing,
   isMessageGenerating,
+  translatingMessageIds,
+  isMessageTranslating,
 };
 
 // 话题相关选择器

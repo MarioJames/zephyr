@@ -4,45 +4,47 @@ import { ChatStore } from '../../store';
 
 export interface TopicAction {
   // 话题CRUD操作
-  fetchTopics: (sessionId: string) => Promise<void>;
+  fetchTopics: (sessionId: string) => Promise<TopicItem[] | undefined>;
   createTopic: (data: TopicCreateRequest) => Promise<TopicItem>;
   updateTopicTitle: (id: string, title: string) => Promise<void>;
   removeTopic: (id: string) => Promise<void>;
-  
+
   // 话题切换
   switchTopic: (topicId?: string) => void;
-  
+
   // 搜索相关
   useSearchTopics: (keyword: string, sessionId: string) => void;
   clearTopicSearchResult: () => void;
-  
+
   // 重命名相关
   startTopicRename: (id: string) => void;
   finishTopicRename: () => void;
 }
 
-export const topicSlice: StateCreator<
-  ChatStore,
-  [],
-  [],
-  TopicAction
-> = (set, get) => ({
+export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
+  set,
+  get
+) => ({
   fetchTopics: async (sessionId: string) => {
     set({ isLoading: true, error: undefined });
+
     try {
       const topics = await topicService.getTopicList(sessionId);
-      set({ 
-        topics, 
-        topicsInit: true, 
+      set({
+        topics,
+        topicsInit: true,
         isLoading: false,
-        error: undefined 
+        error: undefined,
       });
+
+      return topics;
     } catch (error) {
       console.error('Failed to fetch topics:', error);
-      set({ 
-        isLoading: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch topics',
-        topicsInit: true 
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch topics',
+        topicsInit: true,
       });
     }
   },
@@ -64,14 +66,13 @@ export const topicSlice: StateCreator<
     try {
       // 暂时本地更新，实际项目中需要调用API
       set((state) => ({
-        topics: state.topics.map(topic =>
+        topics: state.topics.map((topic) =>
           topic.id === id ? { ...topic, title } : topic
         ),
       }));
-      
+
       // TODO: 调用实际的更新API
       // await topicService.updateTopic(id, { title });
-      
     } catch (error) {
       console.error('Failed to update topic title:', error);
       throw error;
@@ -82,8 +83,9 @@ export const topicSlice: StateCreator<
     try {
       await topicService.deleteTopic(id);
       set((state) => ({
-        topics: state.topics.filter(topic => topic.id !== id),
-        activeTopicId: state.activeTopicId === id ? undefined : state.activeTopicId,
+        topics: state.topics.filter((topic) => topic.id !== id),
+        activeTopicId:
+          state.activeTopicId === id ? undefined : state.activeTopicId,
       }));
     } catch (error) {
       console.error('Failed to remove topic:', error);
@@ -93,7 +95,7 @@ export const topicSlice: StateCreator<
 
   switchTopic: (topicId?: string) => {
     set({ activeTopicId: topicId });
-    
+
     // 切换话题时重新获取消息
     if (topicId) {
       get().fetchMessages(topicId);
@@ -104,31 +106,31 @@ export const topicSlice: StateCreator<
 
   useSearchTopics: (keyword: string, sessionId: string) => {
     if (!keyword.trim()) {
-      set({ 
-        searchTopics: [], 
+      set({
+        searchTopics: [],
         isSearchingTopic: false,
-        inSearchingMode: false 
+        inSearchingMode: false,
       });
       return;
     }
 
     const state = get();
-    const filteredTopics = state.topics.filter(topic =>
+    const filteredTopics = state.topics.filter((topic) =>
       topic.title?.toLowerCase().includes(keyword.toLowerCase())
     );
 
-    set({ 
-      searchTopics: filteredTopics, 
+    set({
+      searchTopics: filteredTopics,
       isSearchingTopic: true,
-      inSearchingMode: true 
+      inSearchingMode: true,
     });
   },
 
   clearTopicSearchResult: () => {
-    set({ 
-      searchTopics: [], 
+    set({
+      searchTopics: [],
       isSearchingTopic: false,
-      inSearchingMode: false 
+      inSearchingMode: false,
     });
   },
 

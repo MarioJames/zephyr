@@ -3,7 +3,14 @@
 import { Icon } from '@lobehub/ui';
 import { useTheme } from 'antd-style';
 import { Loader2Icon } from 'lucide-react';
-import React, { ReactNode, memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  ReactNode,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
@@ -20,85 +27,102 @@ interface VirtualizedListProps {
   itemContent: (index: number, data: any, context: any) => ReactNode;
 }
 
-const VirtualizedList = memo<VirtualizedListProps>(({ dataSource, itemContent }) => {
-  const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [atBottom, setAtBottom] = useState(true);
-  const [isScrolling, setIsScrolling] = useState(false);
+const VirtualizedList = memo<VirtualizedListProps>(
+  ({ dataSource, itemContent }) => {
+    const virtuosoRef = useRef<VirtuosoHandle>(null);
+    const [atBottom, setAtBottom] = useState(true);
+    const [isScrolling, setIsScrolling] = useState(false);
 
-  const [activeTopicId, isFirstLoading, isCurrentChatLoaded] = useChatStore((s) => [
-    chatSelectors.activeTopicId(s),
-    chatSelectors.isLoading(s),
-    chatSelectors.isCurrentChatLoaded(s),
-  ]);
+    const [activeTopicId, isCurrentChatLoaded] = useChatStore((s) => [
+      chatSelectors.activeTopicId(s),
+      chatSelectors.isCurrentChatLoaded(s),
+    ]);
 
-  useEffect(() => {
-    if (virtuosoRef.current) {
-      virtuosoRef.current.scrollToIndex({ align: 'end', behavior: 'auto', index: 'LAST' });
-    }
-  }, [activeTopicId]);
+    useEffect(() => {
+      if (virtuosoRef.current) {
+        virtuosoRef.current.scrollToIndex({
+          align: 'end',
+          behavior: 'auto',
+          index: 'LAST',
+        });
+      }
+    }, [activeTopicId]);
 
-  const prevDataLengthRef = useRef(dataSource.length);
+    const prevDataLengthRef = useRef(dataSource.length);
 
-  const getFollowOutput = useCallback(() => {
-    const newFollowOutput = dataSource.length > prevDataLengthRef.current ? 'auto' : false;
-    prevDataLengthRef.current = dataSource.length;
-    return newFollowOutput;
-  }, [dataSource.length]);
+    const getFollowOutput = useCallback(() => {
+      const newFollowOutput =
+        dataSource.length > prevDataLengthRef.current ? 'auto' : false;
+      prevDataLengthRef.current = dataSource.length;
+      return newFollowOutput;
+    }, [dataSource.length]);
 
-  const theme = useTheme();
-  // overscan should be 3 times the height of the window
-  const overscan = typeof window !== 'undefined' ? window.innerHeight * 3 : 0;
+    const theme = useTheme();
 
-  // first time loading or not loaded
-  if (isFirstLoading) return <SkeletonList />;
+    // overscan should be 3 times the height of the window
+    const overscan = typeof window !== 'undefined' ? window.innerHeight * 3 : 0;
 
-  if (!isCurrentChatLoaded)
-    // use skeleton list when not loaded in server mode due to the loading duration is much longer than client mode
-    return isServerMode ? (
-      <SkeletonList />
-    ) : (
-      // in client mode and switch page, using the center loading for smooth transition
-      <Center height={'100%'} width={'100%'}>
-        <Icon icon={Loader2Icon} size={32} spin style={{ color: theme.colorTextTertiary }} />
-      </Center>
+    if (!isCurrentChatLoaded)
+      // use skeleton list when not loaded in server mode due to the loading duration is much longer than client mode
+      return isServerMode ? (
+        <SkeletonList />
+      ) : (
+        // in client mode and switch page, using the center loading for smooth transition
+        <Center height={'100%'} width={'100%'}>
+          <Icon
+            icon={Loader2Icon}
+            size={32}
+            spin
+            style={{ color: theme.colorTextTertiary }}
+          />
+        </Center>
+      );
+
+    return (
+      <VirtuosoContext value={virtuosoRef}>
+        <Flexbox height={'100%'}>
+          <Virtuoso
+            atBottomStateChange={setAtBottom}
+            atBottomThreshold={50}
+            computeItemKey={(_, item) => item}
+            data={dataSource}
+            followOutput={getFollowOutput}
+            increaseViewportBy={overscan}
+            initialTopMostItemIndex={dataSource?.length - 1}
+            isScrolling={setIsScrolling}
+            itemContent={itemContent}
+            overscan={overscan}
+            ref={virtuosoRef}
+          />
+          <AutoScroll
+            atBottom={atBottom}
+            isScrolling={isScrolling}
+            onScrollToBottom={(type) => {
+              const virtuoso = virtuosoRef.current;
+              switch (type) {
+                case 'auto': {
+                  virtuoso?.scrollToIndex({
+                    align: 'end',
+                    behavior: 'auto',
+                    index: 'LAST',
+                  });
+                  break;
+                }
+                case 'click': {
+                  virtuoso?.scrollToIndex({
+                    align: 'end',
+                    behavior: 'smooth',
+                    index: 'LAST',
+                  });
+                  break;
+                }
+              }
+            }}
+          />
+        </Flexbox>
+      </VirtuosoContext>
     );
-
-  return (
-    <VirtuosoContext value={virtuosoRef}>
-      <Flexbox height={'100%'}>
-        <Virtuoso
-          atBottomStateChange={setAtBottom}
-          atBottomThreshold={50}
-          computeItemKey={(_, item) => item}
-          data={dataSource}
-          followOutput={getFollowOutput}
-          increaseViewportBy={overscan}
-          initialTopMostItemIndex={dataSource?.length - 1}
-          isScrolling={setIsScrolling}
-          itemContent={itemContent}
-          overscan={overscan}
-          ref={virtuosoRef}
-        />
-        <AutoScroll
-          atBottom={atBottom}
-          isScrolling={isScrolling}
-          onScrollToBottom={(type) => {
-            const virtuoso = virtuosoRef.current;
-            switch (type) {
-              case 'auto': {
-                virtuoso?.scrollToIndex({ align: 'end', behavior: 'auto', index: 'LAST' });
-                break;
-              }
-              case 'click': {
-                virtuoso?.scrollToIndex({ align: 'end', behavior: 'smooth', index: 'LAST' });
-                break;
-              }
-            }
-          }}
-        />
-      </Flexbox>
-    </VirtuosoContext>
-  );
-});
+  }
+);
 
 export default VirtualizedList;

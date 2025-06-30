@@ -55,6 +55,11 @@ const SessionListContent = memo(() => {
     if (!initialized) {
       fetchSessions().then(() => {
         // 会话列表获取完成后，从URL参数初始化session和topic
+        console.log('会话列表获取完成，开始初始化URL参数');
+        initFromUrlParams();
+      }).catch((error) => {
+        console.error('获取会话列表失败:', error);
+        // 即使获取失败，也尝试URL参数初始化（可能是自动切换到最后会话的逻辑）
         initFromUrlParams();
       });
     }
