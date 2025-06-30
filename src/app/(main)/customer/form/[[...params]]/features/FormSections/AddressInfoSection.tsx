@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Input, Cascader, Row, Col } from 'antd';
-import { PROVINCE_OPTIONS } from '@/const/customer';
+import { Row } from 'antd';
+import { Input } from '@lobehub/ui';
 import { useSharedStyles } from '../shared/styles';
 
 export default function AddressInfoSection() {
@@ -10,7 +10,7 @@ export default function AddressInfoSection() {
     <>
       <div className={styles.sectionTitle}>地址信息</div>
       <Row gutter={24}>
-        <Input.TextArea placeholder='请输入省市区' />{' '}
+        <Input placeholder='请输入省市区' />
       </Row>
     </>
   );

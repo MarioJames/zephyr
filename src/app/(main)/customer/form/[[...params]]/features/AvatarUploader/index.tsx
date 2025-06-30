@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Typography, Upload, App, Form, Input } from 'antd';
-import { Button } from '@lobehub/ui';
+import { Typography, Upload, App, Form } from 'antd';
+import { Button,Input } from '@lobehub/ui';
 import { UploadOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import { AvatarUploaderProps } from '../shared/types';

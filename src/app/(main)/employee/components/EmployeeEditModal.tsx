@@ -1,6 +1,6 @@
 import React from "react";
-import { Modal, Form, Input, Upload } from "antd";
-import { Button } from '@lobehub/ui';
+import { Modal, Form, Upload } from "antd";
+import { Button, Input } from '@lobehub/ui';
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 

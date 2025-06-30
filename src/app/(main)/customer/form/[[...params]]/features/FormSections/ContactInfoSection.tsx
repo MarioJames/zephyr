@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form, Input, Row, Col } from 'antd';
+import { Form, Row, Col } from 'antd';
+import { Input } from '@lobehub/ui';
 import { useSharedStyles } from '../shared/styles';
 
 export default function ContactInfoSection() {

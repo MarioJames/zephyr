@@ -8,7 +8,7 @@ import { FileClock, Search } from "lucide-react";
 
 import { useGlobalStore } from "@/store/global";
 import { systemStatusSelectors } from "@/store/global/selectors";
-import { Input } from "antd";
+import { Input } from "@lobehub/ui";
 import { createStyles } from "antd-style";
 
 const useStyles = createStyles(({ css, token }) => ({

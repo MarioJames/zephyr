@@ -1,7 +1,6 @@
 import React from 'react';
-import { Form, Input } from 'antd';
-
-const { TextArea } = Input;
+import { Form } from 'antd';
+import { TextArea } from '@lobehub/ui';
 
 export default function NotesSection() {
   return (

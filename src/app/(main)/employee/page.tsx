@@ -1,18 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Input,
-  Table,
-  Typography,
-  Space,
-  Dropdown,
-  Form,
-  App,
-} from "antd";
-import { Button } from '@lobehub/ui';
-import {
-  SearchOutlined,
-} from "@ant-design/icons";
+import { Table, Typography, Space, Dropdown, Form, App } from "antd";
+import { Button, Input } from "@lobehub/ui";
+import { SearchOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 import type { ColumnsType } from "antd/es/table";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
@@ -401,7 +391,7 @@ export default function EmployeePage() {
     } finally {
       setSessionLoading(false);
     }
-  }
+  };
 
   // 关闭客户管理弹窗时清空相关状态
   const handleCustomerModalClose = () => {

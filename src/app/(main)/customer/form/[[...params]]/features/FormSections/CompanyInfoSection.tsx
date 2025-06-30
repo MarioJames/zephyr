@@ -1,9 +1,8 @@
 import React from 'react';
-import { Form, Input, Select, Row, Col } from 'antd';
+import { Form, Row, Col } from 'antd';
+import { Input, Select } from '@lobehub/ui';
 import { INDUSTRY_OPTIONS, SCALE_OPTIONS } from '@/const/customer';
 import { useSharedStyles } from '../shared/styles';
-
-const { Option } = Select;
 
 export default function CompanyInfoSection() {
   const { styles } = useSharedStyles();
@@ -19,24 +18,12 @@ export default function CompanyInfoSection() {
         </Col>
         <Col span={8}>
           <Form.Item name='industry' label='行业'>
-            <Select placeholder='请选择行业'>
-              {INDUSTRY_OPTIONS.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
+            <Select placeholder='请选择行业' options={INDUSTRY_OPTIONS} />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item name='scale' label='规模'>
-            <Select placeholder='请选择公司规模'>
-              {SCALE_OPTIONS.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
+            <Select placeholder='请选择公司规模' options={SCALE_OPTIONS} />
           </Form.Item>
         </Col>
       </Row>

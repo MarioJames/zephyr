@@ -1,9 +1,8 @@
 import React from 'react';
-import { Form, Input, Select, Row, Col, InputNumber } from 'antd';
+import { Form, Row, Col } from 'antd';
+import { Input, Select, InputNumber } from '@lobehub/ui';
 import { GENDER_OPTIONS } from '@/const/customer';
 import { useSharedStyles } from '../shared/styles';
-
-const { Option } = Select;
 
 export default function BasicInfoSection() {
   const { styles } = useSharedStyles();
@@ -23,13 +22,7 @@ export default function BasicInfoSection() {
         </Col>
         <Col span={6}>
           <Form.Item name='gender' label='性别'>
-            <Select placeholder='请选择性别'>
-              {GENDER_OPTIONS.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
+            <Select placeholder='请选择性别' options={GENDER_OPTIONS} />
           </Form.Item>
         </Col>
         <Col span={6}>

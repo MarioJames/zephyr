@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Popover, Input, List, Spin, App } from 'antd';
-import { SearchOutlined, DownOutlined } from '@ant-design/icons';
-import { useEmployeeStore } from '@/store/employee';
-import { employeeSelectors } from '@/store/employee/selectors';
-import { sessionsAPI, userAPI } from '@/services';
-import { UserItem } from '@/services/user';
-import { useCustomerAssigneeStyles } from './styles';
-import { CustomerAssigneeProps, EmployeeListItemProps } from './types';
-import { useDebounceFn, useRequest } from 'ahooks';
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { Popover, List, Spin, App } from "antd";
+import { Input } from "@lobehub/ui";
+import { SearchOutlined, DownOutlined } from "@ant-design/icons";
+import { useEmployeeStore } from "@/store/employee";
+import { employeeSelectors } from "@/store/employee/selectors";
+import { sessionsAPI, userAPI } from "@/services";
+import { UserItem } from "@/services/user";
+import { useCustomerAssigneeStyles } from "./styles";
+import { CustomerAssigneeProps, EmployeeListItemProps } from "./types";
+import { useDebounceFn, useRequest } from "ahooks";
 
 // 员工列表项组件
 const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
@@ -18,7 +19,7 @@ const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
 }) => {
   const { styles } = useCustomerAssigneeStyles();
 
-  const employeeName = employee.fullName || employee.username || '未知员工';
+  const employeeName = employee.fullName || employee.username || "未知员工";
   const employeeEmail = employee.email;
 
   return (
@@ -34,9 +35,9 @@ const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
 // 主组件
 export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   session,
-  title = '对接人',
-  placeholder = '未分配',
-  popoverPlacement = 'bottom',
+  title = "对接人",
+  placeholder = "未分配",
+  popoverPlacement = "bottom",
   disabled = false,
   onAssignSuccess,
   onAssignError,
@@ -47,7 +48,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   const { message } = App.useApp();
 
   // 组件状态
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
 
@@ -68,7 +69,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   // 进入页面发现没有搜索员工，则先搜索一次
   useEffect(() => {
     if (!searchedEmployees.length) {
-      searchEmployees('', 10);
+      searchEmployees("", 10);
     }
   }, []);
 
@@ -85,15 +86,15 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
         });
 
         const employeeName =
-          employee.fullName || employee.username || '未知员工';
+          employee.fullName || employee.username || "未知员工";
         message.success(`已成功分配给 ${employeeName}`);
 
         setPopoverOpen(false);
-        setSearchText('');
+        setSearchText("");
         onAssignSuccess?.(employee);
       } catch (error) {
-        console.error('分配员工失败:', error);
-        message.error('分配员工失败，请重试');
+        console.error("分配员工失败:", error);
+        message.error("分配员工失败，请重试");
         onAssignError?.(error);
       } finally {
         setUpdating(false);
@@ -117,7 +118,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
 
       setPopoverOpen(open);
       if (!open) {
-        setSearchText('');
+        setSearchText("");
       }
     },
     [disabled, updating]
@@ -130,7 +131,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
       <div className={styles.searchContainer}>
         <Input
           className={styles.searchInput}
-          placeholder='搜索员工姓名、邮箱'
+          placeholder="搜索员工姓名、邮箱"
           prefix={<SearchOutlined />}
           onChange={(e) => debouncedSearchEmployees(e.target.value, 10)}
           autoFocus
@@ -140,13 +141,13 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
       {/* 员工列表 */}
       {employeesLoading ? (
         <div className={styles.loadingState}>
-          <Spin size='small' />
+          <Spin size="small" />
           <div style={{ marginTop: 8 }}>加载中...</div>
         </div>
       ) : searchedEmployees.length > 0 ? (
         <List
           className={styles.employeeList}
-          size='small'
+          size="small"
           dataSource={searchedEmployees}
           renderItem={(employee) => (
             <List.Item key={employee.id}>
@@ -159,7 +160,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
         />
       ) : (
         <div className={styles.emptyState}>
-          {searchText ? '暂无匹配的员工' : '暂无员工数据'}
+          {searchText ? "暂无匹配的员工" : "暂无员工数据"}
         </div>
       )}
     </div>
@@ -167,12 +168,12 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
 
   // 获取显示文本
   const displayText = session.user
-    ? session.user.fullName || session.user.username || '未知员工'
+    ? session.user.fullName || session.user.username || "未知员工"
     : placeholder;
 
   return (
     <div
-      className={`${styles.assigneeContainer} ${className || ''}`}
+      className={`${styles.assigneeContainer} ${className || ""}`}
       style={style}
     >
       {title && <div className={styles.assigneeTitle}>{title}</div>}
@@ -180,18 +181,18 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
       <Popover
         destroyOnHidden
         content={popoverContent}
-        title='选择对接人'
-        trigger='click'
+        title="选择对接人"
+        trigger="click"
         placement={popoverPlacement}
         open={popoverOpen}
         onOpenChange={handlePopoverOpenChange}
       >
         <div
-          className={`${styles.assigneeValue} ${disabled ? 'disabled' : ''}`}
+          className={`${styles.assigneeValue} ${disabled ? "disabled" : ""}`}
         >
           {updating ? (
             <>
-              <Spin size='small' style={{ marginRight: 8 }} />
+              <Spin size="small" style={{ marginRight: 8 }} />
               更新中...
             </>
           ) : (
