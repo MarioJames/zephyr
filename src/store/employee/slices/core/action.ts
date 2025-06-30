@@ -4,7 +4,6 @@ import userService, {
   UserCreateRequest,
   UserUpdateRequest,
 } from '@/services/user';
-import rolesService from '@/services/roles';
 import filesService from '@/services/files';
 import sessionsService from '@/services/sessions';
 import { EmployeeState } from '../../initialState';

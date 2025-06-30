@@ -1,22 +1,21 @@
-"use client";
-import React, { useState } from "react";
-import { Table, Typography, Space, Dropdown, Form, App } from "antd";
-import { Button, Input } from "@lobehub/ui";
-import { SearchOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
-import type { ColumnsType } from "antd/es/table";
-import type { UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useEmployeeStore } from "@/store/employee";
-import { UserItem } from "@/services/user";
-import { adminList } from "@/const/role";
-import { RoleItem } from "@/services/roles";
-import { mailAPI } from "@/services";
-import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
-import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
-import EmployeeEditModal from "./components/EmployeeEditModal";
-import SendLoginGuideModal from "./components/SendLoginGuideModal";
+'use client';
+import React, { useState } from 'react';
+import { Table, Typography, Space, Dropdown, Form, App } from 'antd';
+import { Button, Input } from '@lobehub/ui';
+import { SearchOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import type { ColumnsType } from 'antd/es/table';
+import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { useEmployeeStore } from '@/store/employee';
+import { UserItem } from '@/services/user';
+import { adminList } from '@/const/role';
+import { RoleItem } from '@/services/roles';
+import { mailAPI } from '@/services';
+import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
+import EmployeeCustomerModal from './components/EmployeeCustomerModal';
+import EmployeeEditModal from './components/EmployeeEditModal';
+import SendLoginGuideModal from './components/SendLoginGuideModal';
 
-import { ChatConfirmModal } from '@/components/ChatConfirmModal';
 import userService from '@/services/user';
 
 const { Title } = Typography;
@@ -194,7 +193,7 @@ export default function EmployeePage() {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   // 页面状态
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
   const [loginGuideLoading, setLoginGuideLoading] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
@@ -203,10 +202,10 @@ export default function EmployeePage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [customerTab, setCustomerTab] = useState("all");
+  const [customerTab, setCustomerTab] = useState('all');
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
-  
+
   // 对话确认弹窗状态
   const [chatModalVisible, setChatModalVisible] = useState(false);
   const [chatModalData, setChatModalData] = useState<{
@@ -241,12 +240,12 @@ export default function EmployeePage() {
   // 确认发送登录引导邮件
   const handleConfirmSendLoginGuide = async () => {
     if (!currentEmployee) {
-      message.error("员工信息不存在");
+      message.error('员工信息不存在');
       return;
     }
 
     if (!currentEmployee.email) {
-      message.error("员工邮箱不存在，无法发送登录引导");
+      message.error('员工邮箱不存在，无法发送登录引导');
       return;
     }
 
@@ -255,15 +254,15 @@ export default function EmployeePage() {
       await mailAPI.sendLoginGuideMail(
         currentEmployee.id,
         currentEmployee.email,
-        currentEmployee.username || currentEmployee.fullName || "员工"
+        currentEmployee.username || currentEmployee.fullName || '员工'
       );
 
-      message.success("登录引导邮件发送成功");
+      message.success('登录引导邮件发送成功');
 
       setLoginGuideVisible(false);
     } catch (error: any) {
-      console.error("发送登录引导邮件失败:", error);
-      message.error(error.message || "登录引导邮件发送失败");
+      console.error('发送登录引导邮件失败:', error);
+      message.error(error.message || '登录引导邮件发送失败');
     } finally {
       setLoginGuideLoading(false);
     }
@@ -285,9 +284,9 @@ export default function EmployeePage() {
       setAvatarFile(
         employee.avatar
           ? {
-              uid: "-1",
-              name: "avatar.png",
-              status: "done",
+              uid: '-1',
+              name: 'avatar.png',
+              status: 'done',
               url: employee.avatar,
             }
           : null
@@ -320,7 +319,11 @@ export default function EmployeePage() {
   };
 
   // 显示对话确认弹窗
-  const showChatConfirmModal = (sessionId: string, topicId: string, username: string) => {
+  const showChatConfirmModal = (
+    sessionId: string,
+    topicId: string,
+    username: string
+  ) => {
     setChatModalData({ sessionId, topicId, username });
     setChatModalVisible(true);
   };
@@ -335,9 +338,9 @@ export default function EmployeePage() {
             ...values,
             avatar: avatarFile?.url,
           });
-          message.success("修改员工成功");
+          message.success('修改员工成功');
         } catch (e) {
-          message.error("修改员工失败");
+          message.error('修改员工失败');
           return;
         }
       } else {
@@ -347,29 +350,10 @@ export default function EmployeePage() {
             ...values,
             avatar: avatarFile?.url,
           });
-          message.success("添加员工成功");
+          message.success('添加员工成功');
         } catch (e) {
-          message.error("添加员工失败");
+          message.error('添加员工失败');
           return;
-        }
-
-        // 🆕 为新创建的用户创建默认 Topic
-        try {
-          const defaultTopicData = await userService.createDefaultTopicForUser(
-            values.username,
-            createdUser.id
-          );
-          
-          // 显示对话确认弹窗
-          showChatConfirmModal(
-            defaultTopicData.sessionId,
-            defaultTopicData.topicId,
-            values.username
-          );
-        } catch (e) {
-          console.error('创建默认Topic失败:', e);
-          // 用户创建成功但Topic创建失败，不影响主流程
-          message.warning('用户创建成功，但创建默认对话主题失败');
         }
       }
       handleEmployeeModalCancel();
@@ -380,14 +364,14 @@ export default function EmployeePage() {
 
   // 头像上传前处理
   const beforeUpload = async (file: File) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error("只能上传 JPG/PNG 格式的图片!");
+      message.error('只能上传 JPG/PNG 格式的图片!');
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("图片大小不能超过 2MB!");
+      message.error('图片大小不能超过 2MB!');
       return false;
     }
     try {
@@ -395,19 +379,19 @@ export default function EmployeePage() {
       setAvatarFile({
         uid: `${Date.now()}_${file.name}`,
         name: file.name,
-        status: "done",
+        status: 'done',
         url,
       });
-      message.success("头像上传成功");
+      message.success('头像上传成功');
     } catch (e: any) {
-      message.error(e.message || "头像上传失败");
+      message.error(e.message || '头像上传失败');
     }
     // 阻止Upload组件自动上传
     return false;
   };
 
   // 头像上传变更处理
-  const handleAvatarChange: UploadProps["onChange"] = ({ fileList }) => {
+  const handleAvatarChange: UploadProps['onChange'] = ({ fileList }) => {
     if (fileList.length === 0) {
       setAvatarFile(null);
     }
@@ -421,10 +405,10 @@ export default function EmployeePage() {
         currentCustomerEmployee.id,
         employeeCustomers
       );
-      message.success("保存成功");
+      message.success('保存成功');
       handleCustomerModalClose();
     } catch (e: any) {
-      message.error(e.message || "保存失败");
+      message.error(e.message || '保存失败');
     } finally {
       setSessionLoading(false);
     }
@@ -471,8 +455,8 @@ export default function EmployeePage() {
   };
   // 左侧客户列表过滤
   const leftList = sessionList.filter((c) => {
-    if (customerTab === "all") return !employeeCustomers.includes(c.id);
-    if (customerTab === "unassigned") {
+    if (customerTab === 'all') return !employeeCustomers.includes(c.id);
+    if (customerTab === 'unassigned') {
       return !c.userId;
     }
 
@@ -482,33 +466,33 @@ export default function EmployeePage() {
   const rightList = sessionList.filter((c) => employeeCustomers.includes(c.id));
   const columns: ColumnsType<UserItem> = [
     {
-      title: "员工姓名",
-      dataIndex: "username",
-      key: "username",
-      render: (text) => text || "-",
+      title: '员工姓名',
+      dataIndex: 'username',
+      key: 'username',
+      render: (text) => text || '-',
     },
     {
-      title: "登录邮箱",
-      dataIndex: "email",
-      key: "email",
-      render: (text) => text || "-",
+      title: '登录邮箱',
+      dataIndex: 'email',
+      key: 'email',
+      render: (text) => text || '-',
     },
     {
-      title: "联系电话",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text) => text || "-",
+      title: '联系电话',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (text) => text || '-',
     },
     {
-      title: "账户ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => text || "-",
+      title: '账户ID',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text) => text || '-',
     },
     {
-      title: "客户数量",
-      dataIndex: "customerCount",
-      key: "customerCount",
+      title: '客户数量',
+      dataIndex: 'customerCount',
+      key: 'customerCount',
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
         const count = customerList?.length;
@@ -516,13 +500,13 @@ export default function EmployeePage() {
         return (
           <span
             style={{
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
             }}
           >
             {count === undefined || count === null ? (
-              "-"
+              '-'
             ) : (
               <>
                 {count}
@@ -538,18 +522,18 @@ export default function EmployeePage() {
       },
     },
     {
-      title: "权限",
-      dataIndex: "roles",
-      key: "roles",
+      title: '权限',
+      dataIndex: 'roles',
+      key: 'roles',
       render: (roles: RoleItem[], record: UserItem) => {
         const role = roles[0];
         const isAdmin = adminList.includes(role?.name);
-        const roleText = isAdmin ? "管理员" : "员工";
-        const displayRole = roleText || "-";
+        const roleText = isAdmin ? '管理员' : '员工';
+        const displayRole = roleText || '-';
 
         const roleMenuItems = [
           {
-            key: "admin",
+            key: 'admin',
             label: (
               <div className={styles.roleItem}>
                 <span>管理员</span>
@@ -558,7 +542,7 @@ export default function EmployeePage() {
             ),
           },
           {
-            key: "employee",
+            key: 'employee',
             label: (
               <div className={styles.roleItem}>
                 <span>员工</span>
@@ -573,10 +557,10 @@ export default function EmployeePage() {
             menu={{
               items: roleMenuItems,
               onClick: ({ key }) =>
-                handleRoleChange(record.id, key as "admin" | "employee"),
+                handleRoleChange(record.id, key as 'admin' | 'employee'),
               className: styles.roleDropdown,
             }}
-            trigger={["click"]}
+            trigger={['click']}
           >
             <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
               {displayRole} <ChevronDown size={16} />
@@ -586,37 +570,37 @@ export default function EmployeePage() {
       },
     },
     {
-      title: "员工消息记录",
-      dataIndex: "messageCount",
-      key: "messageCount",
+      title: '员工消息记录',
+      dataIndex: 'messageCount',
+      key: 'messageCount',
       render: (text: number) => {
         if (text === undefined || text === null) {
-          return "-";
+          return '-';
         }
         return <span className={styles.blackText}>{text}</span>;
       },
     },
     {
-      title: "操作",
-      key: "action",
+      title: '操作',
+      key: 'action',
       render: (_, record) => (
-        <Space size="middle">
+        <Space size='middle'>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
           >
             发送登录引导
           </Button>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
           >
             编辑
           </Button>
           <Button
-            type="link"
+            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleDelete(record.id)}
           >
@@ -653,13 +637,13 @@ export default function EmployeePage() {
         </Title>
         <div className={styles.headerRight}>
           <Input
-            placeholder="搜索员工"
+            placeholder='搜索员工'
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={handleSearchChange}
             style={{ width: 240 }}
           />
-          <Button type="primary" onClick={showAddEmployeeModal}>
+          <Button type='primary' onClick={showAddEmployeeModal}>
             添加员工
           </Button>
         </div>
@@ -670,7 +654,7 @@ export default function EmployeePage() {
         <Table
           columns={columns}
           dataSource={employees}
-          rowKey="id"
+          rowKey='id'
           loading={loading}
           pagination={{
             current: pagination.current,
@@ -729,17 +713,6 @@ export default function EmployeePage() {
         leftList={leftList}
         rightList={rightList}
       />
-
-      {/* 对话确认弹窗 */}
-      {chatModalData && (
-        <ChatConfirmModal
-          visible={chatModalVisible}
-          onCancel={() => setChatModalVisible(false)}
-          sessionId={chatModalData.sessionId}
-          topicId={chatModalData.topicId}
-          username={chatModalData.username}
-        />
-      )}
     </div>
   );
 }

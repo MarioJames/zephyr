@@ -10,7 +10,9 @@ import { CustomerState } from '../../initialState';
 export interface CoreAction {
   fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
   refreshCustomers: () => Promise<void>;
-  createCustomer: (data: CustomerCreateRequest) => Promise<void>;
+  createCustomer: (
+    data: CustomerCreateRequest
+  ) => Promise<CustomerItem | undefined>;
   updateCustomer: (
     sessionId: string,
     data: CustomerCreateRequest
@@ -63,6 +65,8 @@ export const coreSlice: StateCreator<
         total: state.total + 1,
         loading: false,
       }));
+
+      return newCustomer;
     } catch (error) {
       console.error('创建客户失败:', error);
       set({

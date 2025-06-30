@@ -13,6 +13,7 @@ import {
   formDataToCreateRequest,
   formDataToUpdateRequest,
 } from './utils';
+import { topicsAPI } from '@/services';
 
 interface UseCustomerFormParams {
   form: FormInstance<CustomerFormData>;
@@ -39,7 +40,7 @@ export function useCustomerForm({
   form,
   params,
 }: UseCustomerFormParams): UseCustomerFormReturn {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const router = useRouter();
 
@@ -108,7 +109,6 @@ export function useCustomerForm({
       try {
         setSubmitLoading(true);
         if (mode === 'edit' && customerId) {
-          console.log('data', data);
           // 编辑模式
           const updateData = formDataToUpdateRequest(data);
 
@@ -119,12 +119,27 @@ export function useCustomerForm({
           // 新增模式
           const createData = formDataToCreateRequest(data);
 
-          await createCustomer(createData);
-          message.success('客户添加成功！');
-        }
+          const newCustomer = await createCustomer(createData);
 
-        // 成功后跳转到客户管理页面
-        router.push('/customer');
+          // 创建话题
+          const topic = await topicsAPI.createTopic({
+            title: '默认话题',
+            sessionId: newCustomer!.session.id,
+          });
+
+          modal.confirm({
+            title: '提示',
+            content: '客户添加成功，是否立即开始对话？',
+            onOk: () => {
+              router.push(
+                `/chat?session=${newCustomer!.session.id}&topic=${topic.id}`
+              );
+            },
+            onCancel: () => {
+              router.push('/customer');
+            },
+          });
+        }
       } catch (error) {
         // 错误已经在store中处理，这里只需要显示通用错误消息
         message.error(

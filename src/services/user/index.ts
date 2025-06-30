@@ -125,43 +125,6 @@ function deleteUser(id: string) {
   return http.delete<void>(`/api/v1/users/${id}`);
 }
 
-/**
- * 为新用户创建默认对话主题
- * @description 创建用户后自动创建默认的对话会话和主题
- * @param username string 用户名
- * @param userId string 用户ID
- * @returns Promise<{topicId: string, sessionId: string}>
- */
-async function createDefaultTopicForUser(username: string, userId: string) {
-  try {
-    // 1. 创建默认会话
-    const session = await sessionsAPI.createSession({
-      title: `与 ${username} 的会话`,
-      description: `与用户 ${username} 的对话会话`,
-      userId: userId,
-    });
-    
-    // 2. 创建默认主题
-    const topicData: TopicCreateRequest = {
-      title: '默认话题',
-      sessionId: session.id,
-      favorite: false
-    };
-    
-    const topic = await topicsAPI.createTopic(topicData);
-    
-    return {
-      topicId: topic.id,
-      sessionId: session.id,
-      topic,
-      session
-    };
-  } catch (error) {
-    console.error('创建默认Topic失败:', error);
-    throw error;
-  }
-}
-
 export default {
   getCurrentUser,
   getAllUsers,
@@ -170,5 +133,4 @@ export default {
   updateUser,
   deleteUser,
   searchUsers,
-  createDefaultTopicForUser,
 };
