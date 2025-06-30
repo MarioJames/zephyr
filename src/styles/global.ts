@@ -50,5 +50,11 @@ export default ({ token }: { prefixCls: string; token: Theme }) => css`
     ::-webkit-scrollbar-track {
       background-color: transparent;
     }
+
+    user-select: none;
+  }
+
+  input, textarea, button, a, [contenteditable], [tabindex] {
+    user-select: auto;
   }
 `;
