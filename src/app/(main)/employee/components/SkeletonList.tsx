@@ -1,4 +1,5 @@
-import { Skeleton, Button } from 'antd';
+import { Skeleton } from 'antd';
+import { Button } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { memo } from 'react';
 

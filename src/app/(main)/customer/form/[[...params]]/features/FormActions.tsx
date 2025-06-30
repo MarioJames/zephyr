@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button } from '@lobehub/ui';
 import { FormActionsProps } from './shared/types';
 import { useSharedStyles } from './shared/styles';
 

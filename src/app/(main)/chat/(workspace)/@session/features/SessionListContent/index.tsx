@@ -2,7 +2,7 @@
 
 import React, { memo, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { Button } from 'antd';
+import { Button } from '@lobehub/ui';
 import { ChevronDown, Plus } from 'lucide-react';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';

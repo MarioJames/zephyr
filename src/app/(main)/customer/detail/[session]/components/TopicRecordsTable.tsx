@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, message } from 'antd';
+import { Table, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import topicService, { TopicItem } from '@/services/topics';

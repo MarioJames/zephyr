@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Button,
   Table,
   Space,
   Typography,
@@ -12,6 +11,7 @@ import {
   Alert,
   Select,
 } from 'antd';
+import { Button } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';

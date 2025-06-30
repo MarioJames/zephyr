@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Col,
   Row,
   Tooltip,
@@ -12,6 +11,7 @@ import {
   Spin,
   Empty,
 } from 'antd';
+import { Button } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
@@ -265,7 +265,7 @@ export default function CustomerTemplatePage() {
           ) : (
             <Row gutter={[16, 16]} className={styles.cardGrid}>
               {agents.map((agent) => (
-                <Col xs={24} sm={12} md={8} lg={6} xl={4.8} key={agent.id}>
+                <Col xs={8} sm={6} md={4.8} lg={4} xl={4} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <img

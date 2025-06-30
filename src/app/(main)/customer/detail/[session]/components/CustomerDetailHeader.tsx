@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Popconfirm, Space } from 'antd';
+import { Popconfirm, Space } from 'antd';
+import { Button } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 

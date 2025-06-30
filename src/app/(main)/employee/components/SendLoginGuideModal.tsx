@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal, Button } from "antd";
+import { Modal } from "antd";
+import { Button } from '@lobehub/ui';
 import { createStyles } from "antd-style";
 
 const useStyles = createStyles(({ css }) => ({

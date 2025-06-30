@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal, Button, Tabs, Checkbox } from "antd";
+import { Modal, Tabs, Checkbox } from "antd";
+import { Button } from '@lobehub/ui';
 import { createStyles } from "antd-style";
 import SkeletonList from "./SkeletonList";
 import { DoubleRightOutlined, DoubleLeftOutlined } from "@ant-design/icons";

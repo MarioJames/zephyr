@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import {
   Modal,
   Input,
-  Button,
   Select,
   Upload,
   message,
   SelectProps,
   Form,
 } from 'antd';
+import { Button } from '@lobehub/ui';
 import { UploadOutlined } from '@ant-design/icons';
 import { SliderWithInput } from '@lobehub/ui';
 import Image from 'next/image';

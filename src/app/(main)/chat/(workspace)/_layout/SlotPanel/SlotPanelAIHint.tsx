@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
+import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, ChevronDown, ChevronUp } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
@@ -86,7 +87,7 @@ function AIHintItem({ item }: { item: AgentSuggestionItem }) {
               {expand ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               {expand ? '收起' : '展开'}
             </span>
-            <Button className={styles.adoptBtn} type="primary">采用</Button>
+            <Button type="primary">采用</Button>
           </div>
         </div>
       ))}
