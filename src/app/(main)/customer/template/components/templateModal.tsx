@@ -10,15 +10,6 @@ import { AGAENT_DEFAULT_CONFIG } from "@/const/agent";
 import { isValidImageUrl } from "@/utils/avatar";
 
 const useStyles = createStyles(({ css, token }) => ({
-  modalBody: css`
-    padding: 24px;
-    background: ${token.colorBgContainer};
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  `,
   layout: css`
     display: flex;
     flex: 1 1 0;
@@ -37,7 +28,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   textarea: css`
     flex: 1 1 0;
-    height: 600px !important;
+    height: 520px !important;
     background: ${token.colorFillTertiary};
     resize: none !important;
     border: none;
@@ -64,7 +55,7 @@ const useStyles = createStyles(({ css, token }) => ({
     display: flex;
     flex-direction: column;
     position: relative;
-    height: 600px;
+    height: 520px;
     overflow-y: hidden;
   `,
   contentArea: css`
@@ -278,12 +269,13 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       styles={{
         body: {
           height: 600,
-          marginTop: 16,
           display: "flex",
           flexDirection: "column",
         },
+        header: {
+          justifyContent: "flex-start"
+        },
       }}
-      style={{ background: theme.colorBgLayout }}
       centered
     >
       <Form layout="vertical" form={form}>
