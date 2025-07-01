@@ -39,6 +39,10 @@ const useStyles = createStyles(({ css, token }) => ({
       border-radius: 8px;
       padding: 24px;
     }
+    .ant-modal-body {
+      padding-block: 0 !important;
+      padding-inline: 0 !important;
+    }
   `,
   modalBody: css`
     border-radius: 8px;
@@ -59,19 +63,19 @@ const useStyles = createStyles(({ css, token }) => ({
     min-height: 0;
   `,
   leftPanel: css`
-    width: 275px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
   `,
   rightPanel: css`
-    width: 275px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
   `,
   panelContainer: css`
-    background: ${token.colorBgContainer};
+    background: ${token.colorFillQuaternary};
     flex: 1;
     border-radius: 6px;
     overflow: auto;
@@ -125,16 +129,6 @@ const useStyles = createStyles(({ css, token }) => ({
     justify-content: flex-end;
     gap: 8px;
     margin-top: 8px;
-  `,
-  cancelButton: css`
-    background: ${token.colorBgContainer};
-    color: ${token.colorText};
-    border: 1px solid ${token.colorBorderSecondary};
-  `,
-  saveButton: css`
-    background: ${token.colorText};
-    color: ${token.colorBgContainer};
-    border: none;
   `,
   panelTitle: css`
     font-weight: 500;
@@ -205,7 +199,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                   { key: "all", label: "全部客户" },
                   { key: "unassigned", label: "未分配客户" },
                 ]}
-                tabBarStyle={{ height: 38, marginBottom: 4 }}
+                tabBarStyle={{ height: 38, marginBottom: 4, borderBottom: 'none' }}
               />
               <div className={styles.panelContainer}>
                 {/* 标题栏 */}
@@ -227,12 +221,12 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                     style={{ marginRight: 8 }}
                   />
                   <Tooltip title="客户名称">
-                    <div className={styles.panelItems}>
+                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
                       客户名称
                     </div>
                   </Tooltip>
                   <Tooltip title="对接人">
-                    <div className={styles.panelItems}>
+                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
                       对接人
                     </div>
                   </Tooltip>
@@ -307,7 +301,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                     style={{ marginRight: 8 }}
                   />
                   <Tooltip title="客户名称">
-                    <div className={styles.panelItems}>
+                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
                       客户名称
                     </div>
                   </Tooltip>
@@ -340,11 +334,10 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
           </div>
           {/* 底部按钮 */}
           <div className={styles.footer}>
-            <Button className={styles.cancelButton} onClick={onClose} shadow>
+            <Button onClick={onClose} shadow>
               取消
             </Button>
             <Button
-              className={styles.saveButton}
               loading={loading}
               onClick={onSave}
               type="primary"
