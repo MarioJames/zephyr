@@ -3,6 +3,7 @@ import userService, {
   UserItem,
   UserCreateRequest,
   UserUpdateRequest,
+  UserUpdateRoleRequest,
 } from '@/services/user';
 import filesService from '@/services/files';
 import sessionsService from '@/services/sessions';
@@ -32,6 +33,7 @@ export interface CoreAction {
     userId: string,
     sessionIds: string[]
   ) => Promise<void>;
+  updateEmployeeRole: (id: string, data: UserUpdateRoleRequest) => Promise<void>;
 }
 
 // ========== 核心功能Slice ==========
@@ -104,6 +106,17 @@ export const coreSlice: StateCreator<
       await get().fetchEmployees();
     } catch (e: any) {
       set({ error: e?.message || '删除员工失败' });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  updateEmployeeRole: async (id, data) => {
+    set({ loading: true, error: null });
+    try {
+      await userService.updateUserRole(id, data);
+    } catch (e: any) {
+      set({ error: e?.message || '修改员工角色失败' });
     } finally {
       set({ loading: false });
     }

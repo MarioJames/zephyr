@@ -51,6 +51,14 @@ export interface UserListRequest {
   pageSize?: number;
 }
 
+export interface UserUpdateRoleRequest {
+  addRoles?: {
+    expiresAt?: string;
+    roleId: number;
+  }[];
+  removeRoleIds?: number[];
+}
+
 /**
  * 获取当前用户信息
  * @description 获取当前登录用户的详细信息
@@ -125,6 +133,13 @@ function deleteUser(id: string) {
   return http.delete<void>(`/api/v1/users/${id}`);
 }
 
+/**
+ * 更新用户角色
+ */
+function updateUserRole(id: string, data: UserUpdateRoleRequest) {
+  return http.put<void>(`/api/v1/users/${id}/roles`, data);
+}
+
 export default {
   getCurrentUser,
   getAllUsers,
@@ -133,4 +148,5 @@ export default {
   updateUser,
   deleteUser,
   searchUsers,
+  updateUserRole,
 };
