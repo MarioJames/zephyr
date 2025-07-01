@@ -103,23 +103,19 @@ const useStyles = createStyles(({ css, token }) => ({
     color: ${token.colorText};
     cursor: pointer;
     font-size: 14px;
-    &:hover {
-      color: ${token.colorPrimary};
+    background: none !important;
+    border: none !important;
+    &:hover, &:focus, &:active {
+      color: ${token.colorText} !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
     }
   `,
   footerDivider: css`
     height: 20px;
     width: 1px;
     background-color: ${token.colorBorder};
-  `,
-  addButton: css`
-    background-color: ${token.colorPrimary};
-    color: ${token.colorBgContainer};
-    &:hover,
-    &:focus {
-      background-color: ${token.colorPrimaryHover};
-      color: ${token.colorBgContainer};
-    }
   `,
 }));
 
@@ -235,7 +231,7 @@ export default function CustomerTemplatePage() {
         <Title level={4} style={{ margin: 0 }}>
           客户模版配置
         </Title>
-        <Button className={styles.addButton} onClick={() => openModal()}>
+        <Button type='primary' onClick={() => openModal()}>
           添加客户类型
         </Button>
       </div>

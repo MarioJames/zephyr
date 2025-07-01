@@ -21,7 +21,7 @@ interface DeleteModalProps {
 
 const useStyles = createStyles(({ css, token }) => ({
   modalBody: css`
-    height: 600px;
+    height: 100%;
     display: flex;
     flex-direction: column;
   `,
@@ -114,6 +114,12 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       style={{
         borderRadius: 8,
         background: "#f4f4f4",
+      }}
+      styles={{
+        body: {
+          height: 600,
+          padding: '0 24px 24px 24px',
+        },
       }}
     >
       <div className={styles.modalBody}>

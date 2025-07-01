@@ -57,4 +57,7 @@ export default ({ token }: { prefixCls: string; token: Theme }) => css`
   input, textarea, button, a, [contenteditable], [tabindex] {
     user-select: auto;
   }
+  .ant-modal-header {
+    justify-content: flex-start;
+  }
 `;
