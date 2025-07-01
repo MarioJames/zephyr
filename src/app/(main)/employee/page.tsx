@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Table, Typography, Space, Dropdown, Form, App } from 'antd';
+import { Table, Typography, Space, Dropdown, Form, App, Modal, Popconfirm } from 'antd';
 import { Button, Input } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -206,13 +206,6 @@ export default function EmployeePage() {
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
 
-  // 对话确认弹窗状态
-  const [chatModalVisible, setChatModalVisible] = useState(false);
-  const [chatModalData, setChatModalData] = useState<{
-    sessionId: string;
-    topicId: string;
-    username: string;
-  } | null>(null);
   const [employeeCustomers, setEmployeeCustomers] = useState<string[]>([]);
   const [currentCustomerEmployee, setCurrentCustomerEmployee] =
     useState<UserItem | null>(null);
@@ -297,7 +290,12 @@ export default function EmployeePage() {
 
   // 处理删除员工
   const handleDelete = async (employeeId: string) => {
-    await deleteEmployee(employeeId);
+    try {
+      await deleteEmployee(employeeId);
+      message.success('删除成功');
+    } catch (e: any) {
+      message.error(e.message || '删除失败');
+    }
   };
 
   // 处理添加员工弹窗显示
@@ -316,16 +314,6 @@ export default function EmployeePage() {
     setEmployeeModalVisible(false);
     setCurrentEmployee(null);
     setIsEditMode(false);
-  };
-
-  // 显示对话确认弹窗
-  const showChatConfirmModal = (
-    sessionId: string,
-    topicId: string,
-    username: string
-  ) => {
-    setChatModalData({ sessionId, topicId, username });
-    setChatModalVisible(true);
   };
 
   // 处理员工表单提交
@@ -599,13 +587,20 @@ export default function EmployeePage() {
           >
             编辑
           </Button>
-          <Button
-            type='link'
-            className={`${styles.operationButton} ${styles.blackText}`}
-            onClick={() => handleDelete(record.id)}
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除该员工吗？此操作不可撤销。"
+            okText="确认"
+            cancelText="取消"
+            onConfirm={() => handleDelete(record.id)}
           >
-            删除
-          </Button>
+            <Button
+              type='link'
+              className={`${styles.operationButton} ${styles.blackText}`}
+            >
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
