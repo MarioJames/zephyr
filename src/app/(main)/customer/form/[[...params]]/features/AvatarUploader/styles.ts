@@ -10,8 +10,8 @@ export const useAvatarUploaderStyles = createStyles(({ css, token }) => ({
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: ${token.colorBgContainer};
-    border: 1px dashed ${token.colorSplit};
+    background-color: ${token.colorFillTertiary};
+    border: 1px dashed ${token.colorBorder};
     display: flex;
     justify-content: center;
     align-items: center;

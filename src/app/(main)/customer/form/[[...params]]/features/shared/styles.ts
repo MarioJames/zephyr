@@ -26,4 +26,20 @@ export const useSharedStyles = createStyles(({ css, token }) => ({
     margin-top: 24px;
     gap: 16px;
   `,
+  inputBg: css`
+    background: ${token.colorFillTertiary};
+    border: 1px solid ${token.colorBorder};
+    &:hover,
+    &:focus {
+      background: ${token.colorFillTertiary};
+      border: 1px solid ${token.colorBorder};
+    }
+  `,
+  selectBg: css`
+    .ant-select-selector {
+      background: ${token.colorFillTertiary};
+      border: 1px solid ${token.colorBorder};
+      box-shadow: none;
+    }
+  `,
 }));

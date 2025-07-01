@@ -19,7 +19,7 @@ export default function ContactInfoSection() {
               { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' },
             ]}
           >
-            <Input placeholder='请输入手机号' />
+            <Input placeholder='请输入手机号' className={styles.inputBg} />
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -28,12 +28,12 @@ export default function ContactInfoSection() {
             label='邮箱'
             rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
           >
-            <Input placeholder='请输入邮箱' />
+            <Input placeholder='请输入邮箱' className={styles.inputBg} />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item name='wechat' label='微信号'>
-            <Input placeholder='请输入微信号' />
+            <Input placeholder='请输入微信号' className={styles.inputBg} />
           </Form.Item>
         </Col>
       </Row>

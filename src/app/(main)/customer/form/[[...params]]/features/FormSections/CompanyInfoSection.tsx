@@ -1,7 +1,6 @@
 import React from 'react';
 import { Form, Row, Col } from 'antd';
-import { Input, Select } from '@lobehub/ui';
-import { INDUSTRY_OPTIONS, SCALE_OPTIONS } from '@/const/customer';
+import { Input } from '@lobehub/ui';
 import { useSharedStyles } from '../shared/styles';
 
 export default function CompanyInfoSection() {
@@ -13,17 +12,17 @@ export default function CompanyInfoSection() {
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name='company' label='公司名称'>
-            <Input placeholder='请输入公司名称' />
+            <Input placeholder='请输入公司名称' className={styles.inputBg} />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item name='industry' label='行业'>
-            <Select placeholder='请选择行业' options={INDUSTRY_OPTIONS} />
+            <Input placeholder='请选择行业' className={styles.inputBg} />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item name='scale' label='规模'>
-            <Select placeholder='请选择公司规模' options={SCALE_OPTIONS} />
+            <Input placeholder='请选择公司规模' className={styles.inputBg} />
           </Form.Item>
         </Col>
       </Row>

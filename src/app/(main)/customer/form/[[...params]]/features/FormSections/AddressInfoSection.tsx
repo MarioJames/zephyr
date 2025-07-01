@@ -10,7 +10,7 @@ export default function AddressInfoSection() {
     <>
       <div className={styles.sectionTitle}>地址信息</div>
       <Row gutter={24}>
-        <Input placeholder='请输入省市区' />
+        <Input placeholder='请输入省市区' className={styles.inputBg} />
       </Row>
     </>
   );
