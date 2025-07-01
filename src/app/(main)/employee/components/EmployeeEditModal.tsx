@@ -6,6 +6,10 @@ import { createStyles } from "antd-style";
 
 const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
+    .ant-modal-body {
+      padding-block: 0 !important;
+      padding-inline: 0 !important;
+    }
     .ant-modal-content {
       border-radius: 8px;
       background: ${token.colorBgElevated};
@@ -31,7 +35,7 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: ${token.colorBgContainer};
+    background: ${token.colorFillTertiary};
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -67,20 +71,20 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   customInput: css`
     border-radius: 6px;
-    background: ${token.colorFillQuaternary};
+    background: ${token.colorFillTertiary};
     height: 32px;
     border: none;
     box-shadow: none;
     &:hover,
     &:focus,
     &:active {
-      background: ${token.colorFillQuaternary} !important;
+      background: ${token.colorFillTertiary} !important;
       border: none !important;
       box-shadow: none !important;
     }
   `,
   cancelButton: css`
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid ${token.colorBorder};
   `,
 }));
 

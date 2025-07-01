@@ -24,6 +24,7 @@ const useStyles = createStyles(({ css, token }) => ({
     height: 100%;
     display: flex;
     flex-direction: column;
+    background: ${token.colorBgElevated};
   `,
   title: css`
     font-size: 16px;
@@ -40,17 +41,17 @@ const useStyles = createStyles(({ css, token }) => ({
     height: 64px;
     padding: 8px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid ${token.colorBorder};
     display: flex;
     align-items: center;
     margin-bottom: 8px;
-    background: #f7f7f7;
+    background: ${token.colorBgElevated};
     cursor: pointer;
     position: relative;
     transition: background 0.2s;
   `,
   itemSelected: css`
-    background: #fff !important;
+    background: ${token.colorFillSecondary} !important;
   `,
   avatar: css`
     width: 112px !important;
@@ -69,7 +70,7 @@ const useStyles = createStyles(({ css, token }) => ({
   itemTitle: css`
     font-weight: 500;
     font-size: 16px;
-    color: #000;
+    color: ${token.colorText};
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -78,7 +79,7 @@ const useStyles = createStyles(({ css, token }) => ({
     font-size: 14px;
     margin-top: 8px;
     overflow: hidden;
-    color: rgba(0, 0, 0, 0.65);
+    color: ${token.colorText};
     font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
@@ -111,10 +112,6 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       footer={null}
       width={450}
       centered
-      style={{
-        borderRadius: 8,
-        background: "#f4f4f4",
-      }}
       styles={{
         body: {
           height: 600,

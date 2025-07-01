@@ -58,6 +58,6 @@ export default ({ token }: { prefixCls: string; token: Theme }) => css`
     user-select: auto;
   }
   .ant-modal-header {
-    justify-content: flex-start;
+    justify-content: flex-start !important;
   }
 `;

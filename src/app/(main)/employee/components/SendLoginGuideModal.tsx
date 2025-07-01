@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Modal } from '@lobehub/ui';
 import { createStyles } from "antd-style";
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   cardActions: css`
     display: flex;
     justify-content: flex-end;
@@ -10,7 +10,7 @@ const useStyles = createStyles(({ css }) => ({
     margin-top: 24px;
   `,
   cancelButton: css`
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid ${token.colorBorder};
   `,
 }));
 
