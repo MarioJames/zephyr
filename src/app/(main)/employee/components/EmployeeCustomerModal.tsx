@@ -37,13 +37,11 @@ const useStyles = createStyles(({ css, token }) => ({
   modal: css`
     .ant-modal-content {
       border-radius: 8px;
-      background: ${token.colorFillSecondary};
       padding: 24px;
     }
   `,
   modalBody: css`
     border-radius: 8px;
-    background: ${token.colorFillSecondary};
     padding: 24px;
     height: 500px;
     display: flex;

@@ -62,8 +62,4 @@ export default ({ token }: { prefixCls: string; token: Theme }) => css`
     padding-block: 0 !important;
     padding-inline: 0 !important;
   }
-
-  .ant-table-thead > tr > th {
-    background: ${token.colorBgContainer} !important;
-  }
 `;

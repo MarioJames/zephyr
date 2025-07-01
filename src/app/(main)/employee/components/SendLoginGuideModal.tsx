@@ -40,6 +40,11 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
       onCancel={onCancel}
       width={400}
       closable={false}
+      styles={{
+        content: {
+          padding: 24,
+        },
+      }}
     >
       <div>
         <p>将向员工发送登录引导邮件，包含系统访问地址和登录说明。</p>
