@@ -57,9 +57,4 @@ export default ({ token }: { prefixCls: string; token: Theme }) => css`
   input, textarea, button, a, [contenteditable], [tabindex] {
     user-select: auto;
   }
-
-  .ant-modal-body {
-    padding-block: 0 !important;
-    padding-inline: 0 !important;
-  }
 `;
