@@ -100,6 +100,10 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     height: 100%;
     min-height: 70px;
     min-width: 0;
+
+    &:hover {
+      background: ${token.colorFill};
+    }
   `,
   cardTitle: css`
     font-weight: 500;
@@ -131,54 +135,45 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     font-size: 14px;
     line-height: 22px;
     margin-bottom: 4px;
-    padding: 0 8px;
+    color: ${token.colorPrimary};
+    margin-bottom: 4px;
   `,
   sectionCard: css`
     padding: 10px;
     width: 100%;
     height: auto;
     border-radius: 6px;
-    background: ${token.colorFillSecondary};
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   `,
-  sectionDesc: css`
-    color: ${token.colorTextQuaternary};
+  sectionContent: css`
+    background: ${token.colorFillSecondary};
     font-size: 13px;
     line-height: 22px;
     font-weight: 400;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
     margin-bottom: 10px;
-  `,
-  sectionDescExpand: css`
-    color: ${token.colorTextQuaternary};
-    font-size: 13px;
-    line-height: 22px;
-    font-weight: 400;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 10;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    margin-bottom: 10px;
+    padding: 10px;
+
+    .ant-typography {
+      color: ${token.colorTextSecondary};
+      position: relative;
+      margin-bottom: 10px;
+
+      .ant-typography-expand {
+        color: ${token.colorTextQuaternary};
+        font-size: 12px;
+        position: absolute;
+        left: 0;
+        bottom: -25px;
+        margin-left: 0;
+      }
+    }
   `,
   sectionFooter: css`
     display: flex;
     align-items: center;
-    justify-content: space-between;
-  `,
-  expandBtn: css`
-    color: ${token.colorTextQuaternary};
-    font-size: 12px;
-    font-weight: 400;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+    justify-content: flex-end;
   `,
   adoptBtn: css`
     color: ${token.colorText};

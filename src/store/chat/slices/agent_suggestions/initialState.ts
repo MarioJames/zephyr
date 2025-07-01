@@ -2,6 +2,8 @@ import { AgentSuggestionItem } from '@/services/agent_suggestions';
 
 // Agent 建议状态接口
 export interface AgentSuggestionsState {
+  suggestionsLoading: boolean;
+
   // 当前话题下的建议列表
   suggestions: AgentSuggestionItem[];
 
@@ -17,6 +19,7 @@ export interface AgentSuggestionsState {
 
 // 初始状态
 export const initialAgentSuggestionsState: AgentSuggestionsState = {
+  suggestionsLoading: false,
   suggestions: [],
   suggestionsInit: false,
   isGeneratingAI: false,

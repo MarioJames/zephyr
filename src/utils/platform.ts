@@ -6,7 +6,7 @@ export const getParser = () => {
   //@ts-ignore
   if (isOnServerSide) return new UAParser("Node");
 
-  let ua = navigator.userAgent;
+  const ua = navigator.userAgent;
   //@ts-ignore
   return new UAParser(ua);
 };

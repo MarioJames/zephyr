@@ -8,18 +8,20 @@ import { ChatStore } from '../../store';
 import { agentSelectors, useAgentStore } from '@/store/agent';
 import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
+import { useSessionStore } from '@/store/session';
+import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
 
 export interface AgentSuggestionsAction {
   // 基础操作
-  fetchSuggestions: (topicId?: string) => Promise<void>;
+  fetchSuggestions: () => Promise<void>;
   addSuggestion: (suggestion: AgentSuggestionItem) => void;
-  updateSuggestion: (id: number, data: Partial<AgentSuggestionItem>) => void;
-  deleteSuggestion: (id: number) => void;
-  clearSuggestions: () => void;
+  updateSuggestion: (
+    suggestionId: string,
+    suggestion: AgentSuggestionItem
+  ) => void;
 
   // AI 生成相关
   generateAISuggestion: (
-    userMessage: string,
     parentMessageId: string
   ) => Promise<AgentSuggestionItem | null>;
 
@@ -34,24 +36,24 @@ export const agentSuggestionsSlice: StateCreator<
   [],
   AgentSuggestionsAction
 > = (set, get) => ({
-  fetchSuggestions: async (topicId?: string) => {
-    if (!topicId) {
-      set({ suggestionsInit: true });
-      return;
-    }
+  fetchSuggestions: async () => {
+    const { activeTopicId } = useSessionStore.getState();
+
+    if (!activeTopicId) return;
 
     try {
-      set({ error: undefined });
+      set({ error: undefined, suggestionsLoading: true });
 
       // 调用服务获取建议列表
       const suggestions = await agentSuggestionsService.getSuggestionsByTopic(
-        topicId
+        activeTopicId
       );
 
       set({
         suggestions,
         suggestionsInit: true,
         error: undefined,
+        suggestionsLoading: false,
       });
     } catch (error) {
       console.error('Failed to fetch suggestions:', error);
@@ -61,6 +63,7 @@ export const agentSuggestionsSlice: StateCreator<
             ? error.message
             : 'Failed to fetch suggestions',
         suggestionsInit: true,
+        suggestionsLoading: false,
       });
     }
   },
@@ -71,38 +74,25 @@ export const agentSuggestionsSlice: StateCreator<
     }));
   },
 
-  updateSuggestion: (id: number, data: Partial<AgentSuggestionItem>) => {
+  updateSuggestion: (suggestionId: string, suggestion: AgentSuggestionItem) => {
     set((state) => ({
-      suggestions: state.suggestions.map((suggestion) =>
-        suggestion.id === id ? { ...suggestion, ...data } : suggestion
+      suggestions: state.suggestions.map((s) =>
+        s.id === suggestionId ? suggestion : s
       ),
     }));
-  },
-
-  deleteSuggestion: (id: number) => {
-    set((state) => ({
-      suggestions: state.suggestions.filter(
-        (suggestion) => suggestion.id !== id
-      ),
-    }));
-  },
-
-  clearSuggestions: () => {
-    set({
-      suggestions: [],
-      suggestionsInit: false,
-      error: undefined,
-    });
   },
 
   generateAISuggestion: async (
-    userMessage: string,
     parentMessageId: string
   ): Promise<AgentSuggestionItem | null> => {
+    const { activeSessionId } = useSessionStore.getState();
     const state = get();
 
     try {
       set({ isGeneratingAI: true, error: undefined });
+
+      // 先添加一个占位符
+      get().addSuggestion(PLACEHOLDER_SUGGESTION);
 
       // 获取现在激活的会话对应的agent
       const agent = agentSelectors.currentAgent(useAgentStore.getState());
@@ -119,11 +109,11 @@ export const agentSuggestionsSlice: StateCreator<
       // 使用AI_SUGGESTION_PROMPT生成提示词
       const prompt = AI_SUGGESTION_PROMPT(systemPrompt || '');
 
-      // 根据historyCount，获取历史消息
+      // 根据historyCount，获取最新的historyCount条消息
       const historyMessages = state.messages
         .sort(
           (a, b) =>
-            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+            new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
         )
         .filter(
           (msg) => msg.content && ['user', 'assistant'].includes(msg.role)
@@ -132,10 +122,9 @@ export const agentSuggestionsSlice: StateCreator<
 
       // 调用 AI 生成服务
       const aiResponse = await chatService.generateReply({
-        userMessage,
         model: agent?.model,
         provider: agent?.provider,
-        sessionId: state.activeId,
+        sessionId: activeSessionId!,
         // 拼接系统提示词和用户消息作为上下文
         conversationHistory: [
           {
@@ -174,11 +163,8 @@ export const agentSuggestionsSlice: StateCreator<
             );
 
           // 添加到本地状态
-          get().addSuggestion(createdSuggestion);
-
-          // 更新本地状态
           get().updateSuggestion(
-            createdSuggestion.id,
+            PLACEHOLDER_SUGGESTION.id as string,
             createdSuggestion
           );
         } catch (saveError) {

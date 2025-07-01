@@ -216,6 +216,8 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
    * @param toAgentId 目标 agentId
    */
   transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
+    console.log('transferSessionsToAgent agent slice action');
+
     // 1. 查找当前 agent 下所有 session
     const res = await sessionsService.getSessionList({
       agentId: fromAgentId,

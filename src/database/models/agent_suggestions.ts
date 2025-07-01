@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm';
 import { ZephyrDatabase } from '@/database/type';
 
 import { AgentSuggestionSelect, agentSuggestions } from '../schemas';
+import { AgentSuggestionContent } from '@/services/agent_suggestions';
 
 export interface AgentSuggestionListParams {
   page?: number;
@@ -15,7 +16,7 @@ export interface AgentSuggestionListParams {
 }
 
 export interface CreateAgentSuggestionParams {
-  suggestion: any; // JSON 建议内容
+  suggestion: AgentSuggestionContent; // JSON 建议内容
   topicId: string;
   parentMessageId: string;
 }
@@ -38,7 +39,7 @@ export class AgentSuggestionsModel {
   /**
    * 创建建议记录
    */
-  create = async (params: CreateAgentSuggestionParams): Promise<number> => {
+  create = async (params: CreateAgentSuggestionParams): Promise<AgentSuggestionSelect> => {
     const data = await this.db
       .insert(agentSuggestions)
       .values({
@@ -48,7 +49,7 @@ export class AgentSuggestionsModel {
       })
       .returning();
 
-    return data[0].id;
+    return data[0];
   };
 
   /**
@@ -87,7 +88,7 @@ export class AgentSuggestionsModel {
   findByTopicId = async (topicId: string): Promise<AgentSuggestionSelect[]> => {
     return this.db.query.agentSuggestions.findMany({
       where: eq(agentSuggestions.topicId, topicId),
-      orderBy: [desc(agentSuggestions.createdAt)],
+      orderBy: [asc(agentSuggestions.createdAt)],
     });
   };
 
@@ -160,7 +161,7 @@ export class AgentSuggestionsModel {
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
     // 构建排序
-    const orderByClause = sortOrder === 'desc' 
+    const orderByClause = sortOrder === 'desc'
       ? desc(agentSuggestions[sortBy])
       : asc(agentSuggestions[sortBy]);
 
@@ -169,7 +170,7 @@ export class AgentSuggestionsModel {
       .select({ count: sql<number>`count(*)` })
       .from(agentSuggestions)
       .where(whereClause);
-    
+
     const total = countResult[0]?.count || 0;
 
     // 查询数据
@@ -209,7 +210,7 @@ export class AgentSuggestionsModel {
       .select({ count: sql<number>`count(*)` })
       .from(agentSuggestions)
       .where(whereClause);
-    
+
     return result[0]?.count || 0;
   };
 

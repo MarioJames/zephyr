@@ -5,7 +5,7 @@ const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
 
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
-  timeout: 15000,
+  timeout: 300000,
   headers: {
     'Content-Type': 'application/json',
   },

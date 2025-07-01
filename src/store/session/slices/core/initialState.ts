@@ -12,6 +12,8 @@ export interface SessionCoreState {
   // 加载状态
   isLoading: boolean;
   isSearching: boolean;
+  // 初始化状态
+  isInitialized: boolean;
   // 错误信息
   error?: string;
   searchError?: string;
@@ -25,6 +27,7 @@ export const sessionCoreInitialState: SessionCoreState = {
   searchKeyword: '',
   isLoading: false,
   isSearching: false,
+  isInitialized: false,
   error: undefined,
   searchError: undefined,
   inSearchMode: false,

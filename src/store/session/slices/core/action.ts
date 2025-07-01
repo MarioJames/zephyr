@@ -32,6 +32,7 @@ export const sessionCoreAction: StateCreator<
   SessionCoreAction
 > = (set, get) => ({
   fetchSessions: async (params?: SessionListRequest) => {
+    console.log('fetchSessions session slice core action');
     set({ isLoading: true, error: undefined });
     try {
       const { sessions = [], total = 0 } = await sessionService.getSessionList(
@@ -40,11 +41,13 @@ export const sessionCoreAction: StateCreator<
       set({
         sessions,
         isLoading: false,
+        isInitialized: true,
       });
     } catch (error) {
       console.error('获取会话列表失败:', error);
       set({
         isLoading: false,
+        isInitialized: true,
         error: error instanceof Error ? error.message : '获取会话列表失败',
       });
     }
@@ -79,6 +82,9 @@ export const sessionCoreAction: StateCreator<
       topics: [],
       topicsInit: false,
     });
+
+    // 拉取建议
+    useChatStore.getState().fetchSuggestions();
   },
 
   searchSessions: async (params: SessionSearchRequest) => {
