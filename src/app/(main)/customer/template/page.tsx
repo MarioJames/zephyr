@@ -64,6 +64,7 @@ const useStyles = createStyles(({ css, token }) => ({
     height: 280px;
     display: flex;
     flex-direction: column;
+    background: ${token.colorBgElevated};
   `,
   cardContent: css`
     flex: 1;
@@ -95,7 +96,7 @@ const useStyles = createStyles(({ css, token }) => ({
     height: 40px;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
     border-top: 1px solid ${token.colorBorder};
   `,
   footerButton: css`
@@ -265,7 +266,7 @@ export default function CustomerTemplatePage() {
           ) : (
             <Row gutter={[16, 16]} className={styles.cardGrid}>
               {agents.map((agent) => (
-                <Col xs={8} sm={6} md={4.8} lg={4} xl={4} key={agent.id}>
+                <Col span={4.8} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <img
@@ -281,19 +282,21 @@ export default function CustomerTemplatePage() {
                       </Tooltip>
                     </div>
                     <div className={styles.cardFooter}>
-                      <span
+                      <Button
+                        type='text'
                         className={styles.footerButton}
                         onClick={() => openModal(agent)}
                       >
                         编辑
-                      </span>
+                      </Button>
                       <div className={styles.footerDivider} />
-                      <span
+                      <Button
+                        type='text'
                         className={styles.footerButton}
                         onClick={() => handleDelete(agent.id)}
                       >
                         删除
-                      </span>
+                      </Button>
                     </div>
                   </div>
                 </Col>
