@@ -8,7 +8,7 @@ export default function CompanyInfoSection() {
 
   return (
     <>
-      <div className={styles.sectionTitle}>公司信息</div>
+      <div className={styles.sectionTitle}>个人信息</div>
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item name='company' label='公司名称'>

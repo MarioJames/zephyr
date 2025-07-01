@@ -48,7 +48,7 @@ export const CustomerCompanyInfo: React.FC<CustomerCompanyInfoProps> = ({
 
   return (
     <div className={styles.infoBox}>
-      <div className={styles.infoTitle}>公司信息</div>
+      <div className={styles.infoTitle}>个人信息</div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>公司名称：</div>
         <div className={styles.infoValue}>{companyInfo.company || '-'}</div>
