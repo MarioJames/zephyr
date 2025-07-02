@@ -35,4 +35,16 @@ export const coreSelectors = {
 
   // 检查是否有客户数据
   hasCustomers: (state: CustomerState) => state.customers.length > 0,
+
+  // 获取用户自定义的对话配置
+  currentCustomerChatConfig: (state: CustomerState) =>
+    state.currentCustomerExtend?.chatConfig,
+
+  // 获取用户自定义的对话配置中的搜索模式
+  currentCustomerChatConfigSearchMode: (state: CustomerState) =>
+    state.currentCustomerExtend?.chatConfig?.searchMode,
+
+  // 是否开启模型内置搜索引擎
+  isModelBuiltinSearch: (state: CustomerState) =>
+    state.currentCustomerExtend?.chatConfig?.useModelBuiltinSearch,
 };

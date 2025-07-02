@@ -1,6 +1,6 @@
 {
-  "id": "a1936e31-ba37-4719-8add-53cc8ce11482",
-  "prevId": "6bbb9b5a-7dc5-414c-bee7-f22be2bc62d7",
+  "id": "1de4bf03-7015-448b-868c-dfcbd10550a9",
+  "prevId": "a1936e31-ba37-4719-8add-53cc8ce11482",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -149,13 +149,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "customer_type": {
-          "name": "customer_type",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'A'"
-        },
         "phone": {
           "name": "phone",
           "type": "varchar(20)",
@@ -192,27 +185,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "province": {
-          "name": "province",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "city": {
-          "name": "city",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "district": {
-          "name": "district",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "address": {
           "name": "address",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chat_config": {
+          "name": "chat_config",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },

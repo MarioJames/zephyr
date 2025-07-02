@@ -1,18 +1,7 @@
-export interface AgentChatConfig {
-  autoCreateTopicThreshold: number;
-  enableAutoCreateTopic?: boolean;
-  enableCompressHistory?: boolean;
-  enableHistoryCount?: boolean;
-  enableMaxTokens?: boolean;
-  enableReasoning?: boolean;
-  historyCount?: number;
-  temperature?: number;
-  displayMode?: string;
-  enableHistoryDivider?: boolean;
-}
+import { AgentConfig } from '@/types/agent';
 
 export interface ConfigState {
-  agentChatConfig: AgentChatConfig;
+  agentChatConfig: AgentConfig;
   isAgentConfigLoading: boolean;
 }
 
@@ -25,9 +14,8 @@ export const initialConfigState: ConfigState = {
     enableMaxTokens: false,
     enableReasoning: false,
     historyCount: 10,
-    temperature: 0.7,
-    displayMode: 'chat',
     enableHistoryDivider: true,
+    useModelBuiltinSearch: false,
   },
   isAgentConfigLoading: false,
 };

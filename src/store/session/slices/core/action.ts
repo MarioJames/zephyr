@@ -4,9 +4,9 @@ import sessionService, {
   SessionSearchRequest,
 } from '@/services/sessions';
 import { SessionStore } from '@/store/session';
-import qs from 'query-string';
 import { topicsAPI } from '@/services';
 import { useChatStore } from '@/store/chat';
+import { useCustomerStore } from '@/store/customer';
 
 export interface SessionCoreAction {
   // 获取会话列表
@@ -55,6 +55,9 @@ export const sessionCoreAction: StateCreator<
 
   switchSession: async (sessionId: string, topicId?: string) => {
     let activeTopicId = topicId;
+
+    // 获取客户拓展配置
+    useCustomerStore.getState().getCustomerExtend(sessionId);
 
     // 如果没有传入话题ID，则获取会话下的所有话题
     if (!activeTopicId) {

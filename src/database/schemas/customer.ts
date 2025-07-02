@@ -5,6 +5,7 @@ import {
   unique,
   text,
   integer,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { timestamps } from './_helpers';
 
@@ -23,7 +24,6 @@ export const customerSessions = pgTable(
     gender: varchar('gender', { length: 10 }), // 性别
     age: integer('age'), // 年龄
     position: varchar('position', { length: 100 }), // 职位
-    customerType: varchar('customer_type', { length: 10 }).default('A'), // 客户类型 A/B/C
 
     // 联系方式
     phone: varchar('phone', { length: 20 }), // 手机号
@@ -35,11 +35,11 @@ export const customerSessions = pgTable(
     industry: varchar('industry', { length: 100 }), // 行业
     scale: varchar('scale', { length: 50 }), // 公司规模
 
-    // 地址信息
-    province: varchar('province', { length: 50 }), // 省份
-    city: varchar('city', { length: 50 }), // 城市
-    district: varchar('district', { length: 50 }), // 区县
-    address: text('address'), // 详细地址
+    // 详细地址
+    address: text('address'),
+
+    // 聊天配置
+    chatConfig: jsonb('chat_config'), // 聊天相关配置，可存储 JSON 数据
 
     // 系统字段
     ...timestamps,
@@ -52,5 +52,5 @@ export const customerSessions = pgTable(
 );
 
 // Drizzle 类型推导
-export type CustomerSessionSelect = typeof customerSessions.$inferSelect;
+export type CustomerSessionItem = typeof customerSessions.$inferSelect;
 export type CustomerSessionInsert = typeof customerSessions.$inferInsert;

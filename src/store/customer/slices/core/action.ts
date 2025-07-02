@@ -5,20 +5,33 @@ import customerAPI, {
   type CustomerCreateRequest,
 } from '@/services/customer';
 import { CustomerState } from '../../initialState';
+import { useSessionStore } from '@/store/session';
+import { CustomerExtend } from '@/types/customer';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
   fetchCustomers: (params?: CustomerListRequest) => Promise<void>;
+
   refreshCustomers: () => Promise<void>;
+
   createCustomer: (
     data: CustomerCreateRequest
   ) => Promise<CustomerItem | undefined>;
+
   updateCustomer: (
     sessionId: string,
     data: CustomerCreateRequest
   ) => Promise<void>;
+
   deleteCustomer: (sessionId: string) => Promise<void>;
+
   clearError: () => void;
+
+  // 获取客户的拓展配置
+  getCustomerExtend: (sessionId: string) => Promise<void>;
+
+  // 在对话页面修改客户拓展配置
+  updateCustomerExtend: (data: Partial<CustomerExtend>) => Promise<void>;
 }
 
 // ========== 核心功能Slice ==========
@@ -117,6 +130,40 @@ export const coreSlice: StateCreator<
       set({
         loading: false,
         error: error instanceof Error ? error.message : '删除客户失败',
+      });
+    }
+  },
+
+  getCustomerExtend: async (sessionId) => {
+    try {
+      const extend = await customerAPI.getCustomerExtend(sessionId);
+
+      set({
+        currentCustomerExtend: extend,
+      });
+    } catch (error) {
+      console.error('获取客户拓展配置失败:', error);
+      throw error;
+    }
+  },
+
+  // 更新用户的
+  updateCustomerExtend: async (data) => {
+    set({ loading: true, error: null });
+    try {
+      const updatedCustomer = await customerAPI.updateCustomerExtend(
+        useSessionStore.getState().activeSessionId || '',
+        data
+      );
+
+      // 更新当前客户
+      set({
+        currentCustomerExtend: updatedCustomer,
+      });
+    } catch (error) {
+      console.error('更新客户聊天配置失败:', error);
+      set({
+        error: error instanceof Error ? error.message : '更新客户聊天配置失败',
       });
     }
   },

@@ -49,18 +49,7 @@ export const CustomerAddressInfo: React.FC<CustomerAddressInfoProps> = ({
   return (
     <div className={styles.infoBox}>
       <div className={styles.infoTitle}>地址信息</div>
-      <div className={styles.infoItem}>
-        <div className={styles.infoLabel}>省市区：</div>
-        <div className={styles.infoValue}>
-          {addressInfo.province && addressInfo.city && addressInfo.district
-            ? `${addressInfo.province} ${addressInfo.city} ${addressInfo.district}`
-            : '-'}
-        </div>
-      </div>
-      <div className={styles.infoItem}>
-        <div className={styles.infoLabel}>详细地址：</div>
-        <div className={styles.infoValue}>{addressInfo.address || '-'}</div>
-      </div>
+      <div className={styles.infoValue}>{addressInfo.address || '-'}</div>
     </div>
   );
 };

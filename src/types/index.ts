@@ -34,3 +34,6 @@ export type OptionalTimestamps<T> = Omit<T, 'createdAt' | 'updatedAt'> & {
 
 // 导出邮件相关类型
 export * from './mail';
+
+// 导出 Agent 相关类型
+export * from './agent';

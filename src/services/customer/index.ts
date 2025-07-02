@@ -1,34 +1,13 @@
 import { http } from '../request';
 import sessionsAPI, { SessionItem } from '@/services/sessions';
-
-// 客户相关类型定义
-// 客户扩展信息类型
-export interface CustomerExtendInfo {
-  id: string;
-  sessionId: string;
-  gender?: string | null;
-  age?: number | null;
-  position?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  wechat?: string | null;
-  company?: string | null;
-  industry?: string | null;
-  scale?: string | null;
-  province?: string | null;
-  city?: string | null;
-  district?: string | null;
-  address?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { CustomerExtend } from '@/types/customer';
 
 // 客户完整信息类型（包括 Session 和扩展信息）
 export interface CustomerItem {
   // Session 基础信息
   session: SessionItem;
   // 客户扩展信息
-  extend?: CustomerExtendInfo;
+  extend?: CustomerExtend;
 }
 
 export interface CustomerListRequest {
@@ -43,39 +22,21 @@ export interface CustomerListResponse {
   total: number;
 }
 
-// 客户扩展信息创建请求类型
-export interface CustomerExtendCreateRequest {
-  sessionId: string;
-  gender?: string;
-  age?: number;
-  position?: string;
-  phone?: string;
-  email?: string;
-  wechat?: string;
-  company?: string;
-  industry?: string;
-  scale?: string;
-  province?: string;
-  city?: string;
-  district?: string;
-  address?: string;
-}
-
 // 客户创建请求类型（包括 Session 和扩展信息）
 export type CustomerCreateRequest = {
-  extend: Omit<CustomerExtendInfo, 'id' | 'sessionId'>;
+  extend: Omit<CustomerExtend, 'id' | 'sessionId'>;
   session: Omit<SessionItem, 'id' | 'sessionId'>;
 };
 
 // 客户更新请求类型（包括 Session 和扩展信息）
 export type CustomerUpdateRequest = {
-  extend: Partial<Omit<CustomerExtendInfo, 'id'>>;
+  extend: Partial<Omit<CustomerExtend, 'id'>>;
   session: Partial<Omit<SessionItem, 'id' | 'sessionId'>>;
 };
 
 // 客户扩展信息更新请求类型
 export interface CustomerExtendUpdateRequest
-  extends Partial<Omit<CustomerExtendCreateRequest, 'sessionId'>> {}
+  extends Partial<Omit<CustomerExtend, 'sessionId'>> {}
 
 /**
  * 获取客户列表
@@ -100,7 +61,7 @@ async function getCustomerList(
     // 2. 优化：一次性获取客户扩展信息和总数
     const sessionIds = sessionList.sessions.map((item) => item.id);
 
-    const customerExtendList = await http.get<CustomerExtendInfo[]>(
+    const customerExtendList = await http.get<CustomerExtend[]>(
       '/api/customer',
       {
         sessionIds: sessionIds.join(','),
@@ -142,7 +103,7 @@ async function getCustomerDetail(sessionId: string): Promise<CustomerItem> {
     const session = await sessionsAPI.getSessionDetail(sessionId);
 
     // 2. 获取客户扩展信息
-    const extend = await http.get<CustomerExtendInfo>('/api/customer', {
+    const extend = await http.get<CustomerExtend>('/api/customer', {
       sessionId,
     });
 
@@ -152,6 +113,23 @@ async function getCustomerDetail(sessionId: string): Promise<CustomerItem> {
     };
   } catch (error) {
     console.error('getCustomerDetail error:', error);
+    throw error;
+  }
+}
+
+/**
+ * 获取客户拓展配置
+ * @description 通过 sessionId 获取客户拓展配置
+ * @param sessionId string
+ * @returns CustomerExtend
+ */
+async function getCustomerExtend(sessionId: string): Promise<CustomerExtend> {
+  try {
+    return await http.get<CustomerExtend>(
+      `/api/customer?sessionId=${sessionId}`
+    );
+  } catch (error) {
+    console.error('getCustomerExtend error:', error);
     throw error;
   }
 }
@@ -172,7 +150,7 @@ async function createCustomer(
     const createdSession = await sessionsAPI.createSession(session);
 
     // 2. 创建客户扩展信息
-    const createdExtend = await http.post<CustomerExtendInfo>('/api/customer', {
+    const createdExtend = await http.post<CustomerExtend>('/api/customer', {
       sessionId: createdSession.id,
       ...extend,
     });
@@ -200,11 +178,12 @@ async function updateCustomer(
 ): Promise<CustomerItem> {
   try {
     const { session, extend } = data;
+
     // 1. 更新外部系统的 Session 信息
     const updatedSession = await sessionsAPI.updateSession(sessionId, session);
 
     // 2. 更新客户扩展信息
-    const updatedExtend = await http.put<CustomerExtendInfo>(
+    const updatedExtend = await http.put<CustomerExtend>(
       `/api/customer?sessionId=${sessionId}`,
       extend
     );
@@ -215,6 +194,27 @@ async function updateCustomer(
     };
   } catch (error) {
     console.error('updateCustomer error:', error);
+    throw error;
+  }
+}
+
+/**
+ * 更新客户扩展信息
+ * @param sessionId string
+ * @param data AgentChatConfig
+ * @returns void
+ */
+async function updateCustomerExtend(
+  sessionId: string,
+  data: Partial<CustomerExtend>
+): Promise<CustomerExtend> {
+  try {
+    return await http.put<CustomerExtend>(
+      `/api/customer?sessionId=${sessionId}`,
+      data
+    );
+  } catch (error) {
+    console.error('updateCustomerExtend error:', error);
     throw error;
   }
 }
@@ -242,9 +242,11 @@ async function deleteCustomer(sessionId: string): Promise<void> {
 const customerAPI = {
   getCustomerList,
   getCustomerDetail,
+  getCustomerExtend,
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  updateCustomerExtend,
 };
 
 export default customerAPI;

@@ -6,6 +6,7 @@ import { modelSelectors } from './slices/model/selectors';
 const agents = (s: AgentState) => s.agents;
 const agentsInit = (s: AgentState) => s.agentsInit;
 const currentAgent = (s: AgentState) => s.currentAgent;
+const currentAgentModelProvider = (s: AgentState) => s.currentAgent?.provider;
 const isLoading = (s: AgentState) => s.isLoading;
 const error = (s: AgentState) => s.error;
 
@@ -32,6 +33,7 @@ export const agentSelectors = {
   agents,
   agentsInit,
   currentAgent,
+  currentAgentModelProvider,
   isLoading,
   error,
   getAgentById,
@@ -41,10 +43,12 @@ export const agentSelectors = {
 
 // 聊天配置相关选择器
 const agentChatConfig = (s: AgentState) => s.agentChatConfig;
+const useModelBuiltinSearch = (s: AgentState) => s.agentChatConfig?.useModelBuiltinSearch;
 
 // 聊天配置选择器导出
 export const agentChatConfigSelectors = {
   agentChatConfig,
+  useModelBuiltinSearch,
 };
 
 // 模型选择器导出

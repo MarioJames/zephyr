@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { AgentStore } from '../../store';
-import { AgentChatConfig } from './initialState';
+import { AgentChatConfig } from '@/types/agent';
 
 export interface ConfigAction {
   // 配置管理

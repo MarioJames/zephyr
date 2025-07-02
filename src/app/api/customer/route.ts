@@ -4,28 +4,8 @@ import {
   CustomerModel,
   CreateCustomerSessionParams,
 } from '@/database/models/customer';
-
-// 客户扩展信息类型
-interface CustomerExtendInfo {
-  id: number;
-  sessionId: string;
-  gender?: string | null;
-  age?: number | null;
-  position?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  wechat?: string | null;
-  company?: string | null;
-  industry?: string | null;
-  scale?: string | null;
-  province?: string | null;
-  city?: string | null;
-  district?: string | null;
-  address?: string | null;
-  notes?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { AgentChatConfig } from '@/types/agent';
+import { CustomerSessionItem } from '@/database/schemas';
 
 // 客户扩展信息创建请求类型
 export interface CustomerExtendCreateRequest {
@@ -39,11 +19,8 @@ export interface CustomerExtendCreateRequest {
   company?: string;
   industry?: string;
   scale?: string;
-  province?: string;
-  city?: string;
-  district?: string;
   address?: string;
-  notes?: string;
+  chatConfig?: AgentChatConfig; // 聊天配置
 }
 
 // 客户扩展信息更新请求类型
@@ -127,31 +104,13 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: CustomerExtendCreateRequest = await request.json();
+    const body = await request.json();
 
     const db = await getServerDB();
     const customerModel = new CustomerModel(db);
 
-    const customerSessionData: CreateCustomerSessionParams = {
-      sessionId: body.sessionId,
-      gender: body.gender,
-      age: body.age,
-      position: body.position,
-      phone: body.phone,
-      email: body.email,
-      wechat: body.wechat,
-      company: body.company,
-      industry: body.industry,
-      scale: body.scale,
-      province: body.province,
-      city: body.city,
-      district: body.district,
-      address: body.address,
-      notes: body.notes,
-    };
-
     // 创建客户扩展信息
-    await customerModel.create(customerSessionData);
+    await customerModel.create(body);
 
     // 查询创建的客户扩展信息
     const customerExtend = await customerModel.findBySessionId(body.sessionId);
@@ -219,22 +178,9 @@ export async function PUT(request: NextRequest) {
     }
 
     // 更新客户扩展信息
-    const customerUpdateData: Partial<CreateCustomerSessionParams> = {
-      sessionId,
-      gender: body.gender,
-      age: body.age,
-      position: body.position,
-      phone: body.phone,
-      email: body.email,
-      wechat: body.wechat,
-      company: body.company,
-      industry: body.industry,
-      scale: body.scale,
-      province: body.province,
-      city: body.city,
-      district: body.district,
-      address: body.address,
-      notes: body.notes,
+    const customerUpdateData = {
+      ...(customerExtend || {}),
+      ...body,
     };
 
     await customerModel.update(customerExtend.id, customerUpdateData);

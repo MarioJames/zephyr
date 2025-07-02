@@ -2,8 +2,10 @@ import { and, eq, inArray, like, or, desc, asc } from 'drizzle-orm/expressions';
 import { sql } from 'drizzle-orm';
 
 import { ZephyrDatabase } from '@/database/type';
+import { AgentChatConfig } from '@/types/agent';
 
-import { CustomerSessionSelect, customerSessions } from '../schemas';
+import { CustomerSessionItem, customerSessions } from '../schemas';
+import { OmitTimestamps } from '@/types';
 
 export interface CustomerSessionListParams {
   page?: number;
@@ -34,8 +36,8 @@ export interface CreateCustomerSessionParams {
   city?: string;
   district?: string;
   address?: string;
-  // 备注
-  notes?: string;
+  // 聊天配置
+  chatConfig?: AgentChatConfig;
 }
 
 export class CustomerModel {
@@ -46,7 +48,9 @@ export class CustomerModel {
   }
 
   // ========== 基础客户会话管理 ==========
-  create = async (params: CreateCustomerSessionParams): Promise<number> => {
+  create = async (
+    params: OmitTimestamps<CreateCustomerSessionParams>
+  ): Promise<number> => {
     const { sessionId, ...customerData } = params;
 
     const data = await this.db
@@ -60,7 +64,7 @@ export class CustomerModel {
     return data[0].id;
   };
 
-  update = async (id: number, value: Partial<CustomerSessionSelect>) => {
+  update = async (id: number, value: Partial<CustomerSessionItem>) => {
     return this.db
       .update(customerSessions)
       .set({ ...value, updatedAt: new Date() })
@@ -71,7 +75,7 @@ export class CustomerModel {
 
   findBySessionId = async (
     sessionId: string
-  ): Promise<CustomerSessionSelect | undefined> => {
+  ): Promise<CustomerSessionItem | undefined> => {
     return this.db.query.customerSessions.findFirst({
       where: eq(customerSessions.sessionId, sessionId),
     });
@@ -79,7 +83,7 @@ export class CustomerModel {
 
   updateBySessionId = async (
     sessionId: string,
-    value: Partial<CustomerSessionSelect>
+    value: Partial<CustomerSessionItem>
   ) => {
     return this.db
       .update(customerSessions)
@@ -95,7 +99,7 @@ export class CustomerModel {
 
   findBySessionIds = async (
     sessionIds: string[]
-  ): Promise<CustomerSessionSelect[]> => {
+  ): Promise<CustomerSessionItem[]> => {
     if (sessionIds.length === 0) return [];
 
     return this.db.query.customerSessions.findMany({
@@ -114,7 +118,7 @@ export class CustomerModel {
 
   list = async (
     params: CustomerSessionListParams
-  ): Promise<CustomerSessionSelect[]> => {
+  ): Promise<CustomerSessionItem[]> => {
     const {
       page = 1,
       pageSize = 50,
@@ -134,8 +138,7 @@ export class CustomerModel {
           like(customerSessions.company, searchTerm),
           like(customerSessions.phone, searchTerm),
           like(customerSessions.email, searchTerm),
-          like(customerSessions.wechat, searchTerm),
-          like(customerSessions.notes, searchTerm)
+          like(customerSessions.wechat, searchTerm)
         )
       );
     }

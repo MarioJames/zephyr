@@ -12,7 +12,7 @@ import TextArea from './TextArea';
 
 const leftActions = [
   // 'model',
-  // 'search',
+  'search',
   'fileUpload',
   // 'stt',
   // 'mainToken',

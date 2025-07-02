@@ -1,21 +1,5 @@
 import { http } from '../request';
-
-export interface AgentChatConfig {
-  searchMode?: string;
-  displayMode?: string;
-  historyCount?: number;
-  searchFCModel?: {
-    model: string;
-    provider: string;
-  };
-  enableReasoning?: boolean;
-  enableHistoryCount?: boolean;
-  reasoningBudgetToken?: number;
-  enableAutoCreateTopic?: boolean;
-  enableCompressHistory?: boolean;
-  useModelBuiltinSearch?: boolean;
-  autoCreateTopicThreshold?: number;
-}
+import { AgentChatConfig } from '@/types/agent';
 
 // 智能体相关类型定义
 export interface AgentItem {
