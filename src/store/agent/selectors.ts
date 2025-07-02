@@ -1,6 +1,5 @@
 import { AgentState } from './initialState';
 import { AgentItem } from '@/services/agents';
-import { modelSelectors } from './slices/model/selectors';
 
 // 基础选择器
 const agents = (s: AgentState) => s.agents;
@@ -43,13 +42,11 @@ export const agentSelectors = {
 
 // 聊天配置相关选择器
 const agentChatConfig = (s: AgentState) => s.agentChatConfig;
-const useModelBuiltinSearch = (s: AgentState) => s.agentChatConfig?.useModelBuiltinSearch;
+const useModelBuiltinSearch = (s: AgentState) =>
+  s.agentChatConfig?.useModelBuiltinSearch;
 
 // 聊天配置选择器导出
 export const agentChatConfigSelectors = {
   agentChatConfig,
   useModelBuiltinSearch,
 };
-
-// 模型选择器导出
-export const agentModelSelectors = modelSelectors;

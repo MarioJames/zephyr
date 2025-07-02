@@ -1,7 +1,7 @@
 import { http } from '../request';
 
 // Response types
-export interface EnabledModelItem {
+export interface ModelItem {
   abilities?: {
     files?: boolean;
     functionCall?: boolean;
@@ -32,7 +32,7 @@ export interface EnabledModelItem {
 
 export interface ProviderWithModels {
   modelCount: number;
-  models: EnabledModelItem[];
+  models: ModelItem[];
   providerEnabled: boolean;
   providerId: string;
   providerName?: string;
@@ -72,6 +72,20 @@ async function getEnabledModels(params: GetModelsRequest) {
   return http.get<GetEnabledModelsResponse>(`/api/v1/models`, params);
 }
 
+/**
+ * 获取模型详情
+ * @description 获取模型详情
+ * @param modelId string
+ * @returns EnabledModelItem
+ */
+async function getModelConfig(provider: string, model: string) {
+  return http.get<ModelItem>(`/api/v1/models/config`, {
+    provider,
+    model,
+  });
+}
+
 export default {
   getEnabledModels,
+  getModelConfig,
 };
