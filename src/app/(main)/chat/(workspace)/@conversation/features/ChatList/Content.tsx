@@ -9,6 +9,7 @@ import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
+import DefaultHelloShow from '@/components/DefaultHelloShow';
 
 import MainChatItem from './ChatItem';
 
@@ -34,7 +35,7 @@ const Content = memo(() => {
 
   if (!isCurrentChatLoaded) return <SkeletonList />;
 
-  if (data.length === 0) return null;
+  if (data?.length === 0) return <DefaultHelloShow />;
 
   return <VirtualizedList dataSource={data} itemContent={itemContent} />;
 });

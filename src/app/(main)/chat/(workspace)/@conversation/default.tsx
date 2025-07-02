@@ -20,6 +20,7 @@ const ChatConversation = (props: DynamicLayoutProps) => {
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const activeTopicId = useChatStore((s) => s.activeTopicId);
   const fetchMessagesByTopic = useChatStore((s) => s.fetchMessagesByTopic);
+  const isInitialized = useSessionStore((s) => s.isInitialized);
 
   useEffect(() => {
     if (activeTopicId) {
@@ -27,8 +28,7 @@ const ChatConversation = (props: DynamicLayoutProps) => {
     }
   }, [activeTopicId]);
 
-  // 条件渲染移到 hooks 调用之后
-  if (!sessions || sessions.length === 0) {
+  if (!isInitialized && (!sessions || sessions.length === 0)) {
     return <DefaultCreateCustomer />;
   }
 
