@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Input } from 'antd';
+import { Form, Row, Input, Col } from 'antd';
 import { useSharedStyles } from '../shared/styles';
 
 export default function AddressInfoSection() {
@@ -8,10 +8,12 @@ export default function AddressInfoSection() {
   return (
     <>
       <div className={styles.sectionTitle}>地址信息</div>
-      <Row gutter={24}>
-        <Form.Item name='address'>
-          <Input.TextArea placeholder='请输入地址' className={styles.inputBg} />
-        </Form.Item>
+      <Row gutter={24} style={{ padding: '0 12px' }}>
+        <Col span={16}>
+          <Form.Item name='address' style={{ width: '100%' }}>
+            <Input placeholder='请输入地址' className={styles.inputBg} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
       </Row>
     </>
   );

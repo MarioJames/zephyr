@@ -17,12 +17,12 @@ export default function CompanyInfoSection() {
         </Col>
         <Col span={8}>
           <Form.Item name='industry' label='行业'>
-            <Input placeholder='请选择行业' className={styles.inputBg} />
+            <Input placeholder='请输入行业' className={styles.inputBg} />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name='scale' label='规模'>
-            <Input placeholder='请选择公司规模' className={styles.inputBg} />
+          <Form.Item name='scale' label='公司规模'>
+            <Input placeholder='请输入公司规模' className={styles.inputBg} />
           </Form.Item>
         </Col>
       </Row>
