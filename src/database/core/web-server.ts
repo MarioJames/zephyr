@@ -1,5 +1,5 @@
-import { drizzle as nodeDrizzle } from 'drizzle-orm/node-postgres';
-import { Pool as NodePool } from 'pg';
+import { Pool as NeonPool } from '@neondatabase/serverless';
+import { drizzle as neonDrizzle } from 'drizzle-orm/neon-serverless';
 
 import { serverDBEnv } from '@/config/db';
 import { isServerMode } from '@/const/version';
@@ -19,7 +19,7 @@ If you don't have it, please run \`openssl rand -base64 32\` to create one.
     );
   }
 
-  let connectionString = serverDBEnv.DATABASE_URL;
+  const connectionString = serverDBEnv.DATABASE_URL;
 
   if (!connectionString) {
     throw new Error(
@@ -27,6 +27,6 @@ If you don't have it, please run \`openssl rand -base64 32\` to create one.
     );
   }
 
-  const client = new NodePool({ connectionString });
-  return nodeDrizzle(client, { schema });
+  const client = new NeonPool({ connectionString });
+  return neonDrizzle(client, { schema });
 };

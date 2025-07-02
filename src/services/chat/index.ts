@@ -34,7 +34,7 @@ export interface TranslateRequest {
 }
 
 export interface GenerateReplyRequest {
-  userMessage: string; // 必填，用户消息
+  userMessage?: string; // 必填，用户消息
   sessionId: string | null; // 会话ID
   agentId?: string; // 智能体ID
   conversationHistory: ChatMessage[]; // 对话历史

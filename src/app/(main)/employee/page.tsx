@@ -1,6 +1,15 @@
 'use client';
 import React, { useState } from 'react';
-import { Table, Typography, Space, Dropdown, Form, App, Modal, Popconfirm } from 'antd';
+import {
+  Table,
+  Typography,
+  Space,
+  Dropdown,
+  Form,
+  App,
+  Modal,
+  Popconfirm,
+} from 'antd';
 import { Button, Input } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -16,7 +25,7 @@ import EmployeeCustomerModal from './components/EmployeeCustomerModal';
 import EmployeeEditModal from './components/EmployeeEditModal';
 import SendLoginGuideModal from './components/SendLoginGuideModal';
 
-import userService from '@/services/user';
+import { useRoleStore } from '@/store/role';
 
 const { Title } = Typography;
 
@@ -174,6 +183,7 @@ export default function EmployeePage() {
   const { message } = App.useApp();
 
   const { styles, theme } = useStyles();
+
   // 使用store
   const {
     employees,
@@ -185,9 +195,11 @@ export default function EmployeePage() {
     uploadAvatar,
     fetchSessionList,
     updateEmployeeSessions,
+    searchEmployees,
+    updateEmployeeRole,
   } = useEmployeeStore();
 
-  const searchEmployees = useEmployeeStore((s) => s.searchEmployees);
+  const { roles } = useRoleStore();
 
   // 分页状态
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
@@ -221,7 +233,19 @@ export default function EmployeePage() {
   const handleRoleChange = async (employeeId: string, newRoleId: string) => {
     const employee = employees.find((emp) => emp.id === employeeId);
     if (!employee) return;
-    await updateEmployee(employeeId, { roleId: newRoleId });
+    try {
+      await updateEmployeeRole(employeeId, {
+        addRoles: [{ roleId: Number(newRoleId) }],
+      });
+      message.success('修改成功');
+
+      fetchEmployees({
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } catch (e: any) {
+      message.error(e.message || '修改失败');
+    }
   };
 
   // 处理发送登录引导
@@ -513,39 +537,28 @@ export default function EmployeePage() {
       title: '权限',
       dataIndex: 'roles',
       key: 'roles',
-      render: (roles: RoleItem[], record: UserItem) => {
-        const role = roles[0];
-        const isAdmin = adminList.includes(role?.name);
-        const roleText = isAdmin ? '管理员' : '员工';
-        const displayRole = roleText || '-';
+      render: (_: any, record: UserItem) => {
+        const currentRole = record.roles?.[0];
 
-        const roleMenuItems = [
-          {
-            key: 'admin',
-            label: (
-              <div className={styles.roleItem}>
-                <span>管理员</span>
-                {isAdmin && <CircleCheck size={16} />}
-              </div>
-            ),
-          },
-          {
-            key: 'employee',
-            label: (
-              <div className={styles.roleItem}>
-                <span>员工</span>
-                {!isAdmin && <CircleCheck size={16} />}
-              </div>
-            ),
-          },
-        ];
+        const displayRole = roles.find(
+          (r) => r.id === currentRole?.id
+        )?.displayName;
+
+        const roleMenuItems = roles?.map((role) => ({
+          key: role.id,
+          label: (
+            <div className={styles.roleItem}>
+              <span>{role.displayName}</span>
+              {role.id === currentRole?.id && <CircleCheck size={16} />}
+            </div>
+          ),
+        }));
 
         return (
           <Dropdown
             menu={{
               items: roleMenuItems,
-              onClick: ({ key }) =>
-                handleRoleChange(record.id, key as 'admin' | 'employee'),
+              onClick: ({ key }) => handleRoleChange(record.id, key),
               className: styles.roleDropdown,
             }}
             trigger={['click']}
@@ -588,10 +601,10 @@ export default function EmployeePage() {
             编辑
           </Button>
           <Popconfirm
-            title="确认删除"
-            description="确定要删除该员工吗？此操作不可撤销。"
-            okText="确认"
-            cancelText="取消"
+            title='确认删除'
+            description='确定要删除该员工吗？此操作不可撤销。'
+            okText='确认'
+            cancelText='取消'
             onConfirm={() => handleDelete(record.id)}
           >
             <Button

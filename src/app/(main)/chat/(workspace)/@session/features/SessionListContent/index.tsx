@@ -8,7 +8,6 @@ import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 
 import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
 import { useOIDCStore } from '@/store/oidc';
 import { oidcSelectors } from '@/store/oidc/selectors';
 
@@ -46,7 +45,7 @@ const SessionListContent = memo(() => {
     sessions,
     isLoading,
     inSearchMode,
-    searchResults,
+    isInitialized,
 
     // actions
     fetchSessions,
@@ -54,9 +53,11 @@ const SessionListContent = memo(() => {
   } = useSessionStore();
 
   useEffect(() => {
-    fetchSessions();
-    initFromUrlParams();
-  }, []);
+    if (!isInitialized) {
+      fetchSessions();
+      initFromUrlParams();
+    }
+  }, [isInitialized, fetchSessions, initFromUrlParams]);
 
   const handleAddCustomer = () => {
     router.push('/customer/form');
@@ -90,7 +91,7 @@ const SessionListContent = memo(() => {
         </Button>
       </Flexbox>
       {sessions.length === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
-      {<ShowMode />}
+      <ShowMode />
     </>
   );
 });

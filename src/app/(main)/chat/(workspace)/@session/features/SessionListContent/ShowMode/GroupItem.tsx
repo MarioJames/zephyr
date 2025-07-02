@@ -24,10 +24,9 @@ const useStyles = createStyles(({ css, token }) => ({
 interface SessionGroupItemProps {
   count?: number;
   title:string;
-  id:string;
 }
 
-const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count, id }) => {
+const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count }) => {
   const { styles } = useStyles();
 
   return (

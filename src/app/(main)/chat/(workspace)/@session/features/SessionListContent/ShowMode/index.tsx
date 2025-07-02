@@ -28,7 +28,7 @@ const ShowMode = memo(() => {
     (index: number) => {
       // 判断属于哪个分组
       const isRecent = index < recentSessions.length;
-      const session = flatSessions[index];
+      const session = flatSessions[index] || {};
       const title =
         session?.title && session.title?.trim() !== ''
           ? session.title
