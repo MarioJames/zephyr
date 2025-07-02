@@ -37,8 +37,8 @@ export const useSharedStyles = createStyles(({ css, token }) => ({
   `,
   selectBg: css`
     .ant-select-selector {
-      background: ${token.colorFillTertiary};
-      border: 1px solid ${token.colorBorder};
+      background: ${token.colorFillTertiary} !important;
+      border: 1px solid ${token.colorBorder} !important;
       box-shadow: none;
     }
   `,

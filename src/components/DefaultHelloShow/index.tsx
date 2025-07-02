@@ -5,11 +5,11 @@ import { HELLO_IMG } from "@/const/base";
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
     box-sizing: border-box;
   `,
   helloImg: css`
@@ -33,7 +33,7 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 
-const DefaultCreateCustomer = () => {
+const DefaultHelloShow = () => {
   const { styles } = useStyles();
 
   return (
@@ -45,10 +45,10 @@ const DefaultCreateCustomer = () => {
       <div className={styles.middle}>
         输入客户发送的韩文内容，获取翻译和业务提示信息
         <br />
-        输入中文并以“员工消息”发送，获得韩文翻译和业务提示信息
+        输入中文并以"员工消息"发送，获得韩文翻译和业务提示信息
       </div>
     </div>
   );
 };
 
-export default DefaultCreateCustomer;
+export default DefaultHelloShow;
