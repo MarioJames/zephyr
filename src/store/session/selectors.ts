@@ -6,7 +6,7 @@ export const sessionSelectors = {
   sessions: (state: SessionStore) => state.sessions,
 
   // 获取当前会话ID
-  currentSessionId: (state: SessionStore) => state.activeSessionId,
+  activeSessionId: (state: SessionStore) => state.activeSessionId,
 
   // 当前会话
   currentSession: (state: SessionStore) =>

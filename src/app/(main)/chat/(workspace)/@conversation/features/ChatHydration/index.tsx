@@ -18,7 +18,7 @@ const ChatHydration = memo(() => {
 
   // two-way bindings the session params to session store
   const [session, setSession] = useQueryState('session', { history: 'replace', throttleMs: 500 });
-  useSessionStoreUpdater('currentSessionId', session);
+  useSessionStoreUpdater('activeSessionId', session);
 
   useLayoutEffect(() => {
     // 订阅topic变化并同步到URL
@@ -31,7 +31,7 @@ const ChatHydration = memo(() => {
 
     // 订阅session变化并同步到URL
     const unsubscribeSession = useSessionStore.subscribe(
-      (s) => s.currentSessionId,
+      (s) => s.activeSessionId,
       (state) => {
         setSession(!state ? null : state);
       },

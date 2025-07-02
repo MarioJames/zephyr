@@ -9,8 +9,8 @@ import { useSessionStore } from '@/store/session';
 const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
   const [tempValue, setTempValue] = useState('');
   const [searchKeyword, setSearchKeywords] = useState('');
-  const [currentSessionId, searchSessions, clearSearchResults] = useSessionStore((s) => [
-    s.currentSessionId,
+  const [activeSessionId, searchSessions, clearSearchResults] = useSessionStore((s) => [
+    s.activeSessionId,
     s.searchSessions,
     s.clearSearchResults,
   ]);

@@ -13,19 +13,19 @@ const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
   const { styles } = useHistoryStyles();
 
-  // 获取当前 currentSessionId 和 fetchTopics action
-  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  // 获取当前 activeSessionId 和 fetchTopics action
+  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const fetchTopics = useChatStore((s) => s.fetchTopics);
   // 获取话题列表
   const topics = useChatStore(topicSelectors.topics);
   const switchTopic = useChatStore((s) => s.switchTopic);
 
   useEffect(() => {
-    if (currentSessionId) {
-      fetchTopics(currentSessionId);
+    if (activeSessionId) {
+      fetchTopics(activeSessionId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSessionId]);
+  }, [activeSessionId]);
 
   return (
     <Flexbox height="100%" className={styles.panelBg}>

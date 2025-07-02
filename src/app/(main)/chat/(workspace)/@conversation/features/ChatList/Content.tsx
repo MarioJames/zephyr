@@ -14,7 +14,7 @@ import MainChatItem from './ChatItem';
 
 const Content = memo(() => {
   const isCurrentChatLoaded = useChatStore(chatSelectors.isCurrentChatLoaded);
-  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
 
   useFetchMessages();
   const data = useChatStore((s) => chatSelectors.mainDisplayChatIDs(s), shallow);
@@ -24,7 +24,7 @@ const Content = memo(() => {
     []
   );
 
-  if (!currentSessionId) {
+  if (!activeSessionId) {
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
         请选择客户后进行对话哦

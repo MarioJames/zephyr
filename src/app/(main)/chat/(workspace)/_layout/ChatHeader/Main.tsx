@@ -71,7 +71,7 @@ const useStyles = createStyles(({ css }) => ({
 const Main = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
   const router = useRouter();
-  const sessionId = useSessionStore(sessionSelectors.currentSessionId);
+  const sessionId = useSessionStore(sessionSelectors.activeSessionId);
   const currentSession = useSessionStore(sessionSelectors.currentSession);
   const [isPinned] = useQueryState('pinned', parseAsBoolean);
 

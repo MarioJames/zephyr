@@ -17,7 +17,7 @@ const ChatHeader = dynamic(() => import('../_layout/ChatHeader'));
 const ChatConversation = (props: DynamicLayoutProps) => {
   // 将所有 hooks 调用移到最前面，确保调用顺序一致
   const sessions = useSessionStore(sessionSelectors.sessions);
-  const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const activeTopicId = useChatStore((s) => s.activeTopicId);
   const fetchMessagesByTopic = useChatStore((s) => s.fetchMessagesByTopic);
 
@@ -32,7 +32,7 @@ const ChatConversation = (props: DynamicLayoutProps) => {
     return <DefaultCreateCustomer />;
   }
 
-  if (!currentSessionId) {
+  if (!activeSessionId) {
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
         请选择客户后进行对话哦

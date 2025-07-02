@@ -36,7 +36,7 @@ const SlotPanel = memo(() => {
   const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
 
   // 获取当前激活的 session（从 session store 获取）
-  const activeSessionId = useSessionStore(sessionSelectors.currentSessionId);
+  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const hasActiveSession = !!activeSessionId;
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));

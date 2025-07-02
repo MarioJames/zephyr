@@ -11,7 +11,7 @@ import SessionGroupItem from './GroupItem';
 
 const ShowMode = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [currentSessionId] = useSessionStore((s) => [s.activeSessionId]);
+  const [activeSessionId] = useSessionStore((s) => [s.activeSessionId]);
 
   // 分组逻辑：最近客户（前5个），全部客户（所有）
   const recentSessions = useSessionStore(sessionSelectors.recentSessions);
@@ -35,7 +35,7 @@ const ShowMode = memo(() => {
           : `默认客户${index + 1}`;
       return (
         <SessionItem
-          active={currentSessionId === session?.id}
+          active={activeSessionId === session?.id}
           id={session?.id}
           key={session?.id}
           title={title}
@@ -44,7 +44,7 @@ const ShowMode = memo(() => {
         />
       );
     },
-    [currentSessionId, flatSessions, recentSessions?.length]
+    [activeSessionId, flatSessions, recentSessions?.length]
   );
 
   const groupContent = useCallback(
