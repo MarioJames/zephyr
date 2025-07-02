@@ -1,13 +1,15 @@
 import dynamic from 'next/dynamic';
 import { PropsWithChildren, memo } from 'react';
 
-import { useModelHasContextWindowToken } from '@/hooks/useModelHasContextWindowToken';
 import { useChatStore } from '@/store/chat';
+import { useModelStore, modelCoreSelectors } from '@/store/model';
 
 const LargeTokenContent = dynamic(() => import('./TokenTag'), { ssr: false });
 
 const Token = memo<PropsWithChildren>(({ children }) => {
-  const showTag = useModelHasContextWindowToken();
+  const [showTag] = useModelStore((s) => [
+    modelCoreSelectors.currentModelContextWindowTokens(s),
+  ]);
 
   return showTag && children;
 });

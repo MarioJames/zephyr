@@ -1,9 +1,9 @@
 import { StateCreator } from 'zustand';
-import aiInfraService, {
-  ModelDetailsResponse,
-  ModelDetailRequest,
-} from '@/services/ai-infra';
-import modelsService, { GetModelsRequest, ModelItem } from '@/services/models';
+import modelsService, {
+  GetModelConfigRequest,
+  GetModelsRequest,
+  ModelItem,
+} from '@/services/models';
 import { ModelCoreState } from './initialState';
 
 export interface ModelCoreAction {
@@ -13,7 +13,7 @@ export interface ModelCoreAction {
   clearModelsList: () => void;
 
   // 当前会话模型相关操作
-  fetchModelConfig: (model: string, provider: string) => Promise<void>;
+  fetchModelConfig: (data: GetModelConfigRequest) => Promise<void>;
   setCurrentModelConfig: (modelInfo?: ModelItem) => void;
   clearCurrentModelConfig: () => void;
 }
@@ -68,14 +68,22 @@ export const modelCoreSlice: StateCreator<
   },
 
   // 当前会话模型相关操作
-  fetchModelConfig: async (model: string, provider: string) => {
+  fetchModelConfig: async (data) => {
+    const { model, provider, sessionId } = data;
+
+    if (!sessionId && !model && !provider) return;
+
     set({
       isLoadingModelConfigs: true,
       modelError: undefined,
     });
 
+    const requestMethod = sessionId
+      ? modelsService.getModelConfigBySession
+      : modelsService.getModelConfig;
+
     try {
-      const modelConfig = await modelsService.getModelConfig(provider, model);
+      const modelConfig = await requestMethod(data);
 
       set({
         currentModelConfig: modelConfig,

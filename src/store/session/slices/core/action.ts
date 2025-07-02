@@ -7,6 +7,7 @@ import { SessionStore } from '@/store/session';
 import { topicsAPI } from '@/services';
 import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
+import { useModelStore } from '@/store/model';
 
 export interface SessionCoreAction {
   // 获取会话列表
@@ -32,12 +33,12 @@ export const sessionCoreAction: StateCreator<
   SessionCoreAction
 > = (set, get) => ({
   fetchSessions: async (params?: SessionListRequest) => {
-    console.log('fetchSessions session slice core action');
     set({ isLoading: true, error: undefined });
     try {
       const { sessions = [], total = 0 } = await sessionService.getSessionList(
         params
       );
+
       set({
         sessions,
         isLoading: false,
@@ -58,6 +59,9 @@ export const sessionCoreAction: StateCreator<
 
     // 获取客户拓展配置
     useCustomerStore.getState().getCustomerExtend(sessionId);
+
+    // 获取模型配置
+    useModelStore.getState().fetchModelConfig({ sessionId });
 
     // 如果没有传入话题ID，则获取会话下的所有话题
     if (!activeTopicId) {

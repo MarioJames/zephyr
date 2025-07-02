@@ -30,6 +30,9 @@ const currentModelSupportToolUse = (s: ModelCoreState): boolean =>
 const currentModelSupportReasoning = (s: ModelCoreState): boolean =>
   s.currentModelConfig?.abilities?.reasoning ?? false;
 
+const currentModelSupportSearch = (s: ModelCoreState): boolean =>
+  s.currentModelConfig?.abilities?.search ?? false;
+
 const currentModelContextWindowTokens = (
   s: ModelCoreState
 ): number | undefined => s.currentModelConfig?.contextWindowTokens;
@@ -44,5 +47,6 @@ export const modelCoreSelectors = {
   currentModelSupportVision,
   currentModelSupportToolUse,
   currentModelSupportReasoning,
+  currentModelSupportSearch,
   currentModelContextWindowTokens,
 };
