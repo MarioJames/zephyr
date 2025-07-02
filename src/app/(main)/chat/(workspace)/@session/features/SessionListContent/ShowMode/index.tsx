@@ -30,21 +30,21 @@ const ShowMode = memo(() => {
       const isRecent = index < recentSessions.length;
       const session = flatSessions[index];
       const title =
-        session?.title && session.title.trim() !== ''
+        session?.title && session.title?.trim() !== ''
           ? session.title
           : `默认客户${index + 1}`;
       return (
         <SessionItem
-          active={currentSessionId === session.id}
-          id={session.id}
-          key={session.id}
+          active={currentSessionId === session?.id}
+          id={session?.id}
+          key={session?.id}
           title={title}
           isRecent={isRecent}
-          user={session.user}
+          user={session?.user}
         />
       );
     },
-    [currentSessionId, flatSessions, recentSessions.length]
+    [currentSessionId, flatSessions, recentSessions?.length]
   );
 
   const groupContent = useCallback(

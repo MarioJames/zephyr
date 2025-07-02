@@ -24,7 +24,7 @@ const SearchResult = memo(() => {
     (index: number, item: any) => {
       const title = item?.title && item.title.trim() !== '' ? item.title : '默认客户';
       return (
-        <SessionItem active={activeSessionId === item.id} id={item.id} key={item.id} title={title} />
+        <SessionItem active={activeSessionId === item?.id} id={item?.id} key={item?.id} title={title} />
       );
     },
     [activeSessionId],
