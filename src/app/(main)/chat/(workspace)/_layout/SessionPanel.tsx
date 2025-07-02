@@ -8,6 +8,8 @@ import { PropsWithChildren, memo, useEffect, useState } from 'react';
 import { CHAT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   content: css`
@@ -32,16 +34,33 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   const showSessionPanel = useGlobalStore(systemStatusSelectors.showSessionPanel);
   const toggleSessionPanel = useGlobalStore((s) => s.toggleSessionPanel);
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSessionPanel));
+  
+  // 获取 sessions 状态
+  const sessions = useSessionStore(sessionSelectors.sessions);
+  const [userCollapsed, setUserCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     setCacheExpand(Boolean(showSessionPanel));
   }, [showSessionPanel]);
 
+  // 处理手动展开/收起
   const handleExpand = (expand: boolean) => {
     if (isEqual(expand, Boolean(showSessionPanel))) return;
     toggleSessionPanel(expand);
     setCacheExpand(expand);
+    setUserCollapsed(!expand);
   };
+
+  // 根据 sessions 自动控制展开状态
+  useEffect(() => {
+    if (sessions.length === 0) {
+      toggleSessionPanel(false);
+      setCacheExpand(false);
+    } else if (!userCollapsed) {
+      toggleSessionPanel(true);
+      setCacheExpand(true);
+    }
+  }, [sessions, toggleSessionPanel, userCollapsed]);
 
   useEffect(() => {
     if (lg && cacheExpand) toggleSessionPanel(true);

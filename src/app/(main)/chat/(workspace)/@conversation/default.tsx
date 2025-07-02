@@ -16,7 +16,7 @@ const ChatHeader = dynamic(() => import('../_layout/ChatHeader'));
 
 const ChatConversation = (props: DynamicLayoutProps) => {
   // 将所有 hooks 调用移到最前面，确保调用顺序一致
-  const sessions = useSessionStore((s) => s.sessions);
+  const sessions = useSessionStore(sessionSelectors.sessions);
   const currentSessionId = useSessionStore(sessionSelectors.currentSessionId);
   const activeTopicId = useChatStore((s) => s.activeTopicId);
   const fetchMessagesByTopic = useChatStore((s) => s.fetchMessagesByTopic);
@@ -26,7 +26,6 @@ const ChatConversation = (props: DynamicLayoutProps) => {
       fetchMessagesByTopic(activeTopicId);
     }
   }, [activeTopicId]);
-
 
   // 条件渲染移到 hooks 调用之后
   if (!sessions || sessions.length === 0) {
