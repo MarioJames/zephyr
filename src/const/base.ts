@@ -9,3 +9,5 @@ export const DEFAULT_USER_AVATAR_URL =
   'https://lobehub.com/_next/static/media/logo.98482105.png';
 
 export const ARTIFACT_THINKING_TAG = 'lobeThinking';
+
+export const HELLO_IMG = 'https://registry.npmmirror.com/@lobehub/fluent-emoji-anim-1/1.0.0/files/assets/1f44b.webp';
