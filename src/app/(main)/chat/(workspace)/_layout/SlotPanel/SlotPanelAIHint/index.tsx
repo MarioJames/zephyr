@@ -6,8 +6,8 @@ import { Bot } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { AgentSuggestionItem } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
-import { LoadingOutlined } from '@ant-design/icons';
 import BubblesLoading from '@/components/Loading/BubblesLoading';
+import SkeletonList from './SkeletonList';
 
 const { Paragraph } = Typography;
 
@@ -179,8 +179,8 @@ function AIHintItem({
 const AIHintPanel = () => {
   const { styles } = useAIHintStyles();
 
-  // 获取当前 topic 的建议数据
-  const { isGeneratingAI, suggestions } = useChatStore();
+  // 获取当前 topic 的建议数据和加载状态
+  const { isGeneratingAI, suggestions, isLoading: isFetchingAI } = useChatStore();
 
   // 找到最新建议（按时间戳最大的）
   const latestSuggestion =
@@ -204,23 +204,37 @@ const AIHintPanel = () => {
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
-        {suggestions.length === 0 && !isGeneratingAI && <div>暂无AI建议</div>}
-        {suggestions.map((item) => (
-          <AIHintItem
-            key={item.id}
-            item={item}
-            isLatest={latestSuggestion?.id === item.id}
-          />
-        ))}
-        {isGeneratingAI && (
-          <Flexbox
-            horizontal
-            align='center'
-            justify='center'
-            style={{ marginBottom: 10 }}
-          >
-            <BubblesLoading />
-          </Flexbox>
+        {true ? (
+          <SkeletonList />
+        ) : (
+          <>
+            {suggestions.length === 0 && !isGeneratingAI && (
+              <Flexbox
+                align="center"
+                justify="center"
+                style={{ height: '100%', color: '#999', fontSize: 14 }}
+              >
+                暂无AI建议
+              </Flexbox>
+            )}
+            {suggestions.map((item) => (
+              <AIHintItem
+                key={item.id}
+                item={item}
+                isLatest={latestSuggestion?.id === item.id}
+              />
+            ))}
+            {isGeneratingAI && (
+              <Flexbox
+                horizontal
+                align='center'
+                justify='center'
+                style={{ marginBottom: 10 }}
+              >
+                <BubblesLoading />
+              </Flexbox>
+            )}
+          </>
         )}
       </Flexbox>
     </Flexbox>

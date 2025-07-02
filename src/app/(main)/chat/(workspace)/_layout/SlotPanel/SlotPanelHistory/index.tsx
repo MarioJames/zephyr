@@ -8,6 +8,7 @@ import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
 import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
+import SkeletonList from './SkeletonList';
 
 const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
@@ -16,8 +17,9 @@ const HistoryPanel = () => {
   // 获取当前 activeSessionId 和 fetchTopics action
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const fetchTopics = useChatStore((s) => s.fetchTopics);
-  // 获取话题列表
+  // 获取话题列表和加载状态
   const topics = useChatStore(topicSelectors.topics);
+  const isLoading = useChatStore((s) => s.isLoading);
   const switchTopic = useChatStore((s) => s.switchTopic);
 
   useEffect(() => {
@@ -49,7 +51,9 @@ const HistoryPanel = () => {
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
-        {topics.length === 0 ? (
+        {isLoading ? (
+          <SkeletonList />
+        ) : topics.length === 0 ? (
           <Flexbox flex={1} align="center" justify="center" style={{ color: '#999', fontSize: 16 }}>
             暂无历史会话
           </Flexbox>
