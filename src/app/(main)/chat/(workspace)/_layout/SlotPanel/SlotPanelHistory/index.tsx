@@ -6,7 +6,7 @@ import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
-import { useHistoryStyles } from './style';
+import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
 
 const HistoryPanel = () => {

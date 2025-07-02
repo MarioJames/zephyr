@@ -5,7 +5,7 @@ import { Flexbox } from 'react-layout-kit';
 import { Bot } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { AgentSuggestionItem } from '@/services/agent_suggestions';
-import { useAIHintStyles } from './style';
+import { useAIHintStyles } from '../style';
 import { LoadingOutlined } from '@ant-design/icons';
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 
