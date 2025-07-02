@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { App, FormInstance } from 'antd';
 import { useCustomerStore } from '@/store/customer';
 import { useAgentStore } from '@/store/agent';
@@ -41,7 +41,7 @@ export function useCustomerForm({
   params,
 }: UseCustomerFormParams): UseCustomerFormReturn {
   const { message, modal } = App.useApp();
-
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -100,8 +100,17 @@ export function useCustomerForm({
       handleInitCustomer(customerId);
     } else {
       form.resetFields();
+      // 如果是创建模式，设置默认选中的agent
+      const agentId = searchParams?.get('agentId');
+      if (agentId) {
+        // 如果URL中有agentId参数，使用该参数
+        form.setFieldValue('agentId', agentId);
+      } else if (agents.length > 0) {
+        // 如果没有agentId参数，默认选中第一个agent
+        form.setFieldValue('agentId', agents[0].id);
+      }
     }
-  }, [handleInitCustomer, mode, customerId]);
+      }, [handleInitCustomer, mode, customerId, form, searchParams, agents]);
 
   // 处理表单提交
   const handleSubmit = useCallback(
