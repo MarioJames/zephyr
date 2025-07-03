@@ -145,9 +145,33 @@ export const agentSuggestionsSlice: StateCreator<
       });
 
       if (aiResponse.reply) {
-        const pureReply = aiResponse.reply.replace(/```json\n|```/g, '');
+        let pureReply = '';
 
-        const suggestion = JSON.parse(pureReply) as AgentSuggestionContent;
+        // 用正则表达式提取JSON内容
+        const match = aiResponse.reply.match(/```json\s*\n([\s\S]*?)\n```/);
+        if (match) {
+          pureReply = match[1].trim().replace(/\[\d+\]/g, '');
+        }
+
+        console.log('pureReply', pureReply);
+
+        if (!pureReply) {
+          console.warn('无法从AI响应中提取JSON内容:', aiResponse.reply);
+          set({ isGeneratingAI: false });
+          return null;
+        }
+
+        let suggestion: AgentSuggestionContent;
+        try {
+          suggestion = JSON.parse(pureReply) as AgentSuggestionContent;
+        } catch (parseError) {
+          console.error('JSON解析失败:', parseError);
+          console.error('原始JSON:', pureReply);
+          set({
+            isGeneratingAI: false,
+          });
+          return null;
+        }
 
         if (!suggestion) {
           set({ isGeneratingAI: false });
