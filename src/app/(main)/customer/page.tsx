@@ -1,20 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import {
-  Table,
-  Space,
-  Typography,
-  App,
-  Spin,
-} from 'antd';
-import { Button, Modal, Select,Alert } from '@lobehub/ui';
+import { Table, Space, Typography, App, Spin } from 'antd';
+import { Button, Modal, Select, Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import type { ColumnsType } from 'antd/es/table';
-import { sessionsAPI, type CustomerItem } from '@/services';
-import { UserItem } from '@/services/user';
+import { sessionsAPI, topicsAPI, type CustomerItem } from '@/services';
 import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
 import { useRequest } from 'ahooks';
@@ -122,14 +115,14 @@ const transformCustomerToDisplayItem = (
 ): CustomerDisplayItem => {
   const { session, extend } = customer || {};
 
-  const { user, agent } = session || {};
+  const { user, agentsToSessions } = session || {};
 
   return {
     key: session.id,
     sessionId: session.id,
     name: session.title || '',
     company: extend?.company || '',
-    type: agent?.title || '未分类',
+    type: agentsToSessions[0]?.agent?.title || '未分类',
     phone: extend?.phone || '',
     createTime: dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
@@ -166,6 +159,7 @@ export default function Customer() {
     pageSize,
     setPagination,
   } = useCustomerStore();
+
 
   // 本地状态（只保留必要的UI状态）
   const [currentRecord, setCurrentRecord] =
@@ -250,10 +244,19 @@ export default function Customer() {
 
   // 跳转到对话页面
   const handleViewConversations = useCallback(
-    (record: CustomerDisplayItem) => {
-      router.push(`/chat?sessionId=${record.sessionId}`);
+    async (record: CustomerDisplayItem) => {
+      try {
+        const topics = await topicsAPI.getTopicList(record.sessionId);
+
+        const activeTopicId = topics?.[0]?.id;
+
+        router.push(`/chat?session=${record.sessionId}&topic=${activeTopicId}`);
+      } catch (error) {
+        console.error('切换会话失败:', error);
+        message.error('切换到对话失败');
+      }
     },
-    [router]
+    [router, message]
   );
 
   // 表格列定义

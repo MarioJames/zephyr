@@ -7,7 +7,6 @@ export type { EmployeeState, EmployeeStatsItem } from './initialState';
 
 // 导出各slice的Action类型
 export type { CoreAction } from './slices/core/action';
-export type { StatsAction } from './slices/stats/action';
 export type { NotificationAction } from './slices/notification/action';
 export type { SearchAction } from './slices/search/action';
 

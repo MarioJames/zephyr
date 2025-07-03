@@ -3,24 +3,25 @@ import { Upload } from 'antd';
 import { FileUp, LucideImage } from 'lucide-react';
 import { memo } from 'react';
 
-import { useAgentStore } from '@/store/agent';
-import { agentModelSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
+import { modelCoreSelectors, useModelStore } from '@/store/model';
 
 const FileUpload = memo(() => {
   const upload = useChatStore((s) => s.uploadChatFiles);
   const isUploading = useChatStore((s) => s.isUploading);
 
-  const modelDetails = useAgentStore(agentModelSelectors.currentModelDetails);
-  const { supportFiles: enabledFiles, supportVision: supportVision } = modelDetails || {};
+  const [supportFiles, supportVision] = useModelStore((s) => [
+    modelCoreSelectors.currentModelSupportFiles(s),
+    modelCoreSelectors.currentModelSupportVision(s),
+  ]);
 
-  const canUpload = enabledFiles || supportVision;
+  const canUpload = supportFiles || supportVision;
 
   let title = '上传已禁用';
   if (isUploading) {
     title = '正在上传...';
   } else if (canUpload) {
-    if (enabledFiles) {
+    if (supportFiles) {
       title = '上传文件';
     } else {
       title = '上传图片';
@@ -29,7 +30,7 @@ const FileUpload = memo(() => {
 
   return (
     <Upload
-      accept={enabledFiles ? undefined : 'image/*'}
+      accept={supportFiles ? undefined : 'image/*'}
       beforeUpload={async (file) => {
         await upload([file]);
         return false;
@@ -40,7 +41,7 @@ const FileUpload = memo(() => {
     >
       <ActionIcon
         disabled={!canUpload}
-        icon={enabledFiles ? FileUp : LucideImage}
+        icon={supportFiles ? FileUp : LucideImage}
         loading={isUploading}
         title={title}
         tooltipProps={{

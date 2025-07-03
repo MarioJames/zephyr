@@ -11,6 +11,7 @@ export interface ModelCoreAction {
   fetchModelsList: (params?: GetModelsRequest) => Promise<void>;
   refreshModelsList: () => Promise<void>;
   clearModelsList: () => void;
+  initModels: () => Promise<void>;
 
   // 当前会话模型相关操作
   fetchModelConfig: (data: GetModelConfigRequest) => Promise<void>;
@@ -42,6 +43,7 @@ export const modelCoreSlice: StateCreator<
       set({
         modelsList,
         isLoadingModelsList: false,
+        modelsInit: true,
         modelError: undefined,
       });
     } catch (error) {
@@ -64,7 +66,15 @@ export const modelCoreSlice: StateCreator<
   clearModelsList: () => {
     set({
       modelsList: undefined,
+      modelsInit: false,
     });
+  },
+
+  initModels: async () => {
+    const state = get();
+    if (state.modelsInit) return;
+    
+    await state.fetchModelsList();
   },
 
   // 当前会话模型相关操作
