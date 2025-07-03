@@ -21,7 +21,8 @@ export interface ModelItem {
   id: string;
   settings?: {
     extendParams?: string[];
-    searchImpl?: string;
+    // params: 模型本身支持搜索，internal: lobechat内部搜索，但在Zephyr中不支持
+    searchImpl?: 'params' | 'internal';
     searchProvider?: string;
   };
   sort?: number;
@@ -56,7 +57,7 @@ export interface GetModelsRequest {
     | 'text2music'
     | 'realtime';
   enabled?: boolean;
-  providerId?: string;
+  provider?: string;
   page?: number;
   pageSize?: number;
   groupByProvider?: boolean; // true: 按provider分组返回, false: 返回扁平列表

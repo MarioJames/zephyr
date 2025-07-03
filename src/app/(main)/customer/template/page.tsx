@@ -21,6 +21,7 @@ import { agentSelectors } from '@/store/agent/selectors';
 import TemplateModal from './components/templateModal';
 import DeleteModal from './components/deleteModal';
 import { CreateAgentRequest } from '@/services';
+import { useModelStore, modelCoreSelectors } from '@/store/model';
 
 const { Title } = Typography;
 
@@ -105,7 +106,9 @@ const useStyles = createStyles(({ css, token }) => ({
     font-size: 14px;
     background: none !important;
     border: none !important;
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       color: ${token.colorText} !important;
       background: none !important;
       border: none !important;
@@ -121,6 +124,11 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export default function CustomerTemplatePage() {
   const { styles } = useStyles();
+
+  // 获取模型选项数据
+  const modelOptions = useModelStore((s) =>
+    modelCoreSelectors.providerModelOptions(s)
+  );
 
   // agent store hooks
   const {
@@ -308,26 +316,7 @@ export default function CustomerTemplatePage() {
         onOk={handleModalOk}
         loading={submitting}
         initialValues={editing?.initial}
-        modelOptions={[
-          {
-            label: 'OpenAI',
-            options: [
-              { label: 'gpt-4o', value: 'gpt-4o' },
-              { label: 'gpt-4o-mini', value: 'gpt-4o-mini' },
-            ],
-          },
-          {
-            label: 'Gemini',
-            options: [{ label: 'gemini-2.0-flash', value: 'gemini-2.0-flash' }],
-          },
-          {
-            label: 'Anthropic',
-            options: [
-              { label: 'claude-3.5-haiku', value: 'claude-3.5-haiku' },
-              { label: 'claude-3.5-sonnet', value: 'claude-3.5-sonnet' },
-            ],
-          },
-        ]}
+        modelOptions={modelOptions}
       />
       <DeleteModal
         open={deleteModalOpen}

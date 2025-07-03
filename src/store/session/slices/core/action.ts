@@ -76,12 +76,6 @@ export const sessionCoreAction: StateCreator<
       activeSessionId: sessionId,
     });
 
-    // 设置URL参数
-    const url = new URL(window.location.href);
-    url.searchParams.set('session', sessionId);
-    url.searchParams.set('topic', activeTopicId);
-    window.history.replaceState(null, '', url.toString());
-
     // 重置聊天状态
     useChatStore.setState({
       messages: [],

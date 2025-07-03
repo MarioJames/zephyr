@@ -18,7 +18,12 @@ export interface SessionItem {
   // 关联的员工完整信息
   user?: UserItem;
   // 关联的智能体
-  agent: AgentItem;
+  agentsToSessions: {
+    agent: AgentItem;
+    agentId: string;
+    sessionId: string;
+    userId: string;
+  }[];
   messageCount?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -158,7 +163,9 @@ function getSessionsGroupedByAgent() {
  * @returns 批量更新结果响应
  */
 function batchUpdateSessions(data: SessionUpdateRequest[]) {
-  return http.put<SessionItem[]>('/api/v1/sessions/batch-update', { sessions: data });
+  return http.put<SessionItem[]>('/api/v1/sessions/batch-update', {
+    sessions: data,
+  });
 }
 
 /**
