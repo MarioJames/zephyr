@@ -8,10 +8,9 @@ import {
   Trash,
 } from 'lucide-react';
 import { memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useFileStore } from '@/store/file';
-import { downloadFile } from '@/utils/client/downloadFile';
+import { downloadFile } from '@/utils/downloadFile';
 
 interface DropdownMenuProps {
   name: string;
@@ -20,7 +19,6 @@ interface DropdownMenuProps {
 }
 
 const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
-  const { t } = useTranslation(['components', 'common']);
   const { message, modal } = App.useApp();
 
   const [removeFile] = useFileStore((s) => [s.removeFileItem]);
@@ -30,22 +28,22 @@ const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
       {
         icon: <Icon icon={LinkIcon} />,
         key: 'copyUrl',
-        label: t('FileManager.actions.copyUrl'),
+        label: '复制链接',
         onClick: async ({ domEvent }) => {
           domEvent.stopPropagation();
           await copyToClipboard(url);
-          message.success(t('FileManager.actions.copyUrlSuccess'));
+          message.success('文件地址复制成功');
         },
       },
       {
         icon: <Icon icon={DownloadIcon} />,
         key: 'download',
-        label: t('download', { ns: 'common' }),
+        label: '下载',
         onClick: async ({ domEvent }) => {
           domEvent.stopPropagation();
           const key = 'file-downloading';
           message.loading({
-            content: t('FileManager.actions.downloading'),
+            content: '文件下载中...',
             duration: 0,
             key,
           });
@@ -60,11 +58,11 @@ const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
         danger: true,
         icon: <Icon icon={Trash} />,
         key: 'delete',
-        label: t('delete', { ns: 'common' }),
+        label: '删除',
         onClick: async ({ domEvent }) => {
           domEvent.stopPropagation();
           modal.confirm({
-            content: t('FileManager.actions.confirmDelete'),
+            content: '即将删除该文件，删除后该将无法找回，请确认你的操作',
             okButtonProps: { danger: true },
             onOk: async () => {
               await removeFile(id);

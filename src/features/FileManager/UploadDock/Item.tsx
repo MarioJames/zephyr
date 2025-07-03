@@ -1,7 +1,8 @@
+'use client';
+
 import { Text } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { ReactNode, memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
@@ -35,7 +36,6 @@ const useStyles = createStyles(({ css, token }) => {
 type UploadItemProps = UploadFileItem;
 
 const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
-  const { t } = useTranslation('file');
   const { styles } = useStyles();
   const { type, name, size } = file;
 
@@ -44,11 +44,7 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
       case 'uploading': {
         const textArray = [
           uploadState?.speed ? formatSpeed(uploadState.speed) : '',
-          uploadState?.restTime
-            ? t('uploadDock.body.item.restTime', {
-                time: formatTime(uploadState?.restTime),
-              })
-            : '',
+          uploadState?.restTime ? `剩余 ${formatTime(uploadState?.restTime)}` : '',
         ].filter(Boolean);
 
         return (
@@ -62,7 +58,7 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
       case 'pending': {
         return (
           <Text style={{ fontSize: 12 }} type={'secondary'}>
-            {formatSize(size)} · {t('uploadDock.body.item.pending')}
+            {formatSize(size)} · 准备上传...
           </Text>
         );
       }
@@ -70,7 +66,7 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
       case 'processing': {
         return (
           <Text style={{ fontSize: 12 }} type={'secondary'}>
-            {formatSize(size)} · {t('uploadDock.body.item.processing')}
+            {formatSize(size)} · 文件处理中...
           </Text>
         );
       }
@@ -78,14 +74,14 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
       case 'success': {
         return (
           <Text style={{ fontSize: 12 }} type={'secondary'}>
-            {formatSize(size)} · {t('uploadDock.body.item.done')}
+            {formatSize(size)} · 已上传
           </Text>
         );
       }
       case 'error': {
         return (
           <Text style={{ fontSize: 12 }} type={'danger'}>
-            {formatSize(size)} · {t('uploadDock.body.item.error')}
+            {formatSize(size)} · 上传失败，请重试
           </Text>
         );
       }

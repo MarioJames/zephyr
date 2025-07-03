@@ -5,7 +5,6 @@ import { Flexbox } from 'react-layout-kit';
 
 import { useFileStore } from '@/store/file';
 
-import Config from './Config';
 import MultiSelectActions, { MultiSelectActionType } from './MultiSelectActions';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -20,7 +19,6 @@ interface MultiSelectActionsProps {
   selectCount: number;
   selectFileIds: string[];
   setSelectedFileIds: (ids: string[]) => void;
-  showConfig?: boolean;
   total?: number;
   totalFileIds: string[];
 }
@@ -28,7 +26,6 @@ interface MultiSelectActionsProps {
 const ToolBar = memo<MultiSelectActionsProps>(
   ({
     selectCount,
-    showConfig,
     setSelectedFileIds,
     selectFileIds,
     total,
@@ -59,7 +56,6 @@ const ToolBar = memo<MultiSelectActionsProps>(
           selectCount={selectCount}
           total={total}
         />
-        {showConfig && <Config />}
       </Flexbox>
     );
   },

@@ -1,21 +1,23 @@
 'use client';
 
-import { Text } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { useQueryState } from 'nuqs';
 import { rgba } from 'polished';
 import { memo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso } from 'react-virtuoso';
 
 import { useFileStore } from '@/store/file';
-import { SortType } from '@/types/files';
 
 import EmptyStatus from './EmptyStatus';
 import FileListItem, { FILE_DATE_WIDTH, FILE_SIZE_WIDTH } from './FileListItem';
 import FileSkeleton from './FileSkeleton';
 import ToolBar from './ToolBar';
+
+enum SortType {
+  Asc = 'asc',
+  Desc = 'desc',
+}
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   header: css`
@@ -39,7 +41,6 @@ interface FileListProps {
 }
 
 const FileList = memo<FileListProps>(({ category }) => {
-  const { t } = useTranslation('components');
   const { styles } = useStyles();
 
   const [selectFileIds, setSelectedFileIds] = useState<string[]>([]);
@@ -83,13 +84,13 @@ const FileList = memo<FileListProps>(({ category }) => {
         />
         <Flexbox align={'center'} className={styles.header} horizontal paddingInline={8}>
           <Flexbox className={styles.headerItem} flex={1} style={{ paddingInline: 32 }}>
-            {t('FileManager.title.title')}
+            文件
           </Flexbox>
           <Flexbox className={styles.headerItem} width={FILE_DATE_WIDTH}>
-            {t('FileManager.title.createdAt')}
+            创建时间
           </Flexbox>
           <Flexbox className={styles.headerItem} width={FILE_SIZE_WIDTH}>
-            {t('FileManager.title.size')}
+            大小
           </Flexbox>
         </Flexbox>
       </Flexbox>
@@ -100,9 +101,9 @@ const FileList = memo<FileListProps>(({ category }) => {
           components={{
             Footer: () => (
               <Center style={{ height: 64 }}>
-                <Text style={{ fontSize: 12 }} type={'secondary'}>
-                  {t('FileManager.bottom')}
-                </Text>
+                <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
+                  已经到底啦
+                </div>
               </Center>
             ),
           }}

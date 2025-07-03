@@ -1,3 +1,5 @@
+'use client';
+
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import { ActionIcon, Icon, Text } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
@@ -5,7 +7,6 @@ import isEqual from 'fast-deep-equal';
 import { UploadIcon, XIcon } from 'lucide-react';
 import { lighten } from 'polished';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { fileManagerSelectors, useFileStore } from '@/store/file';
@@ -71,7 +72,6 @@ const useStyles = createStyles(({ css, token }) => {
 
 const UploadDock = memo(() => {
   const { styles, theme } = useStyles();
-  const { t } = useTranslation('file');
   const [expand, setExpand] = useState(true);
   const [show, setShow] = useState(true);
 
@@ -108,6 +108,23 @@ const UploadDock = memo(() => {
 
   if (count === 0 || !show) return;
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'error':
+        return '上传出错';
+      case 'pending':
+        return '等待上传';
+      case 'processing':
+        return '正在上传';
+      case 'success':
+        return '上传完成';
+      case 'uploading':
+        return '正在上传';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Flexbox className={styles.container}>
       <Flexbox
@@ -126,8 +143,7 @@ const UploadDock = memo(() => {
       >
         <Flexbox align={'center'} className={styles.title} gap={16} horizontal>
           {icon}
-          {t(`uploadDock.uploadStatus.${overviewUploadingStatus}`)} ·{' '}
-          {t('uploadDock.totalCount', { count })}
+          {getStatusText(overviewUploadingStatus)} · 共 {count} 项
         </Flexbox>
         {!isUploading && (
           <ActionIcon
@@ -155,7 +171,7 @@ const UploadDock = memo(() => {
               style={{ cursor: 'pointer' }}
               type={'secondary'}
             >
-              {t('uploadDock.body.collapse')}
+              收起
             </Text>
           </Center>
         </Flexbox>

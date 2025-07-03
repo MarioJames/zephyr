@@ -1,11 +1,10 @@
 'use client';
 
-import { Button, Dropdown, Icon, MenuProps } from '@lobehub/ui';
+import { Button, Dropdown, Icon } from '@lobehub/ui';
 import { Upload } from 'antd';
 import { css, cx } from 'antd-style';
 import { FileUp, FolderUp, UploadIcon } from 'lucide-react';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import DragUpload from '@/components/DragUpload';
 import { useFileStore } from '@/store/file';
@@ -19,11 +18,13 @@ const hotArea = css`
   }
 `;
 
-const UploadFileButton = () => {
-  const { t } = useTranslation('file');
+interface UploadFileButtonProps {
+  knowledgeBaseId?: string;
+}
 
+const UploadFileButton = ({ knowledgeBaseId }: UploadFileButtonProps) => {
   const pushDockFileList = useFileStore((s) => s.pushDockFileList);
-  const items = useMemo<MenuProps['items']>(
+  const items = useMemo(
     () => [
       {
         icon: <Icon icon={FileUp} />,
@@ -31,14 +32,13 @@ const UploadFileButton = () => {
         label: (
           <Upload
             beforeUpload={async (file) => {
-              await pushDockFileList([file]);
-
+              await pushDockFileList([file], knowledgeBaseId);
               return false;
             }}
             multiple={true}
             showUploadList={false}
           >
-            <div className={cx(hotArea)}>{t('header.actions.uploadFile')}</div>
+            <div className={cx(hotArea)}>上传文件</div>
           </Upload>
         ),
       },
@@ -48,29 +48,29 @@ const UploadFileButton = () => {
         label: (
           <Upload
             beforeUpload={async (file) => {
-              await pushDockFileList([file]);
-
+              await pushDockFileList([file], knowledgeBaseId);
               return false;
             }}
             directory
             multiple={true}
             showUploadList={false}
           >
-            <div className={cx(hotArea)}>{t('header.actions.uploadFolder')}</div>
+            <div className={cx(hotArea)}>上传文件夹</div>
           </Upload>
         ),
       },
     ],
     [],
   );
+
   return (
     <>
       <Dropdown menu={{ items }} placement="bottomRight">
-        <Button icon={UploadIcon}>{t('header.uploadButton')}</Button>
+        <Button icon={UploadIcon}>上传</Button>
       </Dropdown>
       <DragUpload
         enabledFiles
-        onUploadFiles={(files) => pushDockFileList(files)}
+        onUploadFiles={(files) => pushDockFileList(files, knowledgeBaseId)}
       />
     </>
   );

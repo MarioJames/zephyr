@@ -1,8 +1,7 @@
-import { FileTypeIcon, Icon, Text } from '@lobehub/ui';
+import { FileTypeIcon, Icon } from '@lobehub/ui';
 import { Upload } from 'antd';
 import { createStyles, useTheme } from 'antd-style';
-import { ArrowUpIcon, PlusIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { ArrowUpIcon } from 'lucide-react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useFileStore } from '@/store/file';
@@ -60,7 +59,6 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 const EmptyStatus = () => {
-  const { t } = useTranslation('components');
   const theme = useTheme();
   const { styles } = useStyles();
 
@@ -69,8 +67,8 @@ const EmptyStatus = () => {
   return (
     <Center gap={24} height={'100%'} style={{ paddingBottom: 100 }} width={'100%'}>
       <Flexbox justify={'center'} style={{ textAlign: 'center' }}>
-        <Text as={'h4'}>{t('FileManager.emptyStatus.title')}</Text>
-        <Text type={'secondary'}>{t('FileManager.emptyStatus.or')}</Text>
+        <h4>将文件或文件夹拖到这里</h4>
+        <div style={{ color: 'rgba(0, 0, 0, 0.45)' }}>或者</div>
       </Flexbox>
       <Flexbox gap={12} horizontal>
         <Upload
@@ -83,7 +81,7 @@ const EmptyStatus = () => {
           showUploadList={false}
         >
           <Flexbox className={styles.card} padding={16}>
-            <span className={styles.actionTitle}>{t('FileManager.emptyStatus.actions.file')}</span>
+            <span className={styles.actionTitle}>上传文件</span>
             <div className={styles.glow} style={{ background: theme.gold }} />
             <FileTypeIcon
               className={styles.icon}
@@ -104,9 +102,7 @@ const EmptyStatus = () => {
           showUploadList={false}
         >
           <Flexbox className={styles.card} padding={16}>
-            <span className={styles.actionTitle}>
-              {t('FileManager.emptyStatus.actions.folder')}
-            </span>
+            <span className={styles.actionTitle}>上传文件夹</span>
             <div className={styles.glow} style={{ background: theme.geekblue }} />
             <FileTypeIcon
               className={styles.icon}
