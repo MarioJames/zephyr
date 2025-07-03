@@ -1,5 +1,5 @@
 import { ActionIcon, ActionIconProps } from '@lobehub/ui';
-import { UsersRound, BookUser, MessageSquare } from 'lucide-react';
+import { UsersRound, BookUser, MessageSquare, FolderClosed } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
@@ -17,6 +17,7 @@ export interface TopActionProps {
 
 const TopActions = memo<TopActionProps>(({ tab }) => {
   const isChatActive = tab === SidebarTabKey.Chat;
+  const isFileActive = tab === SidebarTabKey.File;
   const isCustomerManagementActive = tab === SidebarTabKey.CustomerManagement;
   const isEmployeeManagementActive = tab === SidebarTabKey.EmployeeManagement;
 
@@ -46,6 +47,15 @@ const TopActions = memo<TopActionProps>(({ tab }) => {
           icon={UsersRound}
           size={ICON_SIZE}
           title={"员工管理"}
+          tooltipProps={{ placement: 'right' }}
+        />
+      </Link>
+      <Link aria-label={"文件管理"} href={'/file'}>
+        <ActionIcon
+          active={isFileActive}
+          icon={FolderClosed}
+          size={ICON_SIZE}
+          title={"文件管理"}
           tooltipProps={{ placement: 'right' }}
         />
       </Link>

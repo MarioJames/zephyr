@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 const pathToTab = (pathname: string) => {
   if (pathname.startsWith('/customer')) return SidebarTabKey.CustomerManagement;
   if (pathname.startsWith('/employee')) return SidebarTabKey.EmployeeManagement;
+  if (pathname.startsWith('/file')) return SidebarTabKey.File;
   if (pathname.startsWith('/chat')) return SidebarTabKey.Chat;
   return SidebarTabKey.Chat;
 };

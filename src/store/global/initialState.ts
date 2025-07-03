@@ -10,6 +10,7 @@ import { AsyncLocalStorage } from '@/utils/localStorage';
  */
 export enum SidebarTabKey {
   Chat = 'chat',
+  File = 'file',
   CustomerManagement = 'customer-management',
   EmployeeManagement = 'employee-management',
 }
