@@ -3,12 +3,10 @@
 import { Icon } from '@lobehub/ui';
 import { Typography } from 'antd';
 import { createStyles, useTheme } from 'antd-style';
-import { Database, FileImage, FileText, FileUpIcon, LibraryBig, SearchCheck } from 'lucide-react';
+import { FileImage, FileText, FileUpIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Center, Flexbox } from 'react-layout-kit';
 
-import FeatureList from '@/components/FeatureList';
-import { LOBE_CHAT_CLOUD } from '@/const/branding';
 import { DATABASE_SELF_HOSTING_URL, OFFICIAL_URL, UTM_SOURCE } from '@/const/url';
 
 const { Text } = Typography;
@@ -70,24 +68,6 @@ const NotSupportClient = () => {
   const theme = useTheme();
   const { styles } = useStyles();
 
-  const features = [
-    {
-      avatar: Database,
-      desc: '支持主流文件类型，包括 Word、PPT、Excel、PDF、TXT 等常见文档格式，以及JS、Python 等主流代码文件',
-      title: '多种文件类型解析',
-    },
-    {
-      avatar: SearchCheck,
-      desc: '使用高性能向量模型，对文本分块进行向量化，实现文件内容的语义化检索',
-      title: '向量语义化',
-    },
-    {
-      avatar: LibraryBig,
-      desc: '支持创建知识库，并允许添加不同类型的文件，构建属于你的领域知识',
-      title: '知识库',
-    },
-  ];
-
   return (
     <Center gap={40} height={'100%'} width={'100%'}>
       <Flexbox className={styles.iconGroup} gap={12} horizontal>
@@ -138,13 +118,9 @@ const NotSupportClient = () => {
           <Link
             href={`${OFFICIAL_URL}?utm_source=${UTM_SOURCE}&utm_medium=client_not_support_file`}
           >
-            {LOBE_CHAT_CLOUD}
+            LobeChat Cloud
           </Link>
         </Text>
-      </Flexbox>
-
-      <Flexbox style={{ marginTop: 40 }}>
-        <FeatureList data={features} />
       </Flexbox>
     </Center>
   );
