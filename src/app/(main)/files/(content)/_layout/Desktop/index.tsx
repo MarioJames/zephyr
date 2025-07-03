@@ -2,7 +2,6 @@ import { Flexbox } from 'react-layout-kit';
 
 import { LayoutProps } from '../type';
 import Container from './Container';
-import RegisterHotkeys from './RegisterHotkeys';
 
 const Layout = ({ children, modal }: LayoutProps) => {
   return (
@@ -15,7 +14,6 @@ const Layout = ({ children, modal }: LayoutProps) => {
       >
         <Container>{children}</Container>
       </Flexbox>
-      <RegisterHotkeys />
       {modal}
     </>
   );

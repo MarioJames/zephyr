@@ -1,8 +1,13 @@
 'use client';
 
-import { useFileCategory } from '@/app/[variants]/(main)/files/hooks/useFileCategory';
 import FileManager from '@/features/FileManager';
-import { FilesTabs } from '@/types/files';
+import { FilesTabs } from '../type';
+
+import { useQueryState } from 'nuqs';
+
+
+const useFileCategory = () =>
+  useQueryState('category', { clearOnDefault: true, defaultValue: FilesTabs.All });
 
 const tabNames = {
   [FilesTabs.All]: '全部文件',

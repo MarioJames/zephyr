@@ -30,7 +30,7 @@
     "@lobehub/charts": "2.0.0",
     "@lobehub/chat-plugin-sdk": "^1.32.4",
     "@lobehub/icons": "^2.2.0",
-    "@lobehub/ui": "^2.1.15",
+    "@lobehub/ui": "^2.5.6",
     "@neondatabase/serverless": "^1.0.0",
     "@t3-oss/env-nextjs": "^0.13.6",
     "@tanstack/react-query": "5.76.1",

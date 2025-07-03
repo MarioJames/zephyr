@@ -1,13 +1,5 @@
 import { useQueryState } from 'nuqs';
-
-enum FilesTabs {
-  All = 'all',
-  Audios = 'audios',
-  Documents = 'documents',
-  Images = 'images',
-  Videos = 'videos',
-  Websites = 'websites',
-}
+import { FilesTabs } from '../type';
 
 export const useFileCategory = () =>
   useQueryState('category', { clearOnDefault: true, defaultValue: FilesTabs.All });

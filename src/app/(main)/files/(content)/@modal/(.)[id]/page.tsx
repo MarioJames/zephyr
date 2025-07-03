@@ -1,4 +1,9 @@
-import { PagePropsWithId } from '@/types/next';
+interface PageProps<Params, SearchParams = undefined> {
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
+}
+
+type PagePropsWithId = PageProps<{ id: string }>;
 
 import FileDetail from './FileDetail';
 import FilePreview from './FilePreview';

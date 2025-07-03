@@ -5,8 +5,7 @@ import { ConfigProvider } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useState } from 'react';
-
-import { DETAIL_PANEL_WIDTH } from '@/app/[variants]/(main)/files/features/FileDetail';
+const DETAIL_PANEL_WIDTH = 300;
 
 const useStyles = createStyles(({ css, token }, showDetail: boolean) => {
   return {

@@ -1,12 +1,12 @@
 'use client';
 
-import { Descriptions, Divider } from 'antd';
+import { Descriptions } from 'antd';
 import { useTheme } from 'antd-style';
 import dayjs from 'dayjs';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { FileListItem } from '@/types/files';
+import { FileListItem } from '../type';
 import { formatSize } from '@/utils/format';
 
 export const DETAIL_PANEL_WIDTH = 300;
