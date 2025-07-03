@@ -246,8 +246,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       // 检测消息语言并选择目标翻译语言
       const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(message.content);
       const isChinese = /[\u4e00-\u9fff]/.test(message.content);
-      console.log('isKorean', isKorean);
-      console.log('isChinese', isChinese);
 
       const from = isChinese ? 'zh-CN' : isKorean ? 'ko-KR' : '自动判断';
       const to = isChinese ? 'ko-KR' : isKorean ? 'zh-CN' : '自动判断';

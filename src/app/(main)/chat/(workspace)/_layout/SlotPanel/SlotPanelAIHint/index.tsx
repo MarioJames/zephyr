@@ -204,7 +204,7 @@ const AIHintPanel = () => {
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
-        {true ? (
+        {isFetchingAI ? (
           <SkeletonList />
         ) : (
           <>
