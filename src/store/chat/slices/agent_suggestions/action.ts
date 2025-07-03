@@ -150,7 +150,7 @@ export const agentSuggestionsSlice: StateCreator<
         // 用正则表达式提取JSON内容
         const match = aiResponse.reply.match(/```json\s*\n([\s\S]*?)\n```/);
         if (match) {
-          pureReply = match[1].trim().replace(/\[\d+\]/g, '');
+          pureReply = match[1].trim().replace(/\[\d+(?:,\d+)*\]/g, '');
         }
 
         console.log('pureReply', pureReply);

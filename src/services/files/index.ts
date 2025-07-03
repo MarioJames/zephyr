@@ -54,7 +54,6 @@ export interface FileListRequest {
   page?: number;
   pageSize?: number;
   fileType?: string;
-  knowledgeBaseId?: string;
   search?: string;
 }
 
@@ -163,6 +162,13 @@ function getFileDetail(id: string) {
 }
 
 /**
+ * 获取文件访问URL
+ */
+function getFileAccessUrl(id: string, params: { expiresIn?: number }) {
+  return http.get<string>(`/api/v1/files/${id}/url`, params);
+}
+
+/**
  * 删除文件
  * @description 根据文件ID删除文件
  * @param id string
@@ -179,4 +185,5 @@ export default {
   getFileList,
   getFileDetail,
   deleteFile,
+  getFileAccessUrl,
 };
