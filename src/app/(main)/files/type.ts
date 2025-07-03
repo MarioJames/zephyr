@@ -14,4 +14,5 @@ export interface FileListItem {
     size: number;
     updatedAt: Date;
     url: string;
+    fileType: string;
   }

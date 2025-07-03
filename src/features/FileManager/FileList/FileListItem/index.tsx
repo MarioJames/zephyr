@@ -8,7 +8,7 @@ import { memo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { FileListItem } from '@/types/files';
+import { FileListItem } from '@/app/(main)/files/type';
 import { formatSize } from '@/utils/format';
 
 import DropdownMenu from './DropdownMenu';
