@@ -12,7 +12,6 @@ import { useFileStore } from '@/store/file';
 import EmptyStatus from './EmptyStatus';
 import FileListItem, { FILE_DATE_WIDTH, FILE_SIZE_WIDTH } from './FileListItem';
 import FileSkeleton from './FileSkeleton';
-import ToolBar from './ToolBar';
 
 enum SortType {
   Asc = 'asc',
@@ -74,14 +73,6 @@ const FileList = memo<FileListProps>(({ category }) => {
   ) : (
     <Flexbox height={'100%'}>
       <Flexbox style={{ fontSize: 12, marginInline: 24 }}>
-        <ToolBar
-          key={selectFileIds.join('-')}
-          selectCount={selectFileIds.length}
-          selectFileIds={selectFileIds}
-          setSelectedFileIds={setSelectedFileIds}
-          total={data?.length}
-          totalFileIds={data?.map((item) => item.id) || []}
-        />
         <Flexbox align={'center'} className={styles.header} horizontal paddingInline={8}>
           <Flexbox className={styles.headerItem} flex={1} style={{ paddingInline: 32 }}>
             文件

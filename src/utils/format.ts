@@ -1,9 +1,5 @@
-import dayjs from 'dayjs';
 import { isNumber } from 'lodash-es';
-import numeral from 'numeral';
 
-import { ModelPriceCurrency } from '@/types/llm';
-const USD_TO_CNY = 7.24;
 export const formatSize = (
   bytes: number,
   fractionDigits: number = 1
@@ -35,4 +31,42 @@ export const formatTokenNumber = (num: number): string => {
   return kiloToken < 1000
     ? `${kiloToken}K`
     : `${Math.floor(kiloToken / 1000)}M`;
+};
+
+export const formatSpeed = (byte: number, fractionDigits = 2) => {
+  if (!byte && byte !== 0) return '--';
+
+  let word = '';
+
+  // Byte
+  if (byte <= 1000) {
+    word = byte.toFixed(fractionDigits) + ' Byte/s';
+  }
+  // KB
+  else if (byte / 1024 <= 1000) {
+    word = (byte / 1024).toFixed(fractionDigits) + ' KB/s';
+  }
+  // MB
+  else if (byte / 1024 / 1024 <= 1000) {
+    word = (byte / 1024 / 1024).toFixed(fractionDigits) + ' MB/s';
+  }
+  // GB
+  else {
+    word = (byte / 1024 / 1024 / 1024).toFixed(fractionDigits) + ' GB/s';
+  }
+
+  return word;
+};
+
+export const formatTime = (timeInSeconds: number): string => {
+  if (!timeInSeconds && timeInSeconds !== 0) return '--';
+  if (!isNumber(timeInSeconds)) return timeInSeconds;
+
+  if (timeInSeconds < 60) {
+    return `${timeInSeconds.toFixed(1)} s`;
+  } else if (timeInSeconds < 3600) {
+    return `${(timeInSeconds / 60).toFixed(1)} min`;
+  } else {
+    return `${(timeInSeconds / 3600).toFixed(2)} h`;
+  }
 };

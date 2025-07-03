@@ -1,12 +1,12 @@
 'use client';
 
-import { Text } from '@lobehub/ui';
+import { Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { ReactNode, memo, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { UploadFileItem } from '@/types/files/upload';
+import { UploadFileItem } from '@/app/(main)/files/type';
 import { formatSize, formatSpeed, formatTime } from '@/utils/format';
 
 const useStyles = createStyles(({ css, token }) => {
@@ -48,18 +48,18 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
         ].filter(Boolean);
 
         return (
-          <Text style={{ fontSize: 12 }} type={'secondary'}>
+          <Typography.Text style={{ fontSize: 12 }} type={'secondary'}>
             {uploadState?.progress ? formatSize(size * (uploadState.progress / 100)) : '-'}/
             {formatSize(size)}
             {textArray.length === 0 ? '' : ' · ' + textArray.join(' · ')}
-          </Text>
+          </Typography.Text>
         );
       }
       case 'pending': {
         return (
-          <Text style={{ fontSize: 12 }} type={'secondary'}>
+          <Typography.Text style={{ fontSize: 12 }} type={'secondary'}>
             {formatSize(size)} · 准备上传...
-          </Text>
+          </Typography.Text>
         );
       }
 
