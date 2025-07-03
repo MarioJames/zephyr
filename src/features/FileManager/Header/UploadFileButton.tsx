@@ -19,7 +19,7 @@ const hotArea = css`
   }
 `;
 
-const UploadFileButton = ({ knowledgeBaseId }: { knowledgeBaseId?: string }) => {
+const UploadFileButton = () => {
   const { t } = useTranslation('file');
 
   const pushDockFileList = useFileStore((s) => s.pushDockFileList);
@@ -31,7 +31,7 @@ const UploadFileButton = ({ knowledgeBaseId }: { knowledgeBaseId?: string }) => 
         label: (
           <Upload
             beforeUpload={async (file) => {
-              await pushDockFileList([file], knowledgeBaseId);
+              await pushDockFileList([file]);
 
               return false;
             }}
@@ -48,7 +48,7 @@ const UploadFileButton = ({ knowledgeBaseId }: { knowledgeBaseId?: string }) => 
         label: (
           <Upload
             beforeUpload={async (file) => {
-              await pushDockFileList([file], knowledgeBaseId);
+              await pushDockFileList([file]);
 
               return false;
             }}
@@ -70,7 +70,7 @@ const UploadFileButton = ({ knowledgeBaseId }: { knowledgeBaseId?: string }) => 
       </Dropdown>
       <DragUpload
         enabledFiles
-        onUploadFiles={(files) => pushDockFileList(files, knowledgeBaseId)}
+        onUploadFiles={(files) => pushDockFileList(files)}
       />
     </>
   );

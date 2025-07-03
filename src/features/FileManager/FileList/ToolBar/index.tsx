@@ -3,10 +3,7 @@ import { rgba } from 'polished';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { useAddFilesToKnowledgeBaseModal } from '@/features/KnowledgeBaseModal';
 import { useFileStore } from '@/store/file';
-import { useKnowledgeBaseStore } from '@/store/knowledgeBase';
-import { isChunkingUnsupported } from '@/utils/isChunkingUnsupported';
 
 import Config from './Config';
 import MultiSelectActions, { MultiSelectActionType } from './MultiSelectActions';
@@ -20,9 +17,6 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 }));
 
 interface MultiSelectActionsProps {
-  config: { showFilesInKnowledgeBase: boolean };
-  knowledgeBaseId?: string;
-  onConfigChange: (config: { showFilesInKnowledgeBase: boolean }) => void;
   selectCount: number;
   selectFileIds: string[];
   setSelectedFileIds: (ids: string[]) => void;
@@ -39,22 +33,10 @@ const ToolBar = memo<MultiSelectActionsProps>(
     selectFileIds,
     total,
     totalFileIds,
-    config,
-    onConfigChange,
-    knowledgeBaseId,
   }) => {
     const { styles } = useStyles();
 
-    const [removeFiles, parseFilesToChunks, fileList] = useFileStore((s) => [
-      s.removeFiles,
-      s.parseFilesToChunks,
-      s.fileList,
-    ]);
-    const [removeFromKnowledgeBase] = useKnowledgeBaseStore((s) => [
-      s.removeFilesFromKnowledgeBase,
-    ]);
-
-    const { open } = useAddFilesToKnowledgeBaseModal();
+    const [removeFiles] = useFileStore((s) => [s.removeFiles]);
 
     const onActionClick = async (type: MultiSelectActionType) => {
       switch (type) {
@@ -64,46 +46,12 @@ const ToolBar = memo<MultiSelectActionsProps>(
 
           return;
         }
-        case 'removeFromKnowledgeBase': {
-          if (!knowledgeBaseId) return;
-
-          await removeFromKnowledgeBase(knowledgeBaseId, selectFileIds);
-          setSelectedFileIds([]);
-          return;
-        }
-        case 'addToKnowledgeBase': {
-          open({
-            fileIds: selectFileIds,
-            onClose: () => setSelectedFileIds([]),
-          });
-          return;
-        }
-        case 'addToOtherKnowledgeBase': {
-          open({
-            fileIds: selectFileIds,
-            knowledgeBaseId,
-            onClose: () => setSelectedFileIds([]),
-          });
-          return;
-        }
-
-        case 'batchChunking': {
-          const chunkableFileIds = selectFileIds.filter((id) => {
-            const file = fileList.find((f) => f.id === id);
-            return file && !isChunkingUnsupported(file.fileType);
-          });
-          await parseFilesToChunks(chunkableFileIds, { skipExist: true });
-          setSelectedFileIds([]);
-          return;
-        }
       }
     };
 
-    const isInKnowledgeBase = !!knowledgeBaseId;
     return (
       <Flexbox align={'center'} className={styles.container} horizontal justify={'space-between'}>
         <MultiSelectActions
-          isInKnowledgeBase={isInKnowledgeBase}
           onActionClick={onActionClick}
           onClickCheckbox={() => {
             setSelectedFileIds(selectCount === total ? [] : totalFileIds);
@@ -111,7 +59,7 @@ const ToolBar = memo<MultiSelectActionsProps>(
           selectCount={selectCount}
           total={total}
         />
-        {showConfig && <Config config={config} onConfigChange={onConfigChange} />}
+        {showConfig && <Config />}
       </Flexbox>
     );
   },

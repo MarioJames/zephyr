@@ -1,7 +1,6 @@
 'use client';
 
-import { Text } from '@lobehub/ui';
-import dynamic from 'next/dynamic';
+import { Typography } from 'antd';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
@@ -9,25 +8,22 @@ import FileList from './FileList';
 import Header from './Header';
 import UploadDock from './UploadDock';
 
-const ChunkDrawer = dynamic(() => import('./ChunkDrawer'), { ssr: false });
-
 interface FileManagerProps {
   category?: string;
-  knowledgeBaseId?: string;
   title: string;
 }
-const FileManager = memo<FileManagerProps>(({ title, knowledgeBaseId, category }) => {
+
+const FileManager = memo<FileManagerProps>(({ title, category }) => {
   return (
     <>
-      <Header knowledgeBaseId={knowledgeBaseId} />
+      <Header />
       <Flexbox gap={12} height={'100%'}>
-        <Text strong style={{ fontSize: 16, marginBlock: 16, marginInline: 24 }}>
+        <Typography.Text strong style={{ fontSize: 16, marginBlock: 16, marginInline: 24 }}>
           {title}
-        </Text>
-        <FileList category={category} knowledgeBaseId={knowledgeBaseId} />
+        </Typography.Text>
+        <FileList category={category} />
       </Flexbox>
       <UploadDock />
-      <ChunkDrawer />
     </>
   );
 });

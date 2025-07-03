@@ -16,7 +16,6 @@ import EmptyStatus from './EmptyStatus';
 import FileListItem, { FILE_DATE_WIDTH, FILE_SIZE_WIDTH } from './FileListItem';
 import FileSkeleton from './FileSkeleton';
 import ToolBar from './ToolBar';
-import { useCheckTaskStatus } from './useCheckTaskStatus';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   header: css`
@@ -37,10 +36,9 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 
 interface FileListProps {
   category?: string;
-  knowledgeBaseId?: string;
 }
 
-const FileList = memo<FileListProps>(({ knowledgeBaseId, category }) => {
+const FileList = memo<FileListProps>(({ category }) => {
   const { t } = useTranslation('components');
   const { styles } = useStyles();
 
@@ -64,29 +62,22 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category }) => {
 
   const { data, isLoading } = useFetchFileManage({
     category,
-    knowledgeBaseId,
     q: query,
     sortType,
     sorter,
     ...viewConfig,
   });
 
-  useCheckTaskStatus(data);
-
   return !isLoading && data?.length === 0 ? (
-    <EmptyStatus knowledgeBaseId={knowledgeBaseId} showKnowledgeBase={!knowledgeBaseId} />
+    <EmptyStatus />
   ) : (
     <Flexbox height={'100%'}>
       <Flexbox style={{ fontSize: 12, marginInline: 24 }}>
         <ToolBar
-          config={viewConfig}
           key={selectFileIds.join('-')}
-          knowledgeBaseId={knowledgeBaseId}
-          onConfigChange={setViewConfig}
           selectCount={selectFileIds.length}
           selectFileIds={selectFileIds}
           setSelectedFileIds={setSelectedFileIds}
-          showConfig={!knowledgeBaseId}
           total={data?.length}
           totalFileIds={data?.map((item) => item.id) || []}
         />
@@ -120,7 +111,6 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category }) => {
             <FileListItem
               index={index}
               key={item.id}
-              knowledgeBaseId={knowledgeBaseId}
               onSelectedChange={(id, checked) => {
                 setSelectedFileIds((prev) => {
                   if (checked) {
