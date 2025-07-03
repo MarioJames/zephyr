@@ -18,7 +18,11 @@ const Content = memo(() => {
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
 
   useFetchMessages();
-  const data = useChatStore((s) => chatSelectors.mainDisplayChatIDs(s), shallow);
+
+  const data = useChatStore(
+    (s) => chatSelectors.mainDisplayChatIDs(s),
+    shallow
+  );
 
   const itemContent = useCallback(
     (index: number, id: string) => <MainChatItem id={id} index={index} />,
@@ -27,7 +31,17 @@ const Content = memo(() => {
 
   if (!activeSessionId) {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#999',
+          fontSize: 18,
+        }}
+      >
         请选择客户后进行对话哦
       </div>
     );

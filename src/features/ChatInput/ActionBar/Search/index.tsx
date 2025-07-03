@@ -9,9 +9,14 @@ import { agentSelectors } from '@/store/agent/selectors';
 import Action from '../components/Action';
 import Controls from './Controls';
 import { customerSelectors, useCustomerStore } from '@/store/customer';
+import { useModelStore, modelCoreSelectors } from '@/store/model';
 
 const Search = memo(() => {
   const [isLoading] = useAgentStore((s) => [agentSelectors.isLoading(s)]);
+
+  const [allowSearch] = useModelStore((s) => [
+    modelCoreSelectors.currentModelSupportSearch(s),
+  ]);
 
   const [enableSearch] = useCustomerStore((s) => [
     customerSelectors.currentCustomerChatConfigSearchMode(s) === 'auto',
@@ -20,6 +25,8 @@ const Search = memo(() => {
   const theme = useTheme();
 
   if (isLoading) return <Action disabled icon={GlobeOffIcon} />;
+
+  if (!allowSearch) return null;
 
   return (
     <Action

@@ -10,6 +10,7 @@ import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
 import { useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
+import { useCustomerStore } from '@/store/customer';
 
 export interface AgentSuggestionsAction {
   // 基础操作
@@ -86,6 +87,9 @@ export const agentSuggestionsSlice: StateCreator<
     parentMessageId: string
   ): Promise<AgentSuggestionItem | null> => {
     const { activeSessionId } = useSessionStore.getState();
+
+    const { currentCustomerExtend } = useCustomerStore.getState();
+
     const state = get();
 
     try {
@@ -122,6 +126,7 @@ export const agentSuggestionsSlice: StateCreator<
 
       // 调用 AI 生成服务
       const aiResponse = await chatService.generateReply({
+        userMessage: '',
         model: agent?.model,
         provider: agent?.provider,
         sessionId: activeSessionId!,
@@ -136,6 +141,7 @@ export const agentSuggestionsSlice: StateCreator<
             content: msg.content!,
           })),
         ],
+        chatConfig: currentCustomerExtend?.chatConfig,
       });
 
       if (aiResponse.reply) {

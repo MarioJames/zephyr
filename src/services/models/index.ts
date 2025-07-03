@@ -1,7 +1,7 @@
 import { http } from '../request';
 
 // Response types
-export interface EnabledModelItem {
+export interface ModelItem {
   abilities?: {
     files?: boolean;
     functionCall?: boolean;
@@ -32,7 +32,7 @@ export interface EnabledModelItem {
 
 export interface ProviderWithModels {
   modelCount: number;
-  models: EnabledModelItem[];
+  models: ModelItem[];
   providerEnabled: boolean;
   providerId: string;
   providerName?: string;
@@ -62,6 +62,12 @@ export interface GetModelsRequest {
   groupByProvider?: boolean; // true: 按provider分组返回, false: 返回扁平列表
 }
 
+export interface GetModelConfigRequest {
+  model?: string;
+  provider?: string;
+  sessionId?: string;
+}
+
 /**
  * 获取模型列表
  * @description 获取模型列表
@@ -72,6 +78,35 @@ async function getEnabledModels(params: GetModelsRequest) {
   return http.get<GetEnabledModelsResponse>(`/api/v1/models`, params);
 }
 
+/**
+ * 获取模型详情
+ * @description 获取模型详情
+ * @param modelId string
+ * @returns EnabledModelItem
+ */
+async function getModelConfig(data: GetModelConfigRequest) {
+  const { provider, model } = data;
+  return http.get<ModelItem>(`/api/v1/models/config`, {
+    provider,
+    model,
+  });
+}
+
+/**
+ * 通过会话ID获取模型配置
+ * @description 通过会话ID获取模型配置
+ * @param sessionId string
+ * @returns ModelItem
+ */
+async function getModelConfigBySession(data: GetModelConfigRequest) {
+  const { sessionId } = data;
+  return http.get<ModelItem>(`/api/v1/models/configBySession`, {
+    sessionId,
+  });
+}
+
 export default {
   getEnabledModels,
+  getModelConfig,
+  getModelConfigBySession,
 };
