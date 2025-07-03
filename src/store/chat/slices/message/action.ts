@@ -3,6 +3,8 @@ import messageService, { MessageItem } from '@/services/messages';
 import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
+import { useFileStore } from '@/store/file';
+import { createMessageWithFiles, FileForAI, processImageFile } from '@/utils/fileContextFormatter';
 
 // 将消息转换为AI模型消费的格式
 const formatMessagesForAI = (messages: MessageItem[]) => {
@@ -105,7 +107,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         topicId: activeTopicId,
       });
 
-      const updateData: any = {
+      const updateData: Partial<ChatStore> = {
         messages: [...get().messages, createdMessage],
         isLoading: false,
       };
@@ -127,14 +129,79 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         console.log('消息发送成功，开始自动翻译:', createdMessage.id);
         get().autoTranslateMessage(createdMessage.id);
       }
-    } catch (e: any) {
-      set({ isLoading: false, error: e?.message || '消息发送失败' });
+    } catch (e: unknown) {
+      set({ isLoading: false, error: (e as Error)?.message || '消息发送失败' });
     }
   },
 
   sendMessage: async (role: 'user' | 'assistant') => {
-    const { inputMessage } = get();
-    await get().createMessage(inputMessage, role, { clearInput: true });
+    const { inputMessage, chatUploadFileList } = get();
+    
+    // 如果没有上传的文件，正常发送
+    if (!chatUploadFileList.length) {
+      await get().createMessage(inputMessage, role, { clearInput: true });
+      return;
+    }
+
+    try {
+      // 获取文件存储状态
+      const fileStore = useFileStore.getState();
+      const filesForAI: FileForAI[] = [];
+
+      // 处理上传的文件
+      for (const fileItem of chatUploadFileList) {
+        if (fileItem.status !== 'success') continue;
+
+        const fileForAI: FileForAI = {
+          id: fileItem.id,
+          name: fileItem.filename,
+          type: fileItem.fileType,
+          size: fileItem.size,
+        };
+
+        // 处理图片文件
+        if (fileItem.fileType.startsWith('image/') && (fileItem as { previewUrl?: string }).previewUrl) {
+          // 如果有预览URL，从本地获取base64
+          try {
+            const response = await fetch((fileItem as { previewUrl: string }).previewUrl);
+            const blob = await response.blob();
+            const file = new File([blob], fileItem.filename, { type: fileItem.fileType });
+            const { base64 } = await processImageFile(file);
+            fileForAI.base64 = base64;
+            fileForAI.previewUrl = (fileItem as any).previewUrl;
+          } catch (error) {
+            console.error('处理图片失败:', error);
+          }
+        } else {
+          // 处理文档文件，获取解析后的内容
+          // 新接口返回 fileId，所以需要用 fileId 查找解析内容
+          const parsedContent = fileStore.getParsedFileContent(fileItem.id);
+          if (parsedContent) {
+            fileForAI.content = parsedContent.content;
+            fileForAI.metadata = parsedContent.metadata;
+          }
+        }
+
+        filesForAI.push(fileForAI);
+      }
+
+      // 使用文件上下文创建消息
+      const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
+      const finalContent = typeof messageWithFiles.content === 'string' 
+        ? messageWithFiles.content 
+        : messageWithFiles.content[0]?.text || inputMessage;
+
+      // 发送消息
+      await get().createMessage(finalContent, role, { clearInput: true });
+
+      // 清理上传的文件列表
+      get().clearChatUploadFileList();
+      
+    } catch (error) {
+      console.error('发送带文件上下文的消息失败:', error);
+      // 降级处理：正常发送消息
+      await get().createMessage(inputMessage, role, { clearInput: true });
+    }
   },
 
   acceptSuggestion: async (content: string) => {

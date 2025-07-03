@@ -79,6 +79,54 @@ export interface FileAccessResponse {
   url: string;
 }
 
+export interface DocumentParseRequest {
+  file: File;
+}
+
+export interface UploadAndParseRequest {
+  file: File;
+  knowledgeBaseId?: string;
+  skipCheckFileType?: boolean;
+  directory?: string;
+}
+
+/**
+ * 文件解析响应类型
+ */
+export interface FileParseResponse {
+  /** 解析后的文本内容 */
+  content: string;
+  /** 解析错误信息 */
+  error?: string;
+  /** 文件ID */
+  fileId: string;
+  /** 文件类型 */
+  fileType: string;
+  /** 文件名 */
+  filename: string;
+  /** 文档元数据 */
+  metadata?: {
+    /** 页数 */
+    pages?: number;
+    /** 文档标题 */
+    title?: string;
+    /** 字符总数 */
+    totalCharCount?: number;
+    /** 行总数 */
+    totalLineCount?: number;
+  };
+  /** 解析状态 */
+  parseStatus: 'completed' | 'failed';
+  /** 解析时间 */
+  parsedAt: string;
+}
+
+export interface UploadAndParseResponse {
+  /** 上传的文件对象 */
+  fileItem: FileItem;
+  /** 解析结果 */
+  parseResult: FileParseResponse;
+}
 
 /**
  * 单文件上传
@@ -194,6 +242,63 @@ function deleteFile(id: string) {
   return http.delete<void>(`/api/v1/files/${id}`);
 }
 
+/**
+ * 解析文档内容 - 使用现有文件ID
+ * @description 解析已上传文件的内容，支持 PDF、Word、Excel、文本等格式
+ * @param fileId string 文件ID
+ * @param params { skipCheckFileType?: boolean } 可选参数
+ * @returns FileParseResponse
+ */
+function parseDocumentById(
+  fileId: string,
+  params?: { skipCheckFileType?: boolean }
+) {
+  return http.post<FileParseResponse>(`/api/v1/files/${fileId}/parse`, params);
+}
+
+/**
+ * 解析文档内容 - 直接上传并解析
+ * @description 上传文件并解析内容，一步完成
+ * @param data DocumentParseRequest
+ * @returns FileParseResponse
+ */
+function parseDocument(data: DocumentParseRequest) {
+  const formData = new FormData();
+  formData.append('file', data.file);
+
+  return http.post<FileParseResponse>('/api/v1/files/parse', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}
+
+/**
+ * 上传并解析文档 - 一体化接口
+ * @description 一次性完成文件上传和解析，返回文件对象和解析结果
+ * @param data UploadAndParseRequest
+ * @returns UploadAndParseResponse
+ */
+function uploadAndParse(data: UploadAndParseRequest) {
+  const formData = new FormData();
+  formData.append('file', data.file);
+  if (data.knowledgeBaseId)
+    formData.append('knowledgeBaseId', data.knowledgeBaseId);
+  if (data.skipCheckFileType !== undefined)
+    formData.append('skipCheckFileType', String(data.skipCheckFileType));
+  if (data.directory) formData.append('directory', data.directory);
+
+  return http.post<UploadAndParseResponse>(
+    '/api/v1/files/uploadAndParse',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+}
+
 export default {
   upload,
   uploadPublic,
@@ -202,4 +307,7 @@ export default {
   getFileDetail,
   deleteFile,
   getFileAccessUrl,
+  parseDocument,
+  parseDocumentById,
+  uploadAndParse,
 };

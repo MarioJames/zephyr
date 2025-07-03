@@ -1,9 +1,11 @@
 import { MenuProps, Tooltip } from '@lobehub/ui';
-import { Upload } from 'antd';
+import { App, Upload } from 'antd';
 import { css, cx } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip } from 'lucide-react';
 import { memo } from 'react';
 import { useFileStore } from '@/store/file';
+import { useChatStore } from '@/store/chat';
+import { isDocumentFile, isSupportedFileType } from '@/utils/fileContextFormatter';
 
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
@@ -18,11 +20,61 @@ const hotArea = css`
 `;
 
 const FileUpload = memo(() => {
-  const upload = useFileStore((s) => s.uploadFiles);
+  const { message } = App.useApp();
+
+  const { uploadFiles, uploadAndParse } = useFileStore((s) => ({
+    uploadFiles: s.uploadFiles,
+    uploadAndParse: s.uploadAndParse,
+  }));
+
+  const { dispatchChatUploadFileList } = useChatStore((s) => ({
+    dispatchChatUploadFileList: s.dispatchChatUploadFileList,
+  }));
 
   const [canUploadImage] = useModelStore((s) => [
     modelCoreSelectors.currentModelSupportVision(s),
   ]);
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      // 检查文件类型是否支持
+      if (!isSupportedFileType(file)) {
+        message.error(`不支持的文件类型: ${file.type}`);
+        return false;
+      }
+
+      if (isDocumentFile(file)) {
+        // 对于文档文件，使用一体化上传和解析接口
+        try {
+          const response = await uploadAndParse({ file });
+
+          // 直接使用返回的文件对象添加到聊天上传列表
+          dispatchChatUploadFileList({
+            type: 'addFile',
+            file: response.fileItem
+          });
+
+          if (response.parseResult.parseStatus === 'completed') {
+            message.success(`文档 "${file.name}" 上传并解析成功，可以在对话中引用`);
+          } else {
+            message.warning(`文档 "${file.name}" 上传成功，但解析失败: ${response.parseResult.error || '未知错误'}`);
+          }
+        } catch (error) {
+          console.error('文档上传和解析失败:', error);
+          message.error(`文档上传失败: ${error instanceof Error ? error.message : '未知错误'}`);
+        }
+      } else {
+        // 对于图片等非文档文件，只需要上传
+        await uploadFiles([file]);
+        message.success(`文件 "${file.name}" 上传成功`);
+      }
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      message.error(`文件上传失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
+
+    return false; // 阻止默认上传行为
+  };
 
   const items: MenuProps['items'] = [
     {
@@ -32,11 +84,7 @@ const FileUpload = memo(() => {
       label: canUploadImage ? (
         <Upload
           accept={'image/*'}
-          beforeUpload={async (file) => {
-            await upload([file]);
-
-            return false;
-          }}
+          beforeUpload={handleFileUpload}
           multiple
           showUploadList={false}
         >
@@ -53,17 +101,19 @@ const FileUpload = memo(() => {
       key: 'upload-file',
       label: (
         <Upload
+          accept={'.pdf,.docx,.xlsx,.txt,.md,.csv'}
           beforeUpload={async (file) => {
-            if (!canUploadImage && file.type.startsWith('image')) return false;
+            if (!canUploadImage && file.type.startsWith('image/')) {
+              message.error('当前模型不支持图片文件');
+              return false;
+            }
 
-            await upload([file]);
-
-            return false;
+            return await handleFileUpload(file);
           }}
           multiple
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>上传文件</div>
+          <div className={cx(hotArea)}>上传文档</div>
         </Upload>
       ),
     },
@@ -73,11 +123,12 @@ const FileUpload = memo(() => {
       label: (
         <Upload
           beforeUpload={async (file) => {
-            if (!canUploadImage && file.type.startsWith('image')) return false;
+            if (!canUploadImage && file.type.startsWith('image/')) {
+              message.error('当前模型不支持图片文件');
+              return false;
+            }
 
-            await upload([file]);
-
-            return false;
+            return await handleFileUpload(file);
           }}
           directory
           multiple={true}
