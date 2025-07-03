@@ -32,6 +32,7 @@ export interface FileUploadRequest {
 
 export interface BatchUploadRequest {
   files: File[];
+  sessionId?: string;
   knowledgeBaseId?: string;
   skipCheckFileType?: boolean;
   directory?: string;
@@ -64,6 +65,20 @@ export interface FileListResponse {
   total: number;
   totalPages: number;
 }
+
+export interface FileAccessResponse {
+  /** URL过期时间戳 */
+  expiresAt: string;
+  /** URL过期时间（秒） */
+  expiresIn: number;
+  /** 文件ID */
+  fileId: string;
+  /** 文件名 */
+  filename: string;
+  /** 预签名访问URL */
+  url: string;
+}
+
 
 /**
  * 单文件上传
@@ -98,6 +113,7 @@ function batchUpload(data: BatchUploadRequest) {
   data.files.forEach((file) => {
     formData.append('files', file);
   });
+  if (data.sessionId) formData.append('sessionId', data.sessionId);
   if (data.knowledgeBaseId)
     formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
@@ -164,8 +180,8 @@ function getFileDetail(id: string) {
 /**
  * 获取文件访问URL
  */
-function getFileAccessUrl(id: string, params: { expiresIn?: number }) {
-  return http.get<string>(`/api/v1/files/${id}/url`, params);
+function getFileAccessUrl(id: string, params?: { expiresIn?: number }) {
+  return http.get<FileAccessResponse>(`/api/v1/files/${id}/url`, params);
 }
 
 /**
