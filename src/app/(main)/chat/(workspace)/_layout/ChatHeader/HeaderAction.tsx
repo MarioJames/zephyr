@@ -2,7 +2,7 @@
 
 import { ActionIcon, Tooltip } from "@lobehub/ui";
 import { PanelRightClose, PanelRightOpen } from "lucide-react";
-import { memo } from "react";
+import React, { memo } from "react";
 import { Flexbox } from "react-layout-kit";
 import { FileClock, Search } from "lucide-react";
 
@@ -51,11 +51,8 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     gap: 4px;
     transition: background-color 0.2s ease;
-    background-color: '#AEBBFF' !important;
-
-    &:hover {
-      background-color: ${token.colorPrimary} !important;
-    }
+    color: ${token.colorPrimary} !important;
+    background-color: ${token.colorSplit} !important;
   `,
 }));
 
@@ -71,7 +68,9 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const handleHistoryClick = () => {
     setSlotPanelType(slotPanelType === "history" ? "aiHint" : "history");
   };
-
+  React.useEffect(() => {
+    console.log('slotPanelType', slotPanelType);
+  }, [slotPanelType]);
   return (
     <Flexbox className={className} gap={4} horizontal align="center">
       <div className={styles.search}>
