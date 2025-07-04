@@ -58,6 +58,9 @@ const useStyles = createStyles(({ css, token }) => ({
     border-radius: 50%;
     background: ${token.colorFillTertiary};
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   `,
   popoverItem: css`
     padding: 8px;
