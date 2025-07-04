@@ -3,9 +3,11 @@ import { App, Upload } from 'antd';
 import { css, cx } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip } from 'lucide-react';
 import { memo } from 'react';
-import { useFileStore } from '@/store/file';
 import { useChatStore } from '@/store/chat';
-import { isDocumentFile, isSupportedFileType } from '@/utils/fileContextFormatter';
+import {
+  isDocumentFile,
+  isSupportedFileType,
+} from '@/utils/fileContextFormatter';
 
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
@@ -22,13 +24,9 @@ const hotArea = css`
 const FileUpload = memo(() => {
   const { message } = App.useApp();
 
-  const { uploadFiles, uploadAndParse } = useFileStore((s) => ({
-    uploadFiles: s.uploadFiles,
-    uploadAndParse: s.uploadAndParse,
-  }));
-
-  const { dispatchChatUploadFileList } = useChatStore((s) => ({
-    dispatchChatUploadFileList: s.dispatchChatUploadFileList,
+  const { uploadChatFiles, uploadChatFilesAndParse } = useChatStore((s) => ({
+    uploadChatFiles: s.uploadChatFiles,
+    uploadChatFilesAndParse: s.uploadChatFilesAndParse,
   }));
 
   const [canUploadImage] = useModelStore((s) => [
@@ -46,31 +44,38 @@ const FileUpload = memo(() => {
       if (isDocumentFile(file)) {
         // 对于文档文件，使用一体化上传和解析接口
         try {
-          const response = await uploadAndParse({ file });
-
-          // 直接使用返回的文件对象添加到聊天上传列表
-          dispatchChatUploadFileList({
-            type: 'addFile',
-            file: response.fileItem
-          });
+          const response = await uploadChatFilesAndParse({ file });
 
           if (response.parseResult.parseStatus === 'completed') {
-            message.success(`文档 "${file.name}" 上传并解析成功，可以在对话中引用`);
+            message.success(
+              `文档 "${file.name}" 上传并解析成功，可以在对话中引用`
+            );
           } else {
-            message.warning(`文档 "${file.name}" 上传成功，但解析失败: ${response.parseResult.error || '未知错误'}`);
+            message.warning(
+              `文档 "${file.name}" 上传成功，但解析失败: ${
+                response.parseResult.error || '未知错误'
+              }`
+            );
           }
         } catch (error) {
           console.error('文档上传和解析失败:', error);
-          message.error(`文档上传失败: ${error instanceof Error ? error.message : '未知错误'}`);
+          message.error(
+            `文档上传失败: ${
+              error instanceof Error ? error.message : '未知错误'
+            }`
+          );
         }
       } else {
         // 对于图片等非文档文件，只需要上传
-        await uploadFiles([file]);
+        await uploadChatFiles(file);
+
         message.success(`文件 "${file.name}" 上传成功`);
       }
     } catch (error) {
       console.error('文件上传失败:', error);
-      message.error(`文件上传失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      message.error(
+        `文件上传失败: ${error instanceof Error ? error.message : '未知错误'}`
+      );
     }
 
     return false; // 阻止默认上传行为

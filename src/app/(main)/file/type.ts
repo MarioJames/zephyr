@@ -62,7 +62,6 @@ export interface UploadFileItem {
   file: File;
   fileUrl?: string;
   id: string;
-  previewUrl?: string;
   status: FileUploadStatus;
   tasks?: FileParsingTask;
   uploadState?: FileUploadState;

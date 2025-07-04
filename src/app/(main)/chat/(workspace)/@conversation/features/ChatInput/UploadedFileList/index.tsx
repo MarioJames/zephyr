@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { createStyles } from 'antd-style';
-import { FileItem } from '@/services/files';
+import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { X, FileText, Image, Video, Upload, AlertCircle } from 'lucide-react';
 import { Button } from 'antd';
 import { Spin } from 'antd';
@@ -107,17 +107,10 @@ const useStyles = createStyles(({ css, token }) => ({
   empty: css`
     display: none;
   `,
-  previewImage: css`
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 1px solid ${token.colorBorder};
-  `,
 }));
 
 interface UploadedFileListProps {
-  files: FileItem[];
+  files: ChatFileItem[];
   isUploading: boolean;
   onRemoveFile: (id: string) => void;
 }
@@ -144,7 +137,7 @@ const UploadedFileList = memo<UploadedFileListProps>(({
     return <FileText className={styles.fileIcon} />;
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status?: string) => {
     switch (status) {
       case 'uploading':
         return <Spin size="small" />;
@@ -157,7 +150,7 @@ const UploadedFileList = memo<UploadedFileListProps>(({
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status?: string) => {
     switch (status) {
       case 'pending':
         return '待上传';
@@ -193,15 +186,7 @@ const UploadedFileList = memo<UploadedFileListProps>(({
         <div className={styles.fileList}>
           {files.map((file) => (
             <div key={file.id} className={styles.fileItem}>
-              {file.previewUrl && file.fileType.startsWith('image/') ? (
-                <img
-                  src={file.previewUrl}
-                  alt={file.filename}
-                  className={styles.previewImage}
-                />
-              ) : (
-                getFileIcon(file.fileType)
-              )}
+              {getFileIcon(file.fileType)}
               
               <div className={styles.fileInfo}>
                 <div className={styles.fileName}>{file.filename}</div>

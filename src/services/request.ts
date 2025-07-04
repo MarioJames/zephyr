@@ -83,15 +83,28 @@ instance.interceptors.response.use(
           }
         }
 
-        // 没有可用的刷新token，跳转登录
+        // 没有可用的刷新token，触发重新登录
         throw new Error('No refresh token available');
       } catch (refreshError) {
-        // 刷新失败，清除状态并跳转登录
+        // 刷新失败，清除状态并触发重新登录
         const oidcState = useOIDCStore.getState();
         if (oidcState.clearState) {
           oidcState.clearState();
         }
-        window.location.href = '/login';
+
+        // 优先尝试调用 OIDC 的登录方法
+        if (oidcState.login) {
+          try {
+            await oidcState.login();
+          } catch (loginError) {
+            console.error('OIDC login failed, redirecting to home', loginError);
+            window.location.href = '/';
+          }
+        } else {
+          // 降级处理：直接跳转到首页
+          window.location.href = '/';
+        }
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

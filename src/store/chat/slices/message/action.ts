@@ -4,7 +4,10 @@ import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
 import { useFileStore } from '@/store/file';
-import { createMessageWithFiles, FileForAI, processImageFile } from '@/utils/fileContextFormatter';
+import {
+  createMessageWithFiles,
+  FileForAI,
+} from '@/utils/fileContextFormatter';
 
 // 将消息转换为AI模型消费的格式
 const formatMessagesForAI = (messages: MessageItem[]) => {
@@ -31,7 +34,7 @@ export interface MessageAction {
   createMessage: (
     content: string,
     role: 'user' | 'assistant',
-    options: { clearInput?: boolean }
+    options: { clearInput?: boolean; files?: string[] }
   ) => Promise<void>;
   sendMessage: (role: 'user' | 'assistant') => Promise<void>;
   acceptSuggestion: (content: string) => Promise<void>;
@@ -91,7 +94,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   createMessage: async (
     content: string,
     role: 'user' | 'assistant',
-    options: { clearInput?: boolean } = {}
+    options: { clearInput?: boolean; files?: string[] } = {}
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
@@ -105,6 +108,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         content,
         sessionId: activeSessionId,
         topicId: activeTopicId,
+        files: options.files, // 传递文件信息
       });
 
       const updateData: Partial<ChatStore> = {
@@ -136,7 +140,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
   sendMessage: async (role: 'user' | 'assistant') => {
     const { inputMessage, chatUploadFileList } = get();
-    
+
     // 如果没有上传的文件，正常发送
     if (!chatUploadFileList.length) {
       await get().createMessage(inputMessage, role, { clearInput: true });
@@ -159,22 +163,11 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
           size: fileItem.size,
         };
 
-        // 处理图片文件
-        if (fileItem.fileType.startsWith('image/') && (fileItem as { previewUrl?: string }).previewUrl) {
-          // 如果有预览URL，从本地获取base64
-          try {
-            const response = await fetch((fileItem as { previewUrl: string }).previewUrl);
-            const blob = await response.blob();
-            const file = new File([blob], fileItem.filename, { type: fileItem.fileType });
-            const { base64 } = await processImageFile(file);
-            fileForAI.base64 = base64;
-            fileForAI.previewUrl = (fileItem as any).previewUrl;
-          } catch (error) {
-            console.error('处理图片失败:', error);
-          }
+        // 处理图片文件 - 直接使用已经转换好的base64
+        if (fileItem.fileType.startsWith('image/')) {
+          fileForAI.base64 = (fileItem as any).base64;
         } else {
           // 处理文档文件，获取解析后的内容
-          // 新接口返回 fileId，所以需要用 fileId 查找解析内容
           const parsedContent = fileStore.getParsedFileContent(fileItem.id);
           if (parsedContent) {
             fileForAI.content = parsedContent.content;
@@ -187,16 +180,24 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 使用文件上下文创建消息
       const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
-      const finalContent = typeof messageWithFiles.content === 'string' 
-        ? messageWithFiles.content 
-        : messageWithFiles.content[0]?.text || inputMessage;
+      const finalContent =
+        typeof messageWithFiles.content === 'string'
+          ? messageWithFiles.content
+          : messageWithFiles.content[0]?.text || inputMessage;
 
-      // 发送消息
-      await get().createMessage(finalContent, role, { clearInput: true });
+      console.log('finalContent', finalContent);
+
+      // 收集文件ID用于数据库存储
+      const fileIds = chatUploadFileList.map((file) => file.id);
+
+      // 发送消息，包含文件信息
+      await get().createMessage(finalContent, role, {
+        clearInput: true,
+        files: fileIds,
+      });
 
       // 清理上传的文件列表
       get().clearChatUploadFileList();
-      
     } catch (error) {
       console.error('发送带文件上下文的消息失败:', error);
       // 降级处理：正常发送消息

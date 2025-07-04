@@ -1,7 +1,6 @@
 import { ChatMessage } from '@/types/message';
 import { produce } from 'immer';
-import { UploadFileListDispatch } from './slices/upload/action';
-import { FileItem } from '@/services/files';
+import { UploadFileListDispatch, ChatFileItem } from './slices/upload/action';
 
 export const getMessageById = (messages: ChatMessage[], id: string) =>
   messages.find((m) => m.id === id);
@@ -31,9 +30,9 @@ const getSlicedMessages = (
 };
 
 export const uploadFileListReducer = (
-  state: FileItem[],
+  state: ChatFileItem[],
   action: UploadFileListDispatch
-): FileItem[] => {
+): ChatFileItem[] => {
   switch (action.type) {
     case 'addFile': {
       return produce(state, (draftState) => {
@@ -73,7 +72,7 @@ export const uploadFileListReducer = (
       return produce(state, (draftState) => {
         const file = draftState.find((f) => f.id === action.id);
         if (file) {
-          file.status = action.status;
+          (file as any).status = action.status;
         }
       });
     }

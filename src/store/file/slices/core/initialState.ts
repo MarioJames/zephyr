@@ -31,20 +31,14 @@ export interface ParsedFileContent {
 export interface FileCoreState {
   // 是否正在上传
   uploading: boolean;
-  // 是否正在解析
-  parsing: boolean;
   // 文件列表
   fileList: FileItem[];
   // 文件访问 URL 映射
   fileAccessUrlMap: Map<string, FileAccessResponse>;
-  // 解析后的文件内容映射
-  parsedFileContentMap: Map<string, ParsedFileContent>;
 }
 
 export const initialFileCoreState: FileCoreState = {
   uploading: false,
-  parsing: false,
   fileList: [],
   fileAccessUrlMap: new Map(),
-  parsedFileContentMap: new Map(),
 };
