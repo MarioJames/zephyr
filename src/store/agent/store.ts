@@ -3,7 +3,7 @@ import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from 'zustand/vanilla';
 
-import { AgentAction, agentSlice } from './slices/agent/action';
+import { AgentAction, agentSlice } from './slices/core/action';
 import { ConfigAction, configSlice } from './slices/config/action';
 import { AgentState, initialState } from './initialState';
 import { createDevtools } from '@/utils/store';

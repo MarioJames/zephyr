@@ -3,7 +3,6 @@ import messageService, { MessageItem } from '@/services/messages';
 import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
-import { useFileStore } from '@/store/file';
 import {
   createMessageWithFiles,
   FileForAI,
@@ -98,6 +97,8 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
+    console.log('createMessage - 参数:', { content: content.slice(0, 200) + '...', role, options });
+
     if (!content || !activeSessionId || !activeTopicId) return;
 
     set({ isLoading: true });
@@ -110,6 +111,8 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         topicId: activeTopicId,
         files: options.files, // 传递文件信息
       });
+
+      console.log('创建消息成功:', createdMessage);
 
       const updateData: Partial<ChatStore> = {
         messages: [...get().messages, createdMessage],
@@ -141,6 +144,8 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   sendMessage: async (role: 'user' | 'assistant') => {
     const { inputMessage, chatUploadFileList } = get();
 
+    console.log('sendMessage - chatUploadFileList:', chatUploadFileList);
+
     // 如果没有上传的文件，正常发送
     if (!chatUploadFileList.length) {
       await get().createMessage(inputMessage, role, { clearInput: true });
@@ -148,13 +153,15 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     }
 
     try {
-      // 获取文件存储状态
-      const fileStore = useFileStore.getState();
       const filesForAI: FileForAI[] = [];
 
       // 处理上传的文件
       for (const fileItem of chatUploadFileList) {
-        if (fileItem.status !== 'success') continue;
+        console.log('处理文件:', fileItem);
+        if (fileItem.status !== 'success') {
+          console.log('文件状态不是success，跳过:', fileItem.status);
+          continue;
+        }
 
         const fileForAI: FileForAI = {
           id: fileItem.id,
@@ -165,18 +172,22 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
         // 处理图片文件 - 直接使用已经转换好的base64
         if (fileItem.fileType.startsWith('image/')) {
-          fileForAI.base64 = (fileItem as any).base64;
+          fileForAI.base64 = fileItem.base64;
+          console.log('图片文件处理完成:', fileForAI.name, '有base64:', !!fileForAI.base64);
         } else {
           // 处理文档文件，获取解析后的内容
-          const parsedContent = fileStore.getParsedFileContent(fileItem.id);
+          const parsedContent = get().getParsedFileContent(fileItem.id);
           if (parsedContent) {
             fileForAI.content = parsedContent.content;
             fileForAI.metadata = parsedContent.metadata;
           }
+          console.log('文档文件处理完成:', fileForAI.name, '有内容:', !!fileForAI.content);
         }
 
         filesForAI.push(fileForAI);
       }
+
+      console.log('最终处理的文件列表:', filesForAI);
 
       // 使用文件上下文创建消息
       const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
@@ -188,13 +199,19 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       console.log('finalContent', finalContent);
 
       // 收集文件ID用于数据库存储
-      const fileIds = chatUploadFileList.map((file) => file.id);
+      const fileIds = chatUploadFileList
+        .filter((file) => file.status === 'success' && file.id)
+        .map((file) => file.id!);
+
+      console.log('收集的文件ID:', fileIds);
 
       // 发送消息，包含文件信息
       await get().createMessage(finalContent, role, {
         clearInput: true,
         files: fileIds,
       });
+
+      console.log('消息发送成功，清理文件列表');
 
       // 清理上传的文件列表
       get().clearChatUploadFileList();

@@ -1,4 +1,4 @@
-import { agentChatConfigSelectors, useAgentStore } from '@/store/agent';
+import { agentSelectors, useAgentStore } from '@/store/agent';
 import { ChatStore } from '../..';
 import { MessageState } from './initialState';
 import { MessageItem } from '@/services/messages';
@@ -17,12 +17,10 @@ export const getMessageById =
 export const mainAIChatsWithHistoryConfig = (s: ChatStore): MessageItem[] => {
   const chats = messages(s);
 
-  const enableHistoryCount = agentChatConfigSelectors.enableHistoryCount(
-    useAgentStore.getState()
-  );
-  const historyCount = agentChatConfigSelectors.historyCount(
-    useAgentStore.getState()
-  );
+  const [enableHistoryCount, historyCount] = useAgentStore((s) => [
+    agentSelectors.enableHistoryCount(s),
+    agentSelectors.historyCount(s),
+  ]);
 
   return chatHelpers.getSlicedMessages(chats, {
     enableHistoryCount,

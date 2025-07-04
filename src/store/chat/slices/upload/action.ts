@@ -6,15 +6,12 @@ import {
   UploadAndParseRequest,
   UploadAndParseResponse,
 } from '@/services/files';
-import { RcFile } from 'antd/es/upload';
-import { FILE_UPLOAD_BLACKLIST } from '@/const/file';
 import { filesAPI } from '@/services';
-import { processImageFile } from '@/utils/fileContextFormatter';
-import { useFileStore } from '@/store/file';
 import { ParsedFileContent } from '@/store/file/slices/core/initialState';
 
 // 扩展 FileItem 类型以包含前端需要的字段
 export interface ChatFileItem extends FileItem {
+  originalFile?: File;
   base64?: string;
   status?: 'pending' | 'uploading' | 'success' | 'error';
 }
@@ -101,9 +98,11 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         chatUploadFileList: [
           ...get().chatUploadFileList,
           {
+            originalFile: file,
             filename: file.name,
             fileType: file.type,
             size: file.size,
+            status: 'uploading' as const,
           },
         ],
       });
@@ -112,15 +111,37 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         files: [file],
       });
 
+      // 处理图片文件的 base64 编码
+      const processedFiles = await Promise.all(
+        res.successful.map(async (uploadedFile) => {
+          const resultFile: ChatFileItem = {
+            ...uploadedFile,
+            status: 'success' as const,
+          };
+
+          // 如果是图片文件，生成 base64 编码
+          if (file.type.startsWith('image/')) {
+            try {
+              const arrayBuffer = await file.arrayBuffer();
+              const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+              resultFile.base64 = `data:${file.type};base64,${base64}`;
+            } catch (error) {
+              console.error('图片 base64 编码失败:', error);
+            }
+          }
+
+          return resultFile;
+        })
+      );
+
       set({
         chatUploadFileList: [
           // 删除正在上传的文件
-          ...get().chatUploadFileList.filter((chatFile) => chatFile !== file),
+          ...get().chatUploadFileList.filter(
+            (chatFile) => chatFile.originalFile !== file
+          ),
           // 添加上传成功的文件
-          ...res.successful.map((file) => ({
-            ...file,
-            status: 'success' as const,
-          })),
+          ...processedFiles,
         ],
       });
     } catch (error) {
@@ -137,6 +158,8 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
 
   // 一体化上传和解析
   uploadChatFilesAndParse: async (data: UploadAndParseRequest) => {
+    console.log('data', data);
+
     set({
       isUploading: true,
       uploadingFiles: [...get().uploadingFiles, data.file],
@@ -148,7 +171,11 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         chatUploadFileList: [
           ...get().chatUploadFileList,
           {
-            ...data.file,
+            originalFile: data.file,
+            filename: data.file.name,
+            fileType: data.file.type,
+            size: data.file.size,
+            status: 'uploading' as const,
           },
         ],
       });
@@ -158,7 +185,9 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
       // 将文件添加到文件列表
       set({
         chatUploadFileList: [
-          ...get().chatUploadFileList,
+          ...get().chatUploadFileList.filter(
+            (chatFile) => chatFile.originalFile !== data.file
+          ),
           {
             ...response.fileItem,
             status: 'success' as const,

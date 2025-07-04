@@ -6,7 +6,7 @@ import { ScrollText } from 'lucide-react';
 import { memo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
-import { agentChatConfigSelectors } from '@/store/agent/selectors';
+import { agentSelectors } from '@/store/agent/selectors';
 import { useAgentStore } from '@/store/agent/store';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
@@ -35,9 +35,9 @@ const History = memo(() => {
     return [history?.historySummary, history?.metadata?.model];
   });
 
-  const enableCompressHistory = useAgentStore((s) =>
-    agentChatConfigSelectors.enableCompressHistory(s)
-  );
+  const enableCompressHistory = useAgentStore((s) => [
+    agentSelectors.enableCompressHistory(s),
+  ]);
 
   return (
     <Flexbox paddingInline={16} style={{ paddingBottom: 8 }}>

@@ -108,6 +108,7 @@ const FileUpload = memo(() => {
         <Upload
           accept={'.pdf,.docx,.xlsx,.txt,.md,.csv'}
           beforeUpload={async (file) => {
+            console.log('file', file);
             if (!canUploadImage && file.type.startsWith('image/')) {
               message.error('当前模型不支持图片文件');
               return false;

@@ -5,11 +5,7 @@ import { Center, Flexbox } from 'react-layout-kit';
 
 import { useTokenCount } from '@/hooks/useTokenCount';
 import { useAgentStore } from '@/store/agent';
-import {
-  agentChatConfigSelectors,
-  agentModelSelectors,
-  agentSelectors,
-} from '@/store/agent/selectors';
+import { agentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 
@@ -18,6 +14,8 @@ import TokenProgress from './TokenProgress';
 import { mainAIChatsWithHistoryConfig } from '@/store/chat/slices/message/selectors';
 import numeral from 'numeral';
 import { Tooltip } from '@lobehub/ui';
+import { useModelStore } from '@/store/model';
+import { modelCoreSelectors } from '@/store/model';
 
 interface TokenTagProps {
   total: string;
@@ -30,19 +28,15 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     topicSelectors.currentActiveTopic(s)?.historySummary || '',
   ]);
 
-  const [systemRole, modelDetails] = useAgentStore((s) => {
-    return [
-      agentSelectors.currentAgentSystemRole(s),
-      agentModelSelectors.currentModelDetails(s),
-    ];
-  });
-
-  const [historyCount, enableHistoryCount] = useAgentStore((s) => [
-    agentChatConfigSelectors.historyCount(s),
-    agentChatConfigSelectors.enableHistoryCount(s),
+  const [systemRole, historyCount, enableHistoryCount] = useAgentStore((s) => [
+    agentSelectors.currentAgentSystemRole(s),
+    agentSelectors.historyCount(s),
+    agentSelectors.enableHistoryCount(s),
   ]);
 
-  const { contextWindowTokens: maxTokens = 0 } = modelDetails || {};
+  const [maxTokens] = useModelStore((s) => [
+    modelCoreSelectors.currentModelContextWindowTokens(s) || 0,
+  ]);
 
   // Chat usage token
   const inputTokenCount = useTokenCount(input);
