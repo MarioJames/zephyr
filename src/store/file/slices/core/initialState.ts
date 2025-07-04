@@ -28,6 +28,12 @@ export interface ParsedFileContent {
   };
 }
 
+export interface DockFileItem extends FileItem {
+  status: 'pending' | 'uploading' | 'success' | 'error';
+  progress: number;
+  error?: string;
+}
+
 export interface FileCoreState {
   // 是否正在上传
   uploading: boolean;
@@ -39,6 +45,25 @@ export interface FileCoreState {
   fileAccessUrlMap: Map<string, FileAccessResponse>;
   // 解析后的文件内容映射
   parsedFileContentMap: Map<string, ParsedFileContent>;
+  // Dock 文件列表
+  dockFileList: DockFileItem[];
+  // 选中的文件 ID 列表
+  selectedFileIds: string[];
+  // 文件列表加载状态
+  loading: boolean;
+  // 文件列表分页信息
+  pagination: {
+    current: number;
+    pageSize: number;
+    total: number;
+  };
+  // 文件列表排序信息
+  sorter: {
+    field: string;
+    order: 'ascend' | 'descend';
+  };
+  // 文件列表搜索关键词
+  searchKeyword: string;
 }
 
 export const initialFileCoreState: FileCoreState = {
@@ -47,4 +72,17 @@ export const initialFileCoreState: FileCoreState = {
   fileList: [],
   fileAccessUrlMap: new Map(),
   parsedFileContentMap: new Map(),
+  dockFileList: [],
+  selectedFileIds: [],
+  loading: false,
+  pagination: {
+    current: 1,
+    pageSize: 20,
+    total: 0,
+  },
+  sorter: {
+    field: 'uploadedAt',
+    order: 'descend',
+  },
+  searchKeyword: '',
 };

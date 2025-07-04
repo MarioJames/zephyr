@@ -4,10 +4,10 @@ import { Image } from 'antd';
 import { memo } from 'react';
 import { Center } from 'react-layout-kit';
 
-import { fileManagerSelectors, useFileStore } from '@/store/file';
+import { fileCoreSelectors, useFileStore } from '@/store/file';
 
 const FilePreview = memo<{ id: string }>(({ id }) => {
-  const file = useFileStore(fileManagerSelectors.getFileById(id));
+  const file = useFileStore(fileCoreSelectors.getFileById(id));
 
   if (!file) return null;
 

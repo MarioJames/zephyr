@@ -10,7 +10,7 @@ import { lighten } from 'polished';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
-import { fileManagerSelectors, useFileStore } from '@/store/file';
+import { fileCoreSelectors, useFileStore } from '@/store/file';
 import { convertAlphaToSolid } from '@/utils/colorUtils';
 
 import Item from './Item';
@@ -77,10 +77,10 @@ const UploadDock = memo(() => {
   const [show, setShow] = useState(true);
 
   const dispatchDockFileList = useFileStore((s) => s.dispatchDockFileList);
-  const totalUploadingProgress = useFileStore(fileManagerSelectors.overviewUploadingProgress);
-  const fileList = useFileStore(fileManagerSelectors.dockFileList, isEqual);
+  const totalUploadingProgress = useFileStore(fileCoreSelectors.overviewUploadingProgress);
+  const fileList = useFileStore(fileCoreSelectors.dockFileList, isEqual);
   const overviewUploadingStatus = useFileStore(
-    fileManagerSelectors.overviewUploadingStatus,
+    fileCoreSelectors.overviewUploadingStatus,
     isEqual,
   );
   const isUploading = overviewUploadingStatus === 'uploading';
