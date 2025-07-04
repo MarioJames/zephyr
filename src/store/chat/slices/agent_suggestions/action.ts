@@ -88,6 +88,8 @@ export const agentSuggestionsSlice: StateCreator<
   ): Promise<AgentSuggestionItem | null> => {
     const { currentCustomerExtend } = useCustomerStore.getState();
 
+    const { activeSessionId, sessions } = useSessionStore.getState();
+
     const state = get();
 
     try {
@@ -96,13 +98,13 @@ export const agentSuggestionsSlice: StateCreator<
       // 先添加一个占位符
       get().addSuggestion(PLACEHOLDER_SUGGESTION);
 
-      const [activeSessionId, activeAgent, systemRole, historyCount] =
-        useSessionStore((s) => [
-          sessionSelectors.activeSessionId(s),
-          sessionSelectors.activeSessionAgent(s),
-          sessionSelectors.activeAgentSystemRole(s),
-          sessionSelectors.activeAgentHistoryCount(s) || 8,
-        ]);
+      const activeSession = sessions.find((s) => s.id === activeSessionId);
+
+      const activeAgent = activeSession?.agentsToSessions[0].agent;
+
+      const systemRole = activeAgent?.systemRole;
+
+      const historyCount = activeAgent?.chatConfig?.historyCount || 8;
 
       // 使用AI_SUGGESTION_PROMPT生成提示词
       const prompt = AI_SUGGESTION_PROMPT(systemRole || '');

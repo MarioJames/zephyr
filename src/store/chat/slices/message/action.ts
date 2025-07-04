@@ -97,11 +97,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
-    console.log('createMessage - 参数:', {
-      content: content.slice(0, 200) + '...',
-      role,
-      options,
-    });
 
     if (!content || !activeSessionId || !activeTopicId) return;
 
@@ -116,7 +111,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         files: options.files, // 传递文件信息
       });
 
-      console.log('创建消息成功:', createdMessage);
 
       const updateData: Partial<ChatStore> = {
         messages: [...get().messages, createdMessage],
@@ -137,7 +131,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 🆕 自动触发翻译
       if (createdMessage.id) {
-        console.log('消息发送成功，开始自动翻译:', createdMessage.id);
         get().autoTranslateMessage(createdMessage.id);
       }
     } catch (e: unknown) {
@@ -160,9 +153,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 处理上传的文件
       for (const fileItem of chatUploadFileList) {
-        console.log('处理文件:', fileItem);
         if (fileItem.status !== 'success') {
-          console.log('文件状态不是success，跳过:', fileItem.status);
           continue;
         }
 
@@ -176,12 +167,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         // 处理图片文件 - 直接使用已经转换好的base64
         if (fileItem.fileType?.startsWith('image/')) {
           fileForAI.base64 = fileItem.base64;
-          console.log(
-            '图片文件处理完成:',
-            fileForAI.name,
-            '有base64:',
-            !!fileForAI.base64
-          );
         } else {
           // 处理文档文件，获取解析后的内容
           const parsedContent = get().getParsedFileContent(fileItem.id!);
@@ -189,12 +174,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
             fileForAI.content = parsedContent.content;
             fileForAI.metadata = parsedContent.metadata;
           }
-          console.log(
-            '文档文件处理完成:',
-            fileForAI.name,
-            '有内容:',
-            !!fileForAI.content
-          );
         }
 
         filesForAI.push(fileForAI);

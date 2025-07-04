@@ -83,7 +83,16 @@ function AIHintItem({
         </span>
         <div className={styles.dividerLine} />
       </div>
-      {!item.placeholder && (
+      {item.placeholder ? (
+        <Flexbox
+          horizontal
+          align='center'
+          justify='center'
+          style={{ marginTop: 10, marginBottom: 16 }}
+        >
+          <BubblesLoading />
+        </Flexbox>
+      ) : (
         <>
           {/* 上方提示语 */}
           <div className={styles.hint}>
@@ -180,7 +189,11 @@ const AIHintPanel = () => {
   const { styles } = useAIHintStyles();
 
   // 获取当前 topic 的建议数据和加载状态
-  const { isGeneratingAI, suggestions, isLoading: isFetchingAI } = useChatStore();
+  const {
+    isGeneratingAI,
+    suggestions,
+    isLoading: isFetchingAI,
+  } = useChatStore();
 
   // 找到最新建议（按时间戳最大的）
   const latestSuggestion =
@@ -210,8 +223,8 @@ const AIHintPanel = () => {
           <>
             {suggestions.length === 0 && !isGeneratingAI && (
               <Flexbox
-                align="center"
-                justify="center"
+                align='center'
+                justify='center'
                 style={{ height: '100%', color: '#999', fontSize: 14 }}
               >
                 暂无AI建议
@@ -224,16 +237,6 @@ const AIHintPanel = () => {
                 isLatest={latestSuggestion?.id === item.id}
               />
             ))}
-            {isGeneratingAI && (
-              <Flexbox
-                horizontal
-                align='center'
-                justify='center'
-                style={{ marginBottom: 10 }}
-              >
-                <BubblesLoading />
-              </Flexbox>
-            )}
           </>
         )}
       </Flexbox>

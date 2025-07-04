@@ -8,10 +8,13 @@ import { RenderAction } from '../types';
 import { useCustomActions } from './customAction';
 
 export const UserActionsBar: RenderAction = memo(({ onActionClick }) => {
-  const { copy } = useChatListActionsBar();
+  const { copy, regenerate } = useChatListActionsBar();
   const { translate } = useCustomActions();
 
   return (
-    <ActionIconGroup items={[copy, translate]} onActionClick={onActionClick} />
+    <ActionIconGroup
+      items={[copy, regenerate, translate]}
+      onActionClick={onActionClick}
+    />
   );
 });
