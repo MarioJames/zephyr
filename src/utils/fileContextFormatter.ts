@@ -97,8 +97,8 @@ ${formatDocumentForAI(documents)}
       content: [
         { type: 'text', text: userMessage + '\n\n' + systemContext },
         ...images.map(img => ({
-          type: 'image_url',
-          image_url: { url: img.base64, detail: 'auto' }
+          type: 'image_url' as const,
+          image_url: { url: img.base64!, detail: 'auto' as const }
         }))
       ]
     };

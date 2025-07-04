@@ -1,9 +1,9 @@
-import React from "react";
-import { Tabs, Checkbox } from "antd";
+import React from 'react';
+import { Tabs, Checkbox } from 'antd';
 import { Button, Modal } from '@lobehub/ui';
-import { createStyles } from "antd-style";
-import SkeletonList from "./SkeletonList";
-import { DoubleRightOutlined, DoubleLeftOutlined } from "@ant-design/icons";
+import { createStyles } from 'antd-style';
+import SkeletonList from './SkeletonList';
+import { DoubleRightOutlined, DoubleLeftOutlined } from '@ant-design/icons';
 import { Tooltip } from '@lobehub/ui';
 
 interface Customer {
@@ -152,9 +152,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
   open,
   onClose,
-  employee,
   sessionList,
-  employeeCustomers,
   onSave,
   loading,
   customerTab,
@@ -196,10 +194,14 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                 activeKey={customerTab}
                 onChange={setCustomerTab}
                 items={[
-                  { key: "all", label: "全部客户" },
-                  { key: "unassigned", label: "未分配客户" },
+                  { key: 'all', label: '全部客户' },
+                  { key: 'unassigned', label: '未分配客户' },
                 ]}
-                tabBarStyle={{ height: 38, marginBottom: 4, borderBottom: 'none' }}
+                tabBarStyle={{
+                  height: 38,
+                  marginBottom: 4,
+                  borderBottom: 'none',
+                }}
               />
               <div className={styles.panelContainer}>
                 {/* 标题栏 */}
@@ -220,13 +222,19 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                     }
                     style={{ marginRight: 8 }}
                   />
-                  <Tooltip title="客户名称">
-                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
+                  <Tooltip title='客户名称'>
+                    <div
+                      className={styles.panelItems}
+                      style={{ fontWeight: 500 }}
+                    >
                       客户名称
                     </div>
                   </Tooltip>
-                  <Tooltip title="对接人">
-                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
+                  <Tooltip title='对接人'>
+                    <div
+                      className={styles.panelItems}
+                      style={{ fontWeight: 500 }}
+                    >
                       对接人
                     </div>
                   </Tooltip>
@@ -300,8 +308,11 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                     }
                     style={{ marginRight: 8 }}
                   />
-                  <Tooltip title="客户名称">
-                    <div className={styles.panelItems} style={{ fontWeight: 500 }}>
+                  <Tooltip title='客户名称'>
+                    <div
+                      className={styles.panelItems}
+                      style={{ fontWeight: 500 }}
+                    >
                       客户名称
                     </div>
                   </Tooltip>
@@ -337,12 +348,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             <Button onClick={onClose} shadow>
               取消
             </Button>
-            <Button
-              loading={loading}
-              onClick={onSave}
-              type="primary"
-              shadow
-            >
+            <Button loading={loading} onClick={onSave} type='primary' shadow>
               保存
             </Button>
           </div>
