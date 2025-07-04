@@ -8,7 +8,6 @@ import { topicsAPI } from '@/services';
 import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
 import { useModelStore } from '@/store/model';
-import { useAgentStore } from '@/store/agent';
 
 export interface SessionCoreAction {
   // 获取会话列表
@@ -56,15 +55,6 @@ export const sessionCoreAction: StateCreator<
   },
 
   switchSession: async (sessionId: string, topicId?: string) => {
-    const session = get().sessions.find((s) => s.id === sessionId);
-
-    if (!session) return;
-
-    // 设置当前智能体
-    useAgentStore
-      .getState()
-      .setCurrentAgent(session.agentsToSessions[0].agentId);
-
     let activeTopicId = topicId;
 
     // 获取客户拓展配置

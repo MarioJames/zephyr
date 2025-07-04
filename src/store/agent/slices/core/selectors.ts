@@ -7,12 +7,6 @@ const currentAgent = (s: AgentStore) => s.currentAgent;
 const currentAgentModelProvider = (s: AgentStore) => s.currentAgent?.provider;
 const isLoading = (s: AgentStore) => s.isLoading;
 const error = (s: AgentStore) => s.error;
-const agentChatConfig = (s: AgentStore) => s.agentChatConfig;
-const historyCount = (s: AgentStore) => s.agentChatConfig.historyCount;
-const enableHistoryCount = (s: AgentStore) =>
-  s.agentChatConfig.enableHistoryCount;
-const enableCompressHistory = (s: AgentStore) =>
-  s.agentChatConfig.enableCompressHistory;
 
 const getAgentById =
   (id: string) =>
@@ -38,10 +32,6 @@ export const agentCoreSelectors = {
   currentAgentModelProvider,
   isLoading,
   error,
-  agentChatConfig,
-  historyCount,
-  enableHistoryCount,
-  enableCompressHistory,
   getAgentById,
   currentAgentSystemRole,
   agentMeta,

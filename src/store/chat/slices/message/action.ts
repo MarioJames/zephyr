@@ -97,7 +97,11 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
-    console.log('createMessage - 参数:', { content: content.slice(0, 200) + '...', role, options });
+    console.log('createMessage - 参数:', {
+      content: content.slice(0, 200) + '...',
+      role,
+      options,
+    });
 
     if (!content || !activeSessionId || !activeTopicId) return;
 
@@ -144,15 +148,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   sendMessage: async (role: 'user' | 'assistant') => {
     const { inputMessage, chatUploadFileList } = get();
 
-    console.log('sendMessage - chatUploadFileList:', chatUploadFileList);
-
-    // 如果没有上传的文件，正常发送
-    if (!chatUploadFileList.length) {
-      await get().createMessage(inputMessage, role, { clearInput: true });
-      return;
-    }
-
+    set({ sendLoading: true });
     try {
+      // 如果没有上传的文件，正常发送
+      if (!chatUploadFileList.length) {
+        await get().createMessage(inputMessage, role, { clearInput: true });
+        return;
+      }
+
       const filesForAI: FileForAI[] = [];
 
       // 处理上传的文件
@@ -164,30 +167,38 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         }
 
         const fileForAI: FileForAI = {
-          id: fileItem.id,
-          name: fileItem.filename,
-          type: fileItem.fileType,
-          size: fileItem.size,
+          id: fileItem.id!,
+          name: fileItem.filename!,
+          type: fileItem.fileType!,
+          size: fileItem.size!,
         };
 
         // 处理图片文件 - 直接使用已经转换好的base64
-        if (fileItem.fileType.startsWith('image/')) {
+        if (fileItem.fileType?.startsWith('image/')) {
           fileForAI.base64 = fileItem.base64;
-          console.log('图片文件处理完成:', fileForAI.name, '有base64:', !!fileForAI.base64);
+          console.log(
+            '图片文件处理完成:',
+            fileForAI.name,
+            '有base64:',
+            !!fileForAI.base64
+          );
         } else {
           // 处理文档文件，获取解析后的内容
-          const parsedContent = get().getParsedFileContent(fileItem.id);
+          const parsedContent = get().getParsedFileContent(fileItem.id!);
           if (parsedContent) {
             fileForAI.content = parsedContent.content;
             fileForAI.metadata = parsedContent.metadata;
           }
-          console.log('文档文件处理完成:', fileForAI.name, '有内容:', !!fileForAI.content);
+          console.log(
+            '文档文件处理完成:',
+            fileForAI.name,
+            '有内容:',
+            !!fileForAI.content
+          );
         }
 
         filesForAI.push(fileForAI);
       }
-
-      console.log('最终处理的文件列表:', filesForAI);
 
       // 使用文件上下文创建消息
       const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
@@ -196,14 +207,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
           ? messageWithFiles.content
           : messageWithFiles.content[0]?.text || inputMessage;
 
-      console.log('finalContent', finalContent);
-
       // 收集文件ID用于数据库存储
       const fileIds = chatUploadFileList
         .filter((file) => file.status === 'success' && file.id)
         .map((file) => file.id!);
-
-      console.log('收集的文件ID:', fileIds);
 
       // 发送消息，包含文件信息
       await get().createMessage(finalContent, role, {
@@ -211,14 +218,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         files: fileIds,
       });
 
-      console.log('消息发送成功，清理文件列表');
-
       // 清理上传的文件列表
       get().clearChatUploadFileList();
     } catch (error) {
       console.error('发送带文件上下文的消息失败:', error);
       // 降级处理：正常发送消息
       await get().createMessage(inputMessage, role, { clearInput: true });
+    } finally {
+      set({ sendLoading: false });
     }
   },
 

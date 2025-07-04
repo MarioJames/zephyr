@@ -8,7 +8,7 @@ import { ChatStore } from '../../store';
 import { agentSelectors, useAgentStore } from '@/store/agent';
 import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
-import { useSessionStore } from '@/store/session';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
 import { useCustomerStore } from '@/store/customer';
 
@@ -86,8 +86,6 @@ export const agentSuggestionsSlice: StateCreator<
   generateAISuggestion: async (
     parentMessageId: string
   ): Promise<AgentSuggestionItem | null> => {
-    const { activeSessionId } = useSessionStore.getState();
-
     const { currentCustomerExtend } = useCustomerStore.getState();
 
     const state = get();
@@ -98,20 +96,16 @@ export const agentSuggestionsSlice: StateCreator<
       // 先添加一个占位符
       get().addSuggestion(PLACEHOLDER_SUGGESTION);
 
-      // 获取现在激活的会话对应的agent
-      const agent = agentSelectors.currentAgent(useAgentStore.getState());
-
-      // 拿到agent的system prompt
-      const systemPrompt = agent?.systemRole;
-
-      // 拿到agent的chatConfig
-      const chatConfig = agent?.chatConfig;
-
-      // 拿到agent的historyCount
-      const historyCount = chatConfig?.historyCount ?? 8;
+      const [activeSessionId, activeAgent, systemRole, historyCount] =
+        useSessionStore((s) => [
+          sessionSelectors.activeSessionId(s),
+          sessionSelectors.activeSessionAgent(s),
+          sessionSelectors.activeAgentSystemRole(s),
+          sessionSelectors.activeAgentHistoryCount(s) || 8,
+        ]);
 
       // 使用AI_SUGGESTION_PROMPT生成提示词
-      const prompt = AI_SUGGESTION_PROMPT(systemPrompt || '');
+      const prompt = AI_SUGGESTION_PROMPT(systemRole || '');
 
       // 根据historyCount，获取最新的historyCount条消息
       const historyMessages = state.messages
@@ -127,8 +121,8 @@ export const agentSuggestionsSlice: StateCreator<
       // 调用 AI 生成服务
       const aiResponse = await chatService.generateReply({
         userMessage: '',
-        model: agent?.model,
-        provider: agent?.provider,
+        model: activeAgent?.model,
+        provider: activeAgent?.provider,
         sessionId: activeSessionId!,
         // 拼接系统提示词和用户消息作为上下文
         conversationHistory: [

@@ -81,7 +81,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
   const router = useRouter();
   const sessionId = useSessionStore(sessionSelectors.activeSessionId);
-  const currentSession = useSessionStore(sessionSelectors.currentSession);
+  const activeSession = useSessionStore(sessionSelectors.activeSession);
   const [isPinned] = useQueryState("pinned", parseAsBoolean);
 
   const showSessionPanel = useGlobalStore(
@@ -110,11 +110,11 @@ const Main = memo<{ className?: string }>(({ className }) => {
         title={title}
       /> */}
       <div className={styles.avatar}>
-        {currentSession?.avatar ? (
-          <img src={currentSession?.avatar} alt="头像" />
+        {activeSession?.avatar ? (
+          <img src={activeSession?.avatar} alt="头像" />
         ) : (
           <div className={styles.avatarCircle}>
-            {currentSession?.title?.slice(0, 1)}
+            {activeSession?.title?.slice(0, 1)}
           </div>
         )}
       </div>
@@ -135,7 +135,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
           }}
         >
           <div className={styles.title}>
-            {currentSession?.title || "客户名称"}
+            {activeSession?.title || "客户名称"}
             <ChevronDown size={14} />
           </div>
         </Popover>

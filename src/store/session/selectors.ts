@@ -1,16 +1,9 @@
+import { sessionActiveSelectors } from './slices/active/selectors';
 import { SessionStore } from './store';
 
 // 基础会话选择器
 export const sessionSelectors = {
-  // 获取所有会话
-  sessions: (state: SessionStore) => state.sessions,
-
-  // 获取当前会话ID
-  activeSessionId: (state: SessionStore) => state.activeSessionId,
-
-  // 当前会话
-  currentSession: (state: SessionStore) =>
-    state.sessions.find((session) => session.id === state.activeSessionId),
+  ...sessionActiveSelectors,
 
   // 获取搜索结果
   searchResults: (state: SessionStore) => state.searchResults,

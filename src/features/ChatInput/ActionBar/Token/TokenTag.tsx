@@ -4,8 +4,6 @@ import { memo, useMemo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useTokenCount } from '@/hooks/useTokenCount';
-import { useAgentStore } from '@/store/agent';
-import { agentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 
@@ -16,6 +14,8 @@ import numeral from 'numeral';
 import { Tooltip } from '@lobehub/ui';
 import { useModelStore } from '@/store/model';
 import { modelCoreSelectors } from '@/store/model';
+import { sessionSelectors } from '@/store/session/selectors';
+import { useSessionStore } from '@/store/session';
 
 interface TokenTagProps {
   total: string;
@@ -28,11 +28,13 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     topicSelectors.currentActiveTopic(s)?.historySummary || '',
   ]);
 
-  const [systemRole, historyCount, enableHistoryCount] = useAgentStore((s) => [
-    agentSelectors.currentAgentSystemRole(s),
-    agentSelectors.historyCount(s),
-    agentSelectors.enableHistoryCount(s),
-  ]);
+  const [systemRole, historyCount, enableHistoryCount] = useSessionStore(
+    (s) => [
+      sessionSelectors.activeAgentSystemRole(s),
+      sessionSelectors.activeAgentHistoryCount(s),
+      sessionSelectors.activeAgentEnableHistoryCount(s),
+    ]
+  );
 
   const [maxTokens] = useModelStore((s) => [
     modelCoreSelectors.currentModelContextWindowTokens(s) || 0,
