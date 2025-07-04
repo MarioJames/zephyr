@@ -212,6 +212,7 @@ export default function EmployeePage() {
   const [currentEmployee, setCurrentEmployee] = useState<UserItem | null>(null);
   const [avatarFile, setAvatarFile] = useState<UploadFile | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [customerTab, setCustomerTab] = useState('all');
@@ -315,8 +316,28 @@ export default function EmployeePage() {
   // 处理删除员工
   const handleDelete = async (employeeId: string) => {
     try {
+      // 先删除本地员工记录
       await deleteEmployee(employeeId);
-      message.success('删除成功');
+
+      // 然后删除 Clerk 用户
+      try {
+        const clerkResponse = await fetch(`/api/clerk/users/${employeeId}`, {
+          method: 'DELETE',
+        });
+
+        if (!clerkResponse.ok) {
+          const errorData = await clerkResponse.json();
+          console.error('Clerk 用户删除失败:', errorData);
+          // 这里不抛出错误，因为本地员工已经删除成功
+          message.warning('员工删除成功，但 Clerk 用户删除失败');
+          return;
+        }
+
+        message.success('删除成功');
+      } catch (clerkError: any) {
+        console.error('Clerk 用户删除异常:', clerkError);
+        message.warning('员工删除成功，但 Clerk 用户删除失败');
+      }
     } catch (e: any) {
       message.error(e.message || '删除失败');
     }
@@ -333,6 +354,7 @@ export default function EmployeePage() {
 
   // 处理员工弹窗关闭
   const handleEmployeeModalCancel = () => {
+    setSubmitLoading(false);
     form.resetFields();
     setAvatarFile(null);
     setEmployeeModalVisible(false);
@@ -344,33 +366,96 @@ export default function EmployeePage() {
   const handleEmployeeSubmit = async () => {
     try {
       const values = await form.validateFields();
+      setSubmitLoading(true);
+
       if (isEditMode && currentEmployee) {
         try {
+          // 先更新本地员工记录
           await updateEmployee(currentEmployee.id, {
             ...values,
             avatar: avatarFile?.url,
           });
-          message.success('修改员工成功');
+
+          // 然后更新 Clerk 用户信息
+          try {
+            const clerkResponse = await fetch(`/api/clerk/users/${currentEmployee.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: values.email,
+                username: values.username,
+                fullName: values.fullName,
+              }),
+            });
+
+            if (!clerkResponse.ok) {
+              const errorData = await clerkResponse.json();
+              console.error('Clerk 用户更新失败:', errorData);
+              // 这里不抛出错误，因为本地员工已经更新成功
+              message.warning('员工信息更新成功，但 Clerk 用户更新失败');
+              handleEmployeeModalCancel();
+              return;
+            }
+
+            // 先关闭弹窗
+            handleEmployeeModalCancel();
+            // 再显示成功消息
+            message.success('修改员工成功');
+          } catch (clerkError: any) {
+            console.error('Clerk 用户更新异常:', clerkError);
+            message.warning('员工信息更新成功，但 Clerk 用户更新失败');
+            handleEmployeeModalCancel();
+          }
         } catch (e) {
           message.error('修改员工失败');
           return;
         }
       } else {
-        let createdUser;
         try {
-          createdUser = await addEmployee({
+          // 先调用 API 在 Clerk 中创建用户
+          const clerkResponse = await fetch('/api/clerk/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: values.email,
+              username: values.username,
+              fullName: values.fullName,
+            }),
+          });
+
+          if (!clerkResponse.ok) {
+            const errorData = await clerkResponse.json();
+            throw new Error(errorData.error || '创建用户失败');
+          }
+
+          const clerkData = await clerkResponse.json();
+
+          // 使用 Clerk 返回的 userId 调用本地 API
+          // 注意：这里使用原始的中文用户名，不需要编码
+          await addEmployee({
             ...values,
+            id: clerkData.userId, // 使用 Clerk 生成的 userId
+            username: values.username, // 直接使用原始用户名（中文）
             avatar: avatarFile?.url,
           });
+
+          // 先关闭弹窗
+          handleEmployeeModalCancel();
+          // 再显示成功消息
           message.success('添加员工成功');
-        } catch (e) {
-          message.error('添加员工失败');
+        } catch (e: any) {
+          console.error('添加员工失败:', e);
+          message.error(e.message || '添加员工失败');
           return;
         }
       }
-      handleEmployeeModalCancel();
     } catch (info) {
       // 表单校验失败
+      setSubmitLoading(false);
     }
   };
 
@@ -534,7 +619,7 @@ export default function EmployeePage() {
       },
     },
     {
-      title: '权限',
+      title: '员工角色',
       dataIndex: 'roles',
       key: 'roles',
       render: (_: any, record: UserItem) => {
@@ -564,7 +649,7 @@ export default function EmployeePage() {
             trigger={['click']}
           >
             <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
-              {displayRole} <ChevronDown size={16} />
+              {displayRole || '暂无角色'} <ChevronDown size={16} />
             </a>
           </Dropdown>
         );
@@ -691,7 +776,7 @@ export default function EmployeePage() {
       <EmployeeEditModal
         open={employeeModalVisible}
         isEditMode={isEditMode}
-        loading={loading}
+        loading={submitLoading}
         form={form}
         avatarFile={avatarFile}
         onCancel={handleEmployeeModalCancel}

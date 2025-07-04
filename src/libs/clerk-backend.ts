@@ -1,5 +1,6 @@
 import { createClerkClient } from '@clerk/backend';
 import type { ClerkClient } from '@clerk/backend';
+import { env } from '@/config/env';
 
 /**
  * Clerk Backend Client 配置
@@ -9,17 +10,12 @@ class ClerkBackend {
   private client: ClerkClient;
 
   constructor() {
-    // 从环境变量中读取 Clerk 配置
-    const secretKey = process.env.CLERK_SECRET_KEY;
-    const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-    
-    if (!secretKey) {
-      throw new Error('CLERK_SECRET_KEY environment variable is not set');
-    }
+    // 从统一的环境变量配置中读取 Clerk 配置
+    const secretKey = env.CLERK_SECRET_KEY;
+    const publishableKey = env.CLERK_PUBLISHABLE_KEY;
 
-    if (!publishableKey) {
-      throw new Error('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY environment variable is not set');
-    }
+    // 由于 t3-env 已经进行了验证，这里不再需要手动检查
+    // 如果环境变量不存在，t3-env 会在导入时抛出错误
 
     // 创建 Clerk 客户端
     this.client = createClerkClient({
@@ -69,8 +65,8 @@ export const clerkBackend = new ClerkBackend();
 
 // 导出类型
 export type { ClerkClient } from '@clerk/backend';
-export type { 
-  User, 
+export type {
+  User,
   EmailAddress,
   Session,
   Organization

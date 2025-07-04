@@ -25,6 +25,7 @@ export interface UserItem {
 }
 
 export interface UserCreateRequest {
+  id?: string;
   username: string;
   email: string;
   fullName?: string;

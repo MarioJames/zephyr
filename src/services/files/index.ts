@@ -257,31 +257,15 @@ function parseDocumentById(
 }
 
 /**
- * 解析文档内容 - 直接上传并解析
- * @description 上传文件并解析内容，一步完成
- * @param data DocumentParseRequest
- * @returns FileParseResponse
- */
-function parseDocument(data: DocumentParseRequest) {
-  const formData = new FormData();
-  formData.append('file', data.file);
-
-  return http.post<FileParseResponse>('/api/v1/files/parse', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-}
-
-/**
  * 上传并解析文档 - 一体化接口
  * @description 一次性完成文件上传和解析，返回文件对象和解析结果
  * @param data UploadAndParseRequest
  * @returns UploadAndParseResponse
  */
-function uploadAndParse(data: UploadAndParseRequest) {
+function uploadAndParseDocument(data: UploadAndParseRequest) {
   const formData = new FormData();
   formData.append('file', data.file);
+
   if (data.knowledgeBaseId)
     formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
@@ -289,7 +273,7 @@ function uploadAndParse(data: UploadAndParseRequest) {
   if (data.directory) formData.append('directory', data.directory);
 
   return http.post<UploadAndParseResponse>(
-    '/api/v1/files/uploadAndParse',
+    '/api/v1/files/upload-and-parse',
     formData,
     {
       headers: {
@@ -307,7 +291,6 @@ export default {
   getFileDetail,
   deleteFile,
   getFileAccessUrl,
-  parseDocument,
   parseDocumentById,
-  uploadAndParse,
+  uploadAndParseDocument,
 };
