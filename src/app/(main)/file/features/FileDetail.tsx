@@ -6,22 +6,22 @@ import dayjs from 'dayjs';
 import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import { FileListItem } from '../type';
+import { FileItem } from '@/services/files';
 import { formatSize } from '@/utils/format';
 
 export const DETAIL_PANEL_WIDTH = 300;
 
-const FileDetail = memo<FileListItem>((props) => {
-  const { name, size, createdAt, updatedAt } = props || {};
+const FileDetail = memo<FileItem>((props) => {
+  const { filename, size, createdAt, updatedAt } = props || {};
   const theme = useTheme();
 
   if (!props) return null;
 
   const items = [
-    { children: name, key: 'name', label: '文件名' },
+    { children: filename, key: 'filename', label: '文件名' },
     { children: formatSize(size), key: 'size', label: '文件大小' },
     {
-      children: name.split('.').pop()?.toUpperCase(),
+      children: filename.split('.').pop()?.toUpperCase(),
       key: 'type',
       label: '格式',
     },

@@ -47,16 +47,6 @@ export enum FilesTabs {
   Websites = "websites",
 }
 
-export interface FileListItem {
-  createdAt: Date;
-  id: string;
-  name: string;
-  size: number;
-  updatedAt: Date;
-  url: string;
-  fileType: string;
-}
-
 export interface UploadFileItem {
   base64Url?: string;
   file: File;
