@@ -8,7 +8,7 @@ import { memo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { FileListItem } from '@/app/(main)/files/type';
+import { FileItem } from '@/services/files';
 import { formatSize } from '@/utils/format';
 
 import DropdownMenu from './DropdownMenu';
@@ -65,9 +65,9 @@ const useStyles = createStyles(({ css, token, cx, isDarkMode }) => {
   };
 });
 
-interface FileRenderItemProps extends FileListItem {
+interface FileRenderItemProps extends FileItem {
   index: number;
-  onSelectedChange: (id: string, selected: boolean) => void;
+  onSelectedChange: (hashId: string, selected: boolean) => void;
   selected?: boolean;
 }
 
@@ -75,9 +75,9 @@ const FileRenderItem = memo<FileRenderItemProps>(
   ({
     size,
     url,
-    name,
+    filename,
     fileType,
-    id,
+    hashId,
     createdAt,
     selected,
     onSelectedChange,
@@ -105,7 +105,7 @@ const FileRenderItem = memo<FileRenderItemProps>(
           flex={1}
           horizontal
           onClick={() => {
-            router.push(`/files/${id}`);
+            router.push(`/files/${hashId}`);
           }}
         >
           <Flexbox align={'center'} horizontal>
@@ -113,7 +113,7 @@ const FileRenderItem = memo<FileRenderItemProps>(
               height={48}
               onClick={(e) => {
                 e.stopPropagation();
-                onSelectedChange(id, !selected);
+                onSelectedChange(hashId, !selected);
               }}
               style={{ paddingInline: 4 }}
             >
@@ -123,12 +123,12 @@ const FileRenderItem = memo<FileRenderItemProps>(
                 style={{ borderRadius: '50%' }}
               />
             </Center>
-            <FileIcon fileName={name} fileType={fileType} />
-            <span className={styles.name}>{name}</span>
+            <FileIcon fileName={filename} fileType={fileType} />
+            <span className={styles.name}>{filename}</span>
           </Flexbox>
           <DropdownMenu
-            id={id}
-            name={name}
+            id={hashId}
+            name={filename}
             url={url}
           />
         </Flexbox>

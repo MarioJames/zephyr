@@ -9,7 +9,7 @@ export interface FileMetadata {
 }
 
 export interface FileItem {
-  id: string;
+  hashId: string;
   filename: string;
   fileType: string;
   size: number;
@@ -17,6 +17,7 @@ export interface FileItem {
   url: string;
   uploadedAt: string;
   metadata: FileMetadata;
+  createdAt: string;
 }
 
 export interface FilePublicUploadResponse extends FileItem {

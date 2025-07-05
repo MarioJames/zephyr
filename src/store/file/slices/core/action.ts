@@ -25,7 +25,7 @@ export interface FileCoreAction {
   }) => void;
 
   // 删除文件
-  removeFileItem: (id: string) => Promise<void>;
+  removeFileItem: (hashId: string) => Promise<void>;
 
   // 更新文件列表
   setFiles: (files: FileItem[]) => void;
@@ -59,6 +59,7 @@ export const fileCoreSlice: StateCreator<
         fileType: params?.fileType,
         // 其他参数映射
       });
+      console.log('response',response);
       
       set({ 
         fileList: response.files,
@@ -74,6 +75,7 @@ export const fileCoreSlice: StateCreator<
         isLoading: false,
       };
     } catch (error) {
+      console.error('Error fetching files:', error);
       set({ loading: false });
       return {
         data: [],
@@ -87,7 +89,7 @@ export const fileCoreSlice: StateCreator<
     
     // 将文件添加到 dock 列表
     const newDockFiles = files.map((file) => ({
-      id: Math.random().toString(36).slice(2),
+      hashId: Math.random().toString(36).slice(2),
       filename: file.name,
       fileType: file.type || 'unknown',
       size: file.size,
@@ -114,7 +116,7 @@ export const fileCoreSlice: StateCreator<
         // 更新状态为上传中
         set({
           dockFileList: get().dockFileList.map((item: DockFileItem) =>
-            item.id === dockFile.id
+            item.hashId === dockFile.hashId
               ? { ...item, status: 'uploading' as const }
               : item
           ),
@@ -129,7 +131,7 @@ export const fileCoreSlice: StateCreator<
           // 更新状态为成功
           set({
             dockFileList: get().dockFileList.map((item: DockFileItem) =>
-              item.id === dockFile.id
+              item.hashId === dockFile.hashId
                 ? {
                     ...item,
                     ...result.successful[0],
@@ -146,7 +148,7 @@ export const fileCoreSlice: StateCreator<
         // 更新状态为错误
         set({
           dockFileList: get().dockFileList.map((item) =>
-            item.id === dockFile.id
+            item.hashId === dockFile.hashId
               ? {
                   ...item,
                   status: 'error' as const,
@@ -164,7 +166,7 @@ export const fileCoreSlice: StateCreator<
       case 'removeFiles': {
         set({
           dockFileList: get().dockFileList.filter(
-            (item: DockFileItem) => !action.ids.includes(item.id)
+            (item: DockFileItem) => !action.ids.includes(item.hashId)
           ),
         });
         break;
@@ -172,12 +174,12 @@ export const fileCoreSlice: StateCreator<
     }
   },
 
-  removeFileItem: async (id) => {
+  removeFileItem: async (hashId) => {
     try {
-      await filesAPI.deleteFile(id);
+      await filesAPI.deleteFile(hashId);
       const { fileList, pagination } = get();
       set({
-        fileList: fileList.filter((item) => item.id !== id),
+        fileList: fileList.filter((item) => item.hashId !== hashId),
         pagination: {
           ...pagination,
           total: pagination.total - 1,

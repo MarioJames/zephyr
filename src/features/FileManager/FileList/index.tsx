@@ -3,11 +3,12 @@
 import { createStyles } from 'antd-style';
 import { useQueryState } from 'nuqs';
 import { rgba } from 'polished';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso } from 'react-virtuoso';
 
 import { useFileStore } from '@/store/file';
+import { FileItem } from '@/services/files';
 
 import EmptyStatus from './EmptyStatus';
 import FileListItem, { FILE_DATE_WIDTH, FILE_SIZE_WIDTH } from './FileListItem';
@@ -59,15 +60,25 @@ const FileList = memo<FileListProps>(({ category }) => {
   });
 
   const useFetchFileManage = useFileStore((s) => s.useFetchFileManage);
+  const [fileData, setFileData] = useState<FileItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data, isLoading } = useFetchFileManage({
-    search: query,
-    page: 1,
-    pageSize: 20,
-    fileType: 'all',
-  });
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await useFetchFileManage({
+        search: query,
+        page: 1,
+        pageSize: 20,
+        fileType: 'all',
+      });
+      setFileData(result.data);
+      setIsLoading(false);
+    };
 
-  return !isLoading && data?.length === 0 ? (
+    fetchData();
+  }, [useFetchFileManage, query]);
+
+  return !isLoading && fileData.length === 0 ? (
     <EmptyStatus />
   ) : (
     <Flexbox height={'100%'}>
@@ -97,23 +108,26 @@ const FileList = memo<FileListProps>(({ category }) => {
               </Center>
             ),
           }}
-          data={data}
-          itemContent={(index, item) => (
-            <FileListItem
-              index={index}
-              key={item.id}
-              onSelectedChange={(id, checked) => {
-                setSelectedFileIds((prev) => {
-                  if (checked) {
-                    return [...prev, id];
-                  }
-                  return prev.filter((item) => item !== id);
-                });
-              }}
-              selected={selectFileIds.includes(item.id)}
-              {...item}
-            />
-          )}
+          data={fileData}
+          itemContent={(index, item) => {
+            console.log('item',item);
+            return (
+              <FileListItem
+                index={index}
+                key={item.hashId}
+                onSelectedChange={(id, checked) => {
+                  setSelectedFileIds((prev) => {
+                    if (checked) {
+                      return [...prev, id];
+                    }
+                    return prev.filter((item) => item !== id);
+                  });
+                }}
+                selected={selectFileIds.includes(item.hashId)}
+                {...item}
+              />
+            )
+          }}
           style={{ flex: 1 }}
         />
       )}
