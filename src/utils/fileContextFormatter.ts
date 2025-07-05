@@ -8,21 +8,18 @@ export interface FileForAI {
   size: number;
   content?: string; // 文档内容
   base64?: string; // 图片base64
-  previewUrl?: string; // 预览URL
   metadata?: Record<string, unknown>;
 }
 
 /**
  * 处理图片文件，生成base64编码
  */
-export async function processImageFile(file: File): Promise<{ base64: string; previewUrl: string }> {
+export async function processImageFile(file: File): Promise<{ base64: string }> {
   const arrayBuffer = await file.arrayBuffer();
   const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-  const previewUrl = URL.createObjectURL(file);
 
   return {
-    base64: `data:${file.type};base64,${base64}`,
-    previewUrl
+    base64: `data:${file.type};base64,${base64}`
   };
 }
 
@@ -125,7 +122,6 @@ export function mergeFileData(
     size: fileItem.size,
     content: parsedContent?.content,
     metadata: parsedContent?.metadata,
-    previewUrl: (fileItem as FileItem & { previewUrl?: string }).previewUrl
   };
 }
 
@@ -163,9 +159,8 @@ export async function processFilesForAI(
     try {
       if (file.type.startsWith('image/')) {
         // 处理图片
-        const { base64, previewUrl } = await processImageFile(file);
+        const { base64 } = await processImageFile(file);
         fileForAI.base64 = base64;
-        fileForAI.previewUrl = previewUrl;
       } else {
         // 处理文档
         const parsedContent = await parseDocument(file);

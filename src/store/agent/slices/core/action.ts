@@ -8,16 +8,12 @@ import { AgentStore } from '../../store';
 import filesService from '@/services/files';
 import sessionsService from '@/services/sessions';
 
-export interface AgentAction {
+export interface AgentCoreAction {
   // 智能体CRUD操作
   fetchAgents: () => Promise<void>;
   createAgent: (data: CreateAgentRequest) => Promise<AgentItem>;
   updateAgent: (id: string, data: UpdateAgentRequest) => Promise<void>;
   deleteAgent: (id: string) => Promise<void>;
-
-  // 智能体管理
-  setCurrentAgent: (agentId?: string) => void;
-  loadAgentById: (id: string) => Promise<void>;
 
   // 状态管理
   setAgentsLoading: (loading: boolean) => void;
@@ -41,10 +37,12 @@ export interface AgentAction {
   ) => Promise<void>;
 }
 
-export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
-  set,
-  get
-) => ({
+export const agentCoreSlice: StateCreator<
+  AgentStore,
+  [],
+  [],
+  AgentCoreAction
+> = (set, get) => ({
   fetchAgents: async () => {
     set({ isLoading: true, error: undefined });
     try {
@@ -128,58 +126,6 @@ export const agentSlice: StateCreator<AgentStore, [], [], AgentAction> = (
         isLoading: false,
         error:
           error instanceof Error ? error.message : 'Failed to delete agent',
-      });
-      throw error;
-    }
-  },
-
-  setCurrentAgent: (agentId?: string) => {
-    const state = get();
-    const agent = agentId
-      ? state.agents.find((a) => a.id === agentId)
-      : undefined;
-
-    set({
-      currentAgent: agent,
-    });
-
-    // 如果设置了智能体但没有加载配置，则加载配置
-    if (agent?.chatConfig) {
-      set({
-        agentChatConfig: {
-          ...state.agentChatConfig,
-          ...agent.chatConfig,
-        },
-      });
-    }
-  },
-
-  loadAgentById: async (id: string) => {
-    set({ isAgentConfigLoading: true, error: undefined });
-    try {
-      const agentDetail = await agentService.getAgentDetail(id);
-
-      // 更新智能体信息
-      set((state) => ({
-        currentAgentId: id,
-        currentAgent: {
-          ...agentDetail,
-          id: agentDetail.id,
-          title: agentDetail.title,
-          avatar: agentDetail.avatar,
-          description: agentDetail.description,
-          model: agentDetail.model,
-          provider: agentDetail.provider,
-          systemRole: agentDetail.systemRole,
-        } as AgentItem,
-        isAgentConfigLoading: false,
-        error: undefined,
-      }));
-    } catch (error) {
-      console.error('Failed to load agent:', error);
-      set({
-        isAgentConfigLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load agent',
       });
       throw error;
     }

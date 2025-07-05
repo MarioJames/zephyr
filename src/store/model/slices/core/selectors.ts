@@ -15,6 +15,7 @@ const providerModelOptions = (s: ModelCoreState) => {
     .sort((a, b) => (a.providerSort || 0) - (b.providerSort || 0))
     .map((provider) => ({
       label: provider.providerName || provider.providerId,
+      value: provider.providerId,
       options: provider.models
         .filter((model) => model.enabled)
         .sort((a, b) => (a.sort || 0) - (b.sort || 0))

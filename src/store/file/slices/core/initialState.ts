@@ -37,8 +37,6 @@ export interface DockFileItem extends FileItem {
 export interface FileCoreState {
   // 是否正在上传
   uploading: boolean;
-  // 是否正在解析
-  parsing: boolean;
   // 文件列表
   fileList: FileItem[];
   // 文件访问 URL 映射
@@ -68,7 +66,6 @@ export interface FileCoreState {
 
 export const initialFileCoreState: FileCoreState = {
   uploading: false,
-  parsing: false,
   fileList: [],
   fileAccessUrlMap: new Map(),
   parsedFileContentMap: new Map(),

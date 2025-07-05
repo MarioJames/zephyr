@@ -12,7 +12,8 @@ export function OIDCInitializer() {
     setLoading, 
     setError, 
     clearState,
-    scheduleTokenRefresh 
+    scheduleTokenRefresh,
+    login 
   } = useOIDCStore();
 
   useEffect(() => {
@@ -41,9 +42,37 @@ export function OIDCInitializer() {
       // 自动刷新机制已在 store 中处理
     };
 
-    const handleAccessTokenExpired = () => {
+    const handleAccessTokenExpired = async () => {
       console.log('OIDCInitializer: Access token expired');
-      // 自动刷新机制已在 store 中处理
+      
+      try {
+        // 首先尝试静默刷新令牌
+        if (userManager) {
+          const user = await userManager.signinSilent();
+          if (user && user.access_token) {
+            console.log('OIDCInitializer: Token refreshed successfully');
+            setUser(user);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('OIDCInitializer: Silent token refresh failed', error);
+      }
+      
+      // 静默刷新失败，清除状态并触发重新登录
+      console.log('OIDCInitializer: Token refresh failed, triggering re-login');
+      clearState();
+      
+      // 触发重新登录
+      try {
+        await login();
+      } catch (error) {
+        console.error('OIDCInitializer: Re-login failed', error);
+        // 如果重新登录也失败，跳转到首页让用户手动登录
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        }
+      }
     };
 
     const handleSilentRenewError = (error: Error) => {
@@ -93,7 +122,7 @@ export function OIDCInitializer() {
       userManager?.events.removeSilentRenewError(handleSilentRenewError);
       userManager?.events.removeUserSignedOut(handleUserSignedOut);
     };
-  }, [loadUser, setUser, setLoading, setError, clearState, scheduleTokenRefresh]);
+  }, [loadUser, setUser, setLoading, setError, clearState, scheduleTokenRefresh, login]);
 
   return null;
 }

@@ -56,7 +56,7 @@ export const useChatListActionsBar = (): ChatListActionsBar => {
       regenerate: {
         icon: RotateCcw,
         key: 'regenerate',
-        label: '重新生成',
+        label: '重新生成AI建议',
       },
       share: {
         icon: Share2,

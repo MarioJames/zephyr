@@ -1,6 +1,6 @@
 export { useAgentStore } from './store';
 export type { AgentStore } from './store';
-export { agentSelectors, agentChatConfigSelectors } from './selectors';
-export type { AgentState } from './initialState';
-export type { AgentAction } from './slices/agent/action';
+export { agentSelectors } from './selectors';
+export type { AgentCoreState } from './slices/core/initialState';
+export type { AgentCoreAction } from './slices/core/action';
 export type { ConfigAction } from './slices/config/action';

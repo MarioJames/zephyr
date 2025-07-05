@@ -31,8 +31,8 @@ interface ActionsProps {
 const Actions = memo<ActionsProps>(({ id, index }) => {
   const item = useChatStore(chatSelectors.getMessageById(id));
 
-  const [translateMessage, copyMessage, autoTranslateMessage] = useChatStore(
-    (s) => [s.translateMessage, s.copyMessage, s.autoTranslateMessage]
+  const [copyMessage, autoTranslateMessage, regenerateMessage] = useChatStore(
+    (s) => [s.copyMessage, s.autoTranslateMessage, s.generateAISuggestion]
   );
 
   const { message } = App.useApp();
@@ -46,6 +46,13 @@ const Actions = memo<ActionsProps>(({ id, index }) => {
         message.success('复制成功');
         return;
       }
+
+      if (action.key === 'regenerate') {
+        await regenerateMessage(item.id);
+        message.success('重新生成成功');
+        return;
+      }
+
       if (action.keyPath.at(-1) === 'translate') {
         autoTranslateMessage(id);
       }

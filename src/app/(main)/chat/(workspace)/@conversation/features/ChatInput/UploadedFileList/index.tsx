@@ -2,42 +2,43 @@
 
 import { memo } from 'react';
 import { createStyles } from 'antd-style';
-import { FileItem } from '@/services/files';
-import { X, FileText, Image, Video, Upload, AlertCircle } from 'lucide-react';
+import { ChatFileItem } from '@/store/chat/slices/upload/action';
+import { X, FileText, Image, Video } from 'lucide-react';
 import { Button } from 'antd';
 import { Spin } from 'antd';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
-    margin-bottom: 8px;
-    border-radius: 8px;
-    background: ${token.colorBgContainer};
+    border-radius: 8px 8px 0 0;
+    background: ${token.colorPrimaryBg};
     border: 1px solid ${token.colorBorder};
-    padding: 8px;
-    min-height: 48px;
+    border-bottom: none;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
   `,
   fileList: css`
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 16px;
   `,
   fileItem: css`
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 8px;
+    padding: 8px;
     background: ${token.colorFillAlter};
     border-radius: 6px;
     border: 1px solid ${token.colorBorder};
     position: relative;
+    width: 180px;
+    min-height: 48px;
   `,
   fileIcon: css`
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     color: ${token.colorTextSecondary};
   `,
   fileInfo: css`
@@ -59,24 +60,18 @@ const useStyles = createStyles(({ css, token }) => ({
     font-size: 11px;
     color: ${token.colorTextSecondary};
   `,
-  fileStatus: css`
+  uploadingOverlay: css`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${token.colorBgBlur};
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-  `,
-  statusText: css`
-    font-size: 11px;
-    color: ${token.colorTextSecondary};
-  `,
-  statusUploading: css`
-    color: ${token.colorPrimary};
-  `,
-  statusSuccess: css`
-    color: ${token.colorSuccess};
-  `,
-  statusError: css`
-    color: ${token.colorError};
+    justify-content: center;
+    border-radius: 6px;
+    backdrop-filter: blur(2px);
   `,
   removeButton: css`
     position: absolute;
@@ -91,7 +86,7 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    
+
     &:hover {
       background: ${token.colorFillSecondary};
     }
@@ -107,25 +102,18 @@ const useStyles = createStyles(({ css, token }) => ({
   empty: css`
     display: none;
   `,
-  previewImage: css`
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 1px solid ${token.colorBorder};
-  `,
 }));
 
 interface UploadedFileListProps {
-  files: FileItem[];
+  files: Partial<ChatFileItem>[];
   isUploading: boolean;
   onRemoveFile: (id: string) => void;
 }
 
-const UploadedFileList = memo<UploadedFileListProps>(({ 
-  files, 
-  isUploading, 
-  onRemoveFile 
+const UploadedFileList = memo<UploadedFileListProps>(({
+  files,
+  isUploading,
+  onRemoveFile
 }) => {
   const { styles } = useStyles();
 
@@ -134,43 +122,16 @@ const UploadedFileList = memo<UploadedFileListProps>(({
     return null;
   }
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) {
+  const getFileIcon = (fileType?: string) => {
+    if (fileType?.startsWith('image/')) {
       return <Image className={styles.fileIcon} />;
     }
-    if (fileType.startsWith('video/')) {
+    if (fileType?.startsWith('video/')) {
       return <Video className={styles.fileIcon} />;
     }
     return <FileText className={styles.fileIcon} />;
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'uploading':
-        return <Spin size="small" />;
-      case 'success':
-        return null;
-      case 'error':
-        return <AlertCircle size={14} className={styles.statusError} />;
-      default:
-        return <Upload size={14} className={styles.statusText} />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return '待上传';
-      case 'uploading':
-        return '上传中';
-      case 'success':
-        return '上传成功';
-      case 'error':
-        return '上传失败';
-      default:
-        return '';
-    }
-  };
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
@@ -188,46 +149,35 @@ const UploadedFileList = memo<UploadedFileListProps>(({
           <span style={{ marginLeft: 8 }}>正在准备上传...</span>
         </div>
       )}
-      
+
       {files.length > 0 && (
         <div className={styles.fileList}>
           {files.map((file) => (
-            <div key={file.id} className={styles.fileItem}>
-              {file.previewUrl && file.fileType.startsWith('image/') ? (
-                <img
-                  src={file.previewUrl}
-                  alt={file.filename}
-                  className={styles.previewImage}
-                />
-              ) : (
-                getFileIcon(file.fileType)
-              )}
-              
+            <div key={file.id || file.filename} className={styles.fileItem}>
+              {getFileIcon(file.fileType)}
+
               <div className={styles.fileInfo}>
                 <div className={styles.fileName}>{file.filename}</div>
-                <div className={styles.fileSize}>{formatFileSize(file.size)}</div>
+                <div className={styles.fileSize}>{formatFileSize(file.size || 0)}</div>
               </div>
-              
-              <div className={styles.fileStatus}>
-                {getStatusIcon(file.status)}
-                <span 
-                  className={`${styles.statusText} ${
-                    file.status === 'uploading' ? styles.statusUploading :
-                    file.status === 'success' ? styles.statusSuccess :
-                    file.status === 'error' ? styles.statusError : ''
-                  }`}
-                >
-                  {getStatusText(file.status)}
-                </span>
-              </div>
-              
-              <Button
-                type="text"
-                size="small"
-                className={styles.removeButton}
-                onClick={() => onRemoveFile(file.id)}
-                icon={<X size={12} />}
-              />
+
+              {/* 上传中的遮罩层 */}
+              {file.status === 'uploading' && (
+                <div className={styles.uploadingOverlay}>
+                  <Spin size="small" />
+                </div>
+              )}
+
+              {/* 删除按钮 - 只在上传成功后显示 */}
+              {file.status === 'success' && file.id && (
+                <Button
+                  type="text"
+                  size="small"
+                  className={styles.removeButton}
+                  onClick={() => onRemoveFile(file.id!)}
+                  icon={<X size={12} />}
+                />
+              )}
             </div>
           ))}
         </div>

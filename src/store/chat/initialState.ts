@@ -12,8 +12,6 @@ export interface ChatState
     TopicState,
     UploadState,
     AgentSuggestionsState {
-  // 其他状态
-  isLoading: boolean;
   error?: string;
 }
 
@@ -23,6 +21,5 @@ export const initialState: ChatState = {
   ...initialTopicState,
   ...initialAgentSuggestionsState,
 
-  isLoading: false,
   error: undefined,
 };

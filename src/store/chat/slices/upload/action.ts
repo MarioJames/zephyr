@@ -1,27 +1,37 @@
 import { StateCreator } from 'zustand';
 import { ChatStore } from '../../store';
 import { uploadFileListReducer } from '../../helpers';
-import { FileItem } from '@/services/files';
-import { RcFile } from 'antd/es/upload';
-import { FILE_UPLOAD_BLACKLIST } from '@/const/file';
+import {
+  FileItem,
+  UploadAndParseRequest,
+  UploadAndParseResponse,
+} from '@/services/files';
 import { filesAPI } from '@/services';
+import { ParsedFileContent } from '@/store/file/slices/core/initialState';
+
+// 扩展 FileItem 类型以包含前端需要的字段
+export interface ChatFileItem extends FileItem {
+  originalFile?: File;
+  base64?: string;
+  status?: 'pending' | 'uploading' | 'success' | 'error';
+}
 
 interface AddFile {
   atStart?: boolean;
-  file: FileItem;
+  file: ChatFileItem;
   type: 'addFile';
 }
 
 interface AddFiles {
   atStart?: boolean;
-  files: FileItem[];
+  files: ChatFileItem[];
   type: 'addFiles';
 }
 
 interface UpdateFile {
   id: string;
   type: 'updateFile';
-  value: Partial<FileItem>;
+  value: Partial<ChatFileItem>;
 }
 
 interface UpdateFileStatus {
@@ -56,142 +66,193 @@ export type UploadFileListDispatch =
   | RemoveFiles;
 
 export interface UploadAction {
-  uploadChatFiles: (files: RcFile[]) => Promise<void>;
-
+  // 上传文件
+  uploadChatFiles: (files: File) => Promise<void>;
+  uploadChatFilesAndParse: (
+    data: UploadAndParseRequest
+  ) => Promise<UploadAndParseResponse>;
+  // 清空文件列表
   clearChatUploadFileList: () => void;
-
-  dispatchChatUploadFileList: (payload: UploadFileListDispatch) => void;
-
+  // 删除文件
   removeChatUploadFile: (id: string) => Promise<void>;
 
-  // 简化的上传方法，不包含进度回调
-  uploadFile: (file: RcFile) => Promise<{ id: string; url: string }>;
+  // 文件解析相关
+  getParsedFileContent: (fileId: string) => ParsedFileContent | undefined;
+  clearParsedFileContent: (fileId: string) => void;
+  clearAllParsedFileContent: () => void;
 }
 
 export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
   set,
   get
 ) => ({
+  // 上传文件
+  uploadChatFiles: async (file: File) => {
+    set({
+      isUploading: true,
+      uploadingFiles: [...get().uploadingFiles, file],
+    });
+
+    try {
+      set({
+        chatUploadFileList: [
+          ...get().chatUploadFileList,
+          {
+            originalFile: file,
+            filename: file.name,
+            fileType: file.type,
+            size: file.size,
+            status: 'uploading' as const,
+          },
+        ],
+      });
+
+      const res = await filesAPI.batchUpload({
+        files: [file],
+      });
+
+      // 处理图片文件的 base64 编码
+      const processedFiles = await Promise.all(
+        res.successful.map(async (uploadedFile) => {
+          const resultFile: ChatFileItem = {
+            ...uploadedFile,
+            status: 'success' as const,
+          };
+
+          // 如果是图片文件，生成 base64 编码
+          if (file.type.startsWith('image/')) {
+            try {
+              const arrayBuffer = await file.arrayBuffer();
+              const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+              resultFile.base64 = `data:${file.type};base64,${base64}`;
+            } catch (error) {
+              console.error('图片 base64 编码失败:', error);
+            }
+          }
+
+          return resultFile;
+        })
+      );
+
+      set({
+        chatUploadFileList: [
+          // 删除正在上传的文件
+          ...get().chatUploadFileList.filter(
+            (chatFile) => chatFile.originalFile !== file
+          ),
+          // 添加上传成功的文件
+          ...processedFiles,
+        ],
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      set({
+        isUploading: false,
+        uploadingFiles: get().uploadingFiles.filter(
+          (uploadingFile) => uploadingFile !== file
+        ),
+      });
+    }
+  },
+
+  // 一体化上传和解析
+  uploadChatFilesAndParse: async (data: UploadAndParseRequest) => {
+    console.log('data', data);
+
+    set({
+      isUploading: true,
+      uploadingFiles: [...get().uploadingFiles, data.file],
+    });
+
+    try {
+      // 添加文件到列表
+      set({
+        chatUploadFileList: [
+          ...get().chatUploadFileList,
+          {
+            originalFile: data.file,
+            filename: data.file.name,
+            fileType: data.file.type,
+            size: data.file.size,
+            status: 'uploading' as const,
+          },
+        ],
+      });
+
+      const response = await filesAPI.uploadAndParseDocument(data);
+
+      // 将文件添加到文件列表
+      set({
+        chatUploadFileList: [
+          ...get().chatUploadFileList.filter(
+            (chatFile) => chatFile.originalFile !== data.file
+          ),
+          {
+            ...response.fileItem,
+            status: 'success' as const,
+          },
+        ],
+      });
+
+      // 将解析结果存储到解析内容映射中
+      if (response.parseResult.parseStatus === 'completed') {
+        const parsedContent: ParsedFileContent = {
+          fileId: response.parseResult.fileId,
+          content: response.parseResult.content,
+          filename: response.parseResult.filename,
+          fileType: response.parseResult.fileType,
+          parseStatus: response.parseResult.parseStatus,
+          parsedAt: response.parseResult.parsedAt,
+          error: response.parseResult.error,
+          metadata: response.parseResult.metadata,
+        };
+
+        const parsedFileContentMap = get().parsedFileContentMap;
+        parsedFileContentMap.set(parsedContent.fileId, parsedContent);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('文件上传和解析失败:', error);
+      throw error;
+    } finally {
+      set({
+        uploadingFiles: get().uploadingFiles.filter(
+          (uploadingFile) => uploadingFile !== data.file
+        ),
+        isUploading: false,
+      });
+    }
+  },
+
   clearChatUploadFileList: () => {
     set({ chatUploadFileList: [] });
   },
 
-  dispatchChatUploadFileList: (payload) => {
-    const nextValue = uploadFileListReducer(get().chatUploadFileList, payload);
-    if (nextValue === get().chatUploadFileList) return;
+  removeChatUploadFile: async (fileId: string) => {
+    const { chatUploadFileList } = get();
 
-    set({ chatUploadFileList: nextValue }, false);
-  },
-
-  removeChatUploadFile: async (id) => {
-    const { dispatchChatUploadFileList } = get();
-
-    dispatchChatUploadFileList({ id, type: 'removeFile' });
-    await filesAPI.deleteFile(id);
-  },
-
-  // 简化的文件上传方法，只返回基本信息
-  uploadFile: async (file: RcFile) => {
-    try {
-      const response = await filesAPI.upload({ file });
-      return {
-        id: response.id,
-        url: response.url,
-      };
-    } catch (error) {
-      console.error('Upload failed:', error);
-      throw error;
-    }
-  },
-
-  uploadChatFiles: async (rawFiles) => {
-    const { dispatchChatUploadFileList, uploadFile } = get();
-
-    // 设置正在上传状态
-    set({ isUploading: true });
-
-    // 过滤黑名单文件
-    const files = rawFiles.filter(
-      (file) => !FILE_UPLOAD_BLACKLIST.includes(file.name)
-    );
-
-    // 添加文件到列表，初始状态为 pending
-    const uploadFiles: FileItem[] = await Promise.all(
-      files.map(async (file) => {
-        let previewUrl: string | undefined = undefined;
-
-        // 为图片和视频创建预览URL
-        if (file.type.startsWith('image') || file.type.startsWith('video')) {
-          const data = await file.arrayBuffer();
-          previewUrl = URL.createObjectURL(
-            new Blob([data!], { type: file.type })
-          );
-        }
-
-        return {
-          id: file.name,
-          filename: file.name,
-          fileType: file.type,
-          size: file.size,
-          hash: '',
-          url: '',
-          uploadedAt: '',
-          metadata: {},
-          status: 'pending',
-          previewUrl,
-        } as FileItem;
-      })
-    );
-
-    dispatchChatUploadFileList({ files: uploadFiles, type: 'addFiles' });
-
-    // 并行上传所有文件
-    const uploadPromises = files.map(async (file) => {
-      try {
-        // 更新状态为上传中
-        dispatchChatUploadFileList({
-          id: file.name,
-          type: 'updateFileStatus',
-          status: 'uploading',
-        });
-
-        // 执行上传
-        const result = await uploadFile(file);
-
-        // 更新状态为成功
-        dispatchChatUploadFileList({
-          id: file.name,
-          type: 'updateFile',
-          value: {
-            id: result.id,
-            url: result.url,
-            status: 'success',
-          },
-        });
-
-        return result;
-      } catch (error) {
-        console.error('Upload failed for file:', file.name, error);
-
-        // 更新状态为错误
-        dispatchChatUploadFileList({
-          id: file.name,
-          type: 'updateFileStatus',
-          status: 'error',
-        });
-
-        throw error;
-      }
+    set({
+      chatUploadFileList: chatUploadFileList.filter(
+        (chatFile) => chatFile.id !== fileId
+      ),
     });
+  },
 
-    try {
-      await Promise.all(uploadPromises);
-    } catch (error) {
-      console.error('Some uploads failed:', error);
-      // 即使部分上传失败，也不中断整个过程
-    } finally {
-      // 重置上传状态
-      set({ isUploading: false });
-    }
+  // 获取解析后的文件内容
+  getParsedFileContent: (fileId: string) => {
+    return get().parsedFileContentMap.get(fileId);
+  },
+
+  // 清除单个解析后的文件内容
+  clearParsedFileContent: (fileId: string) => {
+    const parsedFileContentMap = get().parsedFileContentMap;
+    parsedFileContentMap.delete(fileId);
+  },
+
+  // 清除所有解析后的文件内容
+  clearAllParsedFileContent: () => {
+    set({ parsedFileContentMap: new Map() });
   },
 });

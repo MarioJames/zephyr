@@ -1,15 +1,14 @@
 'use client';
 
 import { createStyles } from 'antd-style';
-import { ReactNode, memo, useCallback, useMemo, useEffect } from 'react';
+import { ReactNode, memo, useCallback, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import ChatItem from '@/features/ChatItem';
-import { useAgentStore } from '@/store/agent';
-import { agentChatConfigSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatMessage } from '@/types/message';
+import { removeSystemContext } from '@/utils/messageContentFilter';
 
 import ErrorMessageExtra, { useErrorContent } from '../../Error';
 import { renderMessagesExtra } from '../../Extras';
@@ -47,7 +46,6 @@ const Item = memo<ChatListItemProps>(
   ({ className, id, actionBar, endRender }) => {
     const { styles, cx } = useStyles();
 
-    const type = useAgentStore((s) => s.agentChatConfig.displayMode === 'docs' ? 'docs' : 'chat');
     const item = useChatStore(chatSelectors.getMessageById(id));
 
     const renderMessage = useCallback(
@@ -86,10 +84,10 @@ const Item = memo<ChatListItemProps>(
         if (!RenderFunction) return dom;
 
         return (
-          <RenderFunction displayMode={type} dom={dom} id={id} text={text} />
+          <RenderFunction displayMode={'chat'} dom={dom} id={id} text={text} />
         );
       },
-      [item?.role, type]
+      [item?.role]
     );
 
     const error = useErrorContent(item?.error);
@@ -132,9 +130,26 @@ const Item = memo<ChatListItemProps>(
       [item]
     );
     const messageExtra = useMemo(
-        ()=>item && <MessageExtra data={{ ...(item as any), extra: { translate: item.translation } }} />,
+      () =>
+        item && (
+          <MessageExtra
+            data={{ ...(item as any), extra: { translate: item.translation } }}
+          />
+        ),
       [item]
     );
+
+    // 过滤用户消息的系统上下文
+    const displayContent = useMemo(() => {
+      if (!item?.content) return item?.content;
+      
+      // 只对用户消息进行过滤，保留助手消息的完整内容
+      if (item.role === 'user') {
+        return removeSystemContext(item.content);
+      }
+      
+      return item.content;
+    }, [item?.content, item?.role]);
 
     return (
       item && (
@@ -145,19 +160,13 @@ const Item = memo<ChatListItemProps>(
             error={error}
             errorMessage={errorMessage}
             markdownProps={markdownProps}
-            message={item.content}
+            message={displayContent}
             messageExtra={messageExtra}
-            placement={
-              type === 'chat'
-                ? item.role === 'user'
-                  ? 'left'
-                  : 'right'
-                : 'left'
-            }
+            placement={item.role === 'user' ? 'left' : 'right'}
             primary={item.role === 'assistant'}
             renderMessage={renderMessage}
             time={new Date(item.createdAt!).getTime()}
-            variant={type === 'chat' ? 'bubble' : 'docs'}
+            variant={'bubble'}
           />
           {endRender}
         </Flexbox>

@@ -3,7 +3,7 @@ import { Flexbox } from 'react-layout-kit';
 import { FileClock, X } from 'lucide-react';
 import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat';
+import { chatSelectors } from '@/store/chat/selectors';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
 import { useHistoryStyles } from '../style';
@@ -18,8 +18,11 @@ const HistoryPanel = () => {
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const fetchTopics = useChatStore((s) => s.fetchTopics);
   // 获取话题列表和加载状态
-  const topics = useChatStore(topicSelectors.topics);
-  const isLoading = useChatStore((s) => s.isLoading);
+  const [topics, isLoading] = useChatStore((s) => [
+    chatSelectors.topics(s),
+    chatSelectors.fetchTopicLoading(s),
+  ]);
+
   const switchTopic = useChatStore((s) => s.switchTopic);
 
   useEffect(() => {
@@ -30,15 +33,15 @@ const HistoryPanel = () => {
   }, [activeSessionId]);
 
   return (
-    <Flexbox height="100%" className={styles.panelBg}>
+    <Flexbox height='100%' className={styles.panelBg}>
       {/* Header */}
       <Flexbox
         horizontal
-        align="center"
-        distribution="space-between"
+        align='center'
+        distribution='space-between'
         className={styles.header}
       >
-        <Flexbox horizontal align="center" gap={8}>
+        <Flexbox horizontal align='center' gap={8}>
           <FileClock size={20} />
           <span className={styles.headerTitle}>历史会话</span>
         </Flexbox>
@@ -54,7 +57,12 @@ const HistoryPanel = () => {
         {isLoading ? (
           <SkeletonList />
         ) : topics.length === 0 ? (
-          <Flexbox flex={1} align="center" justify="center" style={{ color: '#999', fontSize: 16 }}>
+          <Flexbox
+            flex={1}
+            align='center'
+            justify='center'
+            style={{ color: '#999', fontSize: 16 }}
+          >
             暂无历史会话
           </Flexbox>
         ) : (
@@ -62,8 +70,8 @@ const HistoryPanel = () => {
             <Flexbox
               key={item.id}
               horizontal
-              distribution="space-between"
-              align="center"
+              distribution='space-between'
+              align='center'
               className={styles.historyItem}
               onClick={() => switchTopic(item.id)}
               style={{ cursor: 'pointer' }}
@@ -71,7 +79,10 @@ const HistoryPanel = () => {
               <Flexbox>
                 <div className={styles.historyTitle}>{item.title}</div>
                 <div className={styles.historyMeta}>
-                  @{item.user?.username || item.user?.fullName || '未知员工'} | {item.updatedAt ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+                  @{item.user?.username || item.user?.fullName || '未知员工'} |{' '}
+                  {item.updatedAt
+                    ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+                    : ''}
                 </div>
               </Flexbox>
               <div className={styles.historyCount}>{item.messageCount}</div>
@@ -83,4 +94,4 @@ const HistoryPanel = () => {
   );
 };
 
-export default HistoryPanel; 
+export default HistoryPanel;

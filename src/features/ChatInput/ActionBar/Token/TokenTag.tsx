@@ -4,20 +4,18 @@ import { memo, useMemo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { useTokenCount } from '@/hooks/useTokenCount';
-import { useAgentStore } from '@/store/agent';
-import {
-  agentChatConfigSelectors,
-  agentModelSelectors,
-  agentSelectors,
-} from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat/selectors';
+import { chatSelectors } from '@/store/chat/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
-import { mainAIChatsWithHistoryConfig } from '@/store/chat/slices/message/selectors';
 import numeral from 'numeral';
 import { Tooltip } from '@lobehub/ui';
+import { useModelStore } from '@/store/model';
+import { modelCoreSelectors } from '@/store/model';
+import { sessionSelectors } from '@/store/session/selectors';
+import { useSessionStore } from '@/store/session';
+import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 
 interface TokenTagProps {
   total: string;
@@ -25,37 +23,38 @@ interface TokenTagProps {
 const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const theme = useTheme();
 
-  const [input, historySummary] = useChatStore((s) => [
+  const [systemRole, historyCount, enableHistoryCount] = useSessionStore(
+    (s) => [
+      sessionSelectors.activeAgentSystemRole(s),
+      sessionSelectors.activeAgentHistoryCount(s),
+      sessionSelectors.activeAgentEnableHistoryCount(s),
+    ]
+  );
+
+  const [input, historySummary, chats] = useChatStore((s) => [
     s.inputMessage,
-    topicSelectors.currentActiveTopic(s)?.historySummary || '',
+    chatSelectors.currentActiveTopic(s)?.historySummary || '',
+    chatSelectors.mainAIChatsWithHistoryConfig(s, {
+      enableHistoryCount,
+      historyCount,
+    }),
   ]);
 
-  const [systemRole, modelDetails] = useAgentStore((s) => {
-    return [
-      agentSelectors.currentAgentSystemRole(s),
-      agentModelSelectors.currentModelDetails(s),
-    ];
-  });
-
-  const [historyCount, enableHistoryCount] = useAgentStore((s) => [
-    agentChatConfigSelectors.historyCount(s),
-    agentChatConfigSelectors.enableHistoryCount(s),
+  const [maxTokens] = useModelStore((s) => [
+    modelCoreSelectors.currentModelContextWindowTokens(s) || 0,
   ]);
-
-  const { contextWindowTokens: maxTokens = 0 } = modelDetails || {};
 
   // Chat usage token
   const inputTokenCount = useTokenCount(input);
 
   const chatsString = useMemo(() => {
-    const chats = mainAIChatsWithHistoryConfig(useChatStore.getState());
     return chats.map((chat) => chat.content).join('');
-  }, [messageString, historyCount, enableHistoryCount]);
+  }, [chats, messageString, historyCount, enableHistoryCount]);
 
   const chatsToken = useTokenCount(chatsString) + inputTokenCount;
 
   // SystemRole token
-  const systemRoleToken = useTokenCount(systemRole);
+  const systemRoleToken = useTokenCount(AI_SUGGESTION_PROMPT(systemRole || ''));
   const historySummaryToken = useTokenCount(historySummary);
 
   // Total token

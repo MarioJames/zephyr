@@ -3,8 +3,10 @@ import messageService, { MessageItem } from '@/services/messages';
 import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
-import { useFileStore } from '@/store/file';
-import { createMessageWithFiles, FileForAI, processImageFile } from '@/utils/fileContextFormatter';
+import {
+  createMessageWithFiles,
+  FileForAI,
+} from '@/utils/fileContextFormatter';
 
 // 将消息转换为AI模型消费的格式
 const formatMessagesForAI = (messages: MessageItem[]) => {
@@ -31,7 +33,7 @@ export interface MessageAction {
   createMessage: (
     content: string,
     role: 'user' | 'assistant',
-    options: { clearInput?: boolean }
+    options: { clearInput?: boolean; files?: string[] }
   ) => Promise<void>;
   sendMessage: (role: 'user' | 'assistant') => Promise<void>;
   acceptSuggestion: (content: string) => Promise<void>;
@@ -59,19 +61,19 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       return;
     }
 
-    set({ isLoading: true, error: undefined });
+    set({ fetchMessageLoading: true, error: undefined });
     try {
       const messages = await messageService.queryByTopic(topicId);
       set({
         messages,
         messagesInit: true,
-        isLoading: false,
+        fetchMessageLoading: false,
         error: undefined,
       });
     } catch (error) {
       console.error('Failed to fetch messages:', error);
       set({
-        isLoading: false,
+        fetchMessageLoading: false,
         error:
           error instanceof Error ? error.message : 'Failed to fetch messages',
         messagesInit: true,
@@ -91,13 +93,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   createMessage: async (
     content: string,
     role: 'user' | 'assistant',
-    options: { clearInput?: boolean } = {}
+    options: { clearInput?: boolean; files?: string[] } = {}
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
+
     if (!content || !activeSessionId || !activeTopicId) return;
 
-    set({ isLoading: true });
+    set({ fetchMessageLoading: true });
 
     try {
       const createdMessage = await messageService.createMessage({
@@ -105,11 +108,13 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         content,
         sessionId: activeSessionId,
         topicId: activeTopicId,
+        files: options.files, // 传递文件信息
       });
+
 
       const updateData: Partial<ChatStore> = {
         messages: [...get().messages, createdMessage],
-        isLoading: false,
+        fetchMessageLoading: false,
       };
 
       // 如果需要清空输入框（sendMessage 时清空，acceptSuggestion 时不清空）
@@ -126,56 +131,45 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 🆕 自动触发翻译
       if (createdMessage.id) {
-        console.log('消息发送成功，开始自动翻译:', createdMessage.id);
         get().autoTranslateMessage(createdMessage.id);
       }
     } catch (e: unknown) {
-      set({ isLoading: false, error: (e as Error)?.message || '消息发送失败' });
+      set({ fetchMessageLoading: false, error: (e as Error)?.message || '消息发送失败' });
     }
   },
 
   sendMessage: async (role: 'user' | 'assistant') => {
     const { inputMessage, chatUploadFileList } = get();
-    
-    // 如果没有上传的文件，正常发送
-    if (!chatUploadFileList.length) {
-      await get().createMessage(inputMessage, role, { clearInput: true });
-      return;
-    }
 
+    set({ sendMessageLoading: true });
     try {
-      // 获取文件存储状态
-      const fileStore = useFileStore.getState();
+      // 如果没有上传的文件，正常发送
+      if (!chatUploadFileList.length) {
+        await get().createMessage(inputMessage, role, { clearInput: true });
+        return;
+      }
+
       const filesForAI: FileForAI[] = [];
 
       // 处理上传的文件
       for (const fileItem of chatUploadFileList) {
-        if (fileItem.status !== 'success') continue;
+        if (fileItem.status !== 'success') {
+          continue;
+        }
 
         const fileForAI: FileForAI = {
-          id: fileItem.id,
-          name: fileItem.filename,
-          type: fileItem.fileType,
-          size: fileItem.size,
+          id: fileItem.id!,
+          name: fileItem.filename!,
+          type: fileItem.fileType!,
+          size: fileItem.size!,
         };
 
-        // 处理图片文件
-        if (fileItem.fileType.startsWith('image/') && (fileItem as { previewUrl?: string }).previewUrl) {
-          // 如果有预览URL，从本地获取base64
-          try {
-            const response = await fetch((fileItem as { previewUrl: string }).previewUrl);
-            const blob = await response.blob();
-            const file = new File([blob], fileItem.filename, { type: fileItem.fileType });
-            const { base64 } = await processImageFile(file);
-            fileForAI.base64 = base64;
-            fileForAI.previewUrl = (fileItem as any).previewUrl;
-          } catch (error) {
-            console.error('处理图片失败:', error);
-          }
+        // 处理图片文件 - 直接使用已经转换好的base64
+        if (fileItem.fileType?.startsWith('image/')) {
+          fileForAI.base64 = fileItem.base64;
         } else {
           // 处理文档文件，获取解析后的内容
-          // 新接口返回 fileId，所以需要用 fileId 查找解析内容
-          const parsedContent = fileStore.getParsedFileContent(fileItem.id);
+          const parsedContent = get().getParsedFileContent(fileItem.id!);
           if (parsedContent) {
             fileForAI.content = parsedContent.content;
             fileForAI.metadata = parsedContent.metadata;
@@ -187,20 +181,30 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 使用文件上下文创建消息
       const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
-      const finalContent = typeof messageWithFiles.content === 'string' 
-        ? messageWithFiles.content 
-        : messageWithFiles.content[0]?.text || inputMessage;
+      const finalContent =
+        typeof messageWithFiles.content === 'string'
+          ? messageWithFiles.content
+          : messageWithFiles.content[0]?.text || inputMessage;
 
-      // 发送消息
-      await get().createMessage(finalContent, role, { clearInput: true });
+      // 收集文件ID用于数据库存储
+      const fileIds = chatUploadFileList
+        .filter((file) => file.status === 'success' && file.id)
+        .map((file) => file.id!);
+
+      // 发送消息，包含文件信息
+      await get().createMessage(finalContent, role, {
+        clearInput: true,
+        files: fileIds,
+      });
 
       // 清理上传的文件列表
       get().clearChatUploadFileList();
-      
     } catch (error) {
       console.error('发送带文件上下文的消息失败:', error);
       // 降级处理：正常发送消息
       await get().createMessage(inputMessage, role, { clearInput: true });
+    } finally {
+      set({ sendMessageLoading: false });
     }
   },
 
@@ -276,12 +280,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   },
 
   fetchMessagesByTopic: async (topicId) => {
-    set({ isLoading: true });
+    set({ fetchMessageLoading: true });
     try {
       const messages = await messageService.queryByTopic(topicId);
-      set({ messages, isLoading: false });
+      set({ messages, fetchMessageLoading: false });
     } catch (e: any) {
-      set({ isLoading: false, error: e?.message || '消息获取失败' });
+      set({ fetchMessageLoading: false, error: e?.message || '消息获取失败' });
     }
   },
 

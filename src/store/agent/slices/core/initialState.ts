@@ -1,6 +1,6 @@
 import { AgentItem } from '@/services/agents';
 
-export interface AgentListState {
+export interface AgentCoreState {
   agents: AgentItem[];
   agentsInit: boolean;
   currentAgent?: AgentItem;
@@ -8,7 +8,7 @@ export interface AgentListState {
   error?: string;
 }
 
-export const initialAgentListState: AgentListState = {
+export const initialAgentCoreState: AgentCoreState = {
   agents: [],
   agentsInit: false,
   currentAgent: undefined,
