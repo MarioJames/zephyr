@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Modal, Typography, Flex } from 'antd';
+import { Row, Col, Modal, Typography } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
 import { Bot } from 'lucide-react';

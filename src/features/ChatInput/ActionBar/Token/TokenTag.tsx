@@ -5,28 +5,23 @@ import { Center, Flexbox } from 'react-layout-kit';
 
 import { useTokenCount } from '@/hooks/useTokenCount';
 import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat/selectors';
+import { chatSelectors } from '@/store/chat/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
-import { mainAIChatsWithHistoryConfig } from '@/store/chat/slices/message/selectors';
 import numeral from 'numeral';
 import { Tooltip } from '@lobehub/ui';
 import { useModelStore } from '@/store/model';
 import { modelCoreSelectors } from '@/store/model';
 import { sessionSelectors } from '@/store/session/selectors';
 import { useSessionStore } from '@/store/session';
+import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 
 interface TokenTagProps {
   total: string;
 }
 const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const theme = useTheme();
-
-  const [input, historySummary] = useChatStore((s) => [
-    s.inputMessage,
-    topicSelectors.currentActiveTopic(s)?.historySummary || '',
-  ]);
 
   const [systemRole, historyCount, enableHistoryCount] = useSessionStore(
     (s) => [
@@ -36,6 +31,15 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     ]
   );
 
+  const [input, historySummary, chats] = useChatStore((s) => [
+    s.inputMessage,
+    chatSelectors.currentActiveTopic(s)?.historySummary || '',
+    chatSelectors.mainAIChatsWithHistoryConfig(s, {
+      enableHistoryCount,
+      historyCount,
+    }),
+  ]);
+
   const [maxTokens] = useModelStore((s) => [
     modelCoreSelectors.currentModelContextWindowTokens(s) || 0,
   ]);
@@ -44,14 +48,13 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const inputTokenCount = useTokenCount(input);
 
   const chatsString = useMemo(() => {
-    const chats = mainAIChatsWithHistoryConfig(useChatStore.getState());
     return chats.map((chat) => chat.content).join('');
-  }, [messageString, historyCount, enableHistoryCount]);
+  }, [chats, messageString, historyCount, enableHistoryCount]);
 
   const chatsToken = useTokenCount(chatsString) + inputTokenCount;
 
   // SystemRole token
-  const systemRoleToken = useTokenCount(systemRole);
+  const systemRoleToken = useTokenCount(AI_SUGGESTION_PROMPT(systemRole || ''));
   const historySummaryToken = useTokenCount(historySummary);
 
   // Total token

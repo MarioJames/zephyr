@@ -6,12 +6,11 @@ import { ScrollText } from 'lucide-react';
 import { memo } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
-import { agentSelectors } from '@/store/agent/selectors';
-import { useAgentStore } from '@/store/agent/store';
 import { useChatStore } from '@/store/chat';
-import { topicSelectors } from '@/store/chat/selectors';
+import { chatSelectors } from '@/store/chat/selectors';
 
 import HistoryDivider from './HistoryDivider';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -31,13 +30,13 @@ const useStyles = createStyles(({ css, token }) => ({
 const History = memo(() => {
   const { styles, theme } = useStyles();
   const [content, model] = useChatStore((s) => {
-    const history = topicSelectors.currentActiveTopic(s);
+    const history = chatSelectors.currentActiveTopic(s);
     return [history?.historySummary, history?.metadata?.model];
   });
 
-  const enableCompressHistory = useAgentStore((s) => [
-    agentSelectors.enableCompressHistory(s),
-  ]);
+  const enableCompressHistory = useSessionStore((s) =>
+    sessionSelectors.activeAgentEnableCompressHistory(s)
+  );
 
   return (
     <Flexbox paddingInline={16} style={{ paddingBottom: 8 }}>

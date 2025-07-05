@@ -61,19 +61,19 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       return;
     }
 
-    set({ isLoading: true, error: undefined });
+    set({ fetchMessageLoading: true, error: undefined });
     try {
       const messages = await messageService.queryByTopic(topicId);
       set({
         messages,
         messagesInit: true,
-        isLoading: false,
+        fetchMessageLoading: false,
         error: undefined,
       });
     } catch (error) {
       console.error('Failed to fetch messages:', error);
       set({
-        isLoading: false,
+        fetchMessageLoading: false,
         error:
           error instanceof Error ? error.message : 'Failed to fetch messages',
         messagesInit: true,
@@ -100,7 +100,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
     if (!content || !activeSessionId || !activeTopicId) return;
 
-    set({ isLoading: true });
+    set({ fetchMessageLoading: true });
 
     try {
       const createdMessage = await messageService.createMessage({
@@ -114,7 +114,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       const updateData: Partial<ChatStore> = {
         messages: [...get().messages, createdMessage],
-        isLoading: false,
+        fetchMessageLoading: false,
       };
 
       // 如果需要清空输入框（sendMessage 时清空，acceptSuggestion 时不清空）
@@ -134,14 +134,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         get().autoTranslateMessage(createdMessage.id);
       }
     } catch (e: unknown) {
-      set({ isLoading: false, error: (e as Error)?.message || '消息发送失败' });
+      set({ fetchMessageLoading: false, error: (e as Error)?.message || '消息发送失败' });
     }
   },
 
   sendMessage: async (role: 'user' | 'assistant') => {
     const { inputMessage, chatUploadFileList } = get();
 
-    set({ sendLoading: true });
+    set({ sendMessageLoading: true });
     try {
       // 如果没有上传的文件，正常发送
       if (!chatUploadFileList.length) {
@@ -204,7 +204,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       // 降级处理：正常发送消息
       await get().createMessage(inputMessage, role, { clearInput: true });
     } finally {
-      set({ sendLoading: false });
+      set({ sendMessageLoading: false });
     }
   },
 
@@ -280,12 +280,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   },
 
   fetchMessagesByTopic: async (topicId) => {
-    set({ isLoading: true });
+    set({ fetchMessageLoading: true });
     try {
       const messages = await messageService.queryByTopic(topicId);
-      set({ messages, isLoading: false });
+      set({ messages, fetchMessageLoading: false });
     } catch (e: any) {
-      set({ isLoading: false, error: e?.message || '消息获取失败' });
+      set({ fetchMessageLoading: false, error: e?.message || '消息获取失败' });
     }
   },
 

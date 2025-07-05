@@ -46,7 +46,7 @@ interface FooterProps {
 const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
   const { styles } = useStyles();
 
-  const { sendMessage, sendLoading } = useChatStore();
+  const { sendMessage, sendMessageLoading } = useChatStore();
 
   const [isMac, setIsMac] = useState<boolean>();
 
@@ -67,8 +67,8 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         <ShortcutHint />
         <Space.Compact>
           <Button
-            disabled={sendLoading}
-            loading={sendLoading}
+            disabled={sendMessageLoading}
+            loading={sendMessageLoading}
             onClick={() => {
               sendMessage('user');
               onExpandChange?.(false);
@@ -77,7 +77,7 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
           >
             {'发送'}
           </Button>
-          <SendMore disabled={sendLoading} isMac={isMac} />
+          <SendMore disabled={sendMessageLoading} isMac={isMac} />
         </Space.Compact>
       </Flexbox>
     </>

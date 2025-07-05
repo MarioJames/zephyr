@@ -1,7 +1,9 @@
 import { MessageItem } from '@/services/messages';
 
 export interface MessageState {
-  sendLoading: boolean;
+  fetchMessageLoading: boolean;
+  sendMessageLoading: boolean;
+
   messages: MessageItem[];
   messagesInit: boolean;
   inputMessage: string;
@@ -12,7 +14,8 @@ export interface MessageState {
 }
 
 export const initialMessageState: MessageState = {
-  sendLoading: false,
+  sendMessageLoading: false,
+  fetchMessageLoading: false,
   messages: [],
   messagesInit: false,
   inputMessage: '',

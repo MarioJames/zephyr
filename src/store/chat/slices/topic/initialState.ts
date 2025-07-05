@@ -1,8 +1,9 @@
 import { TopicItem } from '@/services/topics';
 
 export interface TopicState {
-  topics: TopicItem[];
   topicsInit: boolean;
+  fetchTopicLoading: boolean;
+  topics: TopicItem[];
   searchTopics: TopicItem[];
   isSearchingTopic: boolean;
   inSearchingMode: boolean;
@@ -11,8 +12,9 @@ export interface TopicState {
 }
 
 export const initialTopicState: TopicState = {
-  topics: [],
   topicsInit: false,
+  fetchTopicLoading: false,
+  topics: [],
   searchTopics: [],
   isSearchingTopic: false,
   inSearchingMode: false,

@@ -26,14 +26,14 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
   get
 ) => ({
   fetchTopics: async (sessionId: string) => {
-    set({ isLoading: true, error: undefined });
+    set({ fetchTopicLoading: true, error: undefined });
 
     try {
       const topics = await topicService.getTopicList(sessionId);
       set({
         topics,
         topicsInit: true,
-        isLoading: false,
+        fetchTopicLoading: false,
         error: undefined,
       });
 
@@ -41,7 +41,7 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     } catch (error) {
       console.error('Failed to fetch topics:', error);
       set({
-        isLoading: false,
+        fetchTopicLoading: false,
         error:
           error instanceof Error ? error.message : 'Failed to fetch topics',
         topicsInit: true,

@@ -13,16 +13,13 @@ import TextArea from './TextArea';
 import UploadedFileList from './UploadedFileList';
 
 const leftActions = [
-  // 'model',
   'search',
   'fileUpload',
-  // 'stt',
-  // 'mainToken',
+  'stt',
+  'mainToken',
 ] as ActionKeys[];
 
-// const rightActions = ['clear'] as ActionKeys[];
-const rightActions = [] as ActionKeys[];
-
+const rightActions = ['newTopic'] as ActionKeys[];
 
 const renderTextArea = (onSend: () => void) => <TextArea onSend={onSend} />;
 const renderFooter: FooterRender = ({ expand, onExpandChange }) => (
@@ -32,19 +29,20 @@ const renderFooter: FooterRender = ({ expand, onExpandChange }) => (
 const ChatInput = memo(() => {
   const inputHeight = useGlobalStore(systemStatusSelectors.inputHeight);
   const updatePreference = useGlobalStore((s) => s.updateSystemStatus);
-  
+
   // 获取文件上传相关状态
-  const { chatUploadFileList, isUploading, removeChatUploadFile } = useChatStore();
+  const { chatUploadFileList, isUploading, removeChatUploadFile } =
+    useChatStore();
 
   return (
     <div>
       {/* 文件列表展示 */}
-      <UploadedFileList 
+      <UploadedFileList
         files={chatUploadFileList}
         isUploading={isUploading}
         onRemoveFile={removeChatUploadFile}
       />
-      
+
       {/* 输入框 */}
       <DesktopChatInput
         inputHeight={inputHeight}
