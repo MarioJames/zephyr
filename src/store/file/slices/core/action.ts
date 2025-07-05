@@ -1,11 +1,45 @@
 import { StateCreator } from 'zustand';
-import { FileCoreState } from './initialState';
+import { FileItem } from '@/services/files';
+import { DockFileItem, FileCoreState } from './initialState';
 import { filesAPI } from '@/services';
 
 export interface FileCoreAction {
-  uploadFiles: (files: File[]) => Promise<void>;
-  clearFileList: () => void;
+  // 获取文件列表
+  useFetchFileManage: (params?: {
+    search?: string | null;
+    page?: number;
+    pageSize?: number;
+    fileType?: string;
+  }) => Promise<{
+    data: FileItem[];
+    isLoading: boolean;
+  }>;
 
+  // 添加文件到 dock 列表
+  pushDockFileList: (files: File[]) => Promise<void>;
+
+  // 管理 dock 文件列表
+  dispatchDockFileList: (action: {
+    type: 'removeFiles';
+    ids: string[];
+  }) => void;
+
+  // 删除文件
+  removeFileItem: (id: string) => Promise<void>;
+
+  // 更新文件列表
+  setFiles: (files: FileItem[]) => void;
+
+  // 更新总数
+  setTotal: (total: number) => void;
+
+  // 更新加载状态
+  setLoading: (loading: boolean) => void;
+
+  // 更新 dock 文件列表
+  setDockFiles: (files: DockFileItem[]) => void;
+
+  // 获取文件访问 URL
   getFileAccessUrl: (fileId: string) => Promise<string>;
 }
 
@@ -15,42 +49,163 @@ export const fileCoreSlice: StateCreator<
   [],
   FileCoreAction
 > = (set, get) => ({
-  // 上传文件
-  uploadFiles: async (files: File[]) => {
-    set({ uploading: true });
-
+  useFetchFileManage: async (params) => {
+    set({ loading: true });
     try {
-      const res = await filesAPI.batchUpload({
-        files,
+      const response = await filesAPI.getFileList({
+        search: params?.search,
+        page: params?.page,
+        pageSize: params?.pageSize,
+        fileType: params?.fileType,
+        // 其他参数映射
       });
-
-      set({
-        fileList: [...get().fileList, ...res.successful],
+      
+      set({ 
+        fileList: response.files,
+        pagination: {
+          ...get().pagination,
+          total: response.total,
+        },
+        loading: false,
       });
+      
+      return {
+        data: response.files,
+        isLoading: false,
+      };
     } catch (error) {
-      console.error(error);
-    } finally {
-      set({ uploading: false });
+      set({ loading: false });
+      return {
+        data: [],
+        isLoading: false,
+      };
     }
   },
 
-  // 清空文件列表
-  clearFileList: () => set({ fileList: [] }),
+  pushDockFileList: async (files) => {
+    const dockFileList = get().dockFileList;
+    
+    // 将文件添加到 dock 列表
+    const newDockFiles = files.map((file) => ({
+      id: Math.random().toString(36).slice(2),
+      filename: file.name,
+      fileType: file.type || 'unknown',
+      size: file.size,
+      hash: '',
+      url: '',
+      uploadedAt: new Date().toISOString(),
+      metadata: {
+        filename: file.name,
+        dirname: '',
+        path: '',
+        date: new Date().toISOString(),
+      },
+      status: 'pending' as const,
+      progress: 0,
+    } as DockFileItem));
 
-  // 获取文件访问 URL
-  getFileAccessUrl: async (fileId: string) => {
-    const fileAccessUrlMap = get().fileAccessUrlMap;
+    set({ dockFileList: [...dockFileList, ...newDockFiles] });
 
-    const fileAccess = fileAccessUrlMap.get(fileId);
+    // 上传文件
+    for (const [index, file] of files.entries()) {
+      const dockFile = newDockFiles[index];
+      
+      try {
+        // 更新状态为上传中
+        set({
+          dockFileList: get().dockFileList.map((item: DockFileItem) =>
+            item.id === dockFile.id
+              ? { ...item, status: 'uploading' as const }
+              : item
+          ),
+        });
 
-    if (fileAccess && Number(fileAccess.expiresAt) > Date.now()) {
-      return fileAccess.url;
+        // 上传文件
+        const result = await filesAPI.batchUpload({
+          files: [file],
+        });
+
+        if (result.successful.length > 0) {
+          // 更新状态为成功
+          set({
+            dockFileList: get().dockFileList.map((item: DockFileItem) =>
+              item.id === dockFile.id
+                ? {
+                    ...item,
+                    ...result.successful[0],
+                    status: 'success' as const,
+                    progress: 100,
+                  }
+                : item
+            ),
+          });
+        } else {
+          throw new Error(result.failed[0]?.error || '上传失败');
+        }
+      } catch (error) {
+        // 更新状态为错误
+        set({
+          dockFileList: get().dockFileList.map((item) =>
+            item.id === dockFile.id
+              ? {
+                  ...item,
+                  status: 'error' as const,
+                  error: error instanceof Error ? error.message : '上传失败',
+                }
+              : item
+          ),
+        });
+      }
     }
+  },
 
-    const access = await filesAPI.getFileAccessUrl(fileId);
+  dispatchDockFileList: (action) => {
+    switch (action.type) {
+      case 'removeFiles': {
+        set({
+          dockFileList: get().dockFileList.filter(
+            (item: DockFileItem) => !action.ids.includes(item.id)
+          ),
+        });
+        break;
+      }
+    }
+  },
 
-    fileAccessUrlMap.set(fileId, access);
+  removeFileItem: async (id) => {
+    try {
+      await filesAPI.deleteFile(id);
+      const { fileList, pagination } = get();
+      set({
+        fileList: fileList.filter((item) => item.id !== id),
+        pagination: {
+          ...pagination,
+          total: pagination.total - 1,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to delete file:', error);
+      throw error;
+    }
+  },
 
-    return access.url;
+  setFiles: (files) => set({ fileList: files }),
+  setTotal: (total) => set({ 
+    pagination: {
+      ...get().pagination,
+      total,
+    },
+  }),
+  setLoading: (loading) => set({ loading }),
+  setDockFiles: (files) => set({ dockFileList: files }),
+
+  getFileAccessUrl: async (fileId: string) => {
+    try {
+      const access = await filesAPI.getFileAccessUrl(fileId);
+      return access.url;
+    } catch (error) {
+      console.error('Failed to get file access URL:', error);
+      throw error;
+    }
   },
 });

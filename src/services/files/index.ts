@@ -55,7 +55,7 @@ export interface FileListRequest {
   page?: number;
   pageSize?: number;
   fileType?: string;
-  search?: string;
+  search?: string | null;
 }
 
 export interface FileListResponse {

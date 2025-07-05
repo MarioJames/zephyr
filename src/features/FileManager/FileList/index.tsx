@@ -61,11 +61,10 @@ const FileList = memo<FileListProps>(({ category }) => {
   const useFetchFileManage = useFileStore((s) => s.useFetchFileManage);
 
   const { data, isLoading } = useFetchFileManage({
-    category,
-    q: query,
-    sortType,
-    sorter,
-    ...viewConfig,
+    search: query,
+    page: 1,
+    pageSize: 20,
+    fileType: 'all',
   });
 
   return !isLoading && data?.length === 0 ? (
