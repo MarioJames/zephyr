@@ -27,7 +27,6 @@ export interface FilePublicUploadResponse extends FileItem {
 
 export interface FileUploadRequest {
   file: File;
-  knowledgeBaseId?: string;
   skipCheckFileType?: boolean;
   directory?: string;
 }
@@ -35,7 +34,6 @@ export interface FileUploadRequest {
 export interface BatchUploadRequest {
   files: File[];
   sessionId?: string;
-  knowledgeBaseId?: string;
   skipCheckFileType?: boolean;
   directory?: string;
 }
@@ -87,7 +85,6 @@ export interface DocumentParseRequest {
 
 export interface UploadAndParseRequest {
   file: File;
-  knowledgeBaseId?: string;
   skipCheckFileType?: boolean;
   directory?: string;
 }
@@ -139,8 +136,6 @@ export interface UploadAndParseResponse {
 function upload(data: FileUploadRequest) {
   const formData = new FormData();
   formData.append('file', data.file);
-  if (data.knowledgeBaseId)
-    formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
@@ -164,8 +159,6 @@ function batchUpload(data: BatchUploadRequest) {
     formData.append('files', file);
   });
   if (data.sessionId) formData.append('sessionId', data.sessionId);
-  if (data.knowledgeBaseId)
-    formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
@@ -190,8 +183,6 @@ function batchUpload(data: BatchUploadRequest) {
 function uploadPublic(data: FileUploadRequest) {
   const formData = new FormData();
   formData.append('file', data.file);
-  if (data.knowledgeBaseId)
-    formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
@@ -268,8 +259,6 @@ function uploadAndParseDocument(data: UploadAndParseRequest) {
   const formData = new FormData();
   formData.append('file', data.file);
 
-  if (data.knowledgeBaseId)
-    formData.append('knowledgeBaseId', data.knowledgeBaseId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);

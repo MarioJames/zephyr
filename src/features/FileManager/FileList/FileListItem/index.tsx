@@ -2,6 +2,7 @@ import { Checkbox } from 'antd';
 import { createStyles } from 'antd-style';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/zh-cn';
 import { useRouter } from 'next/navigation';
 import { rgba } from 'polished';
 import { memo } from 'react';
@@ -14,6 +15,7 @@ import { formatSize } from '@/utils/format';
 import DropdownMenu from './DropdownMenu';
 
 dayjs.extend(relativeTime);
+dayjs.locale('zh-cn');
 
 export const FILE_DATE_WIDTH = 160;
 export const FILE_SIZE_WIDTH = 140;
