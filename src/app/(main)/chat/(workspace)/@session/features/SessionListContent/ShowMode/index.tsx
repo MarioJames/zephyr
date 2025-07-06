@@ -41,6 +41,7 @@ const ShowMode = memo(() => {
           title={title}
           isRecent={isRecent}
           user={session?.user}
+          avatar={session?.avatar}
         />
       );
     },

@@ -1,7 +1,7 @@
 import { ActionIcon, Dropdown, Icon, type MenuProps } from '@lobehub/ui';
 import { App, Typography } from 'antd';
 import { createStyles } from 'antd-style';
-import { MoreVertical, PencilLine, Trash } from 'lucide-react';
+import { MoreVertical, PencilLine } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
 import { useOIDCStore } from '@/store/oidc';
 import { oidcSelectors } from '@/store/oidc/selectors';
+import Image from 'next/image';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -37,6 +38,9 @@ const useStyles = createStyles(({ css }) => ({
     user-select: none;
     cursor: pointer;
   `,
+  avatarImage: css`
+    border-radius: 50%;
+  `,
 }));
 
 interface SessionContentProps {
@@ -45,10 +49,11 @@ interface SessionContentProps {
   title: string;
   employeeName?: string;
   isRecent?: boolean;
+  avatar?: string;
 }
 
 const SessionContent = memo<SessionContentProps>(
-  ({ id, title, showMore, employeeName, isRecent }) => {
+  ({ id, title, showMore, employeeName, isRecent, avatar }) => {
     const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
     const { styles } = useStyles();
     const router = useRouter();
@@ -92,7 +97,17 @@ const SessionContent = memo<SessionContentProps>(
             if (!id) return;
           }}
         >
-          {title?.[0] || ''}
+          {avatar ? (
+            <Image
+              src={avatar || ''}
+              alt='avatar'
+              width={32}
+              height={32}
+              className={styles.avatarImage}
+            />
+          ) : (
+            title?.[0] || ''
+          )}
         </div>
         <Flexbox
           flex={1}

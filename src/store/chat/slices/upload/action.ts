@@ -81,6 +81,9 @@ export interface UploadAction {
   getParsedFileContent: (fileId: string) => ParsedFileContent | undefined;
   clearParsedFileContent: (fileId: string) => void;
   clearAllParsedFileContent: () => void;
+
+  // 批量获取文件和解析内容
+  batchGetFileAndParseContent: (fileIds: string[]) => Promise<void>;
 }
 
 export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
@@ -90,7 +93,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
   // 上传文件
   uploadChatFiles: async (file: File) => {
     set({
-      isUploading: true,
       uploadingFiles: [...get().uploadingFiles, file],
     });
 
@@ -163,7 +165,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
       throw error;
     } finally {
       set({
-        isUploading: false,
         uploadingFiles: get().uploadingFiles.filter(
           (uploadingFile) => uploadingFile !== file
         ),
@@ -174,7 +175,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
   // 一体化上传和解析
   uploadChatFilesAndParse: async (data: UploadAndParseRequest) => {
     set({
-      isUploading: true,
       uploadingFiles: [...get().uploadingFiles, data.file],
     });
 
@@ -245,7 +245,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         uploadingFiles: get().uploadingFiles.filter(
           (uploadingFile) => uploadingFile !== data.file
         ),
-        isUploading: false,
       });
     }
   },
@@ -278,5 +277,32 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
   // 清除所有解析后的文件内容
   clearAllParsedFileContent: () => {
     set({ parsedFileContentMap: new Map() });
+  },
+
+  // 批量获取文件和解析内容
+  batchGetFileAndParseContent: async (fileIds: string[]) => {
+    const res = await filesAPI.batchGetFileAndParseContent(fileIds);
+
+    const parsedFileContentMap = new Map<string, ParsedFileContent>();
+
+    const chatUploadFileList: ChatFileItem[] = [];
+
+    for (const item of res.files) {
+      const { fileItem, parseResult } = item;
+
+      chatUploadFileList.push({
+        ...fileItem,
+        status: 'success' as const,
+      });
+
+      if (parseResult && parseResult.parseStatus === 'completed') {
+        parsedFileContentMap.set(fileItem.id, parseResult);
+      }
+    }
+
+    set({
+      chatUploadFileList,
+      parsedFileContentMap,
+    });
   },
 });

@@ -9,7 +9,7 @@ import { isMacOS } from '@/utils/platform';
 
 import SendMore from './SendMore';
 import ShortcutHint from './ShortcutHint';
-import { useChatStore } from '@/store/chat';
+import { chatSelectors, useChatStore } from '@/store/chat';
 
 const useStyles = createStyles(({ css, prefixCls, token }) => {
   return {
@@ -46,7 +46,13 @@ interface FooterProps {
 const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
   const { styles } = useStyles();
 
-  const { sendMessage, sendMessageLoading } = useChatStore();
+  const [sendMessage, sendMessageLoading, isUploading] = useChatStore((s) => [
+    s.sendMessage,
+    chatSelectors.sendMessageLoading(s),
+    chatSelectors.isUploading(s),
+  ]);
+
+  const loading = sendMessageLoading || isUploading;
 
   const [isMac, setIsMac] = useState<boolean>();
 
@@ -67,8 +73,8 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         <ShortcutHint />
         <Space.Compact>
           <Button
-            disabled={sendMessageLoading}
-            loading={sendMessageLoading}
+            disabled={loading}
+            loading={loading}
             onClick={() => {
               sendMessage('user');
               onExpandChange?.(false);
@@ -77,7 +83,7 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
           >
             {'发送'}
           </Button>
-          <SendMore disabled={sendMessageLoading} isMac={isMac} />
+          <SendMore disabled={loading} isMac={isMac} />
         </Space.Compact>
       </Flexbox>
     </>

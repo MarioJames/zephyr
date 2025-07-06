@@ -140,9 +140,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   },
 
   sendMessage: async (role: 'user' | 'assistant') => {
-    const { inputMessage, chatUploadFileList } = get();
+    const { inputMessage, chatUploadFileList, } = get();
 
     set({ sendMessageLoading: true });
+
     try {
       // 如果没有上传的文件，正常发送
       if (!chatUploadFileList.length) {
@@ -167,7 +168,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
         // 处理图片文件 - 直接使用已经转换好的base64
         if (fileItem.fileType?.startsWith('image/')) {
-          fileForAI.base64 = fileItem.base64;
+          fileForAI.url = fileItem.url;
         } else {
           // 处理文档文件，获取解析后的内容
           const parsedContent = get().getParsedFileContent(fileItem.id!);

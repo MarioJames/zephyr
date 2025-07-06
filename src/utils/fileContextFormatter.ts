@@ -6,6 +6,7 @@ export interface FileForAI {
   name: string;
   type: string;
   size: number;
+  url?: string; // 图片url
   content?: string; // 文档内容
   base64?: string; // 图片base64
   metadata?: Record<string, unknown>;
@@ -51,7 +52,7 @@ export function formatImagesForAI(images: FileForAI[]): string {
   if (!images.length) return '';
 
   const imagePrompts = images.map(img => {
-    return `<image name="${img.name}" type="${img.type}" size="${img.size}" url="${img.base64}"></image>`;
+    return `<image name="${img.name}" type="${img.type}" size="${img.size}" url="${img.url}"></image>`;
   }).join('\n');
 
   return `<images>

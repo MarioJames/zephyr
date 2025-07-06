@@ -6,7 +6,6 @@ import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { X, FileText, Image, Video } from 'lucide-react';
 import { Button } from 'antd';
 import { Spin } from 'antd';
-import { serverS3Env } from '@/config/s3';
 import FileIcon from '@/components/FileIcon';
 
 const useStyles = createStyles(({ css, token }) => ({

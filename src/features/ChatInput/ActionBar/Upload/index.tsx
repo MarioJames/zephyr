@@ -1,8 +1,8 @@
 import { MenuProps, Tooltip } from '@lobehub/ui';
 import { App, Upload } from 'antd';
 import { css, cx } from 'antd-style';
-import { FileUp, FolderUp, ImageUp, Paperclip } from 'lucide-react';
-import { memo } from 'react';
+import { FileUp, FolderUp, ImageUp, Paperclip, Files } from 'lucide-react';
+import { memo, useState } from 'react';
 import { useChatStore } from '@/store/chat';
 import {
   isDocumentFile,
@@ -11,6 +11,7 @@ import {
 
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
+import FileSelectModal from './FileSelectModal';
 
 const hotArea = css`
   &::before {
@@ -24,9 +25,17 @@ const hotArea = css`
 const FileUpload = memo(() => {
   const { message } = App.useApp();
 
-  const { uploadChatFiles, uploadChatFilesAndParse } = useChatStore((s) => ({
+  const [fileSelectModalOpen, setFileSelectModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    uploadChatFiles,
+    uploadChatFilesAndParse,
+    batchGetFileAndParseContent,
+  } = useChatStore((s) => ({
     uploadChatFiles: s.uploadChatFiles,
     uploadChatFilesAndParse: s.uploadChatFilesAndParse,
+    batchGetFileAndParseContent: s.batchGetFileAndParseContent,
   }));
 
   const [canUploadImage] = useModelStore((s) => [
@@ -45,7 +54,6 @@ const FileUpload = memo(() => {
         // 对于文档文件，使用一体化上传和解析接口
         try {
           const response = await uploadChatFilesAndParse({ file });
-
 
           if (response.parseResult.parseStatus === 'completed') {
             message.success(`文档 "${file.name}" 上传并解析成功`);
@@ -69,6 +77,24 @@ const FileUpload = memo(() => {
     }
 
     return false; // 阻止默认上传行为
+  };
+
+  const handleFileSelect = async (fileIds: string[]) => {
+    try {
+      setLoading(true);
+
+      await batchGetFileAndParseContent(fileIds);
+
+      setFileSelectModalOpen(false);
+
+      message.success(`获取文件和解析内容成功`);
+    } catch (error) {
+      console.error('获取文件和解析内容失败:', error);
+
+      message.error(`获取文件和内容失败`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const items: MenuProps['items'] = [
@@ -138,17 +164,37 @@ const FileUpload = memo(() => {
         </Upload>
       ),
     },
+    {
+      icon: Files,
+      key: 'select-file',
+      label: (
+        <div
+          className={cx(hotArea)}
+          onClick={() => setFileSelectModalOpen(true)}
+        >
+          选择文件
+        </div>
+      ),
+    },
   ];
 
   return (
-    <Action
-      title='上传'
-      icon={Paperclip}
-      dropdown={{
-        menu: { items },
-      }}
-      showTooltip={false}
-    />
+    <>
+      <Action
+        title='上传'
+        icon={Paperclip}
+        dropdown={{
+          menu: { items },
+        }}
+        showTooltip={false}
+      />
+      <FileSelectModal
+        submitLoading={loading}
+        open={fileSelectModalOpen}
+        onClose={() => setFileSelectModalOpen(false)}
+        onConfirm={handleFileSelect}
+      />
+    </>
   );
 });
 

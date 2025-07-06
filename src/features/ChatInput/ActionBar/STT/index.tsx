@@ -33,8 +33,6 @@ const BrowserSTT = memo(() => {
     s.updateInputMessage,
   ]);
 
-
-
   const { start, isLoading, stop, formattedTime, time, response, isRecording } =
     useBrowserSTT({
       onError: () => {

@@ -45,10 +45,11 @@ export interface ConfigCellProps {
   title: string;
   isRecent?: boolean;
   user?: { username?: string };
+  avatar?: string;
 }
 
 const SessionItem = memo<ConfigCellProps>(
-  ({ title, active, id, isRecent, user }) => {
+  ({ title, active, id, isRecent, user, avatar }) => {
     const { styles, cx } = useStyles();
     const [activeSessionId, switchSession] = useSessionStore((s) => [
       s.activeSessionId,
@@ -61,6 +62,7 @@ const SessionItem = memo<ConfigCellProps>(
     return (
       <Flexbox style={{ position: 'relative' }}>
         <Flexbox
+          horizontal
           align={'center'}
           className={cx(
             styles.container,
@@ -68,7 +70,6 @@ const SessionItem = memo<ConfigCellProps>(
             active && styles.active
           )}
           distribution={'space-between'}
-          horizontal
           onClick={() => {
             if (activeSessionId !== id) {
               switchSession(id);
@@ -89,6 +90,7 @@ const SessionItem = memo<ConfigCellProps>(
             id={id}
             showMore={isHover}
             title={title}
+            avatar={avatar}
             isRecent={isRecent}
             employeeName={user?.username}
           />

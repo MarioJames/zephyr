@@ -25,17 +25,16 @@ const ActionsBar = memo<ActionsBarProps>((props) => {
 
 interface ActionsProps {
   id: string;
-  index: number;
 }
 
-const Actions = memo<ActionsProps>(({ id, index }) => {
+const Actions = memo<ActionsProps>(({ id }) => {
+  const { message } = App.useApp();
+
   const item = useChatStore(chatSelectors.getMessageById(id));
 
   const [copyMessage, autoTranslateMessage, regenerateMessage] = useChatStore(
     (s) => [s.copyMessage, s.autoTranslateMessage, s.generateAISuggestion]
   );
-
-  const { message } = App.useApp();
 
   const handleActionClick = useCallback(
     async (action: ActionIconGroupEvent) => {
@@ -48,7 +47,13 @@ const Actions = memo<ActionsProps>(({ id, index }) => {
       }
 
       if (action.key === 'regenerate') {
-        await regenerateMessage(item.id);
+        const suggestion = await regenerateMessage(item.id);
+
+        if (!suggestion) {
+          message.error('AI 建议生成失败，请稍后再试');
+          return;
+        }
+
         message.success('重新生成成功');
         return;
       }

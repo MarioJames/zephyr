@@ -19,6 +19,7 @@ export interface FileItem {
   metadata: FileMetadata;
   createdAt: string;
   updatedAt: string;
+  base64?: string;
 }
 
 export interface FilePublicUploadResponse extends FileItem {
@@ -128,6 +129,16 @@ export interface UploadAndParseResponse {
   parseResult: FileParseResponse;
 }
 
+export interface BatchGetFileAndParseContentResponse {
+  files: UploadAndParseResponse[];
+  failed: Array<{
+    fileId: string;
+    error: string;
+  }>;
+  success: number;
+  total: number;
+}
+
 /**
  * 单文件上传
  * @description 上传单个文件到服务器
@@ -223,6 +234,18 @@ function getFileDetail(id: string) {
 }
 
 /**
+ * 批量获取文件详情和解析内容
+ */
+function batchGetFileAndParseContent(fileIds: string[]) {
+  return http.post<BatchGetFileAndParseContentResponse>(
+    `/api/v1/files/batch-get-parsed-files`,
+    {
+      fileIds,
+    }
+  );
+}
+
+/**
  * 获取文件访问URL
  */
 function getFileAccessUrl(id: string, params?: { expiresIn?: number }) {
@@ -288,4 +311,5 @@ export default {
   getFileAccessUrl,
   parseDocumentById,
   uploadAndParseDocument,
+  batchGetFileAndParseContent,
 };

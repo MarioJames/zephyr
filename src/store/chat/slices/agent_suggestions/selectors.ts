@@ -8,6 +8,9 @@ export const suggestionsSelectors = {
   // 获取建议初始化状态
   suggestionsInit: (s: ChatStore) => s.suggestionsInit,
 
+  // 获取建议加载状态
+  suggestionsLoading: (s: ChatStore) => s.suggestionsLoading,
+
   // 获取 AI 生成状态
   isGeneratingAI: (s: ChatStore) => s.isGeneratingAI,
 
@@ -15,9 +18,12 @@ export const suggestionsSelectors = {
   suggestionsError: (s: ChatStore) => s.error,
 
   // 根据父消息ID获取对应的建议
-  getSuggestionByParentMessageId: (parentMessageId: string) => (s: ChatStore) => {
-    return s.suggestions.find(suggestion => suggestion.parentMessageId === parentMessageId);
-  },
+  getSuggestionByParentMessageId:
+    (parentMessageId: string) => (s: ChatStore) => {
+      return s.suggestions.find(
+        (suggestion) => suggestion.parentMessageId === parentMessageId
+      );
+    },
 
   // 获取建议总数
   suggestionsCount: (s: ChatStore) => s.suggestions.length,
@@ -26,14 +32,17 @@ export const suggestionsSelectors = {
   latestSuggestion: (s: ChatStore) => {
     if (s.suggestions.length === 0) return null;
     return s.suggestions.reduce((latest, current) => {
-      return new Date(current.createdAt!) > new Date(latest.createdAt!) ? current : latest;
+      return new Date(current.createdAt!) > new Date(latest.createdAt!)
+        ? current
+        : latest;
     });
   },
 
   // 按创建时间排序的建议列表
   suggestionsSortedByTime: (s: ChatStore) => {
-    return [...s.suggestions].sort((a, b) =>
-      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    return [...s.suggestions].sort(
+      (a, b) =>
+        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
     );
   },
 
@@ -42,6 +51,8 @@ export const suggestionsSelectors = {
 
   // 检查指定父消息是否有建议
   hasSuggestionForMessage: (parentMessageId: string) => (s: ChatStore) => {
-    return s.suggestions.some(suggestion => suggestion.parentMessageId === parentMessageId);
+    return s.suggestions.some(
+      (suggestion) => suggestion.parentMessageId === parentMessageId
+    );
   },
 };

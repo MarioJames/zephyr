@@ -3,7 +3,7 @@ import { Row, Col, Modal, Typography } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
 import { Bot } from 'lucide-react';
-import { useChatStore } from '@/store/chat';
+import { chatSelectors, useChatStore } from '@/store/chat';
 import { AgentSuggestionItem } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
 import BubblesLoading from '@/components/Loading/BubblesLoading';
@@ -24,7 +24,7 @@ function AIHintItem({
     desc: string;
   } | null>(null);
   const { styles } = useAIHintStyles();
-  const { acceptSuggestion, isLoading } = useChatStore();
+  const { acceptSuggestion } = useChatStore();
 
   // 格式化日期
   const formatDate = (dateString: string) => {
@@ -97,7 +97,7 @@ function AIHintItem({
           {/* 上方提示语 */}
           <div className={styles.hint}>
             {item.suggestion?.summary}
-            {/。，！？：；/.test(item.suggestion?.summary || '') ? (
+            {/。，！？：；$/.test(item.suggestion?.summary || '') ? (
               <span>建议这样回复：</span>
             ) : (
               <span>，建议这样回复：</span>
@@ -151,7 +151,6 @@ function AIHintItem({
                   <div className={styles.sectionFooter}>
                     <Button
                       type='primary'
-                      loading={isLoading}
                       className={styles.adoptBtn}
                       onClick={() => handleAcceptSuggestion(response.content)}
                     >
@@ -189,11 +188,11 @@ const AIHintPanel = () => {
   const { styles } = useAIHintStyles();
 
   // 获取当前 topic 的建议数据和加载状态
-  const {
-    isGeneratingAI,
-    suggestions,
-    isLoading: isFetchingAI,
-  } = useChatStore();
+  const [isGeneratingAI, suggestions, isFetchingAI] = useChatStore((s) => [
+    chatSelectors.isGeneratingAI(s),
+    chatSelectors.suggestions(s),
+    chatSelectors.suggestionsLoading(s),
+  ]);
 
   // 找到最新建议（按时间戳最大的）
   const latestSuggestion =

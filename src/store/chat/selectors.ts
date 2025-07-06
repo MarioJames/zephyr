@@ -2,6 +2,7 @@ import { ChatState } from './initialState';
 import { messageSelectors } from './slices/message/selectors';
 import { suggestionsSelectors } from './slices/agent_suggestions/selectors';
 import { topicSelectors } from './slices/topic/selectors';
+import { uploadSelectors } from './slices/upload/selectors';
 
 // 基础选择器
 const error = (s: ChatState) => s.error;
@@ -18,4 +19,5 @@ export const chatSelectors = {
   ...suggestionsSelectors,
   ...messageSelectors,
   ...topicSelectors,
+  ...uploadSelectors,
 };

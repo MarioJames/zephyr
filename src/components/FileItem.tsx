@@ -5,9 +5,6 @@ import { CSSProperties, memo } from 'react';
 const MIN_IMAGE_SIZE = 64;
 
 import { usePlatform } from '@/hooks/usePlatform';
-import { serverS3Env } from '@/config/s3';
-
-const s3PublicDomain = serverS3Env.NEXT_PUBLIC_S3_PUBLIC_DOMAIN;
 
 const useStyles = createStyles(({ css, token }) => ({
   deleteButton: css`
@@ -74,7 +71,7 @@ const FileItem = memo<FileItemProps>(
         height={isSafari ? 'auto' : '100%'}
         isLoading={loading}
         size={IMAGE_SIZE as any}
-        src={`${s3PublicDomain}/${url}`}
+        src={url}
         style={{ height: isSafari ? 'auto' : '100%' }}
         wrapperClassName={cx(styles.image, editable && styles.editableImage)}
       />

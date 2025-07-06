@@ -152,7 +152,13 @@ export const agentSuggestionsSlice: StateCreator<
 
         if (!pureReply) {
           console.warn('无法从AI响应中提取JSON内容:', aiResponse.reply);
-          set({ isGeneratingAI: false });
+
+          set({
+            isGeneratingAI: false,
+            suggestions: state.suggestions.filter(
+              (s) => s.id !== PLACEHOLDER_SUGGESTION.id
+            ),
+          });
           return null;
         }
 
@@ -207,6 +213,9 @@ export const agentSuggestionsSlice: StateCreator<
       console.error('Failed to generate AI suggestion:', error);
       set({
         isGeneratingAI: false,
+        suggestions: state.suggestions.filter(
+          (s) => s.id !== PLACEHOLDER_SUGGESTION.id
+        ),
         error:
           error instanceof Error
             ? error.message
