@@ -107,7 +107,7 @@ const FileRenderItem = memo<FileRenderItemProps>(
           flex={1}
           horizontal
           onClick={() => {
-            router.push(`/files/${hashId}`);
+            router.push(`/file/${hashId}`);
           }}
         >
           <Flexbox align={'center'} horizontal>
