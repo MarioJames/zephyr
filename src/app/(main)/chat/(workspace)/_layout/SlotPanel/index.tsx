@@ -37,6 +37,7 @@ const SlotPanel = memo(() => {
 
   // 获取当前激活的 session（从 session store 获取）
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
+  const sessions = useSessionStore(sessionSelectors.sessions);
   const hasActiveSession = !!activeSessionId;
 
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
@@ -56,8 +57,8 @@ const SlotPanel = memo(() => {
     if (!lg) toggleSlotPanel(false);
   }, [lg, cacheExpand, toggleSlotPanel]);
 
-  // 当没有激活的 session 时，不展示 SlotPanel
-  if (!hasActiveSession) {
+  // 默认收起，只有在有活跃会话或非空会话列表时才展示
+  if (!(hasActiveSession || (sessions && sessions.length > 0))) {
     return null;
   }
 
