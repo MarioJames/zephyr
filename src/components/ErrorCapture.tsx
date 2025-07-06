@@ -25,7 +25,7 @@ const ErrorCapture = memo<ErrorCaptureProps>(({ reset }) => {
           zIndex: 0,
         }}
       >
-        ERROR
+        错误
       </h1>
       <FluentEmoji emoji={'🤧'} size={64} />
       <h2 style={{ fontWeight: 'bold', marginTop: '1em', textAlign: 'center' }}>
