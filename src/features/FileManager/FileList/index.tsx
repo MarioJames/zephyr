@@ -43,8 +43,6 @@ interface FileListProps {
 const FileList = memo<FileListProps>(({ category }) => {
   const { styles } = useStyles();
 
-  const [selectFileIds, setSelectedFileIds] = useState<string[]>([]);
-
   const [query] = useQueryState('q', {
     clearOnDefault: true,
   });
@@ -113,15 +111,6 @@ const FileList = memo<FileListProps>(({ category }) => {
               <FileListItem
                 index={index}
                 key={item.hashId}
-                onSelectedChange={(id, checked) => {
-                  setSelectedFileIds((prev) => {
-                    if (checked) {
-                      return [...prev, id];
-                    }
-                    return prev.filter((item) => item !== id);
-                  });
-                }}
-                selected={selectFileIds.includes(item.hashId)}
                 {...item}
               />
             )
