@@ -17,11 +17,13 @@ import { createStyles } from 'antd-style';
 import Link from 'next/link';
 
 import { useAgentStore } from '@/store/agent/store';
-import { agentSelectors } from '@/store/agent/selectors';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 import TemplateModal from './components/templateModal';
 import DeleteModal from './components/deleteModal';
 import { CreateAgentRequest } from '@/services';
 import { useModelStore, modelCoreSelectors } from '@/store/model';
+import NoAuthority from '@/components/NoAuthority';
 
 const { Title } = Typography;
 
@@ -124,6 +126,12 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export default function CustomerTemplatePage() {
   const { styles } = useStyles();
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   // 获取模型选项数据
   const modelOptions = useModelStore((s) =>
