@@ -57,8 +57,8 @@ const FileList = memo<FileListProps>(({ category }) => {
   });
 
   const useFetchFileManage = useFileStore((s) => s.useFetchFileManage);
+  const loading = useFileStore((s) => s.loading);
   const [fileData, setFileData] = useState<FileItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,16 +66,15 @@ const FileList = memo<FileListProps>(({ category }) => {
         search: query,
         page: 1,
         pageSize: 20,
-        fileType: 'all',
+        fileType: category === 'all' ? undefined : category,
       });
       setFileData(result.data);
-      setIsLoading(false);
     };
 
     fetchData();
-  }, [useFetchFileManage, query]);
+  }, [useFetchFileManage, query, category]);
 
-  return !isLoading && fileData.length === 0 ? (
+  return !loading && fileData.length === 0 ? (
     <EmptyStatus />
   ) : (
     <Flexbox height={'100%'}>
@@ -92,7 +91,7 @@ const FileList = memo<FileListProps>(({ category }) => {
           </Flexbox>
         </Flexbox>
       </Flexbox>
-      {isLoading ? (
+      {loading ? (
         <FileSkeleton />
       ) : (
         <Virtuoso
