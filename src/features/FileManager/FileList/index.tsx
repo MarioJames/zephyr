@@ -44,7 +44,6 @@ const FileList = memo<FileListProps>(({ category }) => {
   const { styles } = useStyles();
 
   const [selectFileIds, setSelectedFileIds] = useState<string[]>([]);
-  const [viewConfig, setViewConfig] = useState({ showFilesInKnowledgeBase: false });
 
   const [query] = useQueryState('q', {
     clearOnDefault: true,

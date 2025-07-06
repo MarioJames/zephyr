@@ -6,7 +6,7 @@ import { ReactNode, memo, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { UploadFileItem } from '@/app/(main)/files/type';
+import { UploadFileItem } from '@/types/file';
 import { formatSize, formatSpeed, formatTime } from '@/utils/format';
 
 const useStyles = createStyles(({ css, token }) => {
@@ -35,9 +35,10 @@ const useStyles = createStyles(({ css, token }) => {
 
 type UploadItemProps = UploadFileItem;
 
-const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
+const UploadItem = memo<UploadItemProps>((props: UploadItemProps) => {
   const { styles } = useStyles();
-  const { type, name, size } = file;
+  
+  const { fileType, filename, size, status, uploadState } = props;
 
   const desc: ReactNode = useMemo(() => {
     switch (status) {
@@ -65,45 +66,45 @@ const UploadItem = memo<UploadItemProps>(({ file, status, uploadState }) => {
 
       case 'processing': {
         return (
-          <Text style={{ fontSize: 12 }} type={'secondary'}>
+          <Typography.Text style={{ fontSize: 12 }} type={'secondary'}>
             {formatSize(size)} · 文件处理中...
-          </Text>
+          </Typography.Text>
         );
       }
 
       case 'success': {
         return (
-          <Text style={{ fontSize: 12 }} type={'secondary'}>
+          <Typography.Text style={{ fontSize: 12 }} type={'secondary'}>
             {formatSize(size)} · 已上传
-          </Text>
+          </Typography.Text>
         );
       }
       case 'error': {
         return (
-          <Text style={{ fontSize: 12 }} type={'danger'}>
+          <Typography.Text style={{ fontSize: 12 }} type={'danger'}>
             {formatSize(size)} · 上传失败，请重试
-          </Text>
+          </Typography.Text>
         );
       }
       default: {
         return '';
       }
     }
-  }, [status, uploadState]);
+  }, [status, uploadState, size]);
 
   return (
     <Flexbox
       align={'center'}
       gap={4}
       horizontal
-      key={name}
+      key={filename}
       paddingBlock={8}
       paddingInline={12}
       style={{ position: 'relative' }}
     >
-      <FileIcon fileName={name} fileType={type} />
+      <FileIcon fileName={filename} fileType={fileType} />
       <Flexbox style={{ overflow: 'hidden' }}>
-        <div className={styles.title}>{name}</div>
+        <div className={styles.title}>{filename}</div>
         {desc}
       </Flexbox>
 
