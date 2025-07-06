@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import { createStyles } from 'antd-style';
 import { ChatFileItem } from '@/store/chat/slices/upload/action';
-import { X, FileText, Image, Video } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { Button } from 'antd';
 import { Spin } from 'antd';
 import FileIcon from '@/components/FileIcon';
@@ -76,13 +76,14 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   removeButton: css`
     position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
+    top: -12px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     background: ${token.colorBgContainer};
     border: 1px solid ${token.colorBorder};
+    color: ${token.colorError};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -120,14 +121,16 @@ const UploadedFileList = memo<UploadedFileListProps>(
       return null;
     }
 
-    const getFileIcon = (fileType?: string) => {
-      if (fileType?.startsWith('image/')) {
-        return <Image className={styles.fileIcon} />;
+    const getFileIcon = (file?: Partial<ChatFileItem>) => {
+      const { fileType, url } = file || {};
+
+      if (fileType?.startsWith('image/') && url) {
+        return <img src={url} alt='file' width={54} height={'auto'} />;
       }
-      if (fileType?.startsWith('video/')) {
-        return <Video className={styles.fileIcon} />;
-      }
-      return <FileText className={styles.fileIcon} />;
+
+      return (
+        <FileIcon fileName={file?.filename || ''} fileType={file?.fileType} />
+      );
     };
 
     const formatFileSize = (bytes: number) => {
@@ -151,12 +154,7 @@ const UploadedFileList = memo<UploadedFileListProps>(
           <div className={styles.fileList}>
             {files.map((file) => (
               <div key={file.id || file.filename} className={styles.fileItem}>
-                {getFileIcon(file.fileType)}
-
-                <FileIcon
-                  fileName={file.filename || ''}
-                  fileType={file.fileType}
-                />
+                {getFileIcon(file)}
 
                 <div className={styles.fileInfo}>
                   <div className={styles.fileName}>{file.filename}</div>
@@ -179,7 +177,7 @@ const UploadedFileList = memo<UploadedFileListProps>(
                     size='small'
                     className={styles.removeButton}
                     onClick={() => onRemoveFile(file.id!)}
-                    icon={<X size={12} />}
+                    icon={<Trash size={12} />}
                   />
                 )}
               </div>
