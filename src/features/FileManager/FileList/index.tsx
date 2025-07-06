@@ -57,10 +57,13 @@ const FileList = memo<FileListProps>(({ category }) => {
   const [fileData, setFileData] = useState<FileItem[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const fetchData = async (page: number, append = false) => {
     if (append) {
       setLoadingMore(true);
+    } else {
+      setIsFirstLoad(true);
     }
     
     try {
@@ -82,6 +85,8 @@ const FileList = memo<FileListProps>(({ category }) => {
     } finally {
       if (append) {
         setLoadingMore(false);
+      } else {
+        setIsFirstLoad(false);
       }
     }
   };
@@ -107,7 +112,7 @@ const FileList = memo<FileListProps>(({ category }) => {
           </Flexbox>
         </Flexbox>
       </Flexbox>
-      {loading ? (
+      {loading && isFirstLoad ? (
         <FileSkeleton />
       ) : (
         <Virtuoso
