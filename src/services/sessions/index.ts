@@ -34,6 +34,7 @@ export interface SessionListRequest {
   pageSize?: number;
   userId?: string;
   agentId?: string;
+  keyword?: string;
 }
 
 export interface SessionListResponse {

@@ -20,7 +20,8 @@ export interface TopicItem {
 }
 
 export interface TopicListRequest {
-  sessionId: string; // 会话 ID
+  sessionId?: string; // 会话 ID
+  keyword?: string;
 }
 
 export interface TopicCreateRequest {
@@ -40,7 +41,7 @@ export interface TopicSummaryRequest {
  * @param sessionId string
  * @returns TopicItem[]
  */
-function getTopicList(sessionId: string) {
+function getTopicList(sessionId: string, params?: TopicListRequest) {
   return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`);
 }
 
