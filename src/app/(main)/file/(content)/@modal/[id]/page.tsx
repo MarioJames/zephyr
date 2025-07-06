@@ -3,7 +3,7 @@ interface PageProps<Params, SearchParams = undefined> {
   searchParams: Promise<SearchParams>;
 }
 
-type PagePropsWithId = PageProps<{ hashId: string }>;
+type PagePropsWithId = PageProps<{ id: string }>;
 
 import FileDetail from './FileDetail';
 import FilePreview from './FilePreview';
@@ -14,8 +14,8 @@ const Page = async (props: PagePropsWithId) => {
   console.log('params', params);
 
   return (
-    <FullscreenModal detail={<FileDetail hashId={params.hashId} />}>
-      <FilePreview hashId={params.hashId} />
+    <FullscreenModal detail={<FileDetail id={params.id} />}>
+      <FilePreview id={params.id} />
     </FullscreenModal>
   );
 };

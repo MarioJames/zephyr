@@ -65,7 +65,7 @@ interface FileRenderItemProps extends FileItem {
 }
 
 const FileRenderItem = memo<FileRenderItemProps>(
-  ({ size, url, filename, fileType, hashId, createdAt }) => {
+  ({ size, url, filename, fileType, id, createdAt }) => {
     const { styles, cx } = useStyles();
     const router = useRouter();
 
@@ -94,13 +94,13 @@ const FileRenderItem = memo<FileRenderItemProps>(
             horizontal
             style={{ cursor: "pointer" }}
             onClick={() => {
-              router.push(`/file/${hashId}`);
+              router.push(`/file/${id}`);
             }}
           >
             <FileIcon fileName={filename} fileType={fileType} />
             <span className={styles.name}>{filename}</span>
           </Flexbox>
-          <DropdownMenu id={hashId} name={filename} url={url} />
+          <DropdownMenu id={id} name={filename} url={url} />
         </Flexbox>
         <Flexbox className={styles.item} width={FILE_DATE_WIDTH}>
           {displayTime}

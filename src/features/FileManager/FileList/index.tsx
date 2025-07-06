@@ -138,7 +138,7 @@ const FileList = memo<FileListProps>(({ category }) => {
             return (
               <FileListItem
                 index={index}
-                key={item.hashId}
+                key={item.id}
                 {...item}
               />
             )

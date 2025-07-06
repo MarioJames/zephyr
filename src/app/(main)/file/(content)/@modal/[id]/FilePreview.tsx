@@ -6,8 +6,8 @@ import { Center } from 'react-layout-kit';
 
 import { fileCoreSelectors, useFileStore } from '@/store/file';
 
-const FilePreview = memo<{ hashId: string }>(({ hashId }) => {
-  const file = useFileStore(fileCoreSelectors.getFileById(hashId));
+const FilePreview = memo<{ id: string }>(({ id }) => {
+  const file = useFileStore(fileCoreSelectors.getFileById(id));
 
   if (!file) return null;
 

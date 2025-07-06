@@ -25,7 +25,7 @@ export interface FileCoreAction {
   }) => void;
 
   // 删除文件
-  removeFileItem: (hashId: string) => Promise<void>;
+  removeFileItem: (id: string) => Promise<void>;
 
   // 更新文件列表
   setFiles: (files: FileItem[]) => void;
@@ -89,7 +89,7 @@ export const fileCoreSlice: StateCreator<
     
     // 将文件添加到 dock 列表
     const newDockFiles = files.map((file) => ({
-      hashId: Math.random().toString(36).slice(2),
+      id: Math.random().toString(36).slice(2),
       filename: file.name,
       fileType: file.type || 'unknown',
       size: file.size,
@@ -116,7 +116,7 @@ export const fileCoreSlice: StateCreator<
         // 更新状态为上传中
         set({
           dockFileList: get().dockFileList.map((item: DockFileItem) =>
-            item.hashId === dockFile.hashId
+            item.id === dockFile.id
               ? { ...item, status: 'uploading' as const }
               : item
           ),
@@ -131,7 +131,7 @@ export const fileCoreSlice: StateCreator<
           // 更新状态为成功
           set({
             dockFileList: get().dockFileList.map((item: DockFileItem) =>
-              item.hashId === dockFile.hashId
+              item.id === dockFile.id
                 ? {
                     ...item,
                     ...result.successful[0],
@@ -148,7 +148,7 @@ export const fileCoreSlice: StateCreator<
         // 更新状态为错误
         set({
           dockFileList: get().dockFileList.map((item) =>
-            item.hashId === dockFile.hashId
+            item.id === dockFile.id
               ? {
                   ...item,
                   status: 'error' as const,
@@ -166,7 +166,7 @@ export const fileCoreSlice: StateCreator<
       case 'removeFiles': {
         set({
           dockFileList: get().dockFileList.filter(
-            (item: DockFileItem) => !action.ids.includes(item.hashId)
+            (item: DockFileItem) => !action.ids.includes(item.id)
           ),
         });
         break;
@@ -174,12 +174,12 @@ export const fileCoreSlice: StateCreator<
     }
   },
 
-  removeFileItem: async (hashId) => {
+  removeFileItem: async (id) => {
     try {
-      await filesAPI.deleteFile(hashId);
+      await filesAPI.deleteFile(id);
       const { fileList, pagination } = get();
       set({
-        fileList: fileList.filter((item) => item.hashId !== hashId),
+        fileList: fileList.filter((item) => item.id !== id),
         pagination: {
           ...pagination,
           total: pagination.total - 1,

@@ -151,7 +151,7 @@ const UploadDock = memo(() => {
             icon={XIcon}
             onClick={() => {
               setShow(false);
-              dispatchDockFileList({ ids: fileList.map((item) => item.hashId), type: 'removeFiles' });
+              dispatchDockFileList({ ids: fileList.map((item) => item.id), type: 'removeFiles' });
             }}
           />
         )}
@@ -161,7 +161,7 @@ const UploadDock = memo(() => {
         <Flexbox className={styles.body} justify={'space-between'}>
           <Flexbox gap={8} paddingBlock={16} style={{ overflowY: 'scroll' }}>
             {fileList.map((item) => (
-              <Item key={item.hashId} {...item} />
+              <Item key={item.id} {...item} />
             ))}
           </Flexbox>
           <Center style={{ height: 40, minHeight: 40 }}>
