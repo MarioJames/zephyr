@@ -4,6 +4,8 @@ import React, { use, useEffect } from 'react';
 import { Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 import { useCustomerDetail } from './hooks/useCustomerDetail';
 import {
   CustomerDetailHeader,
@@ -13,6 +15,7 @@ import {
   CustomerAddressInfo,
   TopicRecordsTable,
 } from './components';
+import NoAuthority from '@/components/NoAuthority';
 
 // 创建样式
 const useStyles = createStyles(({ css, token }) => ({
@@ -36,8 +39,13 @@ export default function CustomerDetail({
   params: Promise<{ session: string }>;
 }) {
   const { styles } = useStyles();
-
   const router = useRouter();
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   const { session: sessionId } = use(params);
 
