@@ -81,6 +81,9 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
           }}
           placement="bottom"
           size={{ height: inputHeight, width: '100%' }}
+          expand={expand}
+          onExpandChange={setExpand}
+          showHandleWideArea
         >
           <DraggablePanelContainer
             className={expand ? styles.fullscreenContainer : undefined}
