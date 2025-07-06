@@ -6,6 +6,7 @@ import { rgba } from 'polished';
 import { memo, useState, useEffect } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso } from 'react-virtuoso';
+import { Spin } from 'antd';
 
 import { useFileStore } from '@/store/file';
 import { FileItem } from '@/services/files';
@@ -34,6 +35,14 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
     padding-block-end: 12px;
     border-block-end: 1px solid ${isDarkMode ? token.colorSplit : rgba(token.colorSplit, 0.06)};
   `,
+  loadingMore: css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    color: ${token.colorTextDescription};
+    font-size: 12px;
+  `,
 }));
 
 interface FileListProps {
@@ -47,31 +56,43 @@ const FileList = memo<FileListProps>(({ category }) => {
     clearOnDefault: true,
   });
 
-  const [sorter] = useQueryState('sorter', {
-    clearOnDefault: true,
-    defaultValue: 'createdAt',
-  });
-  const [sortType] = useQueryState('sortType', {
-    clearOnDefault: true,
-    defaultValue: SortType.Desc,
-  });
-
   const useFetchFileManage = useFileStore((s) => s.useFetchFileManage);
   const loading = useFileStore((s) => s.loading);
+  const pagination = useFileStore((s) => s.pagination);
   const [fileData, setFileData] = useState<FileItem[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async (page: number, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    }
+    
+    try {
       const result = await useFetchFileManage({
         search: query,
-        page: 1,
-        pageSize: 20,
+        page,
+        pageSize: pagination.pageSize,
         fileType: category === 'all' ? undefined : category,
       });
-      setFileData(result.data);
-    };
 
-    fetchData();
+      if (append) {
+        setFileData((prev) => [...prev, ...result.data]);
+      } else {
+        setFileData(result.data);
+      }
+
+      // 检查是否还有更多数据
+      setHasMore(result.data.length === pagination.pageSize);
+    } finally {
+      if (append) {
+        setLoadingMore(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData(1);
   }, [useFetchFileManage, query, category]);
 
   return !loading && fileData.length === 0 ? (
@@ -98,13 +119,26 @@ const FileList = memo<FileListProps>(({ category }) => {
           components={{
             Footer: () => (
               <Center style={{ height: 64 }}>
-                <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
-                  已经到底啦
-                </div>
+                {loadingMore ? (
+                  <div className={styles.loadingMore}>
+                    <Spin size="small" style={{ marginRight: 8 }} />
+                    加载更多...
+                  </div>
+                ) : !hasMore ? (
+                  <div style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.45)' }}>
+                    已经到底啦
+                  </div>
+                ) : null}
               </Center>
             ),
           }}
           data={fileData}
+          endReached={() => {
+            if (!loadingMore && hasMore) {
+              const nextPage = Math.floor(fileData.length / pagination.pageSize) + 1;
+              fetchData(nextPage, true);
+            }
+          }}
           itemContent={(index, item) => {
             return (
               <FileListItem
