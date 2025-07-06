@@ -15,7 +15,11 @@ const HistoryPanel = () => {
   const { styles } = useHistoryStyles();
 
   // 获取当前 activeSessionId 和 fetchTopics action
-  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
+  const [activeSessionId, activeTopicId] = useSessionStore((s) => [
+    sessionSelectors.activeSessionId(s),
+    sessionSelectors.activeTopicId(s),
+  ]);
+
   const fetchTopics = useChatStore((s) => s.fetchTopics);
   // 获取话题列表和加载状态
   const [topics, isLoading] = useChatStore((s) => [
@@ -66,28 +70,38 @@ const HistoryPanel = () => {
             暂无历史会话
           </Flexbox>
         ) : (
-          topics.map((item) => (
-            <Flexbox
-              key={item.id}
-              horizontal
-              distribution='space-between'
-              align='center'
-              className={styles.historyItem}
-              onClick={() => switchTopic(item.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <Flexbox>
-                <div className={styles.historyTitle}>{item.title}</div>
-                <div className={styles.historyMeta}>
-                  @{item.user?.username || item.user?.fullName || '未知员工'} |{' '}
-                  {item.updatedAt
-                    ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
-                    : ''}
-                </div>
+          topics.map((item) => {
+            return (
+              <Flexbox
+                key={item.id}
+                horizontal
+                distribution='space-between'
+                align='center'
+                className={`
+                  ${styles.historyItem}
+                  ${item.id === activeTopicId ? styles.activeHistoryItem : ''}
+                  `}
+                onClick={() => {
+                  if (item.id === activeTopicId) return;
+
+                  switchTopic(item.id);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <Flexbox>
+                  <div className={styles.historyTitle}>{item.title}</div>
+                  <div className={styles.historyMeta}>
+                    @{item.user?.username || item.user?.fullName || '未知员工'}{' '}
+                    |{' '}
+                    {item.updatedAt
+                      ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+                      : ''}
+                  </div>
+                </Flexbox>
+                <div className={styles.historyCount}>{item.messageCount}</div>
               </Flexbox>
-              <div className={styles.historyCount}>{item.messageCount}</div>
-            </Flexbox>
-          ))
+            );
+          })
         )}
       </Flexbox>
     </Flexbox>

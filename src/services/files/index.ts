@@ -15,7 +15,6 @@ export interface FileItem {
   size: number;
   hash: string;
   url: string;
-  id: string;
   uploadedAt: string;
   metadata: FileMetadata;
   createdAt: string;
