@@ -53,9 +53,6 @@ const FileItem = memo<FileItemProps>(
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
 
-    console.log('url', url);
-    console.log('s3PublicDomain', s3PublicDomain);
-
     return (
       <Image
         actions={

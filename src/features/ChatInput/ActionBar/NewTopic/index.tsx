@@ -20,7 +20,10 @@ const NewTopic = memo(() => {
     switchTopic: s.switchTopic,
   }));
 
-  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
+  const [activeSessionId, activeTopicId] = useSessionStore((s) => [
+    sessionSelectors.activeSessionId(s),
+    sessionSelectors.activeTopicId(s),
+  ]);
 
   const handleCreateNewTopic = useCallback(async () => {
     if (!activeSessionId) {
@@ -30,7 +33,7 @@ const NewTopic = memo(() => {
 
     try {
       // 异步调用总结话题接口（不需要等待）
-      topicService.summaryTopicTitle({ id: activeSessionId }).catch((error) => {
+      topicService.summaryTopicTitle({ id: activeTopicId! }).catch((error) => {
         console.warn('话题总结失败:', error);
       });
 

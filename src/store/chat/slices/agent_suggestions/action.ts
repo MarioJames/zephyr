@@ -14,7 +14,7 @@ import { useCustomerStore } from '@/store/customer';
 
 export interface AgentSuggestionsAction {
   // 基础操作
-  fetchSuggestions: () => Promise<void>;
+  fetchSuggestions: (topicId?: string) => Promise<void>;
   addSuggestion: (suggestion: AgentSuggestionItem) => void;
   updateSuggestion: (
     suggestionId: string,
@@ -37,17 +37,17 @@ export const agentSuggestionsSlice: StateCreator<
   [],
   AgentSuggestionsAction
 > = (set, get) => ({
-  fetchSuggestions: async () => {
-    const { activeTopicId } = useSessionStore.getState();
+  fetchSuggestions: async (topicId?: string) => {
+    const finalTopicId = topicId || useSessionStore.getState().activeTopicId;
 
-    if (!activeTopicId) return;
+    if (!finalTopicId) return;
 
     try {
       set({ error: undefined, suggestionsLoading: true });
 
       // 调用服务获取建议列表
       const suggestions = await agentSuggestionsService.getSuggestionsByTopic(
-        activeTopicId
+        finalTopicId
       );
 
       set({
@@ -88,7 +88,8 @@ export const agentSuggestionsSlice: StateCreator<
   ): Promise<AgentSuggestionItem | null> => {
     const { currentCustomerExtend } = useCustomerStore.getState();
 
-    const { activeSessionId, sessions } = useSessionStore.getState();
+    const { activeSessionId, activeTopicId, sessions } =
+      useSessionStore.getState();
 
     const state = get();
 
@@ -149,8 +150,6 @@ export const agentSuggestionsSlice: StateCreator<
           pureReply = match[1].trim().replace(/\[\d+(?:,\d+)*\]/g, '');
         }
 
-        console.log('pureReply', pureReply);
-
         if (!pureReply) {
           console.warn('无法从AI响应中提取JSON内容:', aiResponse.reply);
           set({ isGeneratingAI: false });
@@ -178,7 +177,7 @@ export const agentSuggestionsSlice: StateCreator<
         const suggestionItem: Partial<AgentSuggestionItem> = {
           suggestion,
           parentMessageId,
-          topicId: state.activeTopicId!,
+          topicId: activeTopicId!,
         };
 
         // 保存到数据库

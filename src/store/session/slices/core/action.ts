@@ -4,10 +4,11 @@ import sessionService, {
   SessionSearchRequest,
 } from '@/services/sessions';
 import { SessionStore } from '@/store/session';
-import { topicsAPI } from '@/services';
+import { topicsAPI, TopicItem } from '@/services';
 import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
 import { useModelStore } from '@/store/model';
+import { syncUrlParams } from '@/utils/url';
 
 export interface SessionCoreAction {
   // 获取会话列表
@@ -86,6 +87,12 @@ export const sessionCoreAction: StateCreator<
 
     // 拉取建议
     useChatStore.getState().fetchSuggestions();
+
+    // 同步URL参数
+    syncUrlParams({
+      session: sessionId,
+      topic: activeTopicId,
+    });
   },
 
   searchSessions: async (params: SessionSearchRequest) => {

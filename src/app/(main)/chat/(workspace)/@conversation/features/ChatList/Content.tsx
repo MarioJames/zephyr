@@ -1,7 +1,6 @@
 'use client';
 
 import React, { memo, useCallback } from 'react';
-import { shallow } from 'zustand/shallow';
 
 import { SkeletonList, VirtualizedList } from '@/features/Conversation';
 import { useFetchMessages } from '@/hooks/useFetchMessages';
@@ -19,10 +18,7 @@ const Content = memo(() => {
 
   useFetchMessages();
 
-  const data = useChatStore(
-    (s) => chatSelectors.mainDisplayChatIDs(s),
-    shallow
-  );
+  const messagesIds = useChatStore((s) => chatSelectors.messagesIds(s));
 
   const itemContent = useCallback(
     (index: number, id: string) => <MainChatItem id={id} index={index} />,
@@ -49,9 +45,9 @@ const Content = memo(() => {
 
   if (!isCurrentChatLoaded) return <SkeletonList />;
 
-  if (data?.length === 0) return <DefaultHelloShow />;
+  if (messagesIds?.length === 0) return <DefaultHelloShow />;
 
-  return <VirtualizedList dataSource={data} itemContent={itemContent} />;
+  return <VirtualizedList dataSource={messagesIds} itemContent={itemContent} />;
 });
 
 Content.displayName = 'ChatListRender';

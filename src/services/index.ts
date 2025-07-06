@@ -36,7 +36,8 @@ export type {
   TopicItem,
   TopicListRequest,
   TopicCreateRequest,
-  TopicSummaryRequest,
+  TopicTitleSummaryRequest,
+  TopicUpdateRequest,
 } from './topics';
 
 export type {

@@ -1,24 +1,22 @@
 import { StateCreator } from 'zustand';
 import topicService, { TopicItem, TopicCreateRequest } from '@/services/topics';
 import { ChatStore } from '../../store';
+import { useSessionStore } from '@/store/session';
+import { syncUrlParams } from '@/utils/url';
 
 export interface TopicAction {
   // 话题CRUD操作
   fetchTopics: (sessionId: string) => Promise<TopicItem[] | undefined>;
   createTopic: (data: TopicCreateRequest) => Promise<TopicItem>;
   updateTopicTitle: (id: string, title: string) => Promise<void>;
-  removeTopic: (id: string) => Promise<void>;
+  updateTopic: (id: string, topic: TopicItem) => void;
 
   // 话题切换
-  switchTopic: (topicId?: string) => void;
+  switchTopic: (topicId: string) => void;
 
   // 搜索相关
   useSearchTopics: (keyword: string, sessionId: string) => void;
   clearTopicSearchResult: () => void;
-
-  // 重命名相关
-  startTopicRename: (id: string) => void;
-  finishTopicRename: () => void;
 }
 
 export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
@@ -79,29 +77,23 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     }
   },
 
-  removeTopic: async (id: string) => {
-    try {
-      await topicService.deleteTopic(id);
-      set((state) => ({
-        topics: state.topics.filter((topic) => topic.id !== id),
-        activeTopicId:
-          state.activeTopicId === id ? undefined : state.activeTopicId,
-      }));
-    } catch (error) {
-      console.error('Failed to remove topic:', error);
-      throw error;
-    }
-  },
-
-  switchTopic: (topicId?: string) => {
-    set({ activeTopicId: topicId });
+  switchTopic: (topicId: string) => {
+    useSessionStore.getState().setActiveTopic(topicId);
 
     // 切换话题时重新获取消息
     if (topicId) {
       get().fetchMessages(topicId);
+      get().fetchSuggestions(topicId);
     } else {
       set({ messages: [], messagesInit: true });
     }
+
+    // 同步URL参数
+    const activeSessionId = useSessionStore.getState().activeSessionId;
+    syncUrlParams({
+      session: activeSessionId,
+      topic: topicId,
+    });
   },
 
   useSearchTopics: (keyword: string, sessionId: string) => {
@@ -134,11 +126,9 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     });
   },
 
-  startTopicRename: (id: string) => {
-    set({ topicRenamingId: id });
-  },
-
-  finishTopicRename: () => {
-    set({ topicRenamingId: undefined });
+  updateTopic: (id: string, topic: TopicItem) => {
+    set({
+      topics: get().topics.map((t) => (t.id === id ? topic : t)),
+    });
   },
 });

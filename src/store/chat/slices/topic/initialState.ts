@@ -8,7 +8,6 @@ export interface TopicState {
   isSearchingTopic: boolean;
   inSearchingMode: boolean;
   topicRenamingId?: string;
-  activeTopicId?: string;
 }
 
 export const initialTopicState: TopicState = {
@@ -19,5 +18,4 @@ export const initialTopicState: TopicState = {
   isSearchingTopic: false,
   inSearchingMode: false,
   topicRenamingId: undefined,
-  activeTopicId: undefined,
 };

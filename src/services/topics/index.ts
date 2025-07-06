@@ -35,6 +35,10 @@ export interface TopicTitleSummaryRequest {
   lang?: string;
 }
 
+export interface TopicUpdateRequest {
+  title: string;
+}
+
 /**
  * 获取会话的所有话题
  * @description 获取指定会话的所有话题列表，符合文档规范的路径参数方式
@@ -42,7 +46,38 @@ export interface TopicTitleSummaryRequest {
  * @returns TopicItem[]
  */
 function getTopicList(sessionId: string, params?: TopicListRequest) {
-  return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`);
+  return http.get<TopicItem[]>(`/api/v1/topics/session/${sessionId}`);
+}
+
+/**
+ * 获取话题详情
+ * @description 获取指定话题的详情
+ * @param id string
+ * @returns TopicItem
+ */
+function getTopicDetail(id: string) {
+  return http.get<TopicItem>(`/api/v1/topics/${id}`);
+}
+
+/**
+ * 更新话题
+ * @description 更新指定话题的信息
+ * @param id string
+ * @param data TopicUpdateRequest
+ * @returns TopicItem
+ */
+function updateTopic(id: string, data: TopicUpdateRequest) {
+  return http.put<TopicItem>(`/api/v1/topics/${id}`, data);
+}
+
+/**
+ * 删除话题
+ * @description 删除指定的话题
+ * @param id string
+ * @returns void
+ */
+function deleteTopic(id: string) {
+  return http.delete<void>(`/api/v1/topics/${id}`);
 }
 
 /**
@@ -66,19 +101,11 @@ function summaryTopicTitle(data?: TopicTitleSummaryRequest) {
   return http.post<TopicItem>(`/api/v1/topics/summary-title`, data || {});
 }
 
-/**
- * 删除话题
- * @description 删除指定的话题
- * @param id string
- * @returns void
- */
-function deleteTopic(id: string) {
-  return http.delete<void>(`/api/v1/topics/${id}`);
-}
-
 export default {
   getTopicList,
+  getTopicDetail,
   createTopic,
   summaryTopicTitle,
+  updateTopic,
   deleteTopic,
 };
