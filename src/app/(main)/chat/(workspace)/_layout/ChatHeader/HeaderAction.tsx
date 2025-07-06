@@ -63,23 +63,43 @@ const useStyles = createStyles(({ css, token }) => ({
     width: 360px;
     max-height: 540px;
     overflow-y: auto;
+    padding: 16px;
+
+    .ant-list-item {
+      padding: 8px !important;
+      border-radius: 6px;
+      cursor: pointer;
+      border-bottom: none !important;
+
+      &:hover {
+        background-color: ${token.colorBgTextHover};
+      }
+    }
   `,
   searchItem: css`
-    padding: 12px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: ${token.colorBgTextHover};
-    }
+    width: 100%;
   `,
   itemTitle: css`
     font-size: 14px;
     color: ${token.colorText};
     margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
   `,
   itemMeta: css`
     font-size: 12px;
     color: ${token.colorTextSecondary};
+  `,
+  highlight: css`
+    color: ${token.colorHighlight};
+    font-weight: 500;
+    background: ${token.colorHighlight}10;
+    padding: 0 2px;
+    border-radius: 2px;
   `,
   emptyState: css`
     text-align: center;
@@ -93,6 +113,40 @@ const useStyles = createStyles(({ css, token }) => ({
     padding: 24px 0;
   `
 }));
+
+// 处理文本截取和高亮
+const processSearchContent = (content: string, keyword: string, styles: any) => {
+  if (!content) return '';
+  
+  const index = content.toLowerCase().indexOf(keyword.toLowerCase());
+  if (index === -1) return content;
+
+  // 确定截取范围
+  const contextLength = 20; // 关键词前后保留的字符数
+  let start = Math.max(0, index - contextLength);
+  let end = Math.min(content.length, index + keyword.length + contextLength);
+  
+  // 添加省略号
+  let processedContent = content.slice(start, end);
+  if (start > 0) processedContent = '...' + processedContent;
+  if (end < content.length) processedContent = processedContent + '...';
+
+  // 高亮关键词
+  const keywordIndex = processedContent.toLowerCase().indexOf(keyword.toLowerCase());
+  if (keywordIndex === -1) return processedContent;
+
+  const before = processedContent.slice(0, keywordIndex);
+  const match = processedContent.slice(keywordIndex, keywordIndex + keyword.length);
+  const after = processedContent.slice(keywordIndex + keyword.length);
+
+  return (
+    <>
+      {before}
+      <span className={styles.highlight}>{match}</span>
+      {after}
+    </>
+  );
+};
 
 const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
@@ -156,6 +210,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
       setSearchValue("");
       setShowResults(false);
     }
+    // TODO: 看看能不能跳转到指定消息
   };
 
   const searchContent = (
@@ -173,7 +228,9 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
               onClick={() => handleMessageClick(message)}
             >
               <div>
-                <div className={styles.itemTitle}>{message.content || searchValue}</div>
+                <div className={styles.itemTitle}>
+                  {processSearchContent(message.content || searchValue, searchValue, styles)}
+                </div>
                 <div className={styles.itemMeta}>
                   @ {message.user?.fullName || '默认员工'} | {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm')}
                 </div>
@@ -215,7 +272,6 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
               }
             }}
             onBlur={() => {
-              // 给一个小延时，让点击事件能够触发
               setTimeout(() => {
                 setShowResults(false);
               }, 200);
