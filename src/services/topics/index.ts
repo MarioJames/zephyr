@@ -42,7 +42,7 @@ export interface TopicSummaryRequest {
  * @returns TopicItem[]
  */
 function getTopicList(sessionId: string, params?: TopicListRequest) {
-  return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`);
+  return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`, { params });
 }
 
 /**

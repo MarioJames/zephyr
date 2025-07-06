@@ -1,10 +1,10 @@
 import { StateCreator } from 'zustand';
-import topicService, { TopicItem, TopicCreateRequest } from '@/services/topics';
+import topicService, { TopicItem, TopicCreateRequest, TopicListRequest } from '@/services/topics';
 import { ChatStore } from '../../store';
 
 export interface TopicAction {
   // 话题CRUD操作
-  fetchTopics: (sessionId: string) => Promise<TopicItem[] | undefined>;
+  fetchTopics: (sessionId: string, params?: TopicListRequest) => Promise<TopicItem[] | undefined>;
   createTopic: (data: TopicCreateRequest) => Promise<TopicItem>;
   updateTopicTitle: (id: string, title: string) => Promise<void>;
   removeTopic: (id: string) => Promise<void>;
@@ -25,11 +25,11 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
   set,
   get
 ) => ({
-  fetchTopics: async (sessionId: string) => {
+  fetchTopics: async (sessionId: string, params?: TopicListRequest) => {
     set({ fetchTopicLoading: true, error: undefined });
 
     try {
-      const topics = await topicService.getTopicList(sessionId);
+      const topics = await topicService.getTopicList(sessionId, params);
       set({
         topics,
         topicsInit: true,
