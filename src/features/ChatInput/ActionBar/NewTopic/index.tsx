@@ -47,7 +47,7 @@ const NewTopic = memo(() => {
       router.push(`/chat?session=${activeSessionId}&topic=${newTopic.id}`);
 
       // 异步调用总结话题接口（不需要等待）
-      topicService.summaryTopic(newTopic.id).catch((error) => {
+      topicService.summaryTopicTitle({ id: newTopic.id }).catch((error) => {
         console.warn('话题总结失败:', error);
       });
     } catch (error) {

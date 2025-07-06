@@ -30,9 +30,9 @@ export interface TopicCreateRequest {
   favorite?: boolean;
 }
 
-export interface TopicSummaryRequest {
-  model?: string;
-  provider?: string;
+export interface TopicTitleSummaryRequest {
+  id: string;
+  lang?: string;
 }
 
 /**
@@ -56,14 +56,14 @@ function createTopic(data: TopicCreateRequest) {
 }
 
 /**
- * 话题总结
- * @description 对指定话题进行总结
+ * 总结话题标题
+ * @description 对指定话题进行总结标题
  * @param id string
  * @param data TopicSummaryRequest
  * @returns TopicItem
  */
-function summaryTopic(id: string, data?: TopicSummaryRequest) {
-  return http.post<TopicItem>(`/api/v1/topics/${id}/summary`, data || {});
+function summaryTopicTitle(data?: TopicTitleSummaryRequest) {
+  return http.post<TopicItem>(`/api/v1/topics/summary-title`, data || {});
 }
 
 /**
@@ -79,6 +79,6 @@ function deleteTopic(id: string) {
 export default {
   getTopicList,
   createTopic,
-  summaryTopic,
+  summaryTopicTitle,
   deleteTopic,
 };

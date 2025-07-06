@@ -1,6 +1,5 @@
 import { StateCreator } from 'zustand';
 import { ChatStore } from '../../store';
-import { uploadFileListReducer } from '../../helpers';
 import {
   FileItem,
   UploadAndParseRequest,
@@ -8,6 +7,7 @@ import {
 } from '@/services/files';
 import { filesAPI } from '@/services';
 import { ParsedFileContent } from '@/store/file/slices/core/initialState';
+import { useSessionStore } from '@/store/session';
 
 // 扩展 FileItem 类型以包含前端需要的字段
 export interface ChatFileItem extends FileItem {
@@ -71,6 +71,7 @@ export interface UploadAction {
   uploadChatFilesAndParse: (
     data: UploadAndParseRequest
   ) => Promise<UploadAndParseResponse>;
+
   // 清空文件列表
   clearChatUploadFileList: () => void;
   // 删除文件
@@ -109,6 +110,7 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
 
       const res = await filesAPI.batchUpload({
         files: [file],
+        sessionId: useSessionStore.getState().activeSessionId,
       });
 
       // 处理图片文件的 base64 编码
@@ -123,7 +125,9 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
           if (file.type.startsWith('image/')) {
             try {
               const arrayBuffer = await file.arrayBuffer();
-              const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+              const base64 = btoa(
+                String.fromCharCode(...new Uint8Array(arrayBuffer))
+              );
               resultFile.base64 = `data:${file.type};base64,${base64}`;
             } catch (error) {
               console.error('图片 base64 编码失败:', error);
@@ -146,6 +150,17 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
       });
     } catch (error) {
       console.error(error);
+
+      set({
+        chatUploadFileList: get().chatUploadFileList.map((chatFile) => {
+          if (chatFile.originalFile === file) {
+            return { ...chatFile, status: 'error' as const };
+          }
+          return chatFile;
+        }),
+      });
+
+      throw error;
     } finally {
       set({
         isUploading: false,
@@ -158,8 +173,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
 
   // 一体化上传和解析
   uploadChatFilesAndParse: async (data: UploadAndParseRequest) => {
-    console.log('data', data);
-
     set({
       isUploading: true,
       uploadingFiles: [...get().uploadingFiles, data.file],
@@ -181,6 +194,10 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
       });
 
       const response = await filesAPI.uploadAndParseDocument(data);
+
+      if (response.parseResult.parseStatus !== 'completed') {
+        throw new Error('文件解析失败');
+      }
 
       // 将文件添加到文件列表
       set({
@@ -214,7 +231,14 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
 
       return response;
     } catch (error) {
-      console.error('文件上传和解析失败:', error);
+      console.error('文件上传和解析失败', error);
+
+      set({
+        chatUploadFileList: get().chatUploadFileList.filter(
+          (chatFile) => chatFile.originalFile !== data.file
+        ),
+      });
+
       throw error;
     } finally {
       set({
