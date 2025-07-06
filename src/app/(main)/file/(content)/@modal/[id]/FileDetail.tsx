@@ -13,7 +13,6 @@ const FileDetail = memo<{ id: string }>(({ id }) => {
 
   useEffect(() => {
     // 如果没有文件数据，则获取文件详情
-    console.log('file', file);
     if (!file) {
       filesAPI.getFileDetail(id).then((fileData) => {
         setFiles([fileData]);

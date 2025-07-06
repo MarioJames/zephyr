@@ -5,7 +5,7 @@ const activeSessionId = (s: SessionStore) => s.activeSessionId;
 const activeSession = (s: SessionStore) =>
   s.sessions.find((session) => session.id === s.activeSessionId);
 const activeSessionAgent = (s: SessionStore) =>
-  activeSession(s)?.agentsToSessions[0].agent;
+  activeSession(s)?.agentsToSessions[0]?.agent;
 const activeAgentSystemRole = (s: SessionStore) =>
   activeSessionAgent(s)?.systemRole;
 const activeAgentChatConfig = (s: SessionStore) =>

@@ -4,6 +4,7 @@ import { Image } from 'antd';
 import { memo } from 'react';
 import { Center } from 'react-layout-kit';
 
+import { FILE_URL } from '@/const/base';
 import { fileCoreSelectors, useFileStore } from '@/store/file';
 
 const FilePreview = memo<{ id: string }>(({ id }) => {
@@ -22,7 +23,7 @@ const FilePreview = memo<{ id: string }>(({ id }) => {
 
   return (
     <Center height={'100%'}>
-      <Image src={file?.url} alt={file?.filename} />
+      <Image src={`${FILE_URL}${file?.url}`} alt={file?.filename} />
     </Center>
   );
 });

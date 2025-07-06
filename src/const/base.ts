@@ -1,5 +1,6 @@
 export const LOADING_FLAT = '...';
 
+export const FILE_URL = 'https://ombra.eu.org/';
 
 export const ARTIFACT_TAG = 'zephyrArtifact';
 
