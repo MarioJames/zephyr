@@ -7,6 +7,8 @@ export interface SessionActiveAction {
   initFromUrlParams: () => Promise<void>;
   setActiveSession: (sessionId: string) => void;
   setActiveTopic: (topicId: string) => void;
+
+  resetActiveState: () => void;
 }
 
 export const sessionActiveAction: StateCreator<
@@ -41,5 +43,9 @@ export const sessionActiveAction: StateCreator<
 
   setActiveTopic: (topicId: string) => {
     set({ activeTopicId: topicId });
+  },
+
+  resetActiveState: () => {
+    set({ activeSessionId: '', activeTopicId: '' });
   },
 });

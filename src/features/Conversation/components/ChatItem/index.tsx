@@ -156,7 +156,11 @@ const Item = memo<ChatListItemProps>(
         <Flexbox className={cx(styles.message, className)}>
           <ChatItem
             actions={actionBar}
-            avatar={item.metadata?.avatar}
+            avatar={
+              item.role === 'user'
+                ? item.session?.avatar
+                : item.user?.avatar
+            }
             error={error}
             errorMessage={errorMessage}
             markdownProps={markdownProps}

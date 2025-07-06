@@ -1,5 +1,5 @@
 import { ActionIcon, Dropdown, Icon, type MenuProps } from '@lobehub/ui';
-import { App, Typography } from 'antd';
+import { Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { MoreVertical, PencilLine } from 'lucide-react';
 import { memo, useMemo } from 'react';
@@ -10,7 +10,6 @@ import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
 import { useOIDCStore } from '@/store/oidc';
 import { oidcSelectors } from '@/store/oidc/selectors';
-import Image from 'next/image';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -40,6 +39,8 @@ const useStyles = createStyles(({ css }) => ({
   `,
   avatarImage: css`
     border-radius: 50%;
+    width: 32px;
+    height: 32px;
   `,
 }));
 
@@ -63,8 +64,6 @@ const SessionContent = memo<SessionContentProps>(
         router.push(`/customer/edit?id=${id}`);
       }
     };
-
-    const { modal } = App.useApp();
 
     const items = useMemo<MenuProps['items']>(
       () => [
@@ -98,11 +97,9 @@ const SessionContent = memo<SessionContentProps>(
           }}
         >
           {avatar ? (
-            <Image
+            <img
               src={avatar || ''}
               alt='avatar'
-              width={32}
-              height={32}
               className={styles.avatarImage}
             />
           ) : (

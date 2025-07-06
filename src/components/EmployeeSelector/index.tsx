@@ -1,0 +1,299 @@
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { Select, Avatar, Space, Input } from 'antd';
+import { UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import { ChevronDown } from 'lucide-react';
+
+import userService, { UserItem } from '@/services/user';
+import Image from 'next/image';
+
+const { Option } = Select;
+
+const useStyles = createStyles(({ css, token }) => ({
+  selector: css`
+    width: 50%;
+    flex: 1;
+    height: 32px;
+
+    .ant-select-arrow {
+      margin-top: -8px;
+    }
+
+    .ant-select-selector {
+      height: 32px !important;
+      border-radius: 6px;
+      border: 1px solid ${token.colorBorder};
+      background: inherit;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+      .ant-select-selection-item {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        line-height: 30px;
+        color: ${token.colorText};
+        padding: 0;
+      }
+
+      .ant-select-selection-placeholder {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        line-height: 30px;
+        color: ${token.colorText};
+        padding: 0;
+      }
+    }
+
+    .ant-select-arrow {
+      color: ${token.colorText};
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    &.ant-select-focused .ant-select-selector {
+      border-color: ${token.colorPrimary};
+      box-shadow: 0 0 0 2px ${token.colorPrimary}20;
+    }
+
+    &:hover .ant-select-selector {
+      border-color: ${token.colorPrimary};
+    }
+  `,
+
+  dropdownContainer: css`
+    .ant-select-dropdown {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 250px;
+
+      .ant-select-item {
+        padding: 8px 12px;
+
+        &:hover {
+          background-color: ${token.colorBgTextHover};
+        }
+
+        &.ant-select-item-option-selected {
+          background-color: ${token.colorPrimary}20;
+          color: ${token.colorPrimary};
+        }
+      }
+    }
+  `,
+
+  searchInput: css`
+    margin: 8px;
+    margin-bottom: 4px;
+
+    .ant-input {
+      border-radius: 6px;
+    }
+  `,
+
+  userOption: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      .user-name {
+        font-weight: 500;
+        color: ${token.colorText};
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-email {
+        font-size: 12px;
+        color: ${token.colorTextSecondary};
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  `,
+
+  selectedUser: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+
+    .ant-avatar {
+      flex-shrink: 0 0 20px;
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    span {
+      font-weight: 500;
+      color: ${token.colorText};
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+  `,
+}));
+
+interface EmployeeSelectorProps {
+  value?: string;
+  onChange?: (userId: string, user: UserItem) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+}
+
+const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
+  value,
+  onChange,
+  placeholder = '选择员工',
+  disabled = false,
+  className,
+}) => {
+  const { styles } = useStyles();
+  const [employees, setEmployees] = useState<UserItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // 获取员工列表
+  const fetchEmployees = async (keyword?: string) => {
+    setLoading(true);
+    try {
+      if (keyword) {
+        const searchResults = await userService.searchUsers(keyword, 20);
+        setEmployees(searchResults);
+      } else {
+        const allUsers = await userService.getAllUsers({ pageSize: 20 });
+        setEmployees(allUsers);
+      }
+    } catch (error) {
+      console.error('获取员工列表失败:', error);
+      setEmployees([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 初始化加载员工列表
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  // 搜索防抖
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isDropdownOpen) {
+        fetchEmployees(searchKeyword);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchKeyword, isDropdownOpen]);
+
+  // 过滤后的员工列表
+  const filteredEmployees = useMemo(() => {
+    if (!searchKeyword) return employees;
+    return employees.filter(
+      (user) =>
+        user.fullName?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+        user.username?.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+  }, [employees, searchKeyword]);
+
+  const handleSelect = (userId: string) => {
+    const user = employees.find((emp) => emp.id === userId);
+    if (user && onChange) {
+      onChange(userId, user);
+    }
+    setIsDropdownOpen(false);
+  };
+
+  const handleDropdownVisibleChange = (open: boolean) => {
+    setIsDropdownOpen(open);
+    if (open && employees.length === 0) {
+      fetchEmployees();
+    }
+  };
+
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+  };
+
+  return (
+    <Select
+      className={`${styles.selector} ${className || ''}`}
+      value={value}
+      placeholder={placeholder}
+      disabled={disabled}
+      loading={loading}
+      onSelect={handleSelect}
+      onDropdownVisibleChange={handleDropdownVisibleChange}
+      suffixIcon={<ChevronDown size={16} />}
+      showSearch={false}
+      filterOption={false}
+      dropdownStyle={{ minWidth: 280 }}
+      labelInValue={false}
+      optionLabelProp='label'
+      dropdownRender={(menu) => (
+        <div className={styles.dropdownContainer}>
+          <Input
+            className={styles.searchInput}
+            placeholder='搜索员工...'
+            prefix={<SearchOutlined />}
+            value={searchKeyword}
+            onChange={(e) => handleSearch(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+          />
+          {menu}
+        </div>
+      )}
+    >
+      {filteredEmployees.map((user) => (
+        <Option
+          key={user.id}
+          value={user.id}
+          label={
+            <div className={styles.selectedUser}>
+              <Image
+                width={18}
+                height={18}
+                src={user.avatar!}
+                alt={user.fullName || user.username || '未知用户'}
+                style={{ borderRadius: '50%' }}
+              />
+              <span>{user.fullName || user.username || '未知用户'}</span>
+            </div>
+          }
+        >
+          <div className={styles.userOption}>
+            <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
+            <div className='user-info'>
+              <div className='user-name'>
+                {user.fullName || user.username || '未知用户'}
+              </div>
+              {user.email && <div className='user-email'>{user.email}</div>}
+            </div>
+          </div>
+        </Option>
+      ))}
+    </Select>
+  );
+};
+
+export default EmployeeSelector;

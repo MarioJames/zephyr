@@ -59,7 +59,7 @@ const Actions = memo<ActionsProps>(({ id }) => {
       }
 
       if (action.keyPath.at(-1) === 'translate') {
-        autoTranslateMessage(id);
+        autoTranslateMessage(item.role as 'user' | 'assistant', id);
       }
     },
     [item]

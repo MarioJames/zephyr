@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { ActionIcon, Tooltip, Input } from "@lobehub/ui";
-import { Spin, List, Popover } from "antd";
-import { PanelRightClose, PanelRightOpen } from "lucide-react";
-import React, { memo, useState, useEffect } from "react";
-import { Flexbox } from "react-layout-kit";
-import { FileClock, Search } from "lucide-react";
-import { useChatStore } from "@/store/chat";
-import { useGlobalStore } from "@/store/global";
-import { systemStatusSelectors } from "@/store/global/selectors";
-import { createStyles } from "antd-style";
-import dayjs from "dayjs";
-import messageService, { MessageItem } from "@/services/messages";
-import { useSessionStore } from "@/store/session";
-import { sessionSelectors } from "@/store/session/selectors";
+import { ActionIcon, Tooltip, Input } from '@lobehub/ui';
+import { Spin, List, Popover } from 'antd';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+import React, { memo, useState, useEffect } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { FileClock, Search } from 'lucide-react';
+import { useChatStore } from '@/store/chat';
+import { useGlobalStore } from '@/store/global';
+import { systemStatusSelectors } from '@/store/global/selectors';
+import { createStyles } from 'antd-style';
+import dayjs from 'dayjs';
+import messageService, { MessageItem } from '@/services/messages';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session/selectors';
+import { removeSystemContext } from '@/utils/messageContentFilter';
 
 const useStyles = createStyles(({ css, token }) => ({
   search: css`
@@ -24,7 +25,7 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     gap: 8px;
     border-radius: 6px;
-    background: #EAEAEA;
+    background: ${token.colorBgContainer};
     border: none;
     position: relative;
   `,
@@ -111,32 +112,41 @@ const useStyles = createStyles(({ css, token }) => ({
     justify-content: center;
     align-items: center;
     padding: 24px 0;
-  `
+  `,
 }));
 
 // 处理文本截取和高亮
-const processSearchContent = (content: string, keyword: string, styles: any) => {
+const processSearchContent = (
+  content: string,
+  keyword: string,
+  styles: any
+) => {
   if (!content) return '';
-  
+
   const index = content.toLowerCase().indexOf(keyword.toLowerCase());
   if (index === -1) return content;
 
   // 确定截取范围
   const contextLength = 20; // 关键词前后保留的字符数
-  let start = Math.max(0, index - contextLength);
-  let end = Math.min(content.length, index + keyword.length + contextLength);
-  
+  const start = Math.max(0, index - contextLength);
+  const end = Math.min(content.length, index + keyword.length + contextLength);
+
   // 添加省略号
   let processedContent = content.slice(start, end);
   if (start > 0) processedContent = '...' + processedContent;
   if (end < content.length) processedContent = processedContent + '...';
 
   // 高亮关键词
-  const keywordIndex = processedContent.toLowerCase().indexOf(keyword.toLowerCase());
+  const keywordIndex = processedContent
+    .toLowerCase()
+    .indexOf(keyword.toLowerCase());
   if (keywordIndex === -1) return processedContent;
 
   const before = processedContent.slice(0, keywordIndex);
-  const match = processedContent.slice(keywordIndex, keywordIndex + keyword.length);
+  const match = processedContent.slice(
+    keywordIndex,
+    keywordIndex + keyword.length
+  );
   const after = processedContent.slice(keywordIndex + keyword.length);
 
   return (
@@ -153,15 +163,15 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore(
-    (s) => s.status.slotPanelType || "aiHint"
+    (s) => s.status.slotPanelType || 'aiHint'
   );
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
-  
-  const [searchValue, setSearchValue] = useState("");
+
+  const [searchValue, setSearchValue] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [searchResults, setSearchResults] = useState<MessageItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  
+
   const { switchTopic } = useChatStore();
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
 
@@ -172,7 +182,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
       try {
         const results = await messageService.searchMessages({
           keyword: searchValue,
-          sessionId: activeSessionId
+          sessionId: activeSessionId,
         });
         console.log('搜索结果', results);
         setSearchResults(results);
@@ -201,13 +211,13 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   }, [searchValue, activeSessionId]);
 
   const handleHistoryClick = () => {
-    setSlotPanelType(slotPanelType === "history" ? "aiHint" : "history");
+    setSlotPanelType(slotPanelType === 'history' ? 'aiHint' : 'history');
   };
 
   const handleMessageClick = (message: MessageItem) => {
     if (message.topicId) {
       switchTopic(message.topicId);
-      setSearchValue("");
+      setSearchValue('');
       setShowResults(false);
     }
     // TODO: 看看能不能跳转到指定消息
@@ -222,46 +232,53 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
       ) : searchResults.length > 0 ? (
         <List
           dataSource={searchResults}
-          renderItem={(message) => (
-            <List.Item 
-              className={styles.searchItem}
-              onClick={() => handleMessageClick(message)}
-            >
-              <div>
-                <div className={styles.itemTitle}>
-                  {processSearchContent(message.content || searchValue, searchValue, styles)}
+          renderItem={(message) => {
+            const content = removeSystemContext(message.content || '');
+
+            return (
+              <List.Item
+                className={styles.searchItem}
+                onClick={() => handleMessageClick(message)}
+              >
+                <div>
+                  <div className={styles.itemTitle}>
+                    {processSearchContent(
+                      content || searchValue,
+                      searchValue,
+                      styles
+                    )}
+                  </div>
+                  <div className={styles.itemMeta}>
+                    @ {message.user?.fullName || '默认员工'} |{' '}
+                    {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm')}
+                  </div>
                 </div>
-                <div className={styles.itemMeta}>
-                  @ {message.user?.fullName || '默认员工'} | {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm')}
-                </div>
-              </div>
-            </List.Item>
-          )}
+              </List.Item>
+            );
+          }}
         />
       ) : (
-        <div className={styles.emptyState}>
-          暂无搜索结果
-        </div>
+        <div className={styles.emptyState}>暂无搜索结果</div>
       )}
     </div>
   );
 
   return (
-    <Flexbox className={className} gap={4} horizontal align="center">
+    <Flexbox className={className} gap={4} horizontal align='center'>
       <div className={styles.search}>
-        <Search size={16} color="#666" />
+        <Search size={16} color='#666' />
         <Popover
           open={showResults}
           content={searchContent}
-          trigger="click"
-          placement="bottomLeft"
+          trigger='click'
+          placement='bottomLeft'
           arrow={false}
           overlayInnerStyle={{
             padding: 0,
           }}
         >
           <Input
-            placeholder="搜索历史消息"
+            placeholder='搜索历史消息'
             className={styles.searchInput}
             allowClear
             value={searchValue}
@@ -281,18 +298,22 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
         </Popover>
       </div>
       <div
-        className={slotPanelType === "history" ? styles.historyButtonSelected : styles.historyButton}
+        className={
+          slotPanelType === 'history'
+            ? styles.historyButtonSelected
+            : styles.historyButton
+        }
         onClick={handleHistoryClick}
       >
         <FileClock size={20} />
         历史会话
       </div>
-      <Tooltip title={"显示/隐藏右侧面板"}>
+      <Tooltip title={'显示/隐藏右侧面板'}>
         <ActionIcon
           icon={showSlotPanel ? PanelRightClose : PanelRightOpen}
           onClick={() => toggleSlotPanel()}
           size={20}
-          color="#000"
+          color='#000'
         />
       </Tooltip>
     </Flexbox>

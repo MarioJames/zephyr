@@ -3,15 +3,26 @@
 import { ChatItemProps, ChatItem as ChatItemRaw } from '@lobehub/ui/chat';
 import { memo } from 'react';
 
-const ChatItem = memo<ChatItemProps>(({ markdownProps = {}, ...rest }) => {
-  const avatar = {
-    avatar: "🤖",
-    backgroundColor: "rgba(0,0,0,0)",
-    description: undefined,
-    title: "大三 ",
-  };
+interface ZephyrChatItemProps extends Omit<ChatItemProps, 'avatar'> {
+  avatar?: string;
+}
 
-  return <ChatItemRaw markdownProps={markdownProps} {...rest} avatar={avatar} />;
-});
+const ChatItem = memo<ZephyrChatItemProps>(
+  ({ markdownProps = {}, avatar, ...rest }) => {
+    const displayAvatar = {
+      avatar: <img src={avatar} width={32} height={32} />,
+      backgroundColor: 'rgba(0,0,0,0)',
+      description: undefined,
+    };
+
+    return (
+      <ChatItemRaw
+        markdownProps={markdownProps}
+        {...rest}
+        avatar={displayAvatar}
+      />
+    );
+  }
+);
 
 export default ChatItem;

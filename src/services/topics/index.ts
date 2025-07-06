@@ -40,8 +40,10 @@ export interface TopicUpdateRequest {
  * @param sessionId string
  * @returns TopicItem[]
  */
-function getTopicList(sessionId: string) {
-  return http.get<TopicItem[]>(`/api/v1/topics/session/${sessionId}`);
+function getTopicList(sessionId: string, params?: { keyword?: string }) {
+  return http.get<TopicItem[]>(`/api/v1/topics/session/${sessionId}`, {
+    params,
+  });
 }
 
 /**

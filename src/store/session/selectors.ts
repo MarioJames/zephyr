@@ -1,9 +1,13 @@
 import { sessionActiveSelectors } from './slices/active/selectors';
+import { sessionCoreSelectors } from './slices/core/selectors';
 import { SessionStore } from './store';
 
 // 基础会话选择器
 export const sessionSelectors = {
   ...sessionActiveSelectors,
+  ...sessionCoreSelectors,
+
+  inSearchMode: (state: SessionStore) => state.inSearchMode,
 
   // 获取搜索结果
   searchResults: (state: SessionStore) => state.searchResults,

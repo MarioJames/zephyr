@@ -9,7 +9,7 @@ export interface ThreadChatItemProps {
 }
 
 const MainChatItem = memo<ThreadChatItemProps>(({ id, index }) => {
-  const actionBar = useMemo(() => <ActionsBar id={id} index={index} />, [id]);
+  const actionBar = useMemo(() => <ActionsBar id={id} />, [id]);
 
   return <ChatItem actionBar={actionBar} id={id} />;
 });

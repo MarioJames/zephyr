@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import messageService, { MessageItem } from '@/services/messages';
+import messageService from '@/services/messages';
 import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
@@ -40,7 +40,10 @@ export interface MessageAction {
   // 翻译状态管理
   addTranslatingMessage: (id: string) => void;
   removeTranslatingMessage: (id: string) => void;
-  autoTranslateMessage: (messageId: string) => Promise<void>;
+  autoTranslateMessage: (
+    role: 'user' | 'assistant',
+    messageId: string
+  ) => Promise<void>;
 }
 
 export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
@@ -129,7 +132,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 🆕 自动触发翻译
       if (createdMessage.id) {
-        get().autoTranslateMessage(createdMessage.id);
+        get().autoTranslateMessage(role, createdMessage.id);
       }
     } catch (e: unknown) {
       set({
@@ -140,7 +143,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   },
 
   sendMessage: async (role: 'user' | 'assistant') => {
-    const { inputMessage, chatUploadFileList, } = get();
+    const { inputMessage, chatUploadFileList } = get();
 
     set({ sendMessageLoading: true });
 
@@ -309,7 +312,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     }));
   },
 
-  autoTranslateMessage: async (messageId: string) => {
+  autoTranslateMessage: async (
+    role: 'user' | 'assistant',
+    messageId: string
+  ) => {
     try {
       const state = get();
       const message = state.messages.find((msg) => msg.id === messageId);
@@ -319,15 +325,11 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         return;
       }
 
-      // 检测消息语言并选择目标翻译语言
-      const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(message.content);
-      const isChinese = /[\u4e00-\u9fff]/.test(message.content);
-
-      const from = isChinese ? 'zh-CN' : isKorean ? 'ko-KR' : '自动判断';
-      const to = isChinese ? 'ko-KR' : isKorean ? 'zh-CN' : '自动判断';
+      // 检测消息发送方指定翻译语言
+      const to = role === 'user' ? 'zh-CN' : 'ko-KR';
 
       // 执行翻译
-      await get().translateMessage(messageId, { from, to });
+      await get().translateMessage(messageId, { from: '自动识别', to });
     } catch (error) {
       console.error('Auto translate failed:', error);
     }
