@@ -68,9 +68,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const handleHistoryClick = () => {
     setSlotPanelType(slotPanelType === "history" ? "aiHint" : "history");
   };
-  React.useEffect(() => {
-    console.log('slotPanelType', slotPanelType);
-  }, [slotPanelType]);
+
   return (
     <Flexbox className={className} gap={4} horizontal align="center">
       <div className={styles.search}>
