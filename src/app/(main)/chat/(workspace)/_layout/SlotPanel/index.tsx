@@ -57,8 +57,10 @@ const SlotPanel = memo(() => {
     if (!lg) toggleSlotPanel(false);
   }, [lg, cacheExpand, toggleSlotPanel]);
 
+  console.log('测试',hasActiveSession,sessions,!(hasActiveSession || (sessions && sessions.length > 0)))
+
   // 默认收起，只有在有活跃会话或非空会话列表时才展示
-  if (!(hasActiveSession || (sessions && sessions.length > 0))) {
+  if (!((sessions && sessions.length > 0) && hasActiveSession )) {
     return null;
   }
 
