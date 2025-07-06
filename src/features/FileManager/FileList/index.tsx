@@ -15,11 +15,6 @@ import EmptyStatus from './EmptyStatus';
 import FileListItem, { FILE_DATE_WIDTH, FILE_SIZE_WIDTH } from './FileListItem';
 import FileSkeleton from './FileSkeleton';
 
-enum SortType {
-  Asc = 'asc',
-  Desc = 'desc',
-}
-
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   header: css`
     height: 40px;
