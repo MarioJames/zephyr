@@ -80,6 +80,7 @@ export interface MessageCountResponse {
 export interface MessagesSearchRequest {
   keyword: string; // 搜索关键词
   limit?: number; // 结果限制
+  sessionId: string; // 会话ID
 }
 
 /**
