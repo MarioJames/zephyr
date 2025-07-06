@@ -109,7 +109,6 @@ const FileList = memo<FileListProps>(({ category }) => {
           }}
           data={fileData}
           itemContent={(index, item) => {
-            console.log('item',item);
             return (
               <FileListItem
                 index={index}

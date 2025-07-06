@@ -13,6 +13,7 @@ export const DETAIL_PANEL_WIDTH = 300;
 
 const FileDetail = memo<FileItem>((props) => {
   const { filename, size, createdAt, updatedAt } = props || {};
+  console.log('FileDetail', props);
   const theme = useTheme();
 
   if (!props) return null;
