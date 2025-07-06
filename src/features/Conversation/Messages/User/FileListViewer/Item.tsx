@@ -4,7 +4,6 @@ import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { useChatStore } from '@/store/chat';
 import { ChatFileItem } from '@/types/message';
 import { formatSize } from '@/utils/format';
 
@@ -29,18 +28,8 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 const FileItem = memo<ChatFileItem>(({ id, fileType, size, name }) => {
   const { styles } = useStyles();
 
-  const openFilePreview = useChatStore((s) => s.openFilePreview);
-
   return (
-    <Flexbox
-      className={styles.container}
-      gap={12}
-      horizontal
-      key={id}
-      onClick={() => {
-        openFilePreview({ fileId: id });
-      }}
-    >
+    <Flexbox className={styles.container} gap={12} horizontal key={id}>
       <FileIcon fileName={name} fileType={fileType} />
       <Flexbox style={{ overflow: 'hidden' }}>
         <Typography.Text ellipsis>{name}</Typography.Text>
