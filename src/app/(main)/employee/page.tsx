@@ -16,6 +16,8 @@ import { createStyles } from 'antd-style';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { useEmployeeStore } from '@/store/employee';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 import { UserItem } from '@/services/user';
 import { adminList } from '@/const/role';
 import { RoleItem } from '@/services/roles';
@@ -24,6 +26,7 @@ import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
 import EmployeeCustomerModal from './components/EmployeeCustomerModal';
 import EmployeeEditModal from './components/EmployeeEditModal';
 import SendLoginGuideModal from './components/SendLoginGuideModal';
+import NoAuthority from '@/components/NoAuthority';
 
 import { useRoleStore } from '@/store/role';
 
@@ -181,8 +184,13 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export default function EmployeePage() {
   const { message } = App.useApp();
-
   const { styles, theme } = useStyles();
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   // 使用store
   const {

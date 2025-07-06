@@ -10,9 +10,12 @@ import type { ColumnsType } from 'antd/es/table';
 import { sessionsAPI, topicsAPI, type CustomerItem } from '@/services';
 import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
+import { useOIDCStore } from '@/store/oidc';
+import { oidcSelectors } from '@/store/oidc/selectors';
 import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
 import Link from 'next/link';
+import NoAuthority from '@/components/NoAuthority';
 
 const { Title } = Typography;
 
@@ -138,6 +141,12 @@ export default function Customer() {
   const { styles, theme } = useStyles();
   const { message } = App.useApp();
   const router = useRouter();
+  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   // Store hooks
   const {
