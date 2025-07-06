@@ -20,7 +20,10 @@ const NewTopic = memo(() => {
     switchTopic: s.switchTopic,
   }));
 
-  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
+  const [activeSessionId, activeTopicId] = useSessionStore((s) => [
+    sessionSelectors.activeSessionId(s),
+    sessionSelectors.activeTopicId(s),
+  ]);
 
   const handleCreateNewTopic = useCallback(async () => {
     if (!activeSessionId) {
@@ -29,6 +32,11 @@ const NewTopic = memo(() => {
     }
 
     try {
+      // 异步调用总结话题接口（不需要等待）
+      topicService.summaryTopicTitle({ id: activeTopicId! }).catch((error) => {
+        console.warn('话题总结失败:', error);
+      });
+
       message.loading('正在创建新话题...', 0);
 
       // 创建新话题
@@ -45,11 +53,6 @@ const NewTopic = memo(() => {
 
       // 跳转到新话题页面
       router.push(`/chat?session=${activeSessionId}&topic=${newTopic.id}`);
-
-      // 异步调用总结话题接口（不需要等待）
-      topicService.summaryTopic(newTopic.id).catch((error) => {
-        console.warn('话题总结失败:', error);
-      });
     } catch (error) {
       message.destroy();
       console.error('创建新话题失败:', error);
@@ -58,11 +61,14 @@ const NewTopic = memo(() => {
   }, [activeSessionId, createTopic, switchTopic, router, message]);
 
   return (
-    <Flex align='center' style={{ cursor: 'pointer', width: 100 }}>
+    <Flex
+      align='center'
+      style={{ cursor: 'pointer', width: 100 }}
+      onClick={handleCreateNewTopic}
+    >
       <Action
         title='新开会话'
         icon={MessageCirclePlus}
-        onClick={handleCreateNewTopic}
         disabled={!activeSessionId}
       />
       <span>新开会话</span>

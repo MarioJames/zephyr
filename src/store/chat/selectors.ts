@@ -8,23 +8,12 @@ const error = (s: ChatState) => s.error;
 
 const isCurrentChatLoaded = (s: ChatState): boolean => s.messagesInit;
 
-const mainDisplayChatIDs = (s: ChatState): string[] =>
-  s.messages
-    .filter((msg) => msg.topicId === s.activeTopicId)
-    .sort(
-      (a, b) =>
-        new Date(a.createdAt || 0).getTime() -
-        new Date(b.createdAt || 0).getTime()
-    )
-    .map((msg) => msg.id);
-
 // 话题相关选择器
 
 // 聊天相关选择器
 export const chatSelectors = {
   error,
   isCurrentChatLoaded,
-  mainDisplayChatIDs,
 
   ...suggestionsSelectors,
   ...messageSelectors,

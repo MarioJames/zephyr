@@ -3,12 +3,17 @@ import { type ChatItemProps } from '@lobehub/ui/chat';
 import { FC, ReactNode } from 'react';
 
 import { LLMRoleType } from '@/types/llm';
-import { MessageItem } from '@/services/messages';
 
 import { type ActionsBarProps } from '../components/ChatItem/ActionsBar';
+import { ChatMessage } from '@/types/message';
 
-export type OnActionsClick = (action: ActionIconGroupEvent, message: ChatMessage) => void;
-export type OnAvatarsClick = (role: RenderRole) => ChatItemProps['onAvatarClick'];
+export type OnActionsClick = (
+  action: ActionIconGroupEvent,
+  message: ChatMessage
+) => void;
+export type OnAvatarsClick = (
+  role: RenderRole
+) => ChatItemProps['onAvatarClick'];
 export type RenderRole = LLMRoleType | 'default' | 'history' | string;
 export type RenderMessage = FC<ChatMessage & { editableContent: ReactNode }>;
 export type RenderBelowMessage = FC<ChatMessage>;

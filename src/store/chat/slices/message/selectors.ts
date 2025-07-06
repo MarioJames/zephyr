@@ -2,12 +2,12 @@ import { MessageState } from './initialState';
 import { MessageItem } from '@/services/messages';
 import { chatHelpers } from '../../helpers';
 
-
 const messagesInit = (s: MessageState) => s.messagesInit;
 const fetchMessageLoading = (s: MessageState) => s.fetchMessageLoading;
 const sendMessageLoading = (s: MessageState) => s.sendMessageLoading;
 const inputMessage = (s: MessageState) => s.inputMessage;
 const messages = (s: MessageState) => s.messages;
+const messagesIds = (s: MessageState) => s.messages.map((msg) => msg.id);
 
 const getMessageById =
   (id: string) =>
@@ -40,6 +40,7 @@ const isMessageTranslating = (id: string) => (s: MessageState) =>
 export const messageSelectors = {
   inputMessage,
   messages,
+  messagesIds,
   messagesInit,
   getMessageById,
   fetchMessageLoading,

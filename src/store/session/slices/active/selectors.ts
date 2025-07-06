@@ -2,6 +2,7 @@ import { SessionStore } from '../../store';
 
 const sessions = (state: SessionStore) => state.sessions;
 const activeSessionId = (s: SessionStore) => s.activeSessionId;
+const activeTopicId = (s: SessionStore) => s.activeTopicId;
 const activeSession = (s: SessionStore) =>
   s.sessions.find((session) => session.id === s.activeSessionId);
 const activeSessionAgent = (s: SessionStore) =>
@@ -20,6 +21,7 @@ const activeAgentEnableCompressHistory = (s: SessionStore) =>
 export const sessionActiveSelectors = {
   sessions,
   activeSessionId,
+  activeTopicId,
   activeSession,
   activeSessionAgent,
   activeAgentSystemRole,

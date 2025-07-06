@@ -142,12 +142,12 @@ const Item = memo<ChatListItemProps>(
     // 过滤用户消息的系统上下文
     const displayContent = useMemo(() => {
       if (!item?.content) return item?.content;
-      
+
       // 只对用户消息进行过滤，保留助手消息的完整内容
       if (item.role === 'user') {
         return removeSystemContext(item.content);
       }
-      
+
       return item.content;
     }, [item?.content, item?.role]);
 

@@ -29,6 +29,9 @@ export const useHistoryStyles = createStyles(({ css, token, isDarkMode }) => ({
       background: ${token.colorFill};
     }
   `,
+  activeHistoryItem: css`
+    background: ${token.colorFill};
+  `,
   historyTitle: css`
     font-weight: 500;
     font-size: 14px;

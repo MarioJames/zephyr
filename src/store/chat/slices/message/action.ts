@@ -7,18 +7,10 @@ import {
   createMessageWithFiles,
   FileForAI,
 } from '@/utils/fileContextFormatter';
-
-// 将消息转换为AI模型消费的格式
-const formatMessagesForAI = (messages: MessageItem[]) => {
-  return messages
-    .filter(
-      (msg) => msg.content && ['user', 'assistant', 'system'].includes(msg.role)
-    )
-    .map((msg) => ({
-      role: msg.role as 'user' | 'assistant' | 'system',
-      content: msg.content!,
-    }));
-};
+import {
+  transformMessagesWithFileClassification,
+  transformMessageWithFileClassification,
+} from './helpers';
 
 export interface MessageAction {
   // 消息CRUD操作
@@ -64,8 +56,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ fetchMessageLoading: true, error: undefined });
     try {
       const messages = await messageService.queryByTopic(topicId);
+      // 对消息进行文件分类处理
+      const transformedMessages =
+        transformMessagesWithFileClassification(messages);
+
       set({
-        messages,
+        messages: transformedMessages,
         messagesInit: true,
         fetchMessageLoading: false,
         error: undefined,
@@ -97,7 +93,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   ) => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
-
     if (!content || !activeSessionId || !activeTopicId) return;
 
     set({ fetchMessageLoading: true });
@@ -111,9 +106,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         files: options.files, // 传递文件信息
       });
 
+      // 对创建的消息进行文件分类处理
+      const transformedMessage =
+        transformMessageWithFileClassification(createdMessage);
 
       const updateData: Partial<ChatStore> = {
-        messages: [...get().messages, createdMessage],
+        messages: [...get().messages, transformedMessage],
         fetchMessageLoading: false,
       };
 
@@ -134,7 +132,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         get().autoTranslateMessage(createdMessage.id);
       }
     } catch (e: unknown) {
-      set({ fetchMessageLoading: false, error: (e as Error)?.message || '消息发送失败' });
+      set({
+        fetchMessageLoading: false,
+        error: (e as Error)?.message || '消息发送失败',
+      });
     }
   },
 
@@ -283,7 +284,10 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ fetchMessageLoading: true });
     try {
       const messages = await messageService.queryByTopic(topicId);
-      set({ messages, fetchMessageLoading: false });
+      // 对消息进行文件分类处理
+      const transformedMessages =
+        transformMessagesWithFileClassification(messages);
+      set({ messages: transformedMessages, fetchMessageLoading: false });
     } catch (e: any) {
       set({ fetchMessageLoading: false, error: e?.message || '消息获取失败' });
     }

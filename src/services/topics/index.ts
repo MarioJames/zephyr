@@ -19,20 +19,19 @@ export interface TopicItem {
   updatedAt?: string;
 }
 
-export interface TopicListRequest {
-  sessionId?: string; // 会话 ID
-  keyword?: string;
-}
-
 export interface TopicCreateRequest {
   title: string;
   sessionId: string;
   favorite?: boolean;
 }
 
-export interface TopicSummaryRequest {
-  model?: string;
-  provider?: string;
+export interface TopicTitleSummaryRequest {
+  id: string;
+  lang?: string;
+}
+
+export interface TopicUpdateRequest {
+  title: string;
 }
 
 /**
@@ -41,8 +40,39 @@ export interface TopicSummaryRequest {
  * @param sessionId string
  * @returns TopicItem[]
  */
-function getTopicList(sessionId: string, params?: TopicListRequest) {
-  return http.get<TopicItem[]>(`/api/v1/topics/${sessionId}`, { params });
+function getTopicList(sessionId: string) {
+  return http.get<TopicItem[]>(`/api/v1/topics/session/${sessionId}`);
+}
+
+/**
+ * 获取话题详情
+ * @description 获取指定话题的详情
+ * @param id string
+ * @returns TopicItem
+ */
+function getTopicDetail(id: string) {
+  return http.get<TopicItem>(`/api/v1/topics/${id}`);
+}
+
+/**
+ * 更新话题
+ * @description 更新指定话题的信息
+ * @param id string
+ * @param data TopicUpdateRequest
+ * @returns TopicItem
+ */
+function updateTopic(id: string, data: TopicUpdateRequest) {
+  return http.put<TopicItem>(`/api/v1/topics/${id}`, data);
+}
+
+/**
+ * 删除话题
+ * @description 删除指定的话题
+ * @param id string
+ * @returns void
+ */
+function deleteTopic(id: string) {
+  return http.delete<void>(`/api/v1/topics/${id}`);
 }
 
 /**
@@ -56,29 +86,21 @@ function createTopic(data: TopicCreateRequest) {
 }
 
 /**
- * 话题总结
- * @description 对指定话题进行总结
+ * 总结话题标题
+ * @description 对指定话题进行总结标题
  * @param id string
  * @param data TopicSummaryRequest
  * @returns TopicItem
  */
-function summaryTopic(id: string, data?: TopicSummaryRequest) {
-  return http.post<TopicItem>(`/api/v1/topics/${id}/summary`, data || {});
-}
-
-/**
- * 删除话题
- * @description 删除指定的话题
- * @param id string
- * @returns void
- */
-function deleteTopic(id: string) {
-  return http.delete<void>(`/api/v1/topics/${id}`);
+function summaryTopicTitle(data?: TopicTitleSummaryRequest) {
+  return http.post<TopicItem>(`/api/v1/topics/summary-title`, data || {});
 }
 
 export default {
   getTopicList,
+  getTopicDetail,
   createTopic,
-  summaryTopic,
+  summaryTopicTitle,
+  updateTopic,
   deleteTopic,
 };

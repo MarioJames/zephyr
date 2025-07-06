@@ -29,6 +29,7 @@ export interface FileUploadRequest {
   file: File;
   skipCheckFileType?: boolean;
   directory?: string;
+  sessionId?: string;
 }
 
 export interface BatchUploadRequest {
@@ -135,7 +136,10 @@ export interface UploadAndParseResponse {
  */
 function upload(data: FileUploadRequest) {
   const formData = new FormData();
+
   formData.append('file', data.file);
+
+  if (data.sessionId) formData.append('sessionId', data.sessionId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);

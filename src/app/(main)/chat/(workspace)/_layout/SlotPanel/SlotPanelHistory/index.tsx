@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { FileClock, X } from 'lucide-react';
+import { FileClock, X, MoreHorizontal, Edit3, Sparkles } from 'lucide-react';
+import { Dropdown, Modal, Input, App, Spin } from 'antd';
+import { createStyles } from 'antd-style';
 import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
@@ -9,21 +11,73 @@ import { sessionSelectors } from '@/store/session';
 import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
 import SkeletonList from './SkeletonList';
+import topicService from '@/services/topics';
+import { topicsAPI } from '@/services';
+
+const useStyles = createStyles(({ token, css }) => ({
+  menuItem: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `,
+  dropdownTrigger: css`
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: ${token.colorBgTextHover};
+    }
+  `,
+  historyItemWrapper: css`
+    position: relative;
+
+    &:hover .dropdown-trigger {
+      opacity: 1;
+    }
+  `,
+  dropdownTriggerHidden: css`
+    opacity: 0;
+    transition: opacity 0.2s;
+  `,
+}));
 
 const HistoryPanel = () => {
   const setSlotPanelType = useGlobalStore((s) => s.setSlotPanelType);
+
   const { styles } = useHistoryStyles();
+  const { styles: customStyles } = useStyles();
+  const { message } = App.useApp();
+
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [editingTopic, setEditingTopic] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [newTitle, setNewTitle] = useState('');
+  const [loadingTopicIds, setLoadingTopicIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // 获取当前 activeSessionId 和 fetchTopics action
-  const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
-  const fetchTopics = useChatStore((s) => s.fetchTopics);
-  // 获取话题列表和加载状态
-  const [topics, isLoading] = useChatStore((s) => [
-    chatSelectors.topics(s),
-    chatSelectors.fetchTopicLoading(s),
+  const [activeSessionId, activeTopicId] = useSessionStore((s) => [
+    sessionSelectors.activeSessionId(s),
+    sessionSelectors.activeTopicId(s),
   ]);
 
-  const switchTopic = useChatStore((s) => s.switchTopic);
+  // 获取话题列表和加载状态
+  const [isLoading, topics, fetchTopics, switchTopic, updateTopic] =
+    useChatStore((s) => [
+      chatSelectors.fetchTopicLoading(s),
+      chatSelectors.topics(s),
+      s.fetchTopics,
+      s.switchTopic,
+      s.updateTopic,
+    ]);
 
   useEffect(() => {
     if (activeSessionId) {
@@ -31,6 +85,101 @@ const HistoryPanel = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSessionId]);
+
+  // 处理重命名
+  const handleRename = (topic: { id: string; title: string }) => {
+    setEditingTopic(topic);
+    setNewTitle(topic.title || '');
+    setIsRenameModalOpen(true);
+  };
+
+  // 处理AI重命名
+  const handleAIRename = async (topicId: string) => {
+    try {
+      // 添加loading状态
+      setLoadingTopicIds((prev) => new Set(prev).add(topicId));
+
+      const newTopic = await topicService.summaryTopicTitle({ id: topicId });
+      updateTopic(topicId, newTopic);
+
+      message.success('AI 重命名成功');
+    } catch (error) {
+      console.error('AI重命名失败:', error);
+      message.error('AI重命名失败：');
+    } finally {
+      // 移除loading状态
+      setLoadingTopicIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(topicId);
+        return newSet;
+      });
+    }
+  };
+
+  // 确认重命名
+  const handleConfirmRename = async () => {
+    if (!editingTopic || !newTitle.trim()) {
+      message.error('请输入话题名称');
+      return;
+    }
+
+    try {
+      // 添加loading状态
+      setLoadingTopicIds((prev) => new Set(prev).add(editingTopic.id));
+
+      const newTopic = await topicsAPI.updateTopic(editingTopic.id, {
+        title: newTitle.trim(),
+      });
+
+      updateTopic(editingTopic.id, newTopic);
+
+      message.success('重命名成功');
+
+      setIsRenameModalOpen(false);
+      setEditingTopic(null);
+      setNewTitle('');
+    } catch (error) {
+      console.error('重命名失败:', error);
+      message.error('重命名失败');
+    } finally {
+      // 移除loading状态
+      setLoadingTopicIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(editingTopic.id);
+        return newSet;
+      });
+    }
+  };
+
+  // 创建下拉菜单项
+  const getDropdownItems = (topic: { id: string; title: string }) => [
+    {
+      key: 'rename',
+      label: (
+        <div className={customStyles.menuItem}>
+          <Edit3 size={16} />
+          重命名
+        </div>
+      ),
+      onClick: (e: any) => {
+        e?.domEvent?.stopPropagation();
+        handleRename(topic);
+      },
+    },
+    {
+      key: 'ai-rename',
+      label: (
+        <div className={customStyles.menuItem}>
+          <Sparkles size={16} />
+          使用 AI 重命名
+        </div>
+      ),
+      onClick: (e: any) => {
+        e?.domEvent?.stopPropagation();
+        handleAIRename(topic.id);
+      },
+    },
+  ];
 
   return (
     <Flexbox height='100%' className={styles.panelBg}>
@@ -66,30 +215,92 @@ const HistoryPanel = () => {
             暂无历史会话
           </Flexbox>
         ) : (
-          topics.map((item) => (
-            <Flexbox
-              key={item.id}
-              horizontal
-              distribution='space-between'
-              align='center'
-              className={styles.historyItem}
-              onClick={() => switchTopic(item.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <Flexbox>
-                <div className={styles.historyTitle}>{item.title}</div>
-                <div className={styles.historyMeta}>
-                  @{item.user?.username || item.user?.fullName || '未知员工'} |{' '}
-                  {item.updatedAt
-                    ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
-                    : ''}
-                </div>
-              </Flexbox>
-              <div className={styles.historyCount}>{item.messageCount}</div>
-            </Flexbox>
-          ))
+          topics.map((item) => {
+            return (
+              <Spin
+                key={item.id}
+                spinning={loadingTopicIds.has(item.id)}
+                size='small'
+              >
+                <Flexbox
+                  horizontal
+                  distribution='space-between'
+                  align='center'
+                  className={`
+                    ${styles.historyItem}
+                    ${item.id === activeTopicId ? styles.activeHistoryItem : ''}
+                    ${customStyles.historyItemWrapper}
+                    `}
+                  onClick={() => {
+                    if (item.id === activeTopicId) return;
+
+                    switchTopic(item.id);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Flexbox flex={1}>
+                    <div className={styles.historyTitle}>{item.title}</div>
+                    <div className={styles.historyMeta}>
+                      @
+                      {item.user?.username || item.user?.fullName || '未知员工'}{' '}
+                      |{' '}
+                      {item.updatedAt
+                        ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+                        : ''}
+                    </div>
+                  </Flexbox>
+                  <Flexbox horizontal align='center' gap={8}>
+                    <div className={styles.historyCount}>
+                      {item.messageCount}
+                    </div>
+                    <Dropdown
+                      menu={{
+                        items: getDropdownItems({
+                          id: item.id,
+                          title: item.title || '',
+                        }),
+                      }}
+                    >
+                      <div
+                        className={`${customStyles.dropdownTrigger} ${customStyles.dropdownTriggerHidden} dropdown-trigger`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal size={16} />
+                      </div>
+                    </Dropdown>
+                  </Flexbox>
+                </Flexbox>
+              </Spin>
+            );
+          })
         )}
       </Flexbox>
+
+      {/* 重命名弹窗 */}
+      <Modal
+        title='重命名话题'
+        open={isRenameModalOpen}
+        onOk={handleConfirmRename}
+        onCancel={() => {
+          setIsRenameModalOpen(false);
+          setEditingTopic(null);
+          setNewTitle('');
+        }}
+        okText='确认'
+        cancelText='取消'
+        confirmLoading={
+          editingTopic ? loadingTopicIds.has(editingTopic.id) : false
+        }
+      >
+        <Input
+          placeholder='请输入新的话题标题'
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          onPressEnter={handleConfirmRename}
+          maxLength={100}
+          disabled={editingTopic ? loadingTopicIds.has(editingTopic.id) : false}
+        />
+      </Modal>
     </Flexbox>
   );
 };

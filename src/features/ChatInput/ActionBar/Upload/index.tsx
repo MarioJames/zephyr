@@ -46,24 +46,14 @@ const FileUpload = memo(() => {
         try {
           const response = await uploadChatFilesAndParse({ file });
 
+
           if (response.parseResult.parseStatus === 'completed') {
-            message.success(
-              `文档 "${file.name}" 上传并解析成功，可以在对话中引用`
-            );
+            message.success(`文档 "${file.name}" 上传并解析成功`);
           } else {
-            message.warning(
-              `文档 "${file.name}" 上传成功，但解析失败: ${
-                response.parseResult.error || '未知错误'
-              }`
-            );
+            message.warning(`文档 "${file.name}" 上传成功，但解析失败`);
           }
         } catch (error) {
-          console.error('文档上传和解析失败:', error);
-          message.error(
-            `文档上传失败: ${
-              error instanceof Error ? error.message : '未知错误'
-            }`
-          );
+          message.error(`文件上传失败，已自动移除`);
         }
       } else {
         // 对于图片等非文档文件，只需要上传
@@ -114,7 +104,9 @@ const FileUpload = memo(() => {
               return false;
             }
 
-            return await handleFileUpload(file);
+            handleFileUpload(file);
+
+            return false;
           }}
           multiple
           showUploadList={false}
@@ -134,7 +126,9 @@ const FileUpload = memo(() => {
               return false;
             }
 
-            return await handleFileUpload(file);
+            handleFileUpload(file);
+
+            return false;
           }}
           directory
           multiple={true}

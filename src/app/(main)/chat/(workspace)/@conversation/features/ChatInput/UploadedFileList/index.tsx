@@ -6,6 +6,8 @@ import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { X, FileText, Image, Video } from 'lucide-react';
 import { Button } from 'antd';
 import { Spin } from 'antd';
+import { serverS3Env } from '@/config/s3';
+import FileIcon from '@/components/FileIcon';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -110,80 +112,84 @@ interface UploadedFileListProps {
   onRemoveFile: (id: string) => void;
 }
 
-const UploadedFileList = memo<UploadedFileListProps>(({
-  files,
-  isUploading,
-  onRemoveFile
-}) => {
-  const { styles } = useStyles();
+const UploadedFileList = memo<UploadedFileListProps>(
+  ({ files, isUploading, onRemoveFile }) => {
+    const { styles } = useStyles();
 
-  // 如果没有文件且不在上传，不显示容器
-  if (files.length === 0 && !isUploading) {
-    return null;
-  }
-
-  const getFileIcon = (fileType?: string) => {
-    if (fileType?.startsWith('image/')) {
-      return <Image className={styles.fileIcon} />;
+    // 如果没有文件且不在上传，不显示容器
+    if (files.length === 0 && !isUploading) {
+      return null;
     }
-    if (fileType?.startsWith('video/')) {
-      return <Video className={styles.fileIcon} />;
-    }
-    return <FileText className={styles.fileIcon} />;
-  };
 
+    const getFileIcon = (fileType?: string) => {
+      if (fileType?.startsWith('image/')) {
+        return <Image className={styles.fileIcon} />;
+      }
+      if (fileType?.startsWith('video/')) {
+        return <Video className={styles.fileIcon} />;
+      }
+      return <FileText className={styles.fileIcon} />;
+    };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+    const formatFileSize = (bytes: number) => {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
 
-  return (
-    <div className={styles.container}>
-      {isUploading && files.length === 0 && (
-        <div className={styles.loadingContainer}>
-          <Spin size="small" />
-          <span style={{ marginLeft: 8 }}>正在准备上传...</span>
-        </div>
-      )}
+    return (
+      <div className={styles.container}>
+        {isUploading && files.length === 0 && (
+          <div className={styles.loadingContainer}>
+            <Spin size='small' />
+            <span style={{ marginLeft: 8 }}>正在准备上传...</span>
+          </div>
+        )}
 
-      {files.length > 0 && (
-        <div className={styles.fileList}>
-          {files.map((file) => (
-            <div key={file.id || file.filename} className={styles.fileItem}>
-              {getFileIcon(file.fileType)}
+        {files.length > 0 && (
+          <div className={styles.fileList}>
+            {files.map((file) => (
+              <div key={file.id || file.filename} className={styles.fileItem}>
+                {getFileIcon(file.fileType)}
 
-              <div className={styles.fileInfo}>
-                <div className={styles.fileName}>{file.filename}</div>
-                <div className={styles.fileSize}>{formatFileSize(file.size || 0)}</div>
-              </div>
-
-              {/* 上传中的遮罩层 */}
-              {file.status === 'uploading' && (
-                <div className={styles.uploadingOverlay}>
-                  <Spin size="small" />
-                </div>
-              )}
-
-              {/* 删除按钮 - 只在上传成功后显示 */}
-              {file.status === 'success' && file.id && (
-                <Button
-                  type="text"
-                  size="small"
-                  className={styles.removeButton}
-                  onClick={() => onRemoveFile(file.id!)}
-                  icon={<X size={12} />}
+                <FileIcon
+                  fileName={file.filename || ''}
+                  fileType={file.fileType}
                 />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-});
+
+                <div className={styles.fileInfo}>
+                  <div className={styles.fileName}>{file.filename}</div>
+                  <div className={styles.fileSize}>
+                    {formatFileSize(file.size || 0)}
+                  </div>
+                </div>
+
+                {/* 上传中的遮罩层 */}
+                {file.status === 'uploading' && (
+                  <div className={styles.uploadingOverlay}>
+                    <Spin size='small' />
+                  </div>
+                )}
+
+                {/* 删除按钮 - 只在上传成功后显示 */}
+                {file.status === 'success' && file.id && (
+                  <Button
+                    type='text'
+                    size='small'
+                    className={styles.removeButton}
+                    onClick={() => onRemoveFile(file.id!)}
+                    icon={<X size={12} />}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 export default UploadedFileList;
