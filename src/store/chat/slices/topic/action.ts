@@ -4,7 +4,7 @@ import { ChatStore } from '../../store';
 
 export interface TopicAction {
   // 话题CRUD操作
-  fetchTopics: (sessionId: string, params?: TopicListRequest) => Promise<TopicItem[] | undefined>;
+  fetchTopics: (sessionId: string) => Promise<TopicItem[] | undefined>;
   createTopic: (data: TopicCreateRequest) => Promise<TopicItem>;
   updateTopicTitle: (id: string, title: string) => Promise<void>;
   removeTopic: (id: string) => Promise<void>;
@@ -25,11 +25,11 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
   set,
   get
 ) => ({
-  fetchTopics: async (sessionId: string, params?: TopicListRequest) => {
+  fetchTopics: async (sessionId: string) => {
     set({ fetchTopicLoading: true, error: undefined });
 
     try {
-      const topics = await topicService.getTopicList(sessionId, params);
+      const topics = await topicService.getTopicList(sessionId);
       set({
         topics,
         topicsInit: true,
@@ -104,7 +104,7 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     }
   },
 
-  useSearchTopics: (keyword: string, sessionId: string) => {
+  useSearchTopics: async (keyword: string, sessionId: string) => {
     if (!keyword.trim()) {
       set({
         searchTopics: [],
@@ -114,16 +114,22 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
       return;
     }
 
-    const state = get();
-    const filteredTopics = state.topics.filter((topic) =>
-      topic.title?.toLowerCase().includes(keyword.toLowerCase())
-    );
+    try {
+      const topics = await topicService.getTopicList(sessionId, { keyword });
 
-    set({
-      searchTopics: filteredTopics,
-      isSearchingTopic: true,
-      inSearchingMode: true,
-    });
+      set({
+        searchTopics: topics,
+        isSearchingTopic: true,
+        inSearchingMode: true,
+      });
+    } catch (error) {
+      console.error('Failed to search topics:', error);
+      set({
+        searchTopics: [],
+        isSearchingTopic: false,
+        inSearchingMode: false,
+      });
+    }
   },
 
   clearTopicSearchResult: () => {
