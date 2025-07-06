@@ -28,7 +28,7 @@ const ChatConversation = (props: DynamicLayoutProps) => {
     }
   }, [activeTopicId]);
 
-  if (!isInitialized && (!sessions || sessions.length === 0)) {
+  if (isInitialized && (!sessions || sessions.length === 0)) {
     return <DefaultCreateCustomer />;
   }
 
