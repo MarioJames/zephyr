@@ -29,6 +29,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const SessionPanel = memo(({ children }: PropsWithChildren) => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
+  const isInitialized = useSessionStore((s) => s.isInitialized);
 
   // 使用全局状态管理
   const showSessionPanel = useGlobalStore(systemStatusSelectors.showSessionPanel);
@@ -53,14 +54,14 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
 
   // 根据 sessions 自动控制展开状态
   useEffect(() => {
-    if (sessions.length === 0) {
+    if (sessions.length === 0 && isInitialized) {
       toggleSessionPanel(false);
       setCacheExpand(false);
     } else if (!userCollapsed) {
       toggleSessionPanel(true);
       setCacheExpand(true);
     }
-  }, [sessions, toggleSessionPanel, userCollapsed]);
+  }, [sessions, toggleSessionPanel, userCollapsed, isInitialized]);
 
   useEffect(() => {
     if (lg && cacheExpand) toggleSessionPanel(true);
