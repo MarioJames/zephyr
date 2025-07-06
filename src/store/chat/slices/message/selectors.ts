@@ -2,7 +2,6 @@ import { MessageState } from './initialState';
 import { MessageItem } from '@/services/messages';
 import { chatHelpers } from '../../helpers';
 
-
 const messagesInit = (s: MessageState) => s.messagesInit;
 const fetchMessageLoading = (s: MessageState) => s.fetchMessageLoading;
 const sendMessageLoading = (s: MessageState) => s.sendMessageLoading;

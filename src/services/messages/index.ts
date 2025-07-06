@@ -3,6 +3,7 @@ import { SessionItem } from '../sessions';
 import { TopicItem } from '../topics';
 import { UserItem } from '../user';
 import { MessageTranslateItem } from '../message_translates';
+import { FileItem } from '../files';
 
 // 消息相关类型定义
 export interface MessageItem {
@@ -31,6 +32,9 @@ export interface MessageItem {
   updatedAt?: string;
   topic?: TopicItem;
   user?: UserItem;
+  files?: FileItem[];
+  imageList?: FileItem[];
+  fileList?: FileItem[];
   session?: SessionItem;
   translation?: MessageTranslateItem;
 }

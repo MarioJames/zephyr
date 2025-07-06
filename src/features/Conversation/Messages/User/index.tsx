@@ -28,5 +28,4 @@ export const UserMessage = memo<
   );
 });
 
-export * from './BelowMessage';
 export { MarkdownRender as UserMarkdownRender } from './MarkdownRender';

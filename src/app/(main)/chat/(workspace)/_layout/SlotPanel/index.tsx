@@ -33,14 +33,18 @@ const SlotPanel = memo(() => {
   const { md = true, lg = true } = useResponsive();
   const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
-  const slotPanelType = useGlobalStore((s) => s.status.slotPanelType || 'aiHint');
+  const slotPanelType = useGlobalStore(
+    (s) => s.status.slotPanelType || 'aiHint'
+  );
 
   // 获取当前激活的 session（从 session store 获取）
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const sessions = useSessionStore(sessionSelectors.sessions);
   const hasActiveSession = !!activeSessionId;
 
-  const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSlotPanel));
+  const [cacheExpand, setCacheExpand] = useState<boolean>(
+    Boolean(showSlotPanel)
+  );
 
   useEffect(() => {
     setCacheExpand(Boolean(showSlotPanel));
@@ -57,10 +61,8 @@ const SlotPanel = memo(() => {
     if (!lg) toggleSlotPanel(false);
   }, [lg, cacheExpand, toggleSlotPanel]);
 
-  console.log('测试',hasActiveSession,sessions,!(hasActiveSession || (sessions && sessions.length > 0)))
-
   // 默认收起，只有在有活跃会话或非空会话列表时才展示
-  if (!((sessions && sessions.length > 0) && hasActiveSession )) {
+  if (!(sessions && sessions.length > 0 && hasActiveSession)) {
     return null;
   }
 
@@ -85,7 +87,7 @@ const SlotPanel = memo(() => {
           minWidth: CHAT_SLOT_SIDEBAR_WIDTH,
         }}
       >
-        {slotPanelType === 'history' ? <HistoryPanel /> : <AIHintPanel /> }
+        {slotPanelType === 'history' ? <HistoryPanel /> : <AIHintPanel />}
       </DraggablePanelContainer>
     </DraggablePanel>
   );
