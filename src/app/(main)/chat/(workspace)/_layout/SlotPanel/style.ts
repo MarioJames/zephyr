@@ -161,15 +161,11 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     .ant-typography {
       color: ${token.colorTextSecondary};
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 0;
 
       .ant-typography-expand {
         color: ${token.colorTextQuaternary};
         font-size: 12px;
-        position: absolute;
-        left: 0;
-        bottom: -25px;
-        margin-left: 0;
       }
     }
   `,

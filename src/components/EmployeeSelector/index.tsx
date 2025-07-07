@@ -243,14 +243,14 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       disabled={disabled}
       loading={loading}
       onSelect={handleSelect}
-      onDropdownVisibleChange={handleDropdownVisibleChange}
+      onOpenChange={handleDropdownVisibleChange}
       suffixIcon={<ChevronDown size={16} />}
       showSearch={false}
       filterOption={false}
-      dropdownStyle={{ minWidth: 280 }}
+      dropdownStyle={{minWidth: 280}}
       labelInValue={false}
       optionLabelProp='label'
-      dropdownRender={(menu) => (
+      popupRender={(menu) => (
         <div className={styles.dropdownContainer}>
           <Input
             className={styles.searchInput}
