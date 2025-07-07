@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Col,
   Row,
@@ -10,20 +10,20 @@ import {
   message,
   Spin,
   Empty,
-} from 'antd';
-import { Button } from '@lobehub/ui';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { createStyles } from 'antd-style';
-import Link from 'next/link';
+} from "antd";
+import { Button } from "@lobehub/ui";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { createStyles } from "antd-style";
+import Link from "next/link";
 
-import { useAgentStore } from '@/store/agent/store';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
-import TemplateModal from './components/templateModal';
-import DeleteModal from './components/deleteModal';
-import { CreateAgentRequest } from '@/services';
-import { useModelStore, modelCoreSelectors } from '@/store/model';
-import NoAuthority from '@/components/NoAuthority';
+import { useAgentStore } from "@/store/agent/store";
+import { useOIDCStore } from "@/store/oidc";
+import { oidcSelectors } from "@/store/oidc/selectors";
+import TemplateModal from "./components/templateModal";
+import DeleteModal from "./components/deleteModal";
+import { CreateAgentRequest } from "@/services";
+import { useModelStore, modelCoreSelectors } from "@/store/model";
+import NoAuthority from "@/components/NoAuthority";
 
 const { Title } = Typography;
 
@@ -57,8 +57,17 @@ const useStyles = createStyles(({ css, token }) => ({
     font-size: 16px;
     color: ${token.colorText} !important;
   `,
+
   cardGrid: css`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px; // 替代原来的 gutter=[16,16]
     margin-top: 16px;
+  `,
+  cardContainer: css`
+    flex: 0 0 calc(20% - 16px); // 5列 = 100% / 5 - gap
+    max-width: calc(20% - 16px); // 防止内容撑开
+    box-sizing: border-box; // 确保 padding/border 不影响宽度
   `,
   card: css`
     border: 1px solid ${token.colorBorder};
@@ -68,6 +77,7 @@ const useStyles = createStyles(({ css, token }) => ({
     display: flex;
     flex-direction: column;
     background: ${token.colorBgElevated};
+    width: 100%;
   `,
   cardContent: css`
     flex: 1;
@@ -194,9 +204,9 @@ export default function CustomerTemplatePage() {
       await deleteAgent(deleteId);
       setDeleteModalOpen(false);
       setDeleteTargetId(null);
-      message.success('转移并删除成功');
+      message.success("转移并删除成功");
     } catch {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
@@ -212,10 +222,10 @@ export default function CustomerTemplatePage() {
       setSubmitting(true);
       if (editing?.id) {
         await updateAgent(editing.id, { id: editing.id, ...values });
-        message.success('编辑成功');
+        message.success("编辑成功");
       } else {
         await createAgent(values);
-        message.success('添加成功');
+        message.success("添加成功");
       }
       setModalOpen(false);
       setEditing(null);
@@ -232,11 +242,13 @@ export default function CustomerTemplatePage() {
     setEditing(null);
   };
 
+  console.log("agents", agents);
+
   return (
     <div className={styles.container}>
       {/* 顶部导航 */}
       <div className={styles.header}>
-        <Link href='/customer' className={styles.backButton}>
+        <Link href="/customer" className={styles.backButton}>
           <ArrowLeftOutlined style={{ marginRight: 8 }} />
           返回客户管理
         </Link>
@@ -247,42 +259,42 @@ export default function CustomerTemplatePage() {
         <Title level={4} style={{ margin: 0 }}>
           客户模版配置
         </Title>
-        <Button type='primary' onClick={() => openModal()}>
+        <Button type="primary" onClick={() => openModal()}>
           添加客户类型
         </Button>
       </div>
 
       {/* 卡片网格/数据区，撑满高度，支持溢出滚动 */}
-      <Spin spinning={isLoading} tip='加载中...'>
-        <div style={{ minHeight: '60vh' }}>
+      <Spin spinning={isLoading} tip="加载中...">
+        <div style={{ minHeight: "60vh" }}>
           {error ? (
             <Empty
               description={error}
               style={{
                 minHeight: 300,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             />
           ) : agents.length === 0 ? (
             <Empty
-              description='暂无客户模版'
+              description="暂无客户模版"
               style={{
                 minHeight: 300,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             />
           ) : (
-            <Row gutter={[16, 16]} className={styles.cardGrid}>
+            <div className={styles.cardGrid}>
               {agents.map((agent) => (
-                <Col span={4.8} key={agent.id}>
+                <div key={agent.id} className={styles.cardContainer}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <img
-                        src={'/test.png'}
+                        src={agent.avatar || "/test.png"}
                         alt={agent.title}
                         className={styles.cardImage}
                       />
@@ -295,7 +307,7 @@ export default function CustomerTemplatePage() {
                     </div>
                     <div className={styles.cardFooter}>
                       <Button
-                        type='text'
+                        type="text"
                         className={styles.footerButton}
                         onClick={() => openModal(agent)}
                       >
@@ -303,7 +315,7 @@ export default function CustomerTemplatePage() {
                       </Button>
                       <div className={styles.footerDivider} />
                       <Button
-                        type='text'
+                        type="text"
                         className={styles.footerButton}
                         onClick={() => handleDelete(agent.id)}
                       >
@@ -311,9 +323,9 @@ export default function CustomerTemplatePage() {
                       </Button>
                     </div>
                   </div>
-                </Col>
+                </div>
               ))}
-            </Row>
+            </div>
           )}
         </div>
       </Spin>
@@ -332,11 +344,11 @@ export default function CustomerTemplatePage() {
         onOk={handleDeleteModalOk}
         agents={agents.map((a) => ({
           id: a.id,
-          title: a.title || '',
-          description: a.description || '',
-          avatar: a.avatar || '',
+          title: a.title || "",
+          description: a.description || "",
+          avatar: a.avatar || "",
         }))}
-        currentId={deleteTargetId || ''}
+        currentId={deleteTargetId || ""}
       />
     </div>
   );
