@@ -148,7 +148,6 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 interface EmployeeSelectorProps {
-  value?: string;
   onChange?: (userId: string, user: UserItem) => void;
   placeholder?: string;
   disabled?: boolean;
@@ -156,7 +155,6 @@ interface EmployeeSelectorProps {
 }
 
 const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
-  value,
   onChange,
   placeholder = "选择员工",
   disabled = false,
@@ -235,9 +233,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
 
   return (
     <Select
-      open={true}
       className={`${styles.selector} ${className || ""}`}
-      value={value}
       placeholder={placeholder}
       disabled={disabled}
       loading={loading}

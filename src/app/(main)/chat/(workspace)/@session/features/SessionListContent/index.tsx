@@ -43,9 +43,6 @@ const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
   const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<
-    string | undefined
-  >();
 
   const [
     // state
@@ -87,7 +84,6 @@ const SessionListContent = memo(() => {
   };
 
   const handleEmployeeSelect = async (userId: string) => {
-    setSelectedEmployeeId(userId);
 
     // 重新获取该员工的会话列表
     await fetchSessions({ userId });
@@ -113,7 +109,6 @@ const SessionListContent = memo(() => {
         {isAdmin && (
           <div style={{ flex: 1 }}>
             <EmployeeSelector
-              value={selectedEmployeeId}
               onChange={handleEmployeeSelect}
               placeholder="全部员工"
             />
