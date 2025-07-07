@@ -1,20 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Select, Avatar, Space, Input } from 'antd';
-import { UserOutlined, SearchOutlined } from '@ant-design/icons';
-import { createStyles } from 'antd-style';
-import { ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from "react";
+import { Select, Avatar, Space, Input } from "antd";
+import { UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { createStyles } from "antd-style";
+import { ChevronDown } from "lucide-react";
 
-import userService, { UserItem } from '@/services/user';
-import Image from 'next/image';
+import userService, { UserItem } from "@/services/user";
+import Image from "next/image";
 
 const { Option } = Select;
 
 const useStyles = createStyles(({ css, token }) => ({
   selector: css`
-    width: 50%;
-    flex: 1;
+    width: 100%;
     height: 32px;
 
     .ant-select-arrow {
@@ -88,8 +87,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 
   searchInput: css`
-    margin: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
 
     .ant-input {
       border-radius: 6px;
@@ -160,14 +158,14 @@ interface EmployeeSelectorProps {
 const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   value,
   onChange,
-  placeholder = '选择员工',
+  placeholder = "选择员工",
   disabled = false,
   className,
 }) => {
   const { styles } = useStyles();
   const [employees, setEmployees] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // 获取员工列表
@@ -182,7 +180,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         setEmployees(allUsers);
       }
     } catch (error) {
-      console.error('获取员工列表失败:', error);
+      console.error("获取员工列表失败:", error);
       setEmployees([]);
     } finally {
       setLoading(false);
@@ -237,7 +235,8 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
 
   return (
     <Select
-      className={`${styles.selector} ${className || ''}`}
+      open={true}
+      className={`${styles.selector} ${className || ""}`}
       value={value}
       placeholder={placeholder}
       disabled={disabled}
@@ -247,14 +246,14 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       suffixIcon={<ChevronDown size={16} />}
       showSearch={false}
       filterOption={false}
-      dropdownStyle={{minWidth: 280}}
+      dropdownStyle={{ minWidth: 280, padding: 12 }}
       labelInValue={false}
-      optionLabelProp='label'
+      optionLabelProp="label"
       popupRender={(menu) => (
         <div className={styles.dropdownContainer}>
           <Input
             className={styles.searchInput}
-            placeholder='搜索员工...'
+            placeholder="搜索员工..."
             prefix={<SearchOutlined />}
             value={searchKeyword}
             onChange={(e) => handleSearch(e.target.value)}
@@ -274,20 +273,20 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                 width={18}
                 height={18}
                 src={user.avatar!}
-                alt={user.fullName || user.username || '未知用户'}
-                style={{ borderRadius: '50%' }}
+                alt={user.fullName || user.username || "未知用户"}
+                style={{ borderRadius: "50%" }}
               />
-              <span>{user.fullName || user.username || '未知用户'}</span>
+              <span>{user.fullName || user.username || "未知用户"}</span>
             </div>
           }
         >
           <div className={styles.userOption}>
             <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
-            <div className='user-info'>
-              <div className='user-name'>
-                {user.fullName || user.username || '未知用户'}
+            <div className="user-info">
+              <div className="user-name">
+                {user.fullName || user.username || "未知用户"}
               </div>
-              {user.email && <div className='user-email'>{user.email}</div>}
+              {user.email && <div className="user-email">{user.email}</div>}
             </div>
           </div>
         </Option>

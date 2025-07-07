@@ -1,27 +1,28 @@
-'use client';
+"use client";
 
-import React, { memo, useEffect, useState } from 'react';
-import { Flexbox } from 'react-layout-kit';
-import { Button } from '@lobehub/ui';
-import { Plus } from 'lucide-react';
-import { createStyles } from 'antd-style';
-import { useRouter } from 'next/navigation';
+import React, { memo, useEffect, useState } from "react";
+import { Flexbox } from "react-layout-kit";
+import { Button } from "@lobehub/ui";
+import { Plus } from "lucide-react";
+import { createStyles } from "antd-style";
+import { useRouter } from "next/navigation";
 
-import { sessionSelectors, useSessionStore } from '@/store/session';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
-import { useChatStore } from '@/store/chat';
-import EmployeeSelector from '@/components/EmployeeSelector';
-import { UserItem } from '@/services/user';
+import { sessionSelectors, useSessionStore } from "@/store/session";
+import { useOIDCStore } from "@/store/oidc";
+import { oidcSelectors } from "@/store/oidc/selectors";
+import { useChatStore } from "@/store/chat";
+import EmployeeSelector from "@/components/EmployeeSelector";
+import { UserItem } from "@/services/user";
 
-import { SkeletonList } from '../SkeletonList';
-import ShowMode from './ShowMode';
-import SearchResult from './SearchResult';
+import { SkeletonList } from "../SkeletonList";
+import ShowMode from "./ShowMode";
+import SearchResult from "./SearchResult";
 
 const useStyles = createStyles(({ css, token }) => ({
   button: css`
     display: flex;
     height: 32px;
+    width:100%;
     justify-content: center;
     align-items: center;
     gap: 4px;
@@ -29,7 +30,6 @@ const useStyles = createStyles(({ css, token }) => ({
     border: 1px solid ${token.colorBorder};
     background: inherit;
     color: ${token.colorText};
-    flex: 1;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
   `,
   flexbox: css`
@@ -83,7 +83,7 @@ const SessionListContent = memo(() => {
   }, [isInitialized, fetchSessions, initFromUrlParams]);
 
   const handleAddCustomer = () => {
-    router.push('/customer/form');
+    router.push("/customer/form");
   };
 
   const handleEmployeeSelect = async (userId: string) => {
@@ -106,26 +106,29 @@ const SessionListContent = memo(() => {
     <>
       <Flexbox
         horizontal
-        align='center'
-        justify='space-between'
+        align="center"
+        justify="space-between"
         className={styles.flexbox}
       >
         {isAdmin && (
-          <EmployeeSelector
-            value={selectedEmployeeId}
-            onChange={handleEmployeeSelect}
-            placeholder='全部员工'
-          />
+          <div style={{ flex: 1 }}>
+            <EmployeeSelector
+              value={selectedEmployeeId}
+              onChange={handleEmployeeSelect}
+              placeholder="全部员工"
+            />
+          </div>
         )}
-        <Button
-          type='default'
-          icon={<Plus size={16} />}
-          className={styles.button}
-          style={!isAdmin ? { flex: 1 } : {}}
-          onClick={handleAddCustomer}
-        >
-          创建客户
-        </Button>
+        <div style={{ flex: 1 }}>
+          <Button
+            type="default"
+            icon={<Plus size={16} />}
+            className={styles.button}
+            onClick={handleAddCustomer}
+          >
+            创建客户
+          </Button>
+        </div>
       </Flexbox>
       {sessions.length === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
       <ShowMode />
@@ -133,6 +136,6 @@ const SessionListContent = memo(() => {
   );
 });
 
-SessionListContent.displayName = 'SessionListContent';
+SessionListContent.displayName = "SessionListContent";
 
 export default SessionListContent;
