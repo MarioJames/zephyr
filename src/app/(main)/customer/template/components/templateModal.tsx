@@ -213,7 +213,11 @@ interface TemplateModalProps {
   modelOptions: {
     label: string;
     value: string;
-    options: { label: string; value: string }[];
+    options: { 
+      label: string; 
+      value: string;
+      key?: string; // 用于唯一标识
+    }[];
   }[];
   onUploadImage?: (file: File) => Promise<string>;
 }
@@ -269,6 +273,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     if (!values.provider || !values.model) {
       message.error("请选择模型后再进行保存");
       return;
+    }
+    if (!values.avatar) {
+      values.avatar = "";
     }
     onOk(values);
   };
@@ -420,7 +427,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
               <Button
                 type="primary"
                 onClick={handleOk}
-                loading={loading}
+                loading={loading || uploading}
                 className={styles.saveBtn}
               >
                 保存

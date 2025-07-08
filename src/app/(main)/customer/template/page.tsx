@@ -336,7 +336,13 @@ export default function CustomerTemplatePage() {
         onOk={handleModalOk}
         loading={submitting}
         initialValues={editing?.initial}
-        modelOptions={modelOptions}
+        modelOptions={modelOptions?.map((item) => ({
+          ...item,
+          options: item.options.map((option) => ({
+            ...option,
+            key: `${item.value}_${option.value}`,
+          })),
+        }))}
       />
       <DeleteModal
         open={deleteModalOpen}
