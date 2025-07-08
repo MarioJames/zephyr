@@ -18,6 +18,7 @@ export interface AgentCoreAction {
   // 状态管理
   setAgentsLoading: (loading: boolean) => void;
   setAgentsError: (error?: string) => void;
+  isDeleting: boolean;
 
   /**
    * 上传智能体头像（公共图片）
@@ -43,6 +44,7 @@ export const agentCoreSlice: StateCreator<
   [],
   AgentCoreAction
 > = (set, get) => ({
+  isDeleting: false,
   fetchAgents: async () => {
     set({ isLoading: true, error: undefined });
     try {
@@ -163,20 +165,33 @@ export const agentCoreSlice: StateCreator<
    */
   transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
     console.log('transferSessionsToAgent agent slice action');
-
-    // 1. 查找当前 agent 下所有 session
-    const res = await sessionsService.getSessionList({
-      agentId: fromAgentId,
-      page: 1,
-      pageSize: 100,
-    });
-    const sessionIds = res.sessions.map((s: any) => s.id);
-    if (!sessionIds.length) return;
-    // 2. 批量更新 session 的 agentId
-    const updateList = sessionIds.map((id: string) => ({
-      id,
-      agentId: toAgentId,
-    }));
-    await sessionsService.batchUpdateSessions(updateList);
+    set({ isDeleting: true });
+    
+    try {
+      // 1. 查找当前 agent 下所有 session
+      const res = await sessionsService.getSessionList({
+        agentId: fromAgentId,
+        page: 1,
+        pageSize: 100,
+      });
+      const sessionIds = res.sessions.map((s: any) => s.id);
+      if (!sessionIds.length) {
+        await get().deleteAgent(fromAgentId);
+        set({ isDeleting: false });
+        return;
+      }
+      // 2. 批量更新 session 的 agentId
+      const updateList = sessionIds.map((id: string) => ({
+        id,
+        agentId: toAgentId,
+      }));
+      await sessionsService.batchUpdateSessions(updateList);
+      await get().deleteAgent(fromAgentId);
+    } catch (error) {
+      console.error('Failed to transfer sessions:', error);
+      throw error;
+    } finally {
+      set({ isDeleting: false });
+    }
   },
 });

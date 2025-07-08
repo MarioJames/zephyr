@@ -173,6 +173,7 @@ export default function CustomerTemplatePage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
+
   // 拉取 agent 列表
   useEffect(() => {
     fetchAgents();
@@ -201,7 +202,6 @@ export default function CustomerTemplatePage() {
   ) => {
     try {
       await transferSessionsToAgent(deleteId, transferToId);
-      await deleteAgent(deleteId);
       setDeleteModalOpen(false);
       setDeleteTargetId(null);
       message.success("转移并删除成功");

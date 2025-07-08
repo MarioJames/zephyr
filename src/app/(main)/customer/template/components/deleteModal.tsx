@@ -3,6 +3,7 @@ import { List, Avatar } from "antd";
 import { Button, Modal } from "@lobehub/ui";
 import { CircleCheck } from "lucide-react";
 import { createStyles } from "antd-style";
+import { useAgentStore } from "@/store/agent";
 
 interface AgentItem {
   id: string;
@@ -103,6 +104,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   // 过滤掉当前要删除的 agent
   const filteredAgents = agents.filter((a) => a.id !== currentId);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const loading = useAgentStore(state => state.isDeleting);
 
   return (
     <Modal
@@ -154,6 +156,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
             type="primary"
             disabled={!selectedId}
             onClick={() => selectedId && onOk(selectedId, currentId)}
+            loading={loading}
           >
             转移并删除
           </Button>
