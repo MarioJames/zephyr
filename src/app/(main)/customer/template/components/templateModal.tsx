@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
-import { Upload, message, SelectProps, Form } from 'antd';
-import { Button, TextArea, Input, Select, Modal } from '@lobehub/ui';
-import { UploadOutlined } from '@ant-design/icons';
-import { SliderWithInput } from '@lobehub/ui';
-import Image from 'next/image';
-import { createStyles } from 'antd-style';
-import { useAgentStore } from '@/store/agent';
-import { AGAENT_DEFAULT_CONFIG } from '@/const/agent';
-import { isValidImageUrl } from '@/utils/avatar';
+import React, { useEffect } from "react";
+import { Upload, message, Form } from "antd";
+import { Button, TextArea, Input, Select, Modal } from "@lobehub/ui";
+import { UploadOutlined } from "@ant-design/icons";
+import { SliderWithInput } from "@lobehub/ui";
+import Image from "next/image";
+import { createStyles } from "antd-style";
+import { useAgentStore } from "@/store/agent";
+import { AGAENT_DEFAULT_CONFIG } from "@/const/agent";
+import { isValidImageUrl } from "@/utils/avatar";
+import isEmpty from "lodash-es/isEmpty";
 
 const useStyles = createStyles(({ css, token }) => ({
   layout: css`
@@ -236,6 +237,11 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
         ...(initialValues || {}),
+        provider: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
+        model:
+          !isEmpty(modelOptions) && modelOptions[0]?.options?.length > 0
+            ? modelOptions[0]?.options[0]?.value
+            : undefined,
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
           ...(initialValues?.params || {}),
@@ -249,10 +255,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     try {
       const url = await uploadAvatar(file);
 
-      form.setFieldValue('avatar', url);
-      message.success('上传成功');
+      form.setFieldValue("avatar", url);
+      message.success("上传成功");
     } catch {
-      message.error('上传失败');
+      message.error("上传失败");
     } finally {
       setUploading(false);
     }
@@ -260,13 +266,16 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
   const handleOk = () => {
     const values = form.getFieldsValue();
-
+    if (!values.provider || !values.model) {
+      message.error("请选择模型后再进行保存");
+      return;
+    }
     onOk(values);
   };
 
   return (
     <Modal
-      title='客户类型'
+      title="客户类型"
       open={open}
       onCancel={onCancel}
       footer={null}
@@ -274,22 +283,22 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       styles={{
         body: {
           height: 600,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         },
         header: {
-          justifyContent: 'flex-start',
+          justifyContent: "flex-start",
         },
       }}
       centered
     >
-      <Form layout='vertical' form={form}>
+      <Form layout="vertical" form={form}>
         <div className={styles.layout}>
           {/* 左侧大文本编辑区 */}
           <div className={styles.left}>
-            <Form.Item name='prompt'>
+            <Form.Item name="systemRole">
               <TextArea
-                placeholder='请输入系统提示词'
+                placeholder="请输入系统提示词"
                 className={styles.textarea}
               />
             </Form.Item>
@@ -297,18 +306,18 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           {/* 右侧表单区 */}
           <div className={styles.right}>
             <div className={styles.contentArea}>
-              <Form.Item label='命名' name='title'>
-                <Input placeholder='请输入名称' className={styles.input} />
+              <Form.Item label="命名" name="title" required>
+                <Input placeholder="请输入名称" className={styles.input} />
               </Form.Item>
-              <Form.Item label='简介' name='description'>
-                <Input placeholder='请输入简介' className={styles.input} />
+              <Form.Item label="简介" name="description">
+                <Input placeholder="请输入简介" className={styles.input} />
               </Form.Item>
-              <Form.Item label='模型提供商' name='provider' hidden>
+              <Form.Item label="模型提供商" name="provider" hidden>
                 <Input />
               </Form.Item>
-              <Form.Item label='模型' name='model'>
+              <Form.Item label="模型" name="model" required>
                 <Select
-                  placeholder='请选择模型'
+                  placeholder="请选择模型"
                   options={modelOptions}
                   className={styles.select}
                   onChange={(value) => {
@@ -316,51 +325,51 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       p.options?.some((m) => m.value === value)
                     );
 
-                    form.setFieldValue('provider', provider?.value);
+                    form.setFieldValue("provider", provider?.value);
                   }}
                 />
               </Form.Item>
               <Form.Item
-                label='温度'
-                name={['params', 'temperature']}
-                tooltip='温度越高，模型越随机，温度越低，模型越确定'
+                label="温度"
+                name={["params", "temperature"]}
+                tooltip="温度越高，模型越随机，温度越低，模型越确定"
               >
                 <SliderWithInput min={0} max={2} step={0.1} />
               </Form.Item>
               <Form.Item
-                label='最大令牌数'
-                name={['params', 'maxTokens']}
-                tooltip='最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短'
+                label="最大令牌数"
+                name={["params", "maxTokens"]}
+                tooltip="最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短"
               >
                 <SliderWithInput min={256} max={4096} step={1} />
               </Form.Item>
               <Form.Item
-                label='思维开放度'
-                name={['params', 'topP']}
-                tooltip='思维开放度越高，模型越随机，思维开放度越低，模型越确定'
+                label="思维开放度"
+                name={["params", "topP"]}
+                tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"
               >
                 <SliderWithInput min={0} max={1} step={0.1} />
               </Form.Item>
               <Form.Item
-                label='表达发散度'
-                name={['params', 'presencePenalty']}
-                tooltip='表达发散度越高，模型越随机，表达发散度越低，模型越确定'
+                label="表达发散度"
+                name={["params", "presencePenalty"]}
+                tooltip="表达发散度越高，模型越随机，表达发散度越低，模型越确定"
               >
                 <SliderWithInput min={-2} max={2} step={0.1} />
               </Form.Item>
               <Form.Item
-                label='词汇丰富度'
-                name={['params', 'frequencyPenalty']}
-                tooltip='词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定'
+                label="词汇丰富度"
+                name={["params", "frequencyPenalty"]}
+                tooltip="词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定"
               >
                 <SliderWithInput min={-2} max={2} step={0.1} />
               </Form.Item>
-              <Form.Item name='avatar' hidden>
+              <Form.Item name="avatar" hidden>
                 <Input />
               </Form.Item>
-              <Form.Item label='示例图' shouldUpdate>
+              <Form.Item label="示例图" shouldUpdate>
                 {({ getFieldValue }) => {
-                  const avatar = getFieldValue('avatar');
+                  const avatar = getFieldValue("avatar");
 
                   if (!avatar || !isValidImageUrl(avatar)) {
                     return (
@@ -369,11 +378,11 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                           width: 112,
                           height: 62,
                           background: theme.colorFillTertiary,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '28px',
-                          borderRadius: '8px',
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "28px",
+                          borderRadius: "8px",
                         }}
                       >
                         {avatar}
@@ -382,7 +391,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   }
 
                   return (
-                    <Image src={avatar} alt='示例图' width={112} height={62} />
+                    <Image src={avatar} alt="示例图" width={112} height={62} />
                   );
                 }}
               </Form.Item>
@@ -390,11 +399,11 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 <Upload
                   customRequest={handleUpload}
                   showUploadList={false}
-                  accept='image/*'
+                  accept="image/*"
                   disabled={uploading}
                 >
                   <Button
-                    type='link'
+                    type="link"
                     icon={<UploadOutlined />}
                     className={styles.uploadBtn}
                     loading={uploading}
@@ -409,7 +418,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 取消
               </Button>
               <Button
-                type='primary'
+                type="primary"
                 onClick={handleOk}
                 loading={loading}
                 className={styles.saveBtn}

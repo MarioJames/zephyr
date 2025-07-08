@@ -5,7 +5,7 @@
 export const AGAENT_DEFAULT_CONFIG = {
   title: '',
   description: '',
-  model: 'claude-3.5-sonnet',
+  model: '',
   params: {
     temperature: 1.0,
     maxTokens: 2048,
