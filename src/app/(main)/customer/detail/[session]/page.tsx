@@ -145,9 +145,6 @@ export default function CustomerDetail({
         {/* 地址信息 */}
         <CustomerAddressInfo
           addressInfo={{
-            province: extend?.province,
-            city: extend?.city,
-            district: extend?.district,
             address: extend?.address,
           }}
         />

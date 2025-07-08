@@ -32,9 +32,6 @@ export interface CreateCustomerSessionParams {
   industry?: string;
   scale?: string;
   // 地址信息
-  province?: string;
-  city?: string;
-  district?: string;
   address?: string;
   // 聊天配置
   chatConfig?: AgentChatConfig;

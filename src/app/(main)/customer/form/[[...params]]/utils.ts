@@ -12,9 +12,6 @@ export function customerItemToFormData(
 
   // 构建地区数组
   const region: string[] = [];
-  if (extend?.province) region.push(extend.province);
-  if (extend?.city) region.push(extend.city);
-  if (extend?.district) region.push(extend.district);
 
   return {
     ...session,
@@ -45,9 +42,6 @@ export function formDataToCreateRequest(
     company,
     industry,
     scale,
-    province,
-    city,
-    district,
     address,
     ...session
   } = formData;
@@ -63,9 +57,6 @@ export function formDataToCreateRequest(
       company,
       industry,
       scale,
-      province,
-      city,
-      district,
       address,
     },
     session,

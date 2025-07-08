@@ -34,9 +34,6 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export interface CustomerAddressInfoProps {
   addressInfo: {
-    province?: string | null;
-    city?: string | null;
-    district?: string | null;
     address?: string | null;
   };
 }

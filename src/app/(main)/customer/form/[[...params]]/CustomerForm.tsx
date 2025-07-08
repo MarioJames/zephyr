@@ -55,9 +55,6 @@ export default function CustomerForm({
       // 构建提交数据
       const submitData = {
         ...values,
-        province: values.region ? values.region[0] : '',
-        city: values.region ? values.region[1] : '',
-        district: values.region ? values.region[2] : '',
       };
 
       await onSubmit(submitData);
