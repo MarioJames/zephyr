@@ -16,6 +16,7 @@ import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import NoAuthority from '@/components/NoAuthority';
+import isEmpty from 'lodash-es/isEmpty';
 
 const { Title } = Typography;
 
@@ -121,16 +122,16 @@ const transformCustomerToDisplayItem = (
   const { user, agentsToSessions } = session || {};
 
   return {
-    key: session.id,
-    sessionId: session.id,
-    name: session.title || '',
+    key: session?.id,
+    sessionId: session?.id,
+    name: session?.title || '',
     company: extend?.company || '',
     type: agentsToSessions[0]?.agent?.title || '未分类',
     phone: extend?.phone || '',
-    createTime: dayjs(session.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    createTime: dayjs(session?.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
-      dayjs(session.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
-    conversations: session.messageCount || 0,
+      dayjs(session?.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
+    conversations: session?.messageCount || 0,
     assignee: user?.fullName || user?.username || '',
     assigneeId: user?.id,
     session: session, // 保存完整的session对象
@@ -195,6 +196,7 @@ export default function Customer() {
 
   // 计算显示用的客户数据
   const displayCustomers = useMemo(() => {
+    if (isEmpty(customers)) return [];
     return customers.map(transformCustomerToDisplayItem);
   }, [customers]);
 

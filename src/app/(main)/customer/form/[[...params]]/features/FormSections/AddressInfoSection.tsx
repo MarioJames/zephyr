@@ -8,7 +8,7 @@ export default function AddressInfoSection() {
   return (
     <>
       <div className={styles.sectionTitle}>地址信息</div>
-      <Row gutter={24} style={{ padding: '0 12px' }}>
+      <Row gutter={24} style={{ padding: '0 8px 0 0' }}>
         <Col span={16}>
           <Form.Item name='address' style={{ width: '100%' }}>
             <Input placeholder='请输入地址' className={styles.inputBg} style={{ width: '100%' }} />

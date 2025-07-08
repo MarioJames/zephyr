@@ -16,7 +16,7 @@ export function customerItemToFormData(
   return {
     ...session,
     ...extend,
-    agentId: session.agent.id,
+    agentId: session.agentsToSessions[0]?.agent?.id,
     description: session.description || '',
     sessionId: session.id,
     extendId: extend?.id,
