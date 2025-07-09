@@ -6,10 +6,21 @@ export const useCustomerTypeSelectorStyles = createStyles(({ css, token, isDarkM
     height: 85px;
     display: flex;
     gap: 20px;
-    margin-bottom: 24px;
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: ${token.colorTextQuaternary};
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: ${token.colorFillQuaternary};
+    }
   `,
   typeBox: css`
     flex: 1;
+    min-width: 240px;
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -38,6 +49,9 @@ export const useCustomerTypeSelectorStyles = createStyles(({ css, token, isDarkM
   typeDesc: css`
     font-size: 12px;
     color: ${token.colorTextQuaternary};
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   `,
   checkIcon: css`
     position: absolute;
