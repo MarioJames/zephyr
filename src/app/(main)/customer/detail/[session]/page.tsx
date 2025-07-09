@@ -20,7 +20,7 @@ import NoAuthority from '@/components/NoAuthority';
 // 创建样式
 const useStyles = createStyles(({ css, token }) => ({
   pageContainer: css`
-    padding: 24px;
+    padding: 16px;
     background-color: ${token.colorBgContainer};
     min-height: 100vh;
     width: 100%;
@@ -106,7 +106,6 @@ export default function CustomerDetail({
     <div className={styles.pageContainer}>
       {/* 顶部导航 */}
       <CustomerDetailHeader
-        customerName={session.title || '未命名客户'}
         onBack={handleBack}
         onEdit={handleEdit}
         onDelete={handleDelete}

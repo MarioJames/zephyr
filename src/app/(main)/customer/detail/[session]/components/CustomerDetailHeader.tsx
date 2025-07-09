@@ -11,7 +11,7 @@ const useStyles = createStyles(({ css }) => ({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   `,
   backButton: css`
     display: flex;
@@ -25,7 +25,6 @@ const useStyles = createStyles(({ css }) => ({
 }));
 
 export interface CustomerDetailHeaderProps {
-  customerName: string;
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -33,7 +32,6 @@ export interface CustomerDetailHeaderProps {
 }
 
 export const CustomerDetailHeader: React.FC<CustomerDetailHeaderProps> = ({
-  customerName,
   onBack,
   onEdit,
   onDelete,
@@ -47,7 +45,7 @@ export const CustomerDetailHeader: React.FC<CustomerDetailHeaderProps> = ({
         <ArrowLeftOutlined style={{ marginRight: 8 }} />
         <span>返回客户管理</span>
       </div>
-      <Space>
+      <Space size={10}>
         <Popconfirm
           title='确定删除该客户吗？'
           onConfirm={onDelete}
@@ -55,8 +53,6 @@ export const CustomerDetailHeader: React.FC<CustomerDetailHeaderProps> = ({
           cancelText='取消'
         >
           <Button
-            danger
-            type='primary'
             loading={deleting}
             className={styles.actionButton}
           >
