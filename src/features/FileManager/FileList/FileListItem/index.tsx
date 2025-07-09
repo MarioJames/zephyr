@@ -65,14 +65,13 @@ interface FileRenderItemProps extends FileItem {
 }
 
 const FileRenderItem = memo<FileRenderItemProps>(
-  ({ size, url, filename, fileType, id, createdAt }) => {
-    const { styles, cx } = useStyles();
+  ({ size, url, filename, fileType, id, uploadedAt }) => {
+    const { styles } = useStyles();
     const router = useRouter();
-
     const displayTime =
-      dayjs().diff(dayjs(createdAt), "d") < 7
-        ? dayjs(createdAt).fromNow()
-        : dayjs(createdAt).format("YYYY-MM-DD");
+      dayjs().diff(dayjs(uploadedAt), "d") < 7
+        ? dayjs(uploadedAt).fromNow()
+        : dayjs(uploadedAt).format("YYYY-MM-DD");
 
     return (
       <Flexbox
