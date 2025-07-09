@@ -24,6 +24,7 @@ export interface SessionItem {
     sessionId: string;
     userId: string;
   }[];
+  agent?: AgentItem;
   messageCount?: number;
   createdAt?: string;
   updatedAt?: string;

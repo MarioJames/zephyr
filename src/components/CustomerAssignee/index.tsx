@@ -197,7 +197,9 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
             </>
           ) : (
             <>
-              {displayText}
+              <div className={styles.assigneeValueText}>
+                {displayText}
+              </div>
               {!disabled && <DownOutlined className={styles.dropdownIcon} />}
             </>
           )}

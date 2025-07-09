@@ -13,7 +13,11 @@ export const useCustomerAssigneeStyles = createStyles(({ css, token }) => ({
     margin-bottom: 8px;
     font-weight: 500;
   `,
-
+  assigneeValueText: css`
+    font-size: 16px;
+    color: ${token.colorText};
+    font-weight: 600;
+  `,
   assigneeValue: css`
     font-size: 16px;
     display: flex;
