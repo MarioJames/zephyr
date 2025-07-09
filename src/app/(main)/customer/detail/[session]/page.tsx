@@ -95,9 +95,7 @@ export default function CustomerDetail({
             justifyContent: 'center',
             marginTop: '20%',
           }}
-        >
-          <div style={{ marginTop: 8 }}>加载中...</div>
-        </Spin>
+        />
       </div>
     );
   }
