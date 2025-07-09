@@ -6,6 +6,10 @@ export const formatSize = (
 ): string => {
   if (!bytes && bytes !== 0) return '--';
 
+  if (bytes < 1024) {
+    return `${bytes.toFixed(fractionDigits)} B`;
+  }
+
   const kbSize = bytes / 1024;
   if (kbSize < 1024) {
     return `${kbSize.toFixed(fractionDigits)} KB`;
