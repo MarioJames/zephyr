@@ -120,13 +120,12 @@ const transformCustomerToDisplayItem = (
   const { session, extend } = customer || {};
 
   const { user, agentsToSessions } = session || {};
-
   return {
     key: session?.id,
     sessionId: session?.id,
     name: session?.title || '',
     company: extend?.company || '',
-    type: agentsToSessions[0]?.agent?.title || '未分类',
+    type: agentsToSessions?.[0]?.agent?.title || '未分类',
     phone: extend?.phone || '',
     createTime: dayjs(session?.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
@@ -169,7 +168,6 @@ export default function Customer() {
     pageSize,
     setPagination,
   } = useCustomerStore();
-
 
   // 本地状态（只保留必要的UI状态）
   const [currentRecord, setCurrentRecord] =

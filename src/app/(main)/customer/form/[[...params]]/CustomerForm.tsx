@@ -26,7 +26,6 @@ export type CustomerFormData = OmitTimestamps<
 > & {
   region?: string[];
   sessionId?: string;
-  extendId?: string;
   agentId?: string;
 };
 

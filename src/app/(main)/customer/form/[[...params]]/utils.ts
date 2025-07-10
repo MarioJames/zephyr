@@ -12,14 +12,13 @@ export function customerItemToFormData(
 
   // 构建地区数组
   const region: string[] = [];
-
+  
   return {
     ...session,
     ...extend,
-    agentId: session.agentsToSessions[0]?.agent?.id,
+    agentId: session?.agent?.id,
     description: session.description || '',
     sessionId: session.id,
-    extendId: extend?.id,
     region: region.length > 0 ? region : undefined,
   };
 }

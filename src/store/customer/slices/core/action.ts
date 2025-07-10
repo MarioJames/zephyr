@@ -96,10 +96,11 @@ export const coreSlice: StateCreator<
 
       // 更新本地状态
       set((state) => ({
-        customers: state.customers.map((customer) =>
-          customer.session.id === sessionId
-            ? { ...customer, ...updatedCustomer }
-            : customer
+        customers: state?.customers?.map((customer) =>{
+          return customer?.session?.id === sessionId
+          ? { ...customer, ...updatedCustomer }
+          : customer
+        }
         ),
         loading: false,
       }));
