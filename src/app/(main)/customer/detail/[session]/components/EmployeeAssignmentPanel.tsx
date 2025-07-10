@@ -20,6 +20,7 @@ export const EmployeeAssignmentPanel: React.FC<
       popoverPlacement="bottom"
       onAssignSuccess={onAssignSuccess}
       onAssignError={onAssignError}
+      isTitle={true}
     />
   );
 };

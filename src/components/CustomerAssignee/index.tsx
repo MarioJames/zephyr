@@ -5,12 +5,11 @@ import { Popover, List, Spin, App } from "antd";
 import { Input } from "@lobehub/ui";
 import { SearchOutlined, DownOutlined } from "@ant-design/icons";
 import { useEmployeeStore } from "@/store/employee";
-import { employeeSelectors } from "@/store/employee/selectors";
-import { sessionsAPI, userAPI } from "@/services";
+import { sessionsAPI } from "@/services";
 import { UserItem } from "@/services/user";
 import { useCustomerAssigneeStyles } from "./styles";
 import { CustomerAssigneeProps, EmployeeListItemProps } from "./types";
-import { useDebounceFn, useRequest } from "ahooks";
+import { useDebounceFn } from "ahooks";
 
 // 员工列表项组件
 const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
@@ -43,6 +42,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   onAssignError,
   className,
   style,
+  isTitle = false,
 }) => {
   const { styles } = useCustomerAssigneeStyles();
   const { message } = App.useApp();
@@ -197,7 +197,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
             </>
           ) : (
             <>
-              <div className={styles.assigneeValueText}>
+              <div className={isTitle ? styles.assigneeValueText : ''}>
                 {displayText}
               </div>
               {!disabled && <DownOutlined className={styles.dropdownIcon} />}

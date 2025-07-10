@@ -54,6 +54,12 @@ export interface CustomerAssigneeProps {
    * 自定义样式
    */
   style?: React.CSSProperties;
+
+  /**
+   * 是否是标题
+   * @default false
+   */
+  isTitle?: boolean;
 }
 
 export interface EmployeeListItemProps {
