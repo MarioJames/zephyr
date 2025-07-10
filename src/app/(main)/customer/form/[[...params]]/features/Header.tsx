@@ -9,7 +9,7 @@ const useStyles = createStyles(({ css }) => ({
     width: 100%;
     display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    padding: 0 16px;
   `,
   backButton: css`
     display: flex;

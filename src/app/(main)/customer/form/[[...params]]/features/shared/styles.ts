@@ -2,7 +2,6 @@ import { createStyles } from 'antd-style';
 
 export const useSharedStyles = createStyles(({ css, token }) => ({
   pageContainer: css`
-    padding: 24px;
     background-color: ${token.colorBgContainer};
     min-height: 100vh;
     width: 100%;
