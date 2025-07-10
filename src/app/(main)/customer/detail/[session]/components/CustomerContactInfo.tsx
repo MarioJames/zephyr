@@ -3,9 +3,10 @@ import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ css, token }) => ({
   infoBox: css`
+    height: 148px;
     flex: 1;
     padding: 16px;
-    background-color: ${token.colorBgBase};
+    background-color: ${token.colorFillAlter};
     border: 1px solid ${token.colorBorder};
     border-radius: 4px;
     margin-right: 16px;
@@ -15,17 +16,18 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   infoTitle: css`
     font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
   `,
   infoItem: css`
     margin-bottom: 8px;
     display: flex;
+    font-size: 14px;
+    font-weight: 400;
   `,
   infoLabel: css`
     color: ${token.colorText};
     margin-right: 8px;
-    min-width: 70px;
   `,
   infoValue: css`
     color: ${token.colorText};
