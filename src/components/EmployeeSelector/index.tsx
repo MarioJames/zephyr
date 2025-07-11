@@ -242,7 +242,14 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       suffixIcon={<ChevronDown size={16} />}
       showSearch={false}
       filterOption={false}
-      dropdownStyle={{ minWidth: 280, padding: 12 }}
+      styles={{
+        popup: {
+          root: {
+            minWidth: 280,
+            padding: 12,
+          },
+        },
+      }}
       labelInValue={false}
       optionLabelProp="label"
       popupRender={(menu) => (
