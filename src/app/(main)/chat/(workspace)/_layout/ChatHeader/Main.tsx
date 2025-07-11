@@ -1,7 +1,6 @@
 "use client";
 
-// import { Avatar } from '@lobehub/ui';
-import { Skeleton, Popover } from "antd";
+import { Skeleton, Popover, Tag } from "antd";
 import { createStyles } from "antd-style";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { Suspense, memo } from "react";
@@ -75,6 +74,10 @@ const useStyles = createStyles(({ css, token }) => ({
       background-color: ${token.colorFillSecondary};
     }
   `,
+  tags: css`
+    color: ${token.colorPrimary};
+    background-color: ${token.colorSplit};
+  `,
 }));
 
 const Main = memo<{ className?: string }>(({ className }) => {
@@ -102,13 +105,6 @@ const Main = memo<{ className?: string }>(({ className }) => {
   return (
     <Flexbox align={"center"} className={className} gap={12} horizontal>
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
-      {/* <Avatar
-        avatar={avatar}
-        background={backgroundColor}
-        onClick={() => openChatSettings()}
-        size={32}
-        title={title}
-      /> */}
       <div className={styles.avatar}>
         {activeSession?.avatar ? (
           <img src={activeSession?.avatar} alt="头像" />
@@ -139,6 +135,11 @@ const Main = memo<{ className?: string }>(({ className }) => {
             <ChevronDown size={14} />
           </div>
         </Popover>
+        {activeSession?.agentsToSessions[0]?.agent?.title && (
+          <Tag className={styles.tags}>
+            {activeSession?.agentsToSessions[0]?.agent?.title}
+          </Tag>
+        )}
       </Flexbox>
     </Flexbox>
   );
