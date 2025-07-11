@@ -39,6 +39,10 @@ const useStyles = createStyles(({ css, token }) => ({
   customerMetaSeparator: css`
     margin: 0 4px;
   `,
+  tags: css`
+    color: ${token.colorPrimary};
+    background-color: ${token.colorSplit};
+  `,
 }));
 
 export interface CustomerInfoCardProps {
@@ -80,12 +84,20 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
                   {session.title || "未命名客户"}
                 </div>
                 {session?.agent?.title && (
-                  <Tag >{session?.agent?.title}</Tag>
+                  <Tag className={styles.tags}>{session?.agent?.title}</Tag>
                 )}
-                {extend?.gender && <Tag >{extend.gender}</Tag>}
-                {extend?.age && <Tag >{extend.age + "岁"}</Tag>}
-                {extend?.industry && <Tag >{extend.industry}</Tag>}
-                {extend?.position && <Tag >{extend.position}</Tag>}
+                {extend?.gender && (
+                  <Tag className={styles.tags}>{extend.gender}</Tag>
+                )}
+                {extend?.age && (
+                  <Tag className={styles.tags}>{extend.age + "岁"}</Tag>
+                )}
+                {extend?.industry && (
+                  <Tag className={styles.tags}>{extend.industry}</Tag>
+                )}
+                {extend?.position && (
+                  <Tag className={styles.tags}>{extend.position}</Tag>
+                )}
               </div>
               <div className={styles.customerMetaContainer}>
                 <div>
