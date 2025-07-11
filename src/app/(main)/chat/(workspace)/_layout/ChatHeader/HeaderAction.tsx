@@ -9,7 +9,7 @@ import { FileClock, Search } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
-import { createStyles } from 'antd-style';
+import { createStyles,useTheme } from 'antd-style';
 import dayjs from 'dayjs';
 import messageService, { MessageItem } from '@/services/messages';
 import { useSessionStore } from '@/store/session';
@@ -25,8 +25,8 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     gap: 8px;
     border-radius: 6px;
-    background: ${token.colorBgContainer};
-    border: none;
+    background: ${token.colorBgTextHover};
+    border: ${token.colorSplit};
     position: relative;
   `,
   searchInput: css`
@@ -38,7 +38,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   historyButton: css`
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 7px 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -113,6 +113,11 @@ const useStyles = createStyles(({ css, token }) => ({
     align-items: center;
     padding: 24px 0;
   `,
+  toggleSlotPanel: css`
+    &:hover {
+      background-color: ${token.colorSplit} !important;
+    }
+  `,
 }));
 
 // 处理文本截取和高亮
@@ -174,6 +179,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
 
   const { switchTopic } = useChatStore();
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
+  const theme = useTheme();
 
   const handleSearch = async () => {
     if (searchValue.trim() && activeSessionId) {
@@ -266,7 +272,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   return (
     <Flexbox className={className} gap={4} horizontal align='center'>
       <div className={styles.search}>
-        <Search size={16} color='#666' />
+        <Search size={16} color={theme.colorText} />
         <Popover
           open={showResults}
           content={searchContent}
@@ -313,7 +319,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
           icon={showSlotPanel ? PanelRightClose : PanelRightOpen}
           onClick={() => toggleSlotPanel()}
           size={20}
-          color='#000'
+          className={styles.toggleSlotPanel}
         />
       </Tooltip>
     </Flexbox>

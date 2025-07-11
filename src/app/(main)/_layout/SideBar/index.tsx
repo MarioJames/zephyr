@@ -5,13 +5,24 @@ import { Suspense, memo } from "react";
 import Avatar from "./Avatar";
 import TopActions from "./TopActions";
 import { SidebarTabKey } from "@/store/global/initialState";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
+import { createStyles } from "antd-style";
+
+const useStyles = createStyles(({ css, token }) => ({
+  sideNav: css`
+    height: 100%;
+    z-index: 100;
+    background: ${token.colorSplit};
+    border-inline-end: 0;
+    padding-block-start: 8px;
+  `,
+}));
 
 const pathToTab = (pathname: string) => {
-  if (pathname.startsWith('/customer')) return SidebarTabKey.CustomerManagement;
-  if (pathname.startsWith('/employee')) return SidebarTabKey.EmployeeManagement;
-  if (pathname.startsWith('/file')) return SidebarTabKey.File;
-  if (pathname.startsWith('/chat')) return SidebarTabKey.Chat;
+  if (pathname.startsWith("/customer")) return SidebarTabKey.CustomerManagement;
+  if (pathname.startsWith("/employee")) return SidebarTabKey.EmployeeManagement;
+  if (pathname.startsWith("/file")) return SidebarTabKey.File;
+  if (pathname.startsWith("/chat")) return SidebarTabKey.Chat;
   return SidebarTabKey.Chat;
 };
 
@@ -21,21 +32,15 @@ const Top = () => {
 };
 
 const Nav = memo(() => {
+  const { styles } = useStyles();
+
   return (
     <SideNav
-      avatar={
-          <Avatar />
-      }
-      style={{
-        height: "100%",
-        zIndex: 100,
-        background: "#0000000F",
-        borderInlineEnd: 0,
-        paddingBlockStart: 8,
-      }}
+      avatar={<Avatar />}
+      className={styles.sideNav}
       topActions={
         <Suspense>
-            <Top />
+          <Top />
         </Suspense>
       }
       bottomActions={<></>}

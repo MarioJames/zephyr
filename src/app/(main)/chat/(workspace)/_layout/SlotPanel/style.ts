@@ -84,7 +84,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     font-weight: 400;
     font-size: 14px;
     margin: 0px 8px 12px 8px;
-    color: ${token.colorTextQuaternary};
+    color: ${token.colorTextSecondary};
     line-height: 22px;
   `,
   cardGrid: css`
@@ -114,7 +114,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     margin-bottom: 4px;
   `,
   cardDesc: css`
-    color: ${token.colorTextQuaternary};
+    color: ${token.colorTextSecondary};
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;

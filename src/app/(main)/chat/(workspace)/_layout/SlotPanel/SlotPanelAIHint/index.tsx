@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Row, Col, Modal, Typography } from 'antd';
-import { Button } from '@lobehub/ui';
-import { Flexbox } from 'react-layout-kit';
-import { Bot } from 'lucide-react';
-import { chatSelectors, useChatStore } from '@/store/chat';
-import { AgentSuggestionItem } from '@/services/agent_suggestions';
-import { useAIHintStyles } from '../style';
-import BubblesLoading from '@/components/Loading/BubblesLoading';
-import SkeletonList from './SkeletonList';
+import React, { useState } from "react";
+import { Row, Col, Modal, Typography } from "antd";
+import { Button } from "@lobehub/ui";
+import { Flexbox } from "react-layout-kit";
+import { Bot } from "lucide-react";
+import { chatSelectors, useChatStore } from "@/store/chat";
+import { AgentSuggestionItem } from "@/services/agent_suggestions";
+import { useAIHintStyles } from "../style";
+import BubblesLoading from "@/components/Loading/BubblesLoading";
+import SkeletonList from "./SkeletonList";
+
+const unit = ["。", "，", "！", "？", "：", "；"];
 
 const { Paragraph } = Typography;
 
@@ -29,12 +31,12 @@ function AIHintItem({
   // 格式化日期
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleString("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -44,17 +46,17 @@ function AIHintItem({
     const cards = [];
 
     if (knowledges.finance)
-      cards.push({ title: '金融知识', desc: knowledges.finance });
+      cards.push({ title: "金融知识", desc: knowledges.finance });
     if (knowledges.psychology)
-      cards.push({ title: '心理知识', desc: knowledges.psychology });
+      cards.push({ title: "心理知识", desc: knowledges.psychology });
     if (knowledges.korea)
-      cards.push({ title: '韩国知识', desc: knowledges.korea });
+      cards.push({ title: "韩国知识", desc: knowledges.korea });
     if (knowledges.role)
-      cards.push({ title: '角色背景', desc: knowledges.role });
+      cards.push({ title: "角色背景", desc: knowledges.role });
 
     // 补充其他知识类型
     Object.entries(knowledges).forEach(([key, value]) => {
-      if (!['finance', 'psychology', 'korea', 'role'].includes(key) && value) {
+      if (!["finance", "psychology", "korea", "role"].includes(key) && value) {
         cards.push({ title: key, desc: value });
       }
     });
@@ -69,9 +71,23 @@ function AIHintItem({
     try {
       await acceptSuggestion(content);
     } catch (error) {
-      console.error('采用建议失败:', error);
+      console.error("采用建议失败:", error);
     }
   };
+
+  /**
+   * 检查字符串是否以指定标点符号结尾
+   * @param {string} str - 要检查的字符串
+   * @returns {boolean} - 如果最后一个字符是unit中的符号则返回true，否则返回false
+   */
+  function endsWithUnitSymbol(str: string) {
+    if (typeof str !== "string" || str.length === 0) {
+      return false;
+    }
+
+    const lastChar = str.slice(-1);
+    return unit.includes(lastChar);
+  }
 
   return (
     <Flexbox>
@@ -79,15 +95,15 @@ function AIHintItem({
       <div className={styles.dividerDate}>
         <div className={styles.dividerLine} />
         <span className={styles.dividerText}>
-          {item.placeholder ? 'AI生成中...' : formatDate(item.createdAt || '')}
+          {item.placeholder ? "AI生成中..." : formatDate(item.createdAt || "")}
         </span>
         <div className={styles.dividerLine} />
       </div>
       {item.placeholder ? (
         <Flexbox
           horizontal
-          align='center'
-          justify='center'
+          align="center"
+          justify="center"
           style={{ marginTop: 10, marginBottom: 16 }}
         >
           <BubblesLoading />
@@ -97,7 +113,7 @@ function AIHintItem({
           {/* 上方提示语 */}
           <div className={styles.hint}>
             {item.suggestion?.summary}
-            {/。，！？：；$/.test(item.suggestion?.summary || '') ? (
+            {endsWithUnitSymbol(item.suggestion?.summary || "") ? (
               <span>建议这样回复：</span>
             ) : (
               <span>，建议这样回复：</span>
@@ -111,7 +127,7 @@ function AIHintItem({
                 <Col span={12} key={idx}>
                   <div
                     className={styles.cardItem}
-                    style={{ height: '100%', width: '100%', cursor: 'pointer' }}
+                    style={{ height: "100%", width: "100%", cursor: "pointer" }}
                     onClick={() => {
                       setSelectedCard(card);
                       setModalVisible(true);
@@ -141,7 +157,7 @@ function AIHintItem({
                   ellipsis={{
                     rows: 3,
                     expandable: true,
-                    symbol: '展开',
+                    symbol: "展开",
                     onExpand: () => {},
                   }}
                 >
@@ -150,7 +166,7 @@ function AIHintItem({
                 {isLatest && (
                   <div className={styles.sectionFooter}>
                     <Button
-                      type='primary'
+                      type="primary"
                       className={styles.adoptBtn}
                       onClick={() => handleAcceptSuggestion(response.content)}
                     >
@@ -175,7 +191,7 @@ function AIHintItem({
         onCancel={() => setModalVisible(false)}
       >
         <div
-          style={{ padding: '16px 0', lineHeight: '24px', fontSize: '14px' }}
+          style={{ padding: "16px 0", lineHeight: "24px", fontSize: "14px" }}
         >
           {selectedCard?.desc}
         </div>
@@ -206,10 +222,10 @@ const AIHintPanel = () => {
       : null;
 
   return (
-    <Flexbox height='100%' className={styles.panelBg}>
+    <Flexbox height="100%" className={styles.panelBg}>
       {/* Header */}
-      <Flexbox horizontal align='center' className={styles.header}>
-        <Flexbox horizontal align='center' gap={8}>
+      <Flexbox horizontal align="center" className={styles.header}>
+        <Flexbox horizontal align="center" gap={8}>
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>
         </Flexbox>
@@ -222,9 +238,9 @@ const AIHintPanel = () => {
           <>
             {suggestions.length === 0 && !isGeneratingAI && (
               <Flexbox
-                align='center'
-                justify='center'
-                style={{ height: '100%', color: '#999', fontSize: 14 }}
+                align="center"
+                justify="center"
+                style={{ height: "100%", color: "#999", fontSize: 14 }}
               >
                 暂无AI建议
               </Flexbox>
