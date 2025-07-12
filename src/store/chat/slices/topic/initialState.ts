@@ -6,7 +6,6 @@ export interface TopicState {
   topics: TopicItem[];
   searchTopics: TopicItem[];
   isSearchingTopic: boolean;
-  inSearchingMode: boolean;
   topicRenamingId?: string;
 }
 
@@ -16,6 +15,5 @@ export const initialTopicState: TopicState = {
   topics: [],
   searchTopics: [],
   isSearchingTopic: false,
-  inSearchingMode: false,
   topicRenamingId: undefined,
 };

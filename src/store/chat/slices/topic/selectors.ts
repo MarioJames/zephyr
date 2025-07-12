@@ -6,8 +6,6 @@ const fetchTopicLoading = (s: ChatState) => s.fetchTopicLoading;
 const topics = (s: ChatState) => s.topics;
 const searchTopics = (s: ChatState) => s.searchTopics;
 const isSearchingTopic = (s: ChatState) => s.isSearchingTopic;
-const inSearchingMode = (s: ChatState) => s.inSearchingMode;
-const isInSearchMode = (s: ChatState) => s.inSearchingMode;
 const topicRenamingId = (s: ChatState) => s.topicRenamingId;
 
 const activeTopicId = (s: ChatState) => s.activeTopicId;
@@ -20,8 +18,6 @@ export const topicSelectors = {
   fetchTopicLoading,
   searchTopics,
   isSearchingTopic,
-  inSearchingMode,
-  isInSearchMode,
   topicRenamingId,
 
   activeTopicId,
