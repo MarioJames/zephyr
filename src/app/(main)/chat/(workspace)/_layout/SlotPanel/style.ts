@@ -109,7 +109,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     }
   `,
   cardTitle: css`
-    font-weight: 500;
+    font-weight: 600;
     font-size: 12px;
     margin-bottom: 4px;
   `,
