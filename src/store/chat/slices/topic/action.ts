@@ -12,7 +12,7 @@ export interface TopicAction {
   updateTopic: (id: string, topic: TopicItem) => void;
 
   // 话题切换
-  switchTopic: (topicId: string) => void;
+  switchTopic: (topicId: string) => Promise<void>;
 
   // 搜索相关
   useSearchTopics: (keyword: string, sessionId: string) => void;
@@ -77,16 +77,17 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     }
   },
 
-  switchTopic: (topicId: string) => {
-    useSessionStore.getState().setActiveTopic(topicId);
-
+  switchTopic: async (topicId: string) => {
+    
     // 切换话题时重新获取消息
     if (topicId) {
-      get().fetchMessages(topicId);
-      get().fetchSuggestions(topicId);
+      await get().fetchMessages(topicId);
+      await get().fetchSuggestions(topicId);
     } else {
       set({ messages: [], messagesInit: true });
     }
+    // 设置当前话题
+    useSessionStore.getState().setActiveTopic(topicId);
 
     // 同步URL参数
     const activeSessionId = useSessionStore.getState().activeSessionId;
@@ -96,45 +97,26 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     });
   },
 
-  useSearchTopics: async (keyword: string, sessionId: string) => {
-    if (!keyword.trim()) {
-      set({
-        searchTopics: [],
-        isSearchingTopic: false,
-        inSearchingMode: false,
+  useSearchTopics: (keyword: string, sessionId: string) => {
+    set({ isSearchingTopic: true });
+    topicService
+      .getTopicList(sessionId, { keyword })
+      .then((topics: TopicItem[]) => {
+        set({ searchTopics: topics, isSearchingTopic: false });
+      })
+      .catch((error: Error) => {
+        console.error('Failed to search topics:', error);
+        set({ isSearchingTopic: false });
       });
-      return;
-    }
-
-    try {
-      const topics = await topicService.getTopicList(sessionId, { keyword });
-
-      set({
-        searchTopics: topics,
-        isSearchingTopic: true,
-        inSearchingMode: true,
-      });
-    } catch (error) {
-      console.error('Failed to search topics:', error);
-      set({
-        searchTopics: [],
-        isSearchingTopic: false,
-        inSearchingMode: false,
-      });
-    }
   },
 
   clearTopicSearchResult: () => {
-    set({
-      searchTopics: [],
-      isSearchingTopic: false,
-      inSearchingMode: false,
-    });
+    set({ searchTopics: [], isSearchingTopic: false });
   },
 
   updateTopic: (id: string, topic: TopicItem) => {
-    set({
-      topics: get().topics.map((t) => (t.id === id ? topic : t)),
-    });
+    set((state) => ({
+      topics: state.topics.map((t) => (t.id === id ? topic : t)),
+    }));
   },
 });
