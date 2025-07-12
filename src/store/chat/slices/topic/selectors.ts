@@ -19,7 +19,6 @@ export const topicSelectors = {
   searchTopics,
   isSearchingTopic,
   topicRenamingId,
-
   activeTopicId,
   currentActiveTopic,
 };

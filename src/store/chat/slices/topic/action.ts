@@ -88,6 +88,7 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
     }
     // 设置当前话题
     useSessionStore.getState().setActiveTopic(topicId);
+    set({ activeTopicId: topicId });
 
     // 同步URL参数
     const activeSessionId = useSessionStore.getState().activeSessionId;

@@ -7,6 +7,7 @@ export interface TopicState {
   searchTopics: TopicItem[];
   isSearchingTopic: boolean;
   topicRenamingId?: string;
+  activeTopicId?: string;
 }
 
 export const initialTopicState: TopicState = {
@@ -16,4 +17,5 @@ export const initialTopicState: TopicState = {
   searchTopics: [],
   isSearchingTopic: false,
   topicRenamingId: undefined,
+  activeTopicId: undefined,
 };
