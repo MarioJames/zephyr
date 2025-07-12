@@ -15,7 +15,6 @@ import {
 export interface MessageAction {
   // 消息CRUD操作
   fetchMessages: (topicId?: string) => Promise<void>;
-  fetchMessagesByTopic: (topicId: string) => Promise<void>;
 
   // 输入管理
   updateInputMessage: (message: string) => void;
@@ -281,19 +280,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     } finally {
       // 无论成功还是失败都移除翻译状态
       get().removeTranslatingMessage(id);
-    }
-  },
-
-  fetchMessagesByTopic: async (topicId) => {
-    set({ fetchMessageLoading: true });
-    try {
-      const messages = await messageService.queryByTopic(topicId);
-      // 对消息进行文件分类处理
-      const transformedMessages =
-        transformMessagesWithFileClassification(messages);
-      set({ messages: transformedMessages, fetchMessageLoading: false });
-    } catch (e: any) {
-      set({ fetchMessageLoading: false, error: e?.message || '消息获取失败' });
     }
   },
 
