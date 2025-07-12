@@ -1,7 +1,6 @@
 'use client';
 import { DynamicLayoutProps } from '@/types/next';
-import React, { useEffect } from 'react';
-import { useChatStore } from '@/store/chat';
+import React from 'react';
 
 import ChatHydration from './features/ChatHydration';
 import ChatInput from './features/ChatInput/index';
@@ -18,15 +17,7 @@ const ChatConversation = (props: DynamicLayoutProps) => {
   // 将所有 hooks 调用移到最前面，确保调用顺序一致
   const sessions = useSessionStore(sessionSelectors.sessions);
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
-  const activeTopicId = useChatStore((s) => s.activeTopicId);
-  const fetchMessagesByTopic = useChatStore((s) => s.fetchMessagesByTopic);
   const isInitialized = useSessionStore((s) => s.isInitialized);
-
-  useEffect(() => {
-    if (activeTopicId) {
-      fetchMessagesByTopic(activeTopicId);
-    }
-  }, [activeTopicId]);
 
   if (isInitialized && (!sessions || sessions.length === 0)) {
     return <DefaultCreateCustomer />;
