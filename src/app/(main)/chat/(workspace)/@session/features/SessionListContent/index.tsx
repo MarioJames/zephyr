@@ -1,18 +1,18 @@
 "use client";
 
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect } from "react";
 import { Flexbox } from "react-layout-kit";
 import { Button } from "@lobehub/ui";
 import { Plus } from "lucide-react";
 import { createStyles } from "antd-style";
 import { useRouter } from "next/navigation";
+import { Empty } from "antd";
 
 import { sessionSelectors, useSessionStore } from "@/store/session";
 import { useOIDCStore } from "@/store/oidc";
 import { oidcSelectors } from "@/store/oidc/selectors";
 import { useChatStore } from "@/store/chat";
 import EmployeeSelector from "@/components/EmployeeSelector";
-import { UserItem } from "@/services/user";
 
 import { SkeletonList } from "../SkeletonList";
 import ShowMode from "./ShowMode";
@@ -22,7 +22,7 @@ const useStyles = createStyles(({ css, token }) => ({
   button: css`
     display: flex;
     height: 32px;
-    width:100%;
+    width: 100%;
     justify-content: center;
     align-items: center;
     gap: 4px;
@@ -84,7 +84,6 @@ const SessionListContent = memo(() => {
   };
 
   const handleEmployeeSelect = async (userId: string) => {
-
     // 重新获取该员工的会话列表
     await fetchSessions({ userId });
 
@@ -125,8 +124,17 @@ const SessionListContent = memo(() => {
           </Button>
         </div>
       </Flexbox>
-      {sessions.length === 0 && <Flexbox paddingInline={8}>暂时为空</Flexbox>}
-      <ShowMode />
+      {isInitialized && sessions.length === 0 ? (
+        <Empty
+          description="暂无会话"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{
+            marginTop: 120,
+          }}
+        />
+      ) : (
+        <ShowMode />
+      )}
     </>
   );
 });

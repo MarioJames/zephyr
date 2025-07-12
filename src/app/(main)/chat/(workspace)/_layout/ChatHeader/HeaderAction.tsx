@@ -51,7 +51,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   historyButtonSelected: css`
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 7px 10px;
     cursor: pointer;
     display: flex;
     align-items: center;

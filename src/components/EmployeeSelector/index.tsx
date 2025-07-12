@@ -24,7 +24,7 @@ const useStyles = createStyles(({ css, token }) => ({
       height: 32px !important;
       border-radius: 6px;
       border: 1px solid ${token.colorBorder};
-      background: inherit;
+      background: ${token.colorBgContainer};
       display: flex;
       align-items: center;
       transition: background 0.2s, color 0.2s, border-color 0.2s;
