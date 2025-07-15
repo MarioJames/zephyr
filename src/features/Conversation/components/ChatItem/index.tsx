@@ -161,6 +161,7 @@ const Item = memo<ChatListItemProps>(
                 ? item.session?.avatar
                 : item.user?.avatar
             }
+            name={item.session?.title}
             error={error}
             errorMessage={errorMessage}
             markdownProps={markdownProps}
