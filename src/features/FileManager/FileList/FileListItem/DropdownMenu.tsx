@@ -47,7 +47,9 @@ const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
             duration: 0,
             key,
           });
-          await downloadFile(url, name);
+
+          const fileName = name.split('.').pop() || 'downloaded-file';
+          downloadFile(url, fileName);
           message.destroy(key);
         },
       },
