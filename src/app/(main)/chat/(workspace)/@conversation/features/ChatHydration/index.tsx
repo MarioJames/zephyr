@@ -20,6 +20,9 @@ const ChatHydration = memo(() => {
   const [session, setSession] = useQueryState('session', { history: 'replace', throttleMs: 500 });
   useSessionStoreUpdater('activeSessionId', session);
 
+  // two-way bindings the userId params to session store
+  const [userId, setUserId] = useQueryState('userId', { history: 'replace', throttleMs: 500 });
+
   useLayoutEffect(() => {
     // 订阅topic变化并同步到URL
     const unsubscribeTopic = useChatStore.subscribe(
@@ -37,11 +40,20 @@ const ChatHydration = memo(() => {
       },
     );
 
+    // 订阅userId变化并同步到URL
+    const unsubscribeUserId = useSessionStore.subscribe(
+      (s) => s.targetUserId,
+      (state) => {
+        setUserId(!state ? null : state);
+      },
+    );
+
     return () => {
       unsubscribeTopic();
       unsubscribeSession();
+      unsubscribeUserId();
     };
-  }, [setTopic, setSession]);
+  }, [setTopic, setSession, setUserId]);
 
   return null;
 });

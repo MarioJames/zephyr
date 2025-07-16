@@ -7,7 +7,7 @@ export interface SessionActiveAction {
   initFromUrlParams: () => Promise<void>;
   setActiveSession: (sessionId: string) => void;
   setActiveTopic: (topicId: string) => void;
-
+  setTargetUserId: (userId: string) => void;
   resetActiveState: () => void;
 }
 
@@ -18,7 +18,13 @@ export const sessionActiveAction: StateCreator<
   SessionActiveAction
 > = (set, get) => ({
   initFromUrlParams: async () => {
-    const { session, topic, openHistory } = qs.parse(window.location.search);
+    const { session, topic, targetUserId, openHistory } = qs.parse(window.location.search);
+
+    // 如果URL参数中存在userId，则获取该员工的会话列表
+    if (targetUserId) {
+      get().fetchSessions({ userId: targetUserId as string });
+      set({ targetUserId: targetUserId as string });
+    }
 
     // 如果URL参数中存在session和topic，则切换会话和话题
     if (session) {
@@ -45,7 +51,11 @@ export const sessionActiveAction: StateCreator<
     set({ activeTopicId: topicId });
   },
 
+  setTargetUserId: (targetUserId: string) => {
+    set({ targetUserId });
+  },
+
   resetActiveState: () => {
-    set({ activeSessionId: '', activeTopicId: '' });
+    set({ activeSessionId: '', activeTopicId: '', targetUserId: '' });
   },
 });

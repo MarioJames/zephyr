@@ -57,6 +57,7 @@ const SessionListContent = memo(() => {
     setActiveSession,
     setActiveTopic,
     resetActiveState,
+    setTargetUserId,
   ] = useSessionStore((s) => [
     sessionSelectors.sessions(s),
     sessionSelectors.isLoading(s),
@@ -68,6 +69,7 @@ const SessionListContent = memo(() => {
     s.setActiveSession,
     s.setActiveTopic,
     s.resetActiveState,
+    s.setTargetUserId,
   ]);
 
   const [resetChatState] = useChatStore((s) => [s.resetChatState]);
@@ -84,6 +86,9 @@ const SessionListContent = memo(() => {
   };
 
   const handleEmployeeSelect = async (userId: string) => {
+    // 设置当前选中的员工ID
+    setTargetUserId(userId);
+
     // 重新获取该员工的会话列表
     await fetchSessions({ userId });
 
