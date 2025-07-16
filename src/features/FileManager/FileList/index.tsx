@@ -65,7 +65,7 @@ const FileList = memo<FileListProps>(({ category }) => {
     } else {
       setIsFirstLoad(true);
     }
-    
+
     try {
       const result = await useFetchFileManage({
         search: query,
