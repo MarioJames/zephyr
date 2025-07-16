@@ -279,8 +279,10 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
           trigger='click'
           placement='bottomLeft'
           arrow={false}
-          overlayInnerStyle={{
-            padding: 0,
+          styles={{
+            body:{
+              padding: 0,
+            }
           }}
         >
           <Input

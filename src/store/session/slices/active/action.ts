@@ -18,12 +18,12 @@ export const sessionActiveAction: StateCreator<
   SessionActiveAction
 > = (set, get) => ({
   initFromUrlParams: async () => {
-    const { session, topic, targetUserId, openHistory } = qs.parse(window.location.search);
+    const { session, topic, userId, openHistory } = qs.parse(window.location.search);
 
     // 如果URL参数中存在userId，则获取该员工的会话列表
-    if (targetUserId) {
-      get().fetchSessions({ userId: targetUserId as string });
-      set({ targetUserId: targetUserId as string });
+    if (userId) {
+      get().fetchSessions({ targetUserId: userId as string });
+      set({ targetUserId: userId as string });
     }
 
     // 如果URL参数中存在session和topic，则切换会话和话题

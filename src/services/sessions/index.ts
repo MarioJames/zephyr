@@ -33,7 +33,7 @@ export interface SessionItem {
 export interface SessionListRequest {
   page?: number;
   pageSize?: number;
-  userId?: string;
+  targetUserId?: string;
   agentId?: string;
   keyword?: string;
 }

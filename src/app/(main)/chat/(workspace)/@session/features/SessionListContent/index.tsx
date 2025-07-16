@@ -90,7 +90,7 @@ const SessionListContent = memo(() => {
     setTargetUserId(userId);
 
     // 重新获取该员工的会话列表
-    await fetchSessions({ userId });
+    await fetchSessions({ targetUserId:userId });
 
     // 清空激活的session和topic
     resetActiveState();

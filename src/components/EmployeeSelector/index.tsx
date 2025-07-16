@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Select, Avatar, Space, Input } from "antd";
+import { Select, Avatar, Space, Input, Spin } from "antd";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 import { ChevronDown } from "lucide-react";
@@ -266,34 +266,45 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         </div>
       )}
     >
-      {filteredEmployees.map((user) => (
-        <Option
-          key={user.id}
-          value={user.id}
-          label={
-            <div className={styles.selectedUser}>
-              <Image
-                width={18}
-                height={18}
-                src={user.avatar!}
-                alt={user.fullName || user.username || "未知用户"}
-                style={{ borderRadius: "50%" }}
-              />
-              <span>{user.fullName || user.username || "未知用户"}</span>
-            </div>
-          }
-        >
-          <div className={styles.userOption}>
-            <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
-            <div className="user-info">
-              <div className="user-name">
-                {user.fullName || user.username || "未知用户"}
+      {loading ? (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "300px",
+        }}>
+          <Spin spinning={loading} />
+        </div>
+      ) : (
+        filteredEmployees.map((user) => (
+          <Option
+            key={user.id}
+            value={user.id}
+            label={
+              <div className={styles.selectedUser}>
+                <Image
+                  width={18}
+                  height={18}
+                  src={user.avatar!}
+                  alt={user.fullName || user.username || "未知用户"}
+                  style={{ borderRadius: "50%" }}
+                />
+                <span>{user.fullName || user.username || "未知用户"}</span>
               </div>
-              {user.email && <div className="user-email">{user.email}</div>}
+            }
+          >
+            <div className={styles.userOption}>
+              <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
+              <div className="user-info">
+                <div className="user-name">
+                  {user.fullName || user.username || "未知用户"}
+                </div>
+                {user.email && <div className="user-email">{user.email}</div>}
+              </div>
             </div>
-          </div>
-        </Option>
-      ))}
+          </Option>
+        ))
+      )}
     </Select>
   );
 };

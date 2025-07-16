@@ -139,7 +139,7 @@ export const coreSlice: StateCreator<
     const res = await sessionsService.getSessionList({
       page: 1,
       pageSize: 100,
-      userId: 'ALL',
+      targetUserId: 'ALL',
     });
 
     // 格式化为{id, customerName, employeeName, userId}
