@@ -1,6 +1,6 @@
 import { MenuProps, Tooltip } from '@lobehub/ui';
 import { App, Upload } from 'antd';
-import { css, cx } from 'antd-style';
+import { createStyles } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip, Files } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useChatStore } from '@/store/chat';
@@ -13,18 +13,20 @@ import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
 import FileSelectModal from './FileSelectModal';
 
-const hotArea = css`
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: transparent;
-  }
-`;
+const useStyles = createStyles(({ css }) => ({
+  hotArea: css`
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: transparent;
+    }
+  `,
+}));
 
 const FileUpload = memo(() => {
   const { message } = App.useApp();
-
+  const { styles } = useStyles();
   const [fileSelectModalOpen, setFileSelectModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -109,11 +111,11 @@ const FileUpload = memo(() => {
           multiple
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>上传图片</div>
+          <div className={styles.hotArea}>上传图片</div>
         </Upload>
       ) : (
         <Tooltip placement={'right'} title='当前模型不支持视觉识别'>
-          <div className={cx(hotArea)}>上传图片</div>
+          <div className={styles.hotArea}>上传图片</div>
         </Tooltip>
       ),
     },
@@ -137,7 +139,7 @@ const FileUpload = memo(() => {
           multiple
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>上传文档</div>
+          <div className={styles.hotArea}>上传文档</div>
         </Upload>
       ),
     },
@@ -160,7 +162,7 @@ const FileUpload = memo(() => {
           multiple={true}
           showUploadList={false}
         >
-          <div className={cx(hotArea)}>上传文件夹</div>
+          <div className={styles.hotArea}>上传文件夹</div>
         </Upload>
       ),
     },
@@ -169,7 +171,7 @@ const FileUpload = memo(() => {
       key: 'select-file',
       label: (
         <div
-          className={cx(hotArea)}
+          className={styles.hotArea}
           onClick={() => setFileSelectModalOpen(true)}
         >
           选择文件
