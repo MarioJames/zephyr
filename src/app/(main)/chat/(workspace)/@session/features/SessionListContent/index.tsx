@@ -89,14 +89,14 @@ const SessionListContent = memo(() => {
     // 设置当前选中的员工ID
     setTargetUserId(userId);
 
-    // 重新获取该员工的会话列表
-    await fetchSessions({ targetUserId:userId });
-
     // 清空激活的session和topic
     resetActiveState();
 
     // 清空聊天状态
     resetChatState();
+
+    // 重新获取该员工的会话列表
+    await fetchSessions({ targetUserId:userId });
   };
 
   if (inSearchMode) return <SearchResult />;

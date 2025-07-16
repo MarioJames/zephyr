@@ -45,6 +45,12 @@ export const sessionCoreAction: StateCreator<
         isLoading: false,
         isInitialized: true,
       });
+
+      // 如果有会话但没有选中的会话，自动选择第一个会话
+      const state = get();
+      if (sessions.length > 0 && !state.activeSessionId) {
+        get().switchSession(sessions[0].id);
+      }
     } catch (error) {
       console.error('获取会话列表失败:', error);
       set({
