@@ -92,6 +92,7 @@ export const sessionCoreAction: StateCreator<
     syncUrlParams({
       session: sessionId,
       topic: activeTopicId,
+      userId: get().targetUserId,
     });
   },
 

@@ -56,6 +56,6 @@ export const sessionActiveAction: StateCreator<
   },
 
   resetActiveState: () => {
-    set({ activeSessionId: '', activeTopicId: '', targetUserId: '' });
+    set({ activeSessionId: '', activeTopicId: '' });
   },
 });
