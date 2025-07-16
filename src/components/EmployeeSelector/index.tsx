@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Select, Avatar, Space, Input, Spin } from "antd";
+import { Select, Avatar, Space, Input, Skeleton } from "antd";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 import { ChevronDown } from "lucide-react";
@@ -193,7 +193,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   // 搜索防抖
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isDropdownOpen) {
+      if (isDropdownOpen && searchKeyword.trim() !== '') {
         fetchEmployees(searchKeyword);
       }
     }, 300);
@@ -267,14 +267,17 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       )}
     >
       {loading ? (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "300px",
-        }}>
-          <Spin spinning={loading} />
-        </div>
+        Array.from({ length: 3 }).map((_, index) => (
+          <Option key={`loading-${index}`} value={`loading-${index}`} disabled>
+            <div className={styles.userOption}>
+              <Skeleton.Avatar active size="small" style={{ width: 40, height: 40, borderRadius: '50%' }} />
+              <div className="user-info" style={{ flex: 1 }}>
+                <Skeleton.Input active size="small" style={{ width: '100%', height: 20 }} />
+                <Skeleton.Input active size="small" style={{ width: '60%', marginTop: 4, height: 16 }} />
+              </div>
+            </div>
+          </Option>
+        ))
       ) : (
         filteredEmployees.map((user) => (
           <Option
