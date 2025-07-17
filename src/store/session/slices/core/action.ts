@@ -12,7 +12,7 @@ import { syncUrlParams } from '@/utils/url';
 
 export interface SessionCoreAction {
   // 获取会话列表
-  fetchSessions: (params?: SessionListRequest) => Promise<void>;
+  fetchSessions: (params?: SessionListRequest & { autoSelectFirst?: boolean }) => Promise<void>;
   // 切换会话
   switchSession: (sessionId: string, topicId?: string) => Promise<void>;
   // 搜索会话
@@ -33,11 +33,12 @@ export const sessionCoreAction: StateCreator<
   [],
   SessionCoreAction
 > = (set, get) => ({
-  fetchSessions: async (params?: SessionListRequest) => {
+  fetchSessions: async (params?: SessionListRequest & { autoSelectFirst?: boolean }) => {
     set({ isLoading: true, error: undefined });
     try {
+      const { autoSelectFirst = true, ...sessionParams } = params || {};
       const { sessions = [], total = 0 } = await sessionService.getSessionList(
-        params
+        sessionParams
       );
 
       set({
@@ -46,9 +47,9 @@ export const sessionCoreAction: StateCreator<
         isInitialized: true,
       });
 
-      // 如果有会话但没有选中的会话，自动选择第一个会话
+      // 如果有会话但没有选中的会话，并且允许自动选择，则自动选择第一个会话
       const state = get();
-      if (sessions.length > 0 && !state.activeSessionId) {
+      if (autoSelectFirst && sessions.length > 0 && !state.activeSessionId) {
         get().switchSession(sessions[0].id);
       }
     } catch (error) {

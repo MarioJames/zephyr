@@ -103,8 +103,8 @@ const SessionListContent = memo(() => {
     // 清空聊天状态
     resetChatState();
 
-    // 重新获取该员工的会话列表
-    await fetchSessions({ targetUserId:userId });
+    // 重新获取该员工的会话列表，但不自动选择第一个会话
+    await fetchSessions({ targetUserId: userId, autoSelectFirst: false });
   };
 
   const handleEmployeeClear = async () => {
@@ -118,8 +118,8 @@ const SessionListContent = memo(() => {
     // 清空聊天状态
     resetChatState();
 
-    // 重新获取当前登录用户的会话列表
-    await fetchSessions();
+    // 重新获取当前登录用户的会话列表，但不自动选择第一个会话
+    await fetchSessions({ autoSelectFirst: false });
   };
 
   if (inSearchMode) return <SearchResult />;
