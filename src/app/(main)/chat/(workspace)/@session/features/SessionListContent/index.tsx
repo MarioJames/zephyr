@@ -17,6 +17,7 @@ import EmployeeSelector from "@/components/EmployeeSelector";
 import { SkeletonList } from "../SkeletonList";
 import ShowMode from "./ShowMode";
 import SearchResult from "./SearchResult";
+import { UserItem } from "@/services";
 
 const useStyles = createStyles(({ css, token }) => ({
   button: css`
@@ -58,6 +59,7 @@ const SessionListContent = memo(() => {
     setActiveTopic,
     resetActiveState,
     setTargetUserId,
+    setTargetUser
   ] = useSessionStore((s) => [
     sessionSelectors.sessions(s),
     sessionSelectors.isLoading(s),
@@ -70,6 +72,7 @@ const SessionListContent = memo(() => {
     s.setActiveTopic,
     s.resetActiveState,
     s.setTargetUserId,
+    s.setTargetUser,
   ]);
 
   const [resetChatState] = useChatStore((s) => [s.resetChatState]);
@@ -85,9 +88,10 @@ const SessionListContent = memo(() => {
     router.push("/customer/form");
   };
 
-  const handleEmployeeSelect = async (userId: string) => {
+  const handleEmployeeSelect = async (userId: string, user: UserItem) => {
     // 设置当前选中的员工ID
     setTargetUserId(userId);
+    setTargetUser(user);
 
     // 清空激活的session和topic
     resetActiveState();

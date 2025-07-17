@@ -2,12 +2,14 @@ import { StateCreator } from 'zustand';
 import { SessionStore } from '@/store/session';
 import qs from 'query-string';
 import { useGlobalStore } from '@/store/global';
+import { UserItem } from '@/services';
 
 export interface SessionActiveAction {
   initFromUrlParams: () => Promise<void>;
   setActiveSession: (sessionId: string) => void;
   setActiveTopic: (topicId: string) => void;
   setTargetUserId: (userId: string) => void;
+  setTargetUser: (user: UserItem) => void;
   resetActiveState: () => void;
 }
 
@@ -57,5 +59,9 @@ export const sessionActiveAction: StateCreator<
 
   resetActiveState: () => {
     set({ activeSessionId: '', activeTopicId: '' });
+  },
+
+  setTargetUser(user) {
+    set({ targetUser: user })
   },
 });
