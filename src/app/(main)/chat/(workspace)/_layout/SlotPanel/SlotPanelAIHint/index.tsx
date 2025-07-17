@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Modal, Typography } from "antd";
 import { Button } from "@lobehub/ui";
 import { Flexbox } from "react-layout-kit";
-import { Bot } from "lucide-react";
+import { Bot, RefreshCw } from "lucide-react";
 import { chatSelectors, useChatStore } from "@/store/chat";
 import { AgentSuggestionItem } from "@/services/agent_suggestions";
 import { useAIHintStyles } from "../style";
@@ -204,10 +204,12 @@ const AIHintPanel = () => {
   const { styles } = useAIHintStyles();
 
   // 获取当前 topic 的建议数据和加载状态
-  const [isGeneratingAI, suggestions, isFetchingAI] = useChatStore((s) => [
+  const [isGeneratingAI, suggestions, isFetchingAI, messages, generateAISuggestion] = useChatStore((s) => [
     chatSelectors.isGeneratingAI(s),
     chatSelectors.suggestions(s),
     chatSelectors.suggestionsLoading(s),
+    chatSelectors.messages(s),
+    s.generateAISuggestion,
   ]);
 
   // 找到最新建议（按时间戳最大的）
@@ -221,6 +223,46 @@ const AIHintPanel = () => {
         )
       : null;
 
+  // 获取最新用户消息ID
+  const getLatestUserMessageId = () => {
+    const userMessages = messages
+      .filter((msg) => msg.role === 'user')
+      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    
+    return userMessages.length > 0 ? userMessages[0].id : null;
+  };
+
+  // 处理重新生成
+  const handleRegenerate = async () => {
+    const latestUserMessageId = getLatestUserMessageId();
+    if (!latestUserMessageId) {
+      console.warn('没有找到用户消息，无法重新生成建议');
+      return;
+    }
+
+    try {
+      await generateAISuggestion(latestUserMessageId);
+    } catch (error) {
+      console.error('重新生成建议失败:', error);
+    }
+  };
+
+  // 判断是否应该显示重新生成按钮
+  const shouldShowRegenerateButton = () => {
+    // 如果正在生成中，不显示
+    if (isGeneratingAI || isFetchingAI) return false;
+    
+    // 如果没有消息，不显示
+    const latestUserMessageId = getLatestUserMessageId();
+    if (!latestUserMessageId) return false;
+
+    // 总是显示重新生成按钮，允许用户在以下情况重新生成：
+    // 1. 没有建议
+    // 2. 有建议但想重新生成
+    // 3. 生成失败的情况
+    return true;
+  };
+
   return (
     <Flexbox height="100%" className={styles.panelBg}>
       {/* Header */}
@@ -229,6 +271,25 @@ const AIHintPanel = () => {
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>
         </Flexbox>
+        {/* 重新生成按钮 */}
+        {shouldShowRegenerateButton() && (
+          <Button
+            type="text"
+            size="small"
+            icon={<RefreshCw size={16} />}
+            onClick={handleRegenerate}
+            style={{ 
+              marginLeft: 'auto',
+              color: '#666',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            disabled={isGeneratingAI}
+          >
+            重新生成
+          </Button>
+        )}
       </Flexbox>
       {/* List */}
       <Flexbox flex={1} className={styles.listWrap}>
@@ -242,7 +303,19 @@ const AIHintPanel = () => {
                 justify="center"
                 style={{ height: "100%", color: "#999", fontSize: 14 }}
               >
-                暂无AI建议
+                <Flexbox align="center" gap={16}>
+                  <div>暂无AI建议</div>
+                  {shouldShowRegenerateButton() && (
+                    <Button
+                      type="primary"
+                      icon={<RefreshCw size={16} />}
+                      onClick={handleRegenerate}
+                      loading={isGeneratingAI}
+                    >
+                      生成建议
+                    </Button>
+                  )}
+                </Flexbox>
               </Flexbox>
             )}
             {suggestions.map((item) => (
