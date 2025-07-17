@@ -61,7 +61,7 @@ export const sessionActiveAction: StateCreator<
     set({ activeSessionId: '', activeTopicId: '' });
   },
 
-  setTargetUser(user) {
+  setTargetUser(user: UserItem) {
     set({ targetUser: user })
   },
 });
