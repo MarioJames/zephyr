@@ -149,6 +149,9 @@ const useStyles = createStyles(({ css, token }) => ({
 
 interface EmployeeSelectorProps {
   onChange?: (userId: string, user: UserItem) => void;
+  onClear?: () => void; // 取消选择的回调
+  value?: string; // 当前选中的用户ID
+  selectedUser?: UserItem; // 当前选中的用户信息
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -156,6 +159,9 @@ interface EmployeeSelectorProps {
 
 const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   onChange,
+  onClear,
+  value,
+  selectedUser,
   placeholder = "选择员工",
   disabled = false,
   className,
@@ -213,6 +219,13 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   }, [employees, searchKeyword]);
 
   const handleSelect = (userId: string) => {
+    // 如果点击的是已选中的用户，则取消选择
+    if (value === userId && onClear) {
+      onClear();
+      setIsDropdownOpen(false);
+      return;
+    }
+
     const user = employees.find((emp) => emp.id === userId);
     if (user && onChange) {
       onChange(userId, user);
@@ -237,6 +250,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       placeholder={placeholder}
       disabled={disabled}
       loading={loading}
+      value={selectedUser ? (selectedUser.fullName || selectedUser.username || "未知用户") : undefined}
       onSelect={handleSelect}
       onOpenChange={handleDropdownVisibleChange}
       suffixIcon={<ChevronDown size={16} />}
@@ -279,34 +293,28 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
           </Option>
         ))
       ) : (
-        filteredEmployees.map((user) => (
-          <Option
-            key={user.id}
-            value={user.id}
-            label={
-              <div className={styles.selectedUser}>
-                <Image
-                  width={18}
-                  height={18}
-                  src={user.avatar!}
-                  alt={user.fullName || user.username || "未知用户"}
-                  style={{ borderRadius: "50%" }}
-                />
-                <span>{user.fullName || user.username || "未知用户"}</span>
-              </div>
-            }
-          >
-            <div className={styles.userOption}>
-              <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
-              <div className="user-info">
-                <div className="user-name">
-                  {user.fullName || user.username || "未知用户"}
+        filteredEmployees.map((user) => {
+          const isSelected = value === user.id;
+          
+          return (
+            <Option
+              key={user.id}
+              value={user.id}
+                             label={user.fullName || user.username || "未知用户"}
+            >
+              <div className={styles.userOption}>
+                <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
+                <div className="user-info">
+                  <div className="user-name">
+                    {user.fullName || user.username || "未知用户"}
+                    {isSelected && <span style={{ color: '#1890ff', fontSize: '12px', marginLeft: '8px' }}>(当前选中)</span>}
+                  </div>
+                  {user.email && <div className="user-email">{user.email}</div>}
                 </div>
-                {user.email && <div className="user-email">{user.email}</div>}
               </div>
-            </div>
-          </Option>
-        ))
+            </Option>
+          );
+        })
       )}
     </Select>
   );

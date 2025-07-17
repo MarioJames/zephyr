@@ -51,6 +51,8 @@ const SessionListContent = memo(() => {
     isLoading,
     inSearchMode,
     isInitialized,
+    targetUserId,
+    targetUser,
 
     // actions
     fetchSessions,
@@ -65,6 +67,8 @@ const SessionListContent = memo(() => {
     sessionSelectors.isLoading(s),
     sessionSelectors.inSearchMode(s),
     sessionSelectors.isInitialized(s),
+    sessionSelectors.targetUserId(s),
+    sessionSelectors.targetUser(s),
 
     s.fetchSessions,
     s.initFromUrlParams,
@@ -103,6 +107,21 @@ const SessionListContent = memo(() => {
     await fetchSessions({ targetUserId:userId });
   };
 
+  const handleEmployeeClear = async () => {
+    // 清空选中的员工
+    setTargetUserId(undefined);
+    setTargetUser(undefined);
+
+    // 清空激活的session和topic
+    resetActiveState();
+
+    // 清空聊天状态
+    resetChatState();
+
+    // 重新获取当前登录用户的会话列表
+    await fetchSessions();
+  };
+
   if (inSearchMode) return <SearchResult />;
   if (isLoading) return <SkeletonList />;
 
@@ -118,6 +137,9 @@ const SessionListContent = memo(() => {
           <div style={{ flex: 1 }}>
             <EmployeeSelector
               onChange={handleEmployeeSelect}
+              onClear={handleEmployeeClear}
+              value={targetUserId}
+              selectedUser={targetUser}
               placeholder="全部员工"
             />
           </div>
