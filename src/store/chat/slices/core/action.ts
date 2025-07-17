@@ -14,6 +14,11 @@ export const chatCoreSlice: StateCreator<ChatStore, [], [], ChatCoreAction> = (
       parsedFileContentMap: new Map(),
       inputMessage: '',
       messages: [],
+      messagesInit: false,
+      editingMessageId: undefined,
+      generatingMessageId: undefined,
+      artifactMessageId: undefined,
+      translatingMessageIds: [],
     });
   },
 });
