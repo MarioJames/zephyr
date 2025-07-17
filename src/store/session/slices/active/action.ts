@@ -8,8 +8,8 @@ export interface SessionActiveAction {
   initFromUrlParams: () => Promise<void>;
   setActiveSession: (sessionId: string) => void;
   setActiveTopic: (topicId: string) => void;
-  setTargetUserId: (userId: string) => void;
-  setTargetUser: (user: UserItem) => void;
+  setTargetUserId: (userId: string | undefined) => void;
+  setTargetUser: (user: UserItem | undefined) => void;
   resetActiveState: () => void;
 }
 
@@ -53,7 +53,7 @@ export const sessionActiveAction: StateCreator<
     set({ activeTopicId: topicId });
   },
 
-  setTargetUserId: (targetUserId: string) => {
+  setTargetUserId: (targetUserId: string | undefined) => {
     set({ targetUserId });
   },
 
@@ -61,7 +61,7 @@ export const sessionActiveAction: StateCreator<
     set({ activeSessionId: '', activeTopicId: '' });
   },
 
-  setTargetUser(user: UserItem) {
+  setTargetUser(user: UserItem | undefined) {
     set({ targetUser: user })
   },
 });
