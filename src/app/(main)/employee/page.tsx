@@ -715,9 +715,12 @@ export default function EmployeePage() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
+  };
+
+  const handleSearch = () => {
     // Reset pagination to first page when searching
     setPagination(prev => ({ ...prev, current: 1 }));
-    searchEmployees(value, pagination.pageSize);
+    searchEmployees(searchValue, pagination.pageSize);
   };
 
   const handleTableChange = (paginationConfig: any) => {
@@ -749,6 +752,7 @@ export default function EmployeePage() {
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={handleSearchChange}
+            onPressEnter={handleSearch}
             style={{ width: 240 }}
           />
           <Button type='primary' onClick={showAddEmployeeModal}>
