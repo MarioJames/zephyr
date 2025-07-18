@@ -715,6 +715,8 @@ export default function EmployeePage() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
+    // Reset pagination to first page when searching
+    setPagination(prev => ({ ...prev, current: 1 }));
     searchEmployees(value, pagination.pageSize);
   };
 
@@ -723,10 +725,15 @@ export default function EmployeePage() {
       current: paginationConfig.current,
       pageSize: paginationConfig.pageSize,
     });
-    fetchEmployees({
-      page: paginationConfig.current,
-      pageSize: paginationConfig.pageSize,
-    });
+    // Use search API if there's a search value, otherwise use regular fetch
+    if (searchValue) {
+      searchEmployees(searchValue, paginationConfig.pageSize);
+    } else {
+      fetchEmployees({
+        page: paginationConfig.current,
+        pageSize: paginationConfig.pageSize,
+      });
+    }
   };
 
   return (
