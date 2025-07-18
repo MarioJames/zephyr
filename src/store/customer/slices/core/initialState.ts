@@ -1,5 +1,4 @@
 import { CustomerItem, CustomerListRequest } from '@/services/customer';
-import { CustomerSessionItem } from '@/database/schemas';
 import { CustomerExtend } from '@/types/customer';
 
 // ========== 核心功能状态接口 ==========

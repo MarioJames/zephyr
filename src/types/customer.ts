@@ -1,4 +1,4 @@
-import { CustomerSessionItem } from '@/database/schemas';
+import { CustomerSessionItem } from '@/database';
 import { AgentConfig } from './agent';
 
 export interface CustomerExtend

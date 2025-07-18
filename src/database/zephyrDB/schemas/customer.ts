@@ -7,7 +7,7 @@ import {
   integer,
   jsonb,
 } from 'drizzle-orm/pg-core';
-import { timestamps } from './_helpers';
+import { timestamps } from '@/database/_helpers';
 
 // 客户 Session 关联信息表
 export const customerSessions = pgTable(

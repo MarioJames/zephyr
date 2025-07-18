@@ -197,7 +197,7 @@ if (!result.success) {
 
 ## 相关文件
 
-- `src/libs/clerk-backend/index.ts` - Clerk 后端客户端配置
+- `src/libs/clerkBackend/index.ts` - Clerk 后端客户端配置
 - `src/types/clerk.ts` - 类型定义
 - `src/services/clerk-user/examples.ts` - 使用示例
 - `src/services/clerk-user/index.ts` - 主服务文件

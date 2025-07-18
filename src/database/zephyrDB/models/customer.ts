@@ -1,7 +1,7 @@
 import { and, eq, inArray, like, or, desc, asc } from 'drizzle-orm/expressions';
 import { sql } from 'drizzle-orm';
 
-import { ZephyrDatabase } from '@/database/type';
+import { ZephyrDatabase } from '../type';
 import { AgentChatConfig } from '@/types/agent';
 
 import { CustomerSessionItem, customerSessions } from '../schemas';

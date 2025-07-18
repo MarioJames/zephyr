@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerDB } from '@/database/server';
-import { AgentSuggestionsModel } from '@/database/models/agent_suggestions';
+import { AgentSuggestionsModel } from '@/database';
 
 /**
  * 获取指定话题的所有建议

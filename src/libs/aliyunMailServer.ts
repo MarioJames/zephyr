@@ -1,10 +1,6 @@
 // 服务器端专用的邮件服务
 import nodemailer from 'nodemailer';
-import type { 
-  AliyunMailConfig, 
-  MailOptions, 
-  MailResponse 
-} from '@/types/mail';
+import type { AliyunMailConfig, MailOptions, MailResponse } from '@/types/mail';
 
 export class AliyunMailServerService {
   private config: AliyunMailConfig;
@@ -38,8 +34,16 @@ export class AliyunMailServerService {
       const mailOptions = {
         from: options.from || this.config.smtp?.auth.user,
         to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
-        cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(', ') : options.cc) : undefined,
-        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(', ') : options.bcc) : undefined,
+        cc: options.cc
+          ? Array.isArray(options.cc)
+            ? options.cc.join(', ')
+            : options.cc
+          : undefined,
+        bcc: options.bcc
+          ? Array.isArray(options.bcc)
+            ? options.bcc.join(', ')
+            : options.bcc
+          : undefined,
         subject: options.subject,
         text: options.text,
         html: options.html,
@@ -47,7 +51,7 @@ export class AliyunMailServerService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      
+
       return {
         success: true,
         messageId: info.messageId,
@@ -86,7 +90,7 @@ export class AliyunMailServerService {
     };
 
     const config: AliyunMailConfig = {};
-    
+
     if (smtpConfig.auth.user && smtpConfig.auth.pass) {
       config.smtp = smtpConfig;
     }

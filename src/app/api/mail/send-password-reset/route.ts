@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AliyunMailServerService } from '@/libs/aliyun-mail-server';
+import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 import type { MailOptions } from '@/types/mail';
 
 interface SendPasswordResetRequest {
@@ -26,9 +26,9 @@ export async function POST(request: NextRequest) {
     // 生成重置令牌（实际项目中应该生成真实的令牌并存储到数据库）
     const resetToken = `reset_${employeeId}_${Date.now()}`;
     const resetLink = `${process.env.APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
-    
+
     const mailService = AliyunMailServerService.createFromEnv();
-    
+
     // 发送密码重置邮件
     const mailOptions: MailOptions = {
       to: userEmail,
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           <p>我们收到了重置您账户密码的请求（员工ID：${employeeId}）。</p>
           <p>请点击下面的链接来重置您的密码：</p>
           <p>
-            <a href="${resetLink}" 
+            <a href="${resetLink}"
                style="display: inline-block; padding: 12px 24px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px;">
               重置密码
             </a>

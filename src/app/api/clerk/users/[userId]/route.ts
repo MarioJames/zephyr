@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clerkBackend } from '@/libs/clerk-backend';
+import { clerkBackend } from '@/libs/clerkBackend';
 
 export async function PUT(
   request: NextRequest,
@@ -19,7 +19,7 @@ export async function PUT(
 
     // 准备更新数据
     const updateData: any = {};
-    
+
     // 如果有邮箱更新
     if (email) {
       updateData.emailAddress = [email];
@@ -61,23 +61,23 @@ export async function PUT(
 
   } catch (error: any) {
     console.error('Clerk 用户更新失败:', error);
-    
+
     if (error.clerkError && error.errors) {
       console.error('Clerk 错误详情:', error.errors);
       return NextResponse.json(
-        { 
-          error: 'Clerk 用户更新失败', 
+        {
+          error: 'Clerk 用户更新失败',
           details: error.errors[0]?.message || error.message,
           clerkErrors: error.errors
         },
         { status: error.status || 500 }
       );
     }
-    
+
     return NextResponse.json(
-      { 
-        error: 'Clerk 用户更新失败', 
-        details: error.message 
+      {
+        error: 'Clerk 用户更新失败',
+        details: error.message
       },
       { status: 500 }
     );
@@ -108,24 +108,24 @@ export async function DELETE(
 
   } catch (error: any) {
     console.error('Clerk 用户删除失败:', error);
-    
+
     // 如果是 Clerk 错误，返回更详细的信息
     if (error.clerkError && error.errors) {
       console.error('Clerk 错误详情:', error.errors);
       return NextResponse.json(
-        { 
-          error: 'Clerk 用户删除失败', 
+        {
+          error: 'Clerk 用户删除失败',
           details: error.errors[0]?.message || error.message,
           clerkErrors: error.errors
         },
         { status: error.status || 500 }
       );
     }
-    
+
     return NextResponse.json(
-      { 
-        error: 'Clerk 用户删除失败', 
-        details: error.message 
+      {
+        error: 'Clerk 用户删除失败',
+        details: error.message
       },
       { status: 500 }
     );

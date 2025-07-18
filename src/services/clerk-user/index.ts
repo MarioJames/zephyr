@@ -1,4 +1,4 @@
-import { clerkBackend } from '@/libs/clerk-backend';
+import { clerkBackend } from '@/libs/clerkBackend';
 import type {
   User,
   CreateUserParams,
