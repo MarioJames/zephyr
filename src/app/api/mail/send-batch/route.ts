@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AliyunMailServerService } from '@/libs/aliyun-mail-server';
+import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 import type { BatchMailOptions, MailOptions, MailResponse } from '@/types/mail';
 
 // 处理模板变量替换
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         // 替换模板变量
         const processedSubject = processTemplate(template.subject, recipient.variables);
         const processedHtml = processTemplate(template.htmlContent, recipient.variables);
-        const processedText = template.textContent 
+        const processedText = template.textContent
           ? processTemplate(template.textContent, recipient.variables)
           : undefined;
 

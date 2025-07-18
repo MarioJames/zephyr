@@ -3,9 +3,9 @@ import { getServerDB } from '@/database/server';
 import {
   CustomerModel,
   CreateCustomerSessionParams,
-} from '@/database/models/customer';
+} from '@/database';
 import { AgentChatConfig } from '@/types/agent';
-import { CustomerSessionItem } from '@/database/schemas';
+import { CustomerSessionItem } from '@/database';
 
 // 客户扩展信息创建请求类型
 export interface CustomerExtendCreateRequest {

@@ -127,13 +127,13 @@ const sendBatchEmails = async () => {
       `,
     },
     recipients: [
-      { 
-        to: 'user1@example.com', 
-        variables: { userName: '张三', month: '12' } 
+      {
+        to: 'user1@example.com',
+        variables: { userName: '张三', month: '12' }
       },
-      { 
-        to: 'user2@example.com', 
-        variables: { userName: '李四', month: '12' } 
+      {
+        to: 'user2@example.com',
+        variables: { userName: '李四', month: '12' }
       },
     ],
   });
@@ -150,7 +150,7 @@ import { mailAPI } from '@/services';
 const checkEmailService = async () => {
   try {
     const result = await mailAPI.verifyMailConnection();
-    
+
     if (result.success && result.data?.connected) {
       console.log('邮件服务正常');
     } else {
@@ -224,7 +224,7 @@ const sendEmployeePasswordReset = async () => {
 ```
 src/
 ├── libs/
-│   └── aliyun-mail-server.ts      # 阿里云邮件服务核心封装（仅服务端）
+│   └── aliyunMailServer.ts      # 阿里云邮件服务核心封装（仅服务端）
 ├── services/
 │   └── mail/
 │       └── index.ts               # HTTP 客户端调用（可在客户端使用）

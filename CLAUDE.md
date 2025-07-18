@@ -60,7 +60,7 @@ src/
 ├── libs/                  # 核心库
 │   ├── model-runtime/     # AI 模型运行时
 │   ├── aliyun-mail.ts     # 阿里云邮件推送服务
-│   ├── clerk-backend.ts   # Clerk 后端集成
+│   ├── clerkBackend.ts   # Clerk 后端集成
 │   └── swr.ts            # SWR 配置
 ├── store/                 # Zustand 状态管理
 ├── types/                 # TypeScript 类型定义

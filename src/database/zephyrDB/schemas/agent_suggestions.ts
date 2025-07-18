@@ -1,5 +1,5 @@
 import { pgTable, integer, text, index, jsonb } from 'drizzle-orm/pg-core';
-import { timestamps } from './_helpers';
+import { timestamps } from '@/database/_helpers';
 
 // AI 智能体建议表
 export const agentSuggestions = pgTable(

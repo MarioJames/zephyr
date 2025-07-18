@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AliyunMailServerService } from '@/libs/aliyun-mail-server';
+import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 import type { MailOptions } from '@/types/mail';
 
 // 处理模板变量替换

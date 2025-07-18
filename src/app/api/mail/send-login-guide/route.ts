@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AliyunMailServerService } from '@/libs/aliyun-mail-server';
+import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 import type { MailOptions } from '@/types/mail';
 
 interface SendLoginGuideRequest {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const mailService = AliyunMailServerService.createFromEnv();
-    
+
     // 发送登录引导邮件模板
     const mailOptions: MailOptions = {
       to: email,
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
           <p>您的账户已成功创建，员工ID：<strong>${employeeId}</strong></p>
           <p>请点击下面的链接开始使用系统：</p>
           <p>
-            <a href="${process.env.APP_URL || 'http://localhost:3000'}/auth/callback" 
+            <a href="${process.env.APP_URL || 'http://localhost:3000'}/auth/callback"
                style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">
               立即登录
             </a>

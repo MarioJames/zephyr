@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { AliyunMailServerService } from '@/libs/aliyun-mail-server';
+import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 
 export async function GET() {
   try {
     const mailService = AliyunMailServerService.createFromEnv();
     const connected = await mailService.verifyConnection();
-    
+
     return NextResponse.json({
       success: true,
       data: {

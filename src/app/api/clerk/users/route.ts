@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clerkBackend } from '@/libs/clerk-backend';
+import { clerkBackend } from '@/libs/clerkBackend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,24 +60,24 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Clerk 用户创建失败:', error);
-    
+
     // 如果是 Clerk 错误，返回更详细的信息
     if (error.clerkError && error.errors) {
       console.error('Clerk 错误详情:', error.errors);
       return NextResponse.json(
-        { 
-          error: '用户创建失败', 
+        {
+          error: '用户创建失败',
           details: error.errors[0]?.message || error.message,
           clerkErrors: error.errors
         },
         { status: error.status || 500 }
       );
     }
-    
+
     return NextResponse.json(
-      { 
-        error: '用户创建失败', 
-        details: error.message 
+      {
+        error: '用户创建失败',
+        details: error.message
       },
       { status: 500 }
     );
