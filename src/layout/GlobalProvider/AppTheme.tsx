@@ -8,7 +8,6 @@ import {
   ThemeProvider,
 } from '@lobehub/ui';
 import { ThemeAppearance, createStyles } from 'antd-style';
-import { App } from 'antd';
 import 'antd/dist/reset.css';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -100,7 +99,6 @@ const AppTheme = memo<AppThemeProps>(
     const { styles, cx, theme } = useStyles();
 
     return (
-      <App>
         <ThemeProvider
           appearance={themeMode !== 'auto' ? themeMode : undefined}
           className={cx(styles.app, styles.scrollbar, styles.scrollbarPolyfill)}
@@ -133,7 +131,6 @@ const AppTheme = memo<AppThemeProps>(
             {children}
           </ConfigProvider>
         </ThemeProvider>
-      </App>
     );
   },
 );
