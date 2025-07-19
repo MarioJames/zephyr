@@ -141,6 +141,16 @@ function updateUserRole(id: string, data: UserUpdateRoleRequest) {
   return http.put<void>(`/api/v1/users/${id}/roles`, data);
 }
 
+/**
+ * 获取虚拟KEY
+ * @param userId 用户ID
+ * @param roleId 角色ID
+ * @returns { key: string }
+ */
+function getVirtualKey(userId: string, roleId: string) {
+  return http.get<{ key: string }>(`/api/virtual-key?userId=${userId}&roleId=${roleId}`);
+}
+
 export default {
   getCurrentUser,
   getAllUsers,
@@ -150,4 +160,5 @@ export default {
   deleteUser,
   searchUsers,
   updateUserRole,
+  getVirtualKey,
 };
