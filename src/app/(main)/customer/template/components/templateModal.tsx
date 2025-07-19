@@ -232,8 +232,15 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   const [form] = Form.useForm();
   const [uploading, setUploading] = React.useState(false);
 
+  // 处理模态框关闭
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
+
   useEffect(() => {
     if (open) {
+      // 只在打开时设置初始值
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
         ...(initialValues || {}),
@@ -244,9 +251,6 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           ...(initialValues?.params || {}),
         },
       });
-    } else {
-      // 当模态框关闭时重置表单
-      form.resetFields();
     }
   }, [open, initialValues]);
 
@@ -270,23 +274,22 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
   const handleOk = () => {
     const values = form.getFieldsValue();
-    if (!values.provider || !values.model) {
-      message.error("请选择模型后再进行保存");
-      return;
-    }
-    if (!values.avatar) {
-      values.avatar = "";
-    }
-    onOk(values);
-    // 提交后重置表单
-    form.resetFields();
+      if (!values.provider || !values.model) {
+        message.error("请选择模型后再进行保存");
+        return;
+      }
+      if (!values.avatar) {
+        values.avatar = "";
+      }
+      onOk(values);
+      form.resetFields();
   };
 
   return (
     <Modal
       title="客户类型"
       open={open}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       footer={null}
       width={840}
       styles={{
@@ -301,7 +304,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       }}
       centered
     >
-      <Form layout="vertical" form={form}>
+      <Form form={form} layout="vertical">
         <div className={styles.layout}>
           {/* 左侧大文本编辑区 */}
           <div className={styles.left}>
