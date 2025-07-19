@@ -9,6 +9,9 @@ export interface OIDCUserState {
   
   // 加载状态
   isLoadingUserInfo: boolean;
+
+  // 虚拟key
+  virtualKey: string | null;
 }
 
 /**
@@ -17,4 +20,5 @@ export interface OIDCUserState {
 export const initialOIDCUserState: OIDCUserState = {
   userInfo: null,
   isLoadingUserInfo: false,
+  virtualKey: null,
 };
