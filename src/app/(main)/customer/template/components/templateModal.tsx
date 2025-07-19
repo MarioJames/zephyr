@@ -320,9 +320,6 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   placeholder="请选择模型"
                   options={modelOptions}
                   className={styles.select}
-                  onChange={(value) => {
-                    form.setFieldValue("provider", 'openai');
-                  }}
                 />
               </Form.Item>
               <Form.Item
