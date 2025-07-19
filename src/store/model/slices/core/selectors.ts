@@ -1,4 +1,5 @@
 import { ModelCoreState } from './initialState';
+import modelsService from '@/services/models';
 
 // 复合选择器
 const hasModelConfig = (s: ModelCoreState): boolean => !!s.currentModelConfig;
@@ -83,4 +84,26 @@ export const modelCoreSelectors = {
 
   // 模型选项选择器
   providerModelOptions,
+
+  /**
+   * 获取模型选项列表（平铺格式）
+   */
+  modelOptions: async (s: ModelCoreState) => {
+    try {
+      const { data, success } = await modelsService.getAggregatedModels();
+      
+      if (!success) {
+        throw new Error('获取模型列表失败');
+      }
+
+      return data.map((model) => ({
+        label: model.name || model.id,
+        value: model.id,
+        key: model.id,
+      }));
+    } catch (error) {
+      console.error('获取模型列表失败:', error);
+      return [];
+    }
+  },
 };

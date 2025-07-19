@@ -213,11 +213,7 @@ interface TemplateModalProps {
   modelOptions: {
     label: string;
     value: string;
-    options: { 
-      label: string; 
-      value: string;
-      key?: string; // 用于唯一标识
-    }[];
+    key?: string;
   }[];
   onUploadImage?: (file: File) => Promise<string>;
 }
@@ -241,11 +237,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
         ...(initialValues || {}),
-        provider: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
-        model:
-          !isEmpty(modelOptions) && modelOptions[0]?.options?.length > 0
-            ? modelOptions[0]?.options[0]?.value
-            : undefined,
+        provider: 'openai',
+        model: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
           ...(initialValues?.params || {}),
@@ -328,11 +321,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   options={modelOptions}
                   className={styles.select}
                   onChange={(value) => {
-                    const provider = modelOptions?.find((p) =>
-                      p.options?.some((m) => m.value === value)
-                    );
-
-                    form.setFieldValue("provider", provider?.value);
+                    form.setFieldValue("provider", 'openai');
                   }}
                 />
               </Form.Item>
