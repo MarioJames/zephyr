@@ -53,6 +53,17 @@ export const createOIDCUserSlice: StateCreator<
       set({ isLoadingUserInfo: true, error: null });
 
       const userInfo = await API.getCurrentUser();
+      // 获取虚拟key
+      if (userInfo.id && userInfo.roles?.[0]?.id) {
+        try {
+          const virtualKeyResponse = await API.getVirtualKey(userInfo.id, userInfo.roles[0].id);
+          console.log("virtualKeyResponse",virtualKeyResponse);
+          set({ virtualKey: virtualKeyResponse.key });
+        } catch (error) {
+          console.error('获取虚拟key失败:', error);
+        }
+      }
+
       set({ userInfo });
     } catch (error) {
       console.error('用户信息加载异常:', error);
