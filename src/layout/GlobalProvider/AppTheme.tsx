@@ -1,5 +1,6 @@
 'use client';
 
+import React from "react";
 import {
   ConfigProvider,
   NeutralColors,
@@ -7,6 +8,7 @@ import {
   ThemeProvider,
 } from '@lobehub/ui';
 import { ThemeAppearance, createStyles } from 'antd-style';
+import { App } from 'antd';
 import 'antd/dist/reset.css';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -97,40 +99,41 @@ const AppTheme = memo<AppThemeProps>(
     const themeMode = useGlobalStore(systemStatusSelectors.themeMode);
     const { styles, cx, theme } = useStyles();
 
-
     return (
-      <ThemeProvider
-        appearance={themeMode !== 'auto' ? themeMode : undefined}
-        className={cx(styles.app, styles.scrollbar, styles.scrollbarPolyfill)}
-        customTheme={{
-          neutralColor: defaultNeutralColor,
-          primaryColor: defaultPrimaryColor,
-        }}
-        defaultAppearance={defaultAppearance}
-        onAppearanceChange={(appearance) => {
-          if (themeMode !== 'auto') return;
-
-          setCookie(LOBE_THEME_APPEARANCE, appearance);
-        }}
-        theme={{
-          cssVar: true,
-          token: customThemeToken,
-        }}
-        themeMode={themeMode}
-      >
-        <GlobalStyle />
-        <AntdStaticMethods />
-        <ConfigProvider
-          config={{
-            aAs: Link,
-            imgAs: Image,
-            imgUnoptimized: true,
-            proxy: globalCDN ? 'unpkg' : undefined,
+      <App>
+        <ThemeProvider
+          appearance={themeMode !== 'auto' ? themeMode : undefined}
+          className={cx(styles.app, styles.scrollbar, styles.scrollbarPolyfill)}
+          customTheme={{
+            neutralColor: defaultNeutralColor,
+            primaryColor: defaultPrimaryColor,
           }}
+          defaultAppearance={defaultAppearance}
+          onAppearanceChange={(appearance) => {
+            if (themeMode !== 'auto') return;
+
+            setCookie(LOBE_THEME_APPEARANCE, appearance);
+          }}
+          theme={{
+            cssVar: true,
+            token: customThemeToken,
+          }}
+          themeMode={themeMode}
         >
-          {children}
-        </ConfigProvider>
-      </ThemeProvider>
+          <GlobalStyle />
+          <AntdStaticMethods />
+          <ConfigProvider
+            config={{
+              aAs: Link,
+              imgAs: Image,
+              imgUnoptimized: true,
+              proxy: globalCDN ? 'unpkg' : undefined,
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </ThemeProvider>
+      </App>
     );
   },
 );
