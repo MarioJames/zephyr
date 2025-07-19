@@ -251,10 +251,14 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     setUploading(true);
     try {
       const url = await uploadAvatar(file);
-
-      form.setFieldValue("avatar", url);
-      message.success("上传成功");
-    } catch {
+      
+      // 确保 url 是字符串类型且是有效的图片 URL
+      if (typeof url === 'string' && isValidImageUrl(url)) {
+        form.setFieldValue("avatar", url);
+        message.success("上传成功");
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
       message.error("上传失败");
     } finally {
       setUploading(false);
