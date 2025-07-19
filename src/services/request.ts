@@ -123,14 +123,15 @@ export async function request<T = any>(
     message?: string;
     timestamp?: number;
   },
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
+  customUrl?: string
 ): Promise<T> {
   const method = (config?.method || 'post') as AxiosRequestConfig['method'];
 
   const isOpenAPI = api.startsWith('/api/v1');
 
   const reqConfig: AxiosRequestConfig = {
-    url: isOpenAPI ? `${baseURL}${api}` : api,
+    url: isOpenAPI ? `${customUrl || baseURL}${api}` : api,
     method,
     ...config,
   };
