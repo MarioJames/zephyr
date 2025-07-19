@@ -46,6 +46,18 @@ export interface GetEnabledModelsResponse {
   totalProviders: number;
 }
 
+export interface AggregatedModelItem {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
+export interface GetAggregatedModelsResponse {
+  data: AggregatedModelItem[];
+  total: number;
+  success: boolean;
+}
+
 export interface GetModelsRequest {
   type?:
     | 'chat'
@@ -106,8 +118,18 @@ async function getModelConfigBySession(data: GetModelConfigRequest) {
   });
 }
 
+/**
+ * 获取聚合模型列表
+ * @description 获取所有启用的聚合模型列表
+ * @returns GetAggregatedModelsResponse
+ */
+async function getAggregatedModels() {
+  return http.get<GetAggregatedModelsResponse>('/api/aggregated-model');
+}
+
 export default {
   getEnabledModels,
   getModelConfig,
   getModelConfigBySession,
+  getAggregatedModels,
 };
