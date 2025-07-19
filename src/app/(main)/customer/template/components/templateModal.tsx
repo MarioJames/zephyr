@@ -244,6 +244,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           ...(initialValues?.params || {}),
         },
       });
+    } else {
+      // 当模态框关闭时重置表单
+      form.resetFields();
     }
   }, [open, initialValues]);
 
@@ -275,6 +278,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       values.avatar = "";
     }
     onOk(values);
+    // 提交后重置表单
+    form.resetFields();
   };
 
   return (
