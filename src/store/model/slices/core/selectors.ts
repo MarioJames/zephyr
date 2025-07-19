@@ -1,5 +1,4 @@
 import { ModelCoreState } from './initialState';
-import modelsService from '@/services/models';
 
 // 复合选择器
 const hasModelConfig = (s: ModelCoreState): boolean => !!s.currentModelConfig;
@@ -9,23 +8,7 @@ const providerModelOptions = (s: ModelCoreState) => {
   const modelsList = s.modelsList;
   if (!modelsList) return [];
 
-  return modelsList.providers
-    .filter(
-      (provider) => provider.providerEnabled && provider.models.length > 0
-    )
-    .sort((a, b) => (a.providerSort || 0) - (b.providerSort || 0))
-    .map((provider) => ({
-      label: provider.providerName || provider.providerId,
-      value: provider.providerId,
-      options: provider.models
-        .filter((model) => model.enabled)
-        .sort((a, b) => (a.sort || 0) - (b.sort || 0))
-        .map((model) => ({
-          label: model.displayName || model.id,
-          value: model.id,
-        })),
-    }))
-    .filter((group) => group.options.length > 0);
+  return modelsList;
 };
 
 // 模型能力选择器
@@ -85,25 +68,4 @@ export const modelCoreSelectors = {
   // 模型选项选择器
   providerModelOptions,
 
-  /**
-   * 获取模型选项列表（平铺格式）
-   */
-  modelOptions: async (s: ModelCoreState) => {
-    try {
-      const { data, success } = await modelsService.getAggregatedModels();
-      
-      if (!success) {
-        throw new Error('获取模型列表失败');
-      }
-
-      return data.map((model) => ({
-        label: model.name || model.id,
-        value: model.id,
-        key: model.id,
-      }));
-    } catch (error) {
-      console.error('获取模型列表失败:', error);
-      return [];
-    }
-  },
 };

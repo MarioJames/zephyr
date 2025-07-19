@@ -15,8 +15,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: enabledModels,
-      total: enabledModels.length,
+      data: {
+        data: enabledModels,
+        total: enabledModels.length,
+      },
       timestamp: Date.now(),
     });
   } catch (error) {

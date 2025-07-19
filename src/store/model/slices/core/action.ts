@@ -33,15 +33,16 @@ export const modelCoreSlice: StateCreator<
     });
 
     try {
-      const modelsList = await modelsService.getEnabledModels({
-        type: 'chat',
-        enabled: true,
-        groupByProvider: true,
-        ...params,
-      });
+      // const modelsList = await modelsService.getEnabledModels({
+      //   type: 'chat',
+      //   enabled: true,
+      //   groupByProvider: true,
+      //   ...params,
+      // });
 
+      const response = await modelsService.getAggregatedModels();
       set({
-        modelsList,
+        modelsList: response?.data,
         isLoadingModelsList: false,
         modelsInit: true,
         modelError: undefined,

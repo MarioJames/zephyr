@@ -144,9 +144,10 @@ export default function CustomerTemplatePage() {
   }
 
   // 获取模型选项数据
-  const modelOptions = useModelStore((s) =>
-    modelCoreSelectors.providerModelOptions(s)
-  );
+  const modelOptions = useModelStore((s) =>{
+    const model = modelCoreSelectors.providerModelOptions(s);
+    return model;
+  });
 
   // agent store hooks
   const {
@@ -337,11 +338,9 @@ export default function CustomerTemplatePage() {
         loading={submitting}
         initialValues={editing?.initial}
         modelOptions={modelOptions?.map((item) => ({
-          ...item,
-          options: item.options.map((option) => ({
-            ...option,
-            key: `${item.value}_${option.value}`,
-          })),
+          label: item.id,
+          value: item.id,
+          key: item.id,
         }))}
       />
       <DeleteModal
