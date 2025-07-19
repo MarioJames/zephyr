@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerDB } from '@/database/server';
+import { getZephyrDB } from '@/database/zephyrDB';
 import { AgentSuggestionsModel } from '@/database';
 
 /**
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const agentSuggestionsModel = new AgentSuggestionsModel(db);
 
     const suggestions = await agentSuggestionsModel.findByTopicId(topic);
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const db = await getServerDB();
+  const db = await getZephyrDB();
   const agentSuggestionsModel = new AgentSuggestionsModel(db);
 
   const newSuggestion = await agentSuggestionsModel.create(body);
@@ -87,7 +87,7 @@ export async function DELETE(
       );
     }
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const agentSuggestionsModel = new AgentSuggestionsModel(db);
 
     await agentSuggestionsModel.deleteByTopicId(topicId);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerDB } from '@/database/server';
+import { getZephyrDB } from '@/database/zephyrDB';
 import {
   CustomerModel,
   CreateCustomerSessionParams,
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const sessionId = searchParams.get('sessionId');
     const sessionIds = searchParams.get('sessionIds');
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
 
     if (sessionId) {
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
 
     // 创建客户扩展信息
@@ -156,7 +156,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
 
     // 根据sessionId查找客户扩展信息
@@ -230,7 +230,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const db = await getServerDB();
+    const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
 
     // 根据sessionId查找客户扩展信息
