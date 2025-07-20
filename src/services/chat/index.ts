@@ -116,7 +116,7 @@ async function chat(data: ChatRequest) {
  * 翻译接口
  * @description 基于通用聊天接口实现的翻译功能
  * @param data TranslateRequest
- * @returns LiteLLMChatResponse
+ * @returns ChatResponse
  */
 function translate(data: TranslateRequest) {
   // 构建翻译prompt
@@ -145,7 +145,7 @@ function translate(data: TranslateRequest) {
  * 生成回复接口
  * @description 基于通用聊天接口实现的对话生成功能
  * @param data GenerateReplyRequest
- * @returns LiteLLMChatResponse
+ * @returns ChatResponse
  */
 function generateReply(data: GenerateReplyRequest) {
   // 构建完整的对话历史
