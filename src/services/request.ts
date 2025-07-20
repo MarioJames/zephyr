@@ -1,13 +1,13 @@
-import { useOIDCStore } from '@/store/oidc';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { useOIDCStore } from "@/store/oidc";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
+const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || "http://localhost:3010";
 
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
   timeout: 300000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -32,7 +32,7 @@ function getCurrentAccessToken(): string | null {
 instance.interceptors.request.use((config) => {
   const token = getCurrentAccessToken();
   if (token && config.headers) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 });
@@ -59,7 +59,7 @@ instance.interceptors.response.use(
         // 队列等待token刷新
         return new Promise((resolve) => {
           refreshSubscribers.push((token: string) => {
-            originalRequest.headers['Authorization'] = 'Bearer ' + token;
+            originalRequest.headers["Authorization"] = "Bearer " + token;
             resolve(instance(originalRequest));
           });
         });
@@ -77,14 +77,14 @@ instance.interceptors.response.use(
             const newToken = oidcState.tokenInfo?.accessToken;
             if (newToken) {
               onRefreshed(newToken);
-              originalRequest.headers['Authorization'] = 'Bearer ' + newToken;
+              originalRequest.headers["Authorization"] = "Bearer " + newToken;
               return instance(originalRequest);
             }
           }
         }
 
         // 没有可用的刷新token，触发重新登录
-        throw new Error('No refresh token available');
+        throw new Error("No refresh token available");
       } catch (refreshError) {
         // 刷新失败，清除状态并触发重新登录
         const oidcState = useOIDCStore.getState();
@@ -97,12 +97,12 @@ instance.interceptors.response.use(
           try {
             await oidcState.login();
           } catch (loginError) {
-            console.error('OIDC login failed, redirecting to home', loginError);
-            window.location.href = '/';
+            console.error("OIDC login failed, redirecting to home", loginError);
+            window.location.href = "/";
           }
         } else {
           // 降级处理：直接跳转到首页
-          window.location.href = '/';
+          window.location.href = "/";
         }
 
         return Promise.reject(refreshError);
@@ -126,16 +126,16 @@ export async function request<T = any>(
   config?: AxiosRequestConfig,
   customUrl?: string
 ): Promise<T> {
-  const method = (config?.method || 'post') as AxiosRequestConfig['method'];
+  const method = (config?.method || "post") as AxiosRequestConfig["method"];
 
-  const isOpenAPI = api.startsWith('/api/v1');
+  const isOpenAPI = api.startsWith("/api/v1");
 
   const reqConfig: AxiosRequestConfig = {
     url: isOpenAPI ? `${customUrl || baseURL}${api}` : api,
     method,
     ...config,
   };
-  if (method === 'get') {
+  if (method === "get") {
     reqConfig.params = data;
   } else {
     reqConfig.data = data;
@@ -157,16 +157,36 @@ export async function request<T = any>(
 
 // http对象，简洁调用
 export const http = {
-  get<T = any>(api: string, params?: any, config?: AxiosRequestConfig) {
-    return request<T>(api, params, { ...config, method: 'get' });
+  get<T = any>(
+    api: string,
+    params?: any,
+    config?: AxiosRequestConfig,
+    customUrl?: string
+  ) {
+    return request<T>(api, params, { ...config, method: "get" }, customUrl);
   },
-  post<T = any>(api: string, data?: any, config?: AxiosRequestConfig) {
-    return request<T>(api, data, { ...config, method: 'post' });
+  post<T = any>(
+    api: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+    customUrl?: string
+  ) {
+    return request<T>(api, data, { ...config, method: "post" }, customUrl);
   },
-  put<T = any>(api: string, data?: any, config?: AxiosRequestConfig) {
-    return request<T>(api, data, { ...config, method: 'put' });
+  put<T = any>(
+    api: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+    customUrl?: string
+  ) {
+    return request<T>(api, data, { ...config, method: "put" }, customUrl);
   },
-  delete<T = any>(api: string, params?: any, config?: AxiosRequestConfig) {
-    return request<T>(api, params, { ...config, method: 'delete' });
+  delete<T = any>(
+    api: string,
+    params?: any,
+    config?: AxiosRequestConfig,
+    customUrl?: string
+  ) {
+    return request<T>(api, params, { ...config, method: "delete" }, customUrl);
   },
 };
