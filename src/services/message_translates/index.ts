@@ -1,5 +1,6 @@
 import { http } from "../request";
 import chatService from "../chat";
+import messageService from "../messages";
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
@@ -21,6 +22,12 @@ export interface MessageTranslateTriggerRequest {
   to: string; // 目标语言
 }
 
+export interface MessageTranslateInfoRequest {
+  from: string;
+  to: string;
+  translatedContent: string;
+}
+
 /**
  * 获取消息翻译
  * @description 获取指定消息的翻译信息
@@ -32,6 +39,17 @@ function getMessageTranslate(params: MessageTranslateQueryRequest) {
 }
 
 /**
+ * 更新消息翻译信息
+ * @description 更新指定消息的翻译信息
+ * @param messageId string
+ * @param data MessageTranslateInfoRequest
+ * @returns MessageTranslateItem
+ */
+function updateMessageTranslate(messageId: string, data: MessageTranslateInfoRequest) {
+  return http.put<MessageTranslateItem>(`/api/v1/message-translates/${messageId}`, data);
+}
+
+/**
  * 翻译消息
  * @description 翻译指定的消息到目标语言，使用通用聊天接口实现
  * @param data MessageTranslateTriggerRequest
@@ -39,7 +57,7 @@ function getMessageTranslate(params: MessageTranslateQueryRequest) {
  */
 async function translateMessage(data: MessageTranslateTriggerRequest) {
   // 1. 先获取原始消息内容
-  const originalMessage = await getMessageTranslate({ messageId: data.messageId });
+  const originalMessage = await messageService.queryMessage(data.messageId);
 
   if (!originalMessage?.content) {
     throw new Error("未找到要翻译的消息内容");
@@ -53,13 +71,15 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
   });
 
   // 3. 保存翻译结果
-  return http.post<MessageTranslateItem>("/api/v1/message-translates", {
-    ...data,
-    content: translationResult.content,
+  return updateMessageTranslate(data.messageId, {
+    from: data.from,
+    to: data.to,
+    translatedContent: translationResult.content,
   });
 }
 
 export default {
   getMessageTranslate,
+  updateMessageTranslate,
   translateMessage,
 };
