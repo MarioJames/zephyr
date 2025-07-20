@@ -69,12 +69,12 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
     fromLanguage: data.from,
     toLanguage: data.to,
   });
-
+  const translatedContent = translationResult?.content;
   // 3. 保存翻译结果
-  return updateMessageTranslate(data.messageId, {
+  return updateMessageTranslate(originalMessage?.id, {
     from: data.from,
     to: data.to,
-    translatedContent: translationResult.content,
+    translatedContent,
   });
 }
 
