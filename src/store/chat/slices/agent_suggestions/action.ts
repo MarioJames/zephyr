@@ -101,7 +101,7 @@ export const agentSuggestionsSlice: StateCreator<
 
       const activeSession = sessions.find((s) => s.id === activeSessionId);
 
-      const activeAgent = activeSession?.agentsToSessions[0].agent;
+      const activeAgent = activeSession?.agentsToSessions[0]?.agent;
 
       const systemRole = activeAgent?.systemRole;
 
