@@ -137,6 +137,16 @@ function createMessageWithReply(data: MessagesCreateRequest) {
 }
 
 /**
+ * 获取消息
+ * @description 获取指定消息的信息
+ * @param id string
+ * @returns MessageItem
+ */
+function queryMessage(messageId: string) {
+  return http.get<MessageItem>(`/api/v1/messages/${messageId}`);
+}
+
+/**
  * 更新消息
  * @description 更新指定消息的信息
  * @param id string
@@ -176,4 +186,5 @@ export default {
   updateMessage,
   deleteMessage,
   searchMessages,
+  queryMessage,
 };
