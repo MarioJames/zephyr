@@ -124,14 +124,13 @@ export async function request<T = any>(
     timestamp?: number;
   },
   config?: AxiosRequestConfig,
-  customUrl?: string
 ): Promise<T> {
   const method = (config?.method || "post") as AxiosRequestConfig["method"];
 
   const isOpenAPI = api.startsWith("/api/v1");
 
   const reqConfig: AxiosRequestConfig = {
-    url: isOpenAPI ? `${customUrl || baseURL}${api}` : api,
+    url: isOpenAPI ? `${baseURL}${api}` : api,
     method,
     ...config,
   };
@@ -161,32 +160,28 @@ export const http = {
     api: string,
     params?: any,
     config?: AxiosRequestConfig,
-    customUrl?: string
   ) {
-    return request<T>(api, params, { ...config, method: "get" }, customUrl);
+    return request<T>(api, params, { ...config, method: "get" });
   },
   post<T = any>(
     api: string,
     data?: any,
     config?: AxiosRequestConfig,
-    customUrl?: string
   ) {
-    return request<T>(api, data, { ...config, method: "post" }, customUrl);
+    return request<T>(api, data, { ...config, method: "post" });
   },
   put<T = any>(
     api: string,
     data?: any,
     config?: AxiosRequestConfig,
-    customUrl?: string
   ) {
-    return request<T>(api, data, { ...config, method: "put" }, customUrl);
+    return request<T>(api, data, { ...config, method: "put" });
   },
   delete<T = any>(
     api: string,
     params?: any,
     config?: AxiosRequestConfig,
-    customUrl?: string
   ) {
-    return request<T>(api, params, { ...config, method: "delete" }, customUrl);
+    return request<T>(api, params, { ...config, method: "delete" });
   },
 };
