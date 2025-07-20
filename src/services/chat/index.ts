@@ -1,8 +1,11 @@
-import { AgentConfig } from '@/types/agent';
-import { http } from '../request';
+import { AgentConfig } from "@/types/agent";
+import { http } from "../request";
+import { useOIDCStore } from "@/store/oidc";
+import { LITELLM_URL } from "@/const/base";
+import axios from "axios";
 
 export type ChatMessage = {
-  role: 'user' | 'system' | 'assistant' | 'tool';
+  role: "user" | "system" | "assistant" | "tool";
   content: string;
 };
 
@@ -48,34 +51,81 @@ export interface GenerateReplyResponse {
   reply: string;
 }
 
+// 获取 Authorization header
+const getAuthHeader = () => {
+  const virtualKey = useOIDCStore.getState().virtualKey;
+  return virtualKey ? { Authorization: `Bearer ${virtualKey}` } : undefined;
+};
+
 /**
  * 通用聊天接口
- * @description 发送聊天消息获取AI回复
+ * @description 发送聊天消息获取AI回复，使用 litellm 接口
  * @param data ChatRequest
  * @returns ChatResponse
  */
-function chat(data: ChatRequest) {
-  return http.post<ChatResponse>('/api/v1/chat', data);
+
+async function chat(data: ChatRequest) {
+  const authorization = getAuthHeader();
+  const res = await axios.post<ChatResponse>(
+    `${LITELLM_URL}/chat/completions`,
+    { ...data, stream: false, model: "openai-test" },
+    {
+      timeout: 300000,
+      headers: {
+        ...(authorization
+          ? { Authorization: authorization.Authorization }
+          : {}),
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return res.data;
 }
 
 /**
  * 翻译接口
- * @description 翻译指定文本到目标语言
+ * @description 基于通用聊天接口实现的翻译功能
  * @param data TranslateRequest
  * @returns ChatResponse
  */
 function translate(data: TranslateRequest) {
-  return http.post<ChatResponse>('/api/v1/chat/translate', data);
+  // 构建翻译提示词
+  const systemPrompt = `You are a professional translator. Translate the following text ${
+    data.fromLanguage ? `from ${data.fromLanguage}` : ""
+  } to ${data.toLanguage}. Only provide the translation, no explanations.`;
+
+  // 使用通用聊天接口实现翻译
+  return chat({
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: data.text },
+    ],
+    model: data.model,
+    provider: data.provider,
+  });
 }
 
 /**
  * 生成回复接口
- * @description 基于对话历史生成AI回复
+ * @description 基于通用聊天接口实现的对话生成功能
  * @param data GenerateReplyRequest
  * @returns ChatResponse
  */
 function generateReply(data: GenerateReplyRequest) {
-  return http.post<GenerateReplyResponse>('/api/v1/chat/generate-reply', data);
+  // 构建完整的对话历史
+  const messages: ChatMessage[] = [
+    ...data.conversationHistory,
+    { role: "user", content: data.userMessage },
+  ];
+
+  // 使用通用聊天接口生成回复
+  return chat({
+    messages,
+    model: data.model,
+    provider: data.provider,
+  }).then((response) => ({
+    reply: response.content,
+  }));
 }
 
 export default {
