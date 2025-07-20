@@ -1,4 +1,5 @@
-import { http } from '../request';
+import { http } from "../request";
+import chatService from "../chat";
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
@@ -27,17 +28,35 @@ export interface MessageTranslateTriggerRequest {
  * @returns MessageTranslateItem
  */
 function getMessageTranslate(params: MessageTranslateQueryRequest) {
-  return http.get<MessageTranslateItem>('/api/v1/message-translates', params);
+  return http.get<MessageTranslateItem>("/api/v1/message-translates", params);
 }
 
 /**
  * 翻译消息
- * @description 翻译指定的消息到目标语言
+ * @description 翻译指定的消息到目标语言，使用通用聊天接口实现
  * @param data MessageTranslateTriggerRequest
  * @returns MessageTranslateItem
  */
-function translateMessage(data: MessageTranslateTriggerRequest) {
-  return http.post<MessageTranslateItem>('/api/v1/message-translates', data);
+async function translateMessage(data: MessageTranslateTriggerRequest) {
+  // 1. 先获取原始消息内容
+  const originalMessage = await getMessageTranslate({ messageId: data.messageId });
+
+  if (!originalMessage?.content) {
+    throw new Error("未找到要翻译的消息内容");
+  }
+
+  // 2. 使用通用聊天接口进行翻译
+  const translationResult = await chatService.translate({
+    text: originalMessage.content,
+    fromLanguage: data.from,
+    toLanguage: data.to,
+  });
+
+  // 3. 保存翻译结果
+  return http.post<MessageTranslateItem>("/api/v1/message-translates", {
+    ...data,
+    content: translationResult.content,
+  });
 }
 
 export default {
