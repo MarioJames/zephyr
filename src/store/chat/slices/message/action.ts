@@ -58,9 +58,13 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ fetchMessageLoading: true, error: undefined });
     try {
       const messages = await messageService.queryByTopic(topicId);
-      // 对消息进行文件分类处理
-      const transformedMessages =
-        transformMessagesWithFileClassification(messages);
+      // 对消息进行文件分类处理并按照 createdAt 排序
+      const transformedMessages = transformMessagesWithFileClassification(messages)
+        .sort((a, b) => {
+          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return aTime - bTime;
+        });
 
       set({
         messages: transformedMessages,
