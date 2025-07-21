@@ -8,7 +8,8 @@ import { useEffect } from 'react';
 export function OIDCInitializer() {
   const { 
     loadUser, 
-    setUser, 
+    setUser,
+    loadUserInfo,
     setLoading, 
     setError, 
     clearState,
@@ -22,13 +23,31 @@ export function OIDCInitializer() {
       return;
     }
 
-    // 初始加载用户信息
-    loadUser();
+    // 统一的初始化流程
+    const initializeOIDC = async () => {
+      try {
+        await loadUser();
+        const { user } = useOIDCStore.getState();
+        if (user) {
+          // 加载业务用户信息
+          await loadUserInfo();
+        }
+      } catch (error) {
+        console.error('OIDC初始化失败:', error);
+        setError(error instanceof Error ? error : new Error('OIDC初始化失败'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeOIDC();
 
     // OIDC事件监听器
-    const handleUserLoaded = (user: User) => {
+    const handleUserLoaded = async (user: User) => {
       console.log('OIDCInitializer: User loaded', user.profile);
       setUser(user);
+      // 用户加载后自动加载业务用户信息
+      await loadUserInfo();
       setLoading(false);
     };
 

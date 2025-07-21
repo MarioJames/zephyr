@@ -84,8 +84,6 @@ export const createOIDCAuthSlice: StateCreator<
     // 设置或清除自动刷新定时器
     if (isAuthenticated) {
       get().scheduleTokenRefresh();
-      // 认证成功后自动加载用户信息
-      get().loadUserInfo();
     } else {
       get().clearRefreshTimer();
     }

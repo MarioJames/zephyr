@@ -45,7 +45,6 @@ export const useOIDC = (): UseOIDCReturn => {
     getValidAccessToken: storeGetValidAccessToken,
     loadUserInfo: storeLoadUserInfo,
     setError,
-    loadUser,
   } = useOIDCStore();
 
   // 增强的登录方法，保存当前页面用于回调后跳转
@@ -76,10 +75,6 @@ export const useOIDC = (): UseOIDCReturn => {
     setError(null);
   }, [setError]);
 
-  // 检查认证状态并自动加载用户信息
-  useEffect(() => {
-    loadUser();
-  }, [loadUser]);
 
   // 监听 UserManager 事件
   useEffect(() => {
