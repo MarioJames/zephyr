@@ -102,15 +102,12 @@ export function useCustomerForm({
       form.resetFields();
       // 如果是创建模式，设置默认选中的agent
       const agentId = searchParams?.get('agentId');
-      if (agentId) {
-        // 如果URL中有agentId参数，使用该参数
-        form.setFieldValue('agentId', agentId);
-      } else if (agents.length > 0) {
-        // 如果没有agentId参数，默认选中第一个agent
-        form.setFieldValue('agentId', agents[0].id);
-      }
+      // 使用单次setFieldsValue设置所有字段值
+      form.setFieldsValue({
+        agentId: agentId || (agents.length > 0 ? agents[0].id : undefined)
+      });
     }
-      }, [handleInitCustomer, mode, customerId, form, searchParams, agents]);
+  }, [handleInitCustomer, mode, customerId, form, searchParams, agents]);
 
   // 处理表单提交
   const handleSubmit = useCallback(
