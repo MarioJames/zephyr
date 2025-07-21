@@ -40,6 +40,9 @@ export class AgentSuggestionsModel {
    * 创建建议记录
    */
   create = async (params: CreateAgentSuggestionParams): Promise<AgentSuggestionSelect> => {
+    // 重置序列到当前最大ID + 1，确保新记录不会冲突
+    await this.db.execute(sql`SELECT setval('agent_suggestions_id_seq', (SELECT COALESCE(MAX(id) + 1, 1) FROM agent_suggestions));`);
+    
     const data = await this.db
       .insert(agentSuggestions)
       .values({
