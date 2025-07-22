@@ -44,11 +44,21 @@ export class CustomerModel {
     this.db = db;
   }
 
+  // 重置序列到当前最大ID + 1
+  private resetSequence = async () => {
+    await this.db.execute(
+      sql`SELECT setval('customer_sessions_id_seq', (SELECT COALESCE(MAX(id) + 1, 1) FROM customer_sessions));`
+    );
+  };
+
   // ========== 基础客户会话管理 ==========
   create = async (
     params: OmitTimestamps<CreateCustomerSessionParams>
   ): Promise<number> => {
     const { sessionId, ...customerData } = params;
+
+    // 重置序列
+    await this.resetSequence();
 
     const data = await this.db
       .insert(customerSessions)
