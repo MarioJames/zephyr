@@ -1,5 +1,4 @@
 import { ReactNode, Suspense } from 'react';
-import { App } from 'antd';
 
 import AntdV5MonkeyPatch from './AntdV5MonkeyPatch';
 import AppTheme from './AppTheme';
@@ -28,12 +27,10 @@ const GlobalLayout = async ({
         defaultNeutralColor={neutralColor as any}
         defaultPrimaryColor={primaryColor as any}
       >
-        <App>
           <QueryProvider>{children}</QueryProvider>
           <Suspense>
             <ReactScan />
           </Suspense>
-        </App>
       </AppTheme>
       <AntdV5MonkeyPatch />
     </StyleRegistry>
