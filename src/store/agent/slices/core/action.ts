@@ -46,6 +46,7 @@ export const agentCoreSlice: StateCreator<
   AgentCoreAction
 > = (set, get) => ({
   isDeleting: false,
+  
   fetchAgents: async () => {
     set({ isLoading: true, error: undefined });
     try {
@@ -55,10 +56,19 @@ export const agentCoreSlice: StateCreator<
         modelsService.getAggregatedModels()
       ]);
 
+      // 获取所有 agent 使用的 model id
+      const usedModelIds = new Set(agents.map(agent => agent.model).filter(Boolean));
+
+      // 过滤出实际使用的模型列表
+      const usedModels = modelsResponse.data.filter(model => usedModelIds.has(model.id));
+
       // 将 models 数据转换为 Map，方便查找
       const modelsMap = new Map(
         modelsResponse.data.map((model: any) => [model.id, model])
       );
+
+      // 保存实际使用的模型列表到 store
+      set({ aggregatedModels: usedModels });
 
       // 合并 agents 和 models 数据
       const enrichedAgents = agents.map((agent) => {
@@ -68,6 +78,7 @@ export const agentCoreSlice: StateCreator<
           modelInfo: matchedModel || null // 添加模型信息
         };
       });
+
       set({
         agents: enrichedAgents,
         agentsInit: true,
