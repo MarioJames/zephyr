@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Upload, message, Form } from "antd";
+import { Upload, message, Form, Spin } from "antd";
 import { Button, TextArea, Input, Select, Modal } from "@lobehub/ui";
 import { UploadOutlined } from "@ant-design/icons";
 import { SliderWithInput } from "@lobehub/ui";
@@ -244,7 +244,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
         ...(initialValues || {}),
-        provider: 'openai',
+        provider: "openai",
         model: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
@@ -258,31 +258,41 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     setUploading(true);
     try {
       const url = await uploadAvatar(file);
-      
-      // 确保 url 是字符串类型且是有效的图片 URL
-      if (typeof url === 'string' && isValidImageUrl(url)) {
-        form.setFieldValue("avatar", url);
+
+      if (typeof url === "string" && isValidImageUrl(url)) {
+        // 使用 setFields 代替 setFieldValue 来避免循环引用
+        form.setFields([
+          {
+            name: "avatar",
+            value: url,
+          },
+        ]);
         message.success("上传成功");
       }
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error("Upload failed:", error);
       message.error("上传失败");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     const values = form.getFieldsValue();
-      if (!values.provider || !values.model) {
-        message.error("请选择模型后再进行保存");
-        return;
-      }
-      if (!values.avatar) {
-        values.avatar = "";
-      }
-      onOk(values);
+    if (!values.provider || !values.model) {
+      message.error("请选择模型后再进行保存");
+      return;
+    }
+    if (!values.avatar) {
+      values.avatar = "";
+    }
+    try {
+      await Promise.resolve(onOk(values));
       form.resetFields();
+    } catch (error) {
+      console.error("Save failed:", error);
+      message.error("保存失败");
+    }
   };
 
   return (
@@ -304,136 +314,143 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       }}
       centered
     >
-      <Form form={form} layout="vertical">
-        <div className={styles.layout}>
-          {/* 左侧大文本编辑区 */}
-          <div className={styles.left}>
-            <Form.Item name="systemRole">
-              <TextArea
-                placeholder="请输入系统提示词"
-                className={styles.textarea}
-              />
-            </Form.Item>
-          </div>
-          {/* 右侧表单区 */}
-          <div className={styles.right}>
-            <div className={styles.contentArea}>
-              <Form.Item label="命名" name="title" required>
-                <Input placeholder="请输入名称" className={styles.input} />
-              </Form.Item>
-              <Form.Item label="简介" name="description">
-                <Input placeholder="请输入简介" className={styles.input} />
-              </Form.Item>
-              <Form.Item label="模型提供商" name="provider" hidden>
-                <Input />
-              </Form.Item>
-              <Form.Item label="模型" name="model" required>
-                <Select
-                  placeholder="请选择模型"
-                  options={modelOptions}
-                  className={styles.select}
+      <Spin spinning={loading || uploading}>
+        <Form form={form} layout="vertical" disabled={loading || uploading}>
+          <div className={styles.layout}>
+            {/* 左侧大文本编辑区 */}
+            <div className={styles.left}>
+              <Form.Item name="systemRole">
+                <TextArea
+                  placeholder="请输入系统提示词"
+                  className={styles.textarea}
                 />
               </Form.Item>
-              <Form.Item
-                label="温度"
-                name={["params", "temperature"]}
-                tooltip="温度越高，模型越随机，温度越低，模型越确定"
-              >
-                <SliderWithInput min={0} max={2} step={0.1} />
-              </Form.Item>
-              <Form.Item
-                label="最大令牌数"
-                name={["params", "maxTokens"]}
-                tooltip="最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短"
-              >
-                <SliderWithInput min={256} max={4096} step={1} />
-              </Form.Item>
-              <Form.Item
-                label="思维开放度"
-                name={["params", "topP"]}
-                tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"
-              >
-                <SliderWithInput min={0} max={1} step={0.1} />
-              </Form.Item>
-              <Form.Item
-                label="表达发散度"
-                name={["params", "presencePenalty"]}
-                tooltip="表达发散度越高，模型越随机，表达发散度越低，模型越确定"
-              >
-                <SliderWithInput min={-2} max={2} step={0.1} />
-              </Form.Item>
-              <Form.Item
-                label="词汇丰富度"
-                name={["params", "frequencyPenalty"]}
-                tooltip="词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定"
-              >
-                <SliderWithInput min={-2} max={2} step={0.1} />
-              </Form.Item>
-              <Form.Item name="avatar" hidden>
-                <Input />
-              </Form.Item>
-              <Form.Item label="示例图" shouldUpdate>
-                {({ getFieldValue }) => {
-                  const avatar = getFieldValue("avatar");
-
-                  if (!avatar || !isValidImageUrl(avatar)) {
-                    return (
-                      <div
-                        style={{
-                          width: 112,
-                          height: 62,
-                          background: theme.colorFillTertiary,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "28px",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        {avatar}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <Image src={avatar} alt="示例图" width={112} height={62} />
-                  );
-                }}
-              </Form.Item>
-              <div>
-                <Upload
-                  customRequest={handleUpload}
-                  showUploadList={false}
-                  accept="image/*"
-                  disabled={uploading}
+            </div>
+            {/* 右侧表单区 */}
+            <div className={styles.right}>
+              <div className={styles.contentArea}>
+                <Form.Item label="命名" name="title" required>
+                  <Input placeholder="请输入名称" className={styles.input} />
+                </Form.Item>
+                <Form.Item label="简介" name="description">
+                  <Input placeholder="请输入简介" className={styles.input} />
+                </Form.Item>
+                <Form.Item label="模型提供商" name="provider" hidden>
+                  <Input />
+                </Form.Item>
+                <Form.Item label="模型" name="model" required>
+                  <Select
+                    placeholder="请选择模型"
+                    options={modelOptions}
+                    className={styles.select}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="温度"
+                  name={["params", "temperature"]}
+                  tooltip="温度越高，模型越随机，温度越低，模型越确定"
                 >
-                  <Button
-                    type="link"
-                    icon={<UploadOutlined />}
-                    className={styles.uploadBtn}
-                    loading={uploading}
+                  <SliderWithInput min={0} max={2} step={0.1} />
+                </Form.Item>
+                <Form.Item
+                  label="最大令牌数"
+                  name={["params", "maxTokens"]}
+                  tooltip="最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短"
+                >
+                  <SliderWithInput min={256} max={4096} step={1} />
+                </Form.Item>
+                <Form.Item
+                  label="思维开放度"
+                  name={["params", "topP"]}
+                  tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"
+                >
+                  <SliderWithInput min={0} max={1} step={0.1} />
+                </Form.Item>
+                <Form.Item
+                  label="表达发散度"
+                  name={["params", "presencePenalty"]}
+                  tooltip="表达发散度越高，模型越随机，表达发散度越低，模型越确定"
+                >
+                  <SliderWithInput min={-2} max={2} step={0.1} />
+                </Form.Item>
+                <Form.Item
+                  label="词汇丰富度"
+                  name={["params", "frequencyPenalty"]}
+                  tooltip="词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定"
+                >
+                  <SliderWithInput min={-2} max={2} step={0.1} />
+                </Form.Item>
+                <Form.Item name="avatar" hidden>
+                  <Input />
+                </Form.Item>
+                <Form.Item label="示例图" shouldUpdate>
+                  {({ getFieldValue }) => {
+                    const avatar = getFieldValue("avatar");
+
+                    if (!avatar || !isValidImageUrl(avatar)) {
+                      return (
+                        <div
+                          style={{
+                            width: 112,
+                            height: 62,
+                            background: theme.colorFillTertiary,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "28px",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {avatar}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <Image
+                        src={avatar}
+                        alt="示例图"
+                        width={112}
+                        height={62}
+                      />
+                    );
+                  }}
+                </Form.Item>
+                <div>
+                  <Upload
+                    customRequest={handleUpload}
+                    showUploadList={false}
+                    accept="image/*"
+                    disabled={uploading}
                   >
-                    上传图片
-                  </Button>
-                </Upload>
+                    <Button
+                      type="link"
+                      icon={<UploadOutlined />}
+                      className={styles.uploadBtn}
+                      loading={uploading}
+                    >
+                      上传图片
+                    </Button>
+                  </Upload>
+                </div>
+              </div>
+              <div className={styles.footer}>
+                <Button onClick={onCancel} className={styles.cancelBtn}>
+                  取消
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handleOk}
+                  loading={loading || uploading}
+                  className={styles.saveBtn}
+                >
+                  保存
+                </Button>
               </div>
             </div>
-            <div className={styles.footer}>
-              <Button onClick={onCancel} className={styles.cancelBtn}>
-                取消
-              </Button>
-              <Button
-                type="primary"
-                onClick={handleOk}
-                loading={loading || uploading}
-                className={styles.saveBtn}
-              >
-                保存
-              </Button>
-            </div>
           </div>
-        </div>
-      </Form>
+        </Form>
+      </Spin>
     </Modal>
   );
 };
