@@ -42,7 +42,13 @@ export const createOIDCUserSlice: StateCreator<
   setLoadingUserInfo: (isLoadingUserInfo) => set({ isLoadingUserInfo }),
 
   loadUserInfo: async () => {
-    const { user } = get();
+    const { user, isLoadingUserInfo } = get();
+
+    // 如果已经在加载中，跳过
+    if (isLoadingUserInfo) {
+      console.log('用户信息正在加载中，跳过重复加载');
+      return;
+    }
 
     if (!user) {
       console.warn('用户未认证，跳过用户信息加载');
