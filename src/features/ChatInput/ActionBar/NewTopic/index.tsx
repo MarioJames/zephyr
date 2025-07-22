@@ -2,7 +2,8 @@
 
 import { App, Flex } from "antd";
 import { MessageCirclePlus } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo, useCallback, MouseEvent } from "react";
+import { debounce } from "lodash-es";
 import { useChatStore } from "@/store/chat";
 import { useSessionStore } from "@/store/session";
 import { sessionSelectors } from "@/store/session/selectors";
@@ -43,7 +44,7 @@ const NewTopic = memo(() => {
     sessionSelectors.activeTopicId(s),
   ]);
 
-  const handleCreateNewTopic = useCallback(async () => {
+  const createNewTopic = async () => {
     if (!activeSessionId) {
       message.warning("请先选择会话");
       return;
@@ -76,7 +77,16 @@ const NewTopic = memo(() => {
       console.error("创建新话题失败:", error);
       message.error("创建新话题失败，请稍后重试");
     }
-  }, [activeSessionId, createTopic, switchTopic, router, message]);
+  };
+
+  const handleCreateNewTopic = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.preventDefault();
+      const debouncedCreate = debounce(createNewTopic, 300);
+      debouncedCreate();
+    },
+    [activeSessionId, activeTopicId, createTopic, switchTopic, router, message]
+  );
 
   return (
     <Flex
