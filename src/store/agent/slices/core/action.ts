@@ -7,6 +7,7 @@ import agentService, {
 import { AgentStore } from '../../store';
 import filesService from '@/services/files';
 import sessionsService from '@/services/sessions';
+import modelsService from '@/services/models';
 
 export interface AgentCoreAction {
   // 智能体CRUD操作
@@ -48,9 +49,27 @@ export const agentCoreSlice: StateCreator<
   fetchAgents: async () => {
     set({ isLoading: true, error: undefined });
     try {
-      const agents = await agentService.getAgentList();
+      // 并行获取 agents 和 models 数据
+      const [agents, modelsResponse] = await Promise.all([
+        agentService.getAgentList(),
+        modelsService.getAggregatedModels()
+      ]);
+
+      // 将 models 数据转换为 Map，方便查找
+      const modelsMap = new Map(
+        modelsResponse.data.map((model: any) => [model.id, model])
+      );
+
+      // 合并 agents 和 models 数据
+      const enrichedAgents = agents.map((agent) => {
+        const matchedModel = agent.model ? modelsMap.get(agent.model) : null;
+        return {
+          ...agent,
+          modelInfo: matchedModel || null // 添加模型信息
+        };
+      });
       set({
-        agents,
+        agents: enrichedAgents,
         agentsInit: true,
         isLoading: false,
         error: undefined,
