@@ -146,10 +146,21 @@ function getAgentDetail(id: string) {
   return http.get<AgentDetailResponse>(`/api/v1/agents/${id}`);
 }
 
+/**
+ * 根据会话ID获取智能体
+ * @description 根据会话ID获取智能体
+ * @param sessionId string
+ * @returns AgentItem
+ */
+function getAgentBySessionId(sessionId: string) {
+  return http.get<AgentItem>(`/api/v1/agents/session/${sessionId}`);
+}
+
 export default {
   getAgentList,
   createAgent,
   updateAgent,
   deleteAgent,
   getAgentDetail,
+  getAgentBySessionId,
 };
