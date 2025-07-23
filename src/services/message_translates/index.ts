@@ -1,6 +1,7 @@
 import { http } from "../request";
 import chatService from "../chat";
 import messageService from "../messages";
+import { AgentConfig } from "@/types";
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
@@ -20,6 +21,9 @@ export interface MessageTranslateTriggerRequest {
   messageId: string; // 翻译的消息ID
   from: string; // 源语言
   to: string; // 目标语言
+  model?: string;
+  provider?: string;
+  chatConfig?: AgentConfig;
 }
 
 export interface MessageTranslateInfoRequest {
@@ -68,6 +72,9 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
     text: originalMessage.content,
     fromLanguage: data.from,
     toLanguage: data.to,
+    model: data.model,
+    provider: data.provider,
+    chatConfig: data.chatConfig,
   });
   const translatedContent = translationResult?.content;
   // 3. 保存翻译结果

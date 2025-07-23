@@ -11,6 +11,7 @@ import {
   transformMessagesWithFileClassification,
   transformMessageWithFileClassification,
 } from './helpers';
+import { useCustomerStore } from '@/store/customer';
 
 export interface MessageAction {
   // 消息CRUD操作
@@ -259,11 +260,19 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       if (!message?.content) {
         throw new Error('Message content not found');
       }
+      const { activeSessionId, sessions } = useSessionStore.getState();
+
+      const activeSession = sessions.find((s) => s.id === activeSessionId);
+      const activeAgent = activeSession?.agentsToSessions[0]?.agent;
+      const { currentCustomerExtend } = useCustomerStore.getState();
 
       // 调用翻译接口，返回翻译结果
       const translationResult = await messageTranslateService.translateMessage({
         ...params,
         messageId: id,
+        model: activeAgent?.model,
+        provider: activeAgent?.provider,
+        chatConfig: currentCustomerExtend?.chatConfig,
       });
 
       // 更新消息的 translation 字段
