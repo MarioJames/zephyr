@@ -3,6 +3,8 @@ import agentsService from "../agents";
 import { useOIDCStore } from "@/store/oidc";
 import { LITELLM_URL } from "@/const/base";
 import axios from "axios";
+import { useAgentStore } from "@/store/agent";
+import { isEmpty } from "lodash-es";
 
 export type ChatMessage = {
   role: "user" | "system" | "assistant" | "tool";
@@ -88,6 +90,19 @@ const getChatConfig = async (agentId: string) => {
   return agent;
 };
 
+const getCallBackModel = () => {
+  const aggregatedModels = useAgentStore.getState().aggregatedModels;
+  const callBackModels = aggregatedModels.map((model) => {
+    if (model.callBackModelId) {
+      return {
+        model: model.callBackModelId,
+        provider: model.provider,
+      };
+    }
+  });
+  return callBackModels;
+};
+
 /**
  * 通用聊天接口
  * @description 发送聊天消息获取AI回复，使用 litellm 接口
@@ -97,10 +112,14 @@ const getChatConfig = async (agentId: string) => {
 
 async function chat(data: ChatRequest) {
   const authorization = getAuthHeader();
-  console.log("chat", data);
+  const callBackModel = getCallBackModel();
+  // const chatConfig = await getChatConfig(data?.agentId);
   const res = await axios.post<LiteLLMChatResponse>(
     `${LITELLM_URL}/chat/completions`,
-    data,
+    {
+      ...data,
+      ...(isEmpty(callBackModel) ? {} : { callBackModel }),
+    },
     {
       timeout: 300000,
       headers: {
