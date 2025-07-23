@@ -21,4 +21,15 @@ export class AggregatedModelModel {
       orderBy: [AGGREGATED_MODEL.createdAt],
     });
   };
+
+  /**
+   * 根据ID查询聚合模型
+   * @param id 模型ID
+   */
+  findById = async (id: string): Promise<AggregatedModelSelect | null> => {
+    const result = await this.db.query.AGGREGATED_MODEL.findFirst({
+      where: eq(AGGREGATED_MODEL.id, id),
+    });
+    return result || null;
+  };
 }
