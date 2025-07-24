@@ -17,7 +17,7 @@ const currentModelCapabilities = (s: ModelCoreState) => {
   if (!config) return null;
 
   return {
-    supportFiles: config.abilities?.files ?? false,
+    // supportFiles: config.abilities?.files ?? false,
     supportVision: config.abilities?.vision ?? false,
     supportToolUse: config.abilities?.functionCall ?? false,
     supportReasoning: config.abilities?.reasoning ?? false,
@@ -26,8 +26,8 @@ const currentModelCapabilities = (s: ModelCoreState) => {
 };
 
 // 检查特定能力的选择器
-const currentModelSupportFiles = (s: ModelCoreState): boolean =>
-  s.currentModelConfig?.abilities?.files ?? false;
+// const currentModelSupportFiles = (s: ModelCoreState): boolean =>
+//   s.currentModelConfig?.abilities?.files ?? false;
 
 const currentModelSupportVision = (s: ModelCoreState): boolean =>
   s.currentModelConfig?.abilities?.vision ?? false;
@@ -55,7 +55,7 @@ export const modelCoreSelectors = {
   currentModelCapabilities,
 
   // 能力检查选择器
-  currentModelSupportFiles,
+  // currentModelSupportFiles,
   currentModelSupportVision,
   currentModelSupportToolUse,
   currentModelSupportReasoning,
