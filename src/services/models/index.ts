@@ -31,6 +31,24 @@ export interface ModelItem {
   updatedAt: string;
 }
 
+export interface AggregatedModelItem {
+  abilities: {
+    search: boolean;
+    vision: boolean;
+    reasoning: boolean;
+    imageOutput: boolean;
+    functionCall: boolean;
+  };
+  contextWindowTokens: number;
+  createdAt: string;
+  createdBy: string;
+  description: string;
+  displayName: string;
+  enabled: boolean;
+  fallbackModelId: string;
+
+}
+
 export interface ProviderWithModels {
   modelCount: number;
   models: ModelItem[];
@@ -44,12 +62,6 @@ export interface GetEnabledModelsResponse {
   providers: ProviderWithModels[];
   totalModels: number;
   totalProviders: number;
-}
-
-export interface AggregatedModelItem {
-  id: string;
-  name: string;
-  enabled: boolean;
 }
 
 export interface GetAggregatedModelsResponse {
@@ -128,7 +140,7 @@ async function getAggregatedModels() {
 }
 
 async function getAggregatedModelConfig(modelId: string) {
-  return http.get<ModelItem>(`/api/aggregated-model/${modelId}`);
+  return http.get<AggregatedModelItem>(`/api/aggregated-model/${modelId}`);
 }
 
 export default {
