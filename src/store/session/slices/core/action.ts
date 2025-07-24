@@ -9,6 +9,7 @@ import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
 import { useModelStore } from '@/store/model';
 import { syncUrlParams } from '@/utils/url';
+import { sessionActiveSelectors } from '../active/selectors';
 
 export interface SessionCoreAction {
   // 获取会话列表
@@ -68,8 +69,17 @@ export const sessionCoreAction: StateCreator<
     // 获取客户拓展配置
     useCustomerStore.getState().getCustomerExtend(sessionId);
 
+    // 先设置当前会话ID，这样选择器才能正确工作
+    set({
+      activeSessionId: sessionId,
+    });
+
+    // 使用选择器获取 activeSessionAgent
+    const state = get();
+    const activeSessionAgent = sessionActiveSelectors.activeSessionAgent(state);
+
     // 获取模型配置
-    useModelStore.getState().fetchModelConfig({ sessionId });
+    useModelStore.getState().fetchModelConfig({ model: activeSessionAgent?.model });
 
     // 如果没有传入话题ID，则获取会话下的所有话题
     if (!activeTopicId) {
@@ -78,10 +88,9 @@ export const sessionCoreAction: StateCreator<
       activeTopicId = topics?.[0]?.id;
     }
 
-    // 设置当前会话和话题
+    // 设置当前话题
     set({
       activeTopicId,
-      activeSessionId: sessionId,
     });
 
     // 重置聊天状态
