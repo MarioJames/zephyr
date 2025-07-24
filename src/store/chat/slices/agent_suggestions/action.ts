@@ -5,12 +5,10 @@ import agentSuggestionsService, {
   AgentSuggestionItem,
 } from '@/services/agent_suggestions';
 import { ChatStore } from '../../store';
-import { agentSelectors, useAgentStore } from '@/store/agent';
 import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
-import { sessionSelectors, useSessionStore } from '@/store/session';
+import { useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
-import { useCustomerStore } from '@/store/customer';
 
 export interface AgentSuggestionsAction {
   // 基础操作
@@ -86,8 +84,6 @@ export const agentSuggestionsSlice: StateCreator<
   generateAISuggestion: async (
     parentMessageId: string
   ): Promise<AgentSuggestionItem | null> => {
-    const { currentCustomerExtend } = useCustomerStore.getState();
-
     const { activeSessionId, activeTopicId, sessions } =
       useSessionStore.getState();
 
@@ -138,7 +134,7 @@ export const agentSuggestionsSlice: StateCreator<
             content: msg.content!,
           })),
         ],
-        chatConfig: currentCustomerExtend?.chatConfig,
+        chatConfig: activeAgent?.params,
       });
 
       if (aiResponse.reply) {
