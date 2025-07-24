@@ -102,7 +102,10 @@ const getFallbackModel = () => {
  */
 
 async function chat(data: ChatRequest) {
-  const authorization = getAuthHeader();
+  // const authorization = getAuthHeader();
+    const authorization = {
+      Authorization: "Bearer sk-1234",
+    };
   const fallbackModels = getFallbackModel();
   const fallbacks = fallbackModels.map((model) => ({
     model,
@@ -158,9 +161,10 @@ function translate(data: TranslateRequest) {
     ],
     model: data.model,
     provider: data.provider,
+    ...data.chatConfig,
   });
 }
-
+// activeSession?.agentsToSessions[0]?.agent
 /**
  * 生成回复接口
  * @description 基于通用聊天接口实现的对话生成功能
@@ -178,6 +182,7 @@ function generateReply(data: GenerateReplyRequest) {
     messages,
     model: data.model,
     provider: data.provider,
+    ...data.chatConfig,
   }).then((response) => ({
     reply: response.content,
   }));
