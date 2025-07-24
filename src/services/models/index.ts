@@ -46,7 +46,7 @@ export interface AggregatedModelItem {
   displayName: string;
   enabled: boolean;
   fallbackModelId: string;
-
+  id: string;
 }
 
 export interface ProviderWithModels {
