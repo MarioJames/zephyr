@@ -127,9 +127,14 @@ async function getAggregatedModels() {
   return http.get<GetAggregatedModelsResponse>('/api/aggregated-model');
 }
 
+async function getAggregatedModelConfig(modelId: string) {
+  return http.get<ModelItem>(`/api/aggregated-model/${modelId}`);
+}
+
 export default {
   getEnabledModels,
   getModelConfig,
   getModelConfigBySession,
   getAggregatedModels,
+  getAggregatedModelConfig,
 };
