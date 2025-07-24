@@ -1,10 +1,10 @@
-import { StateCreator } from 'zustand';
+import { StateCreator } from "zustand";
 import modelsService, {
+  AggregatedModelItem,
   GetModelConfigRequest,
   GetModelsRequest,
-  ModelItem,
-} from '@/services/models';
-import { ModelCoreState } from './initialState';
+} from "@/services/models";
+import { ModelCoreState } from "./initialState";
 
 export interface ModelCoreAction {
   // 模型列表相关操作
@@ -15,7 +15,7 @@ export interface ModelCoreAction {
 
   // 当前会话模型相关操作
   fetchModelConfig: (data: GetModelConfigRequest) => Promise<void>;
-  setCurrentModelConfig: (modelInfo?: ModelItem) => void;
+  setCurrentModelConfig: (modelInfo?: AggregatedModelItem) => void;
   clearCurrentModelConfig: () => void;
 }
 
@@ -48,13 +48,13 @@ export const modelCoreSlice: StateCreator<
         modelError: undefined,
       });
     } catch (error) {
-      console.error('Failed to fetch models list:', error);
+      console.error("Failed to fetch models list:", error);
       set({
         isLoadingModelsList: false,
         modelError:
           error instanceof Error
             ? error.message
-            : 'Failed to fetch models list',
+            : "Failed to fetch models list",
       });
     }
   },
@@ -74,27 +74,55 @@ export const modelCoreSlice: StateCreator<
   initModels: async () => {
     const state = get();
     if (state.modelsInit) return;
-    
+
     await state.fetchModelsList();
   },
 
   // 当前会话模型相关操作
-  fetchModelConfig: async (data) => {
-    const { model, provider, sessionId } = data;
+  // fetchModelConfig: async (data) => {
+  //   const { model, provider, sessionId } = data;
 
-    if (!sessionId && !model && !provider) return;
+  //   if (!sessionId && !model && !provider) return;
+
+  //   set({
+  //     isLoadingModelConfigs: true,
+  //     modelError: undefined,
+  //   });
+
+  //   const requestMethod = sessionId
+  //     ? modelsService.getModelConfigBySession
+  //     : modelsService.getModelConfig;
+
+  //   try {
+  //     const modelConfig = await requestMethod(data);
+
+  //     set({
+  //       currentModelConfig: modelConfig,
+  //       isLoadingModelConfigs: false,
+  //       modelError: undefined,
+  //     });
+  //   } catch (error) {
+  //     console.error('Failed to fetch model config:', error);
+  //     set({
+  //       isLoadingModelConfigs: false,
+  //       modelError:
+  //         error instanceof Error
+  //           ? error.message
+  //           : 'Failed to fetch model config',
+  //     });
+  //   }
+  // },
+
+  fetchModelConfig: async (data) => {
+    const { model } = data;
+    if (!model) return;
 
     set({
       isLoadingModelConfigs: true,
       modelError: undefined,
     });
-
-    const requestMethod = sessionId
-      ? modelsService.getModelConfigBySession
-      : modelsService.getModelConfig;
-
     try {
-      const modelConfig = await requestMethod(data);
+      const modelConfig = await modelsService.getAggregatedModelConfig(model);
 
       set({
         currentModelConfig: modelConfig,
@@ -102,18 +130,18 @@ export const modelCoreSlice: StateCreator<
         modelError: undefined,
       });
     } catch (error) {
-      console.error('Failed to fetch model config:', error);
+      console.error("Failed to fetch model config:", error);
       set({
         isLoadingModelConfigs: false,
         modelError:
           error instanceof Error
             ? error.message
-            : 'Failed to fetch model config',
+            : "Failed to fetch model config",
       });
     }
   },
 
-  setCurrentModelConfig: (modelInfo?: ModelItem) => {
+  setCurrentModelConfig: (modelInfo?: AggregatedModelItem) => {
     set({
       currentModelConfig: modelInfo,
       modelError: undefined,
@@ -126,7 +154,7 @@ export const modelCoreSlice: StateCreator<
     });
   },
 
-  updateCurrentSessionModelInfo: (modelInfo: ModelItem) => {
+  updateCurrentSessionModelInfo: (modelInfo: AggregatedModelItem) => {
     const state = get();
     if (state.currentModelConfig) {
       set({

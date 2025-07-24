@@ -10,7 +10,7 @@ export interface ModelCoreState {
   // 模型列表加载状态
   isLoadingModelsList: boolean;
   // 当前会话使用的模型信息
-  currentModelConfig?: ModelItem;
+  currentModelConfig?: AggregatedModelItem;
   // 模型配置加载状态
   isLoadingModelConfigs: boolean;
 }
