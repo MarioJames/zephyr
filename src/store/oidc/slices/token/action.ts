@@ -65,6 +65,8 @@ export const createOIDCTokenSlice: StateCreator<
   refreshTokens: async () => {
     const { isRefreshing, tokenInfo } = get();
 
+    console.log('token调用了',tokenInfo)
+
     if (isRefreshing) {
       console.log('OIDC: Token refresh already in progress');
       return false;
