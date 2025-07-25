@@ -27,8 +27,6 @@ export const AGGREGATED_MODEL = pgTable(
     pricing: jsonb('pricing').notNull(), // 定价信息（JSON）
     abilities: jsonb('abilities').default({}), // 能力（JSON）
     contextWindowTokens: integer('context_window_tokens'), // 上下文窗口令牌数
-    createdBy: text('created_by').notNull(), // 模型创建者
-    updatedBy: text('updated_by').notNull(), // 模型更新者
     ...timestamps,
   },
   (table) => [index('uq_model_id').on(table.id)] // 模型ID索引
