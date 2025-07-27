@@ -82,7 +82,7 @@ export interface GenerateReplyResponse {
 // 获取 Authorization header
 const getAuthHeader = () => {
   const virtualKey = useOIDCStore.getState().virtualKey;
-  return virtualKey ? { Authorization: `Bearer ${virtualKey}` } : undefined;
+  return virtualKey ? { Authorization: `Bearer sk-${virtualKey}` } : undefined;
 };
 
 // 获取 fallback 模型
