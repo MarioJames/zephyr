@@ -49,7 +49,7 @@ async function getCustomerList(
 ): Promise<CustomerListResponse> {
   try {
     // 1. 获取符合条件的会话列表
-    const sessionList = await sessionsAPI.getSessionList(params);
+    const sessionList = await sessionsAPI.getSessionList({...params, targetUserId:'ALL'});
 
     if (sessionList.total === 0) {
       return {
