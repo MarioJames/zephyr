@@ -102,10 +102,7 @@ const getFallbackModel = () => {
  */
 
 async function chat(data: ChatRequest) {
-  // const authorization = getAuthHeader();
-    const authorization = {
-      Authorization: "Bearer sk-1234",
-    };
+  const authorization = getAuthHeader();
   const fallbackModels = getFallbackModel();
   const fallbacks = fallbackModels.map((model) => ({
     model,
