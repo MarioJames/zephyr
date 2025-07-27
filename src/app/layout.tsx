@@ -23,8 +23,12 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
   const { variants } = await params;
   const { locale, theme, primaryColor, neutralColor } =
     RouteVariants.deserializeVariants(variants);
+  
+  // 获取主题相关的类名
+  const themeClass = theme === 'dark' ? 'dark' : '';
+  
   return (
-    <html lang='zh'>
+    <html lang='zh' className={themeClass}>
       <body>
         <OIDCInitializer />
         <NuqsAdapter>

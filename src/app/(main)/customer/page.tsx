@@ -426,9 +426,9 @@ export default function Customer() {
 
       {/* 统计区域/类别Tab */}
       <div className={styles.statsContainer}>
-        {categoryStats.map((item) => (
+        {categoryStats.map((item, index) => (
           <div
-            key={item.agent?.id}
+            key={item.agent?.id || `category-${index}`}
             onClick={() => setSelectedCategory(item)}
             className={`${styles.statsBox} ${
               selectedCategory.agent?.id === item.agent?.id
