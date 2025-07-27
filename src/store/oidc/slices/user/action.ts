@@ -64,7 +64,7 @@ export const createOIDCUserSlice: StateCreator<
         try {
           const virtualKeyResponse = await API.getVirtualKey(userInfo.id, userInfo.roles[0].id);
           console.log("virtualKeyResponse",virtualKeyResponse);
-          set({ virtualKey: virtualKeyResponse.key });
+          set({ virtualKey: virtualKeyResponse?.keyVaults?.api_key });
         } catch (error) {
           console.error('获取虚拟key失败:', error);
         }

@@ -33,6 +33,14 @@ export interface UserCreateRequest {
   roleId?: string;
 }
 
+export interface VirtualKeyResponse {
+  keyVaults: {
+    api_key: string;
+  };
+  roleId: string;
+  userId: string;
+}
+
 export interface UserUpdateRequest {
   username?: string;
   email?: string;
@@ -148,7 +156,7 @@ function updateUserRole(id: string, data: UserUpdateRoleRequest) {
  * @returns { key: string }
  */
 function getVirtualKey(userId: string, roleId: string) {
-  return http.get<{ key: string }>(`/api/virtual-key?userId=${userId}&roleId=${roleId}`);
+  return http.get<VirtualKeyResponse>(`/api/virtual-key?userId=${userId}&roleId=${roleId}`);
 }
 
 export default {
