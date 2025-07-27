@@ -61,7 +61,7 @@ const SessionContent = memo<SessionContentProps>(
 
     const toggleEditing = () => {
       if (id) {
-        router.push(`/customer/edit?id=${id}`);
+        router.push(`/customer/form/edit/${id}`);
       }
     };
 

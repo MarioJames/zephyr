@@ -92,7 +92,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
   );
 
   const handleEditCustomer = () => {
-    router.push(`/customer/edit?id=${sessionId}`);
+    router.push(`/customer/form/edit/${sessionId}`);
   };
 
   const popoverContent = (
