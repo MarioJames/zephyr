@@ -1,5 +1,7 @@
 import { Pool as NeonPool } from '@neondatabase/serverless';
 import { drizzle as neonDrizzle } from 'drizzle-orm/neon-serverless';
+import { drizzle as nodeDrizzle } from 'drizzle-orm/node-postgres';
+import { Pool as NodePool } from 'pg';
 
 import { ZephyrDatabase } from './type';
 import { serverDBEnv } from '@/config/db';
@@ -15,16 +17,17 @@ export const getZephyrDB = async (): Promise<ZephyrDatabase> => {
   // 如果已经有缓存的实例，直接返回
   if (cachedDB) return cachedDB;
 
-  try {
-    const client = new NeonPool({
-      connectionString: serverDBEnv.ZEPHYR_DATABASE_URL,
-    });
+  let connectionString = serverDBEnv.ZEPHYR_DATABASE_URL;
+
+  if (serverDBEnv.ZEPHYR_DATABASE_DRIVER === 'node') {
+    const client = new NodePool({ connectionString });
+    cachedDB = nodeDrizzle(client, { schema });
+  } else {
+    const client = new NeonPool({ connectionString });
     cachedDB = neonDrizzle(client, { schema });
-    return cachedDB;
-  } catch (error) {
-    console.error('❌ Failed to initialize database:', error);
-    throw error;
   }
+
+  return cachedDB;
 };
 
 export const zephyrDB = getZephyrDB();
