@@ -40,7 +40,8 @@ export const searchSlice: StateCreator<
       const finalPendingKeys = new Set(get().pendingSearchKeys);
       finalPendingKeys.delete(searchKey);
       set({ 
-        searchedEmployees: employees, 
+        employees,
+        searchedEmployees: employees,
         loading: false,
         pendingSearchKeys: finalPendingKeys
       });
@@ -49,7 +50,8 @@ export const searchSlice: StateCreator<
       const finalPendingKeys = new Set(get().pendingSearchKeys);
       finalPendingKeys.delete(searchKey);
       set({ 
-        searchedEmployees: [], 
+        employees: [],
+        searchedEmployees: [],
         loading: false,
         pendingSearchKeys: finalPendingKeys
       });
