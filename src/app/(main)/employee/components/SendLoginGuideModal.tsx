@@ -42,7 +42,7 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
       closable={false}
       styles={{
         content: {
-          padding: 24,
+          padding: 16,
         },
       }}
     >
