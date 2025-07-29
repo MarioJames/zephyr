@@ -2,6 +2,15 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  webpack: (config, { isServer }) => {
+    // 添加对 cloudflare:sockets 的处理
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "cloudflare:sockets": false,
+    };
+    
+    return config;
+  },
   async redirects() {
     return [
       {
