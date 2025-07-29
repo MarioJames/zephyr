@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Table, Space, Typography, App, Spin } from 'antd';
+import { Table, Space, Typography, App, Spin, Popconfirm } from 'antd';
 import { Button, Modal, Select, Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -169,11 +169,6 @@ export default function Customer() {
     setPagination,
   } = useCustomerStore();
 
-  // 本地状态（只保留必要的UI状态）
-  const [currentRecord, setCurrentRecord] =
-    useState<CustomerDisplayItem | null>(null);
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-
   // 防抖搜索
   const {
     loading: searchLoading,
@@ -204,25 +199,16 @@ export default function Customer() {
   }, []);
 
   // 处理删除
-  const handleDelete = useCallback((record: CustomerDisplayItem) => {
-    setCurrentRecord(record);
-    setDeleteModalVisible(true);
-  }, []);
-
-  const confirmDelete = useCallback(async () => {
-    if (!currentRecord) return;
-
+  const handleDelete = useCallback(async (record: CustomerDisplayItem) => {
     try {
-      await deleteCustomer(currentRecord.sessionId);
-      message.success(`已删除客户: ${currentRecord.name}`);
-      setDeleteModalVisible(false);
-      setCurrentRecord(null);
+      await deleteCustomer(record.sessionId);
+      message.success(`已删除客户: ${record.name}`);
       refreshCustomers();
     } catch (error) {
       message.error('删除客户失败');
       console.error('删除客户失败:', error);
     }
-  }, [currentRecord, deleteCustomer, message]);
+  }, [deleteCustomer, message, refreshCustomers]);
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
@@ -349,12 +335,15 @@ export default function Customer() {
           >
             编辑
           </a>
-          <a
-            style={{ color: theme.colorPrimary }}
-            onClick={() => handleDelete(record)}
+          <Popconfirm
+            title='确认删除'
+            description='确定要删除该客户吗？此操作不可撤销。'
+            okText='确认'
+            cancelText='取消'
+            onConfirm={() => handleDelete(record)}
           >
-            删除
-          </a>
+            <a style={{ color: theme.colorPrimary }}>删除</a>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -388,7 +377,7 @@ export default function Customer() {
             suffixIcon={<SearchOutlined />}
             className={styles.searchBox}
             onSearch={searchSessions}
-            onChange={(value) => {
+            onChange={(value: string | undefined) => {
               if (value) {
                 // 直接跳转到客户详情页
                 router.push(`/customer/detail?id=${value}`);
@@ -478,18 +467,6 @@ export default function Customer() {
           }}
         />
       </div>
-
-      {/* 删除确认弹窗 */}
-      <Modal
-        title='确认删除'
-        open={deleteModalVisible}
-        onOk={confirmDelete}
-        onCancel={() => setDeleteModalVisible(false)}
-        okText='确认'
-        cancelText='取消'
-      >
-        <p>确定要删除客户 {currentRecord?.name} 吗？此操作不可撤销。</p>
-      </Modal>
     </div>
   );
 }
