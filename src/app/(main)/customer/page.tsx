@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Table, Space, Typography, App, Spin, Popconfirm } from 'antd';
+import { Table, Space, Typography, App, Spin, Popconfirm, Skeleton } from 'antd';
 import { Button, Modal, Select, Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -194,10 +194,21 @@ export default function Customer() {
     return customers.map(transformCustomerToDisplayItem);
   }, [customers]);
 
+  // 添加统计区域加载状态
+  const [statsLoading, setStatsLoading] = useState(false);
+
   // 进入页面时获取分类统计数据
   useEffect(() => {
-    fetchCategoryStats();
-  }, []);
+    const loadStats = async () => {
+      setStatsLoading(true);
+      try {
+        await fetchCategoryStats();
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+    loadStats();
+  }, [fetchCategoryStats]);
 
   // 处理删除
   const handleDelete = useCallback(async (record: CustomerDisplayItem) => {
@@ -205,7 +216,12 @@ export default function Customer() {
       await deleteCustomer(record.sessionId);
       message.success(`已删除客户: ${record.name}`);
       // 刷新客户列表和统计数据
-      await Promise.all([refreshCustomers(), fetchCategoryStats()]);
+      setStatsLoading(true);
+      try {
+        await Promise.all([refreshCustomers(), fetchCategoryStats()]);
+      } finally {
+        setStatsLoading(false);
+      }
     } catch (error) {
       message.error('删除客户失败');
       console.error('删除客户失败:', error);
@@ -417,20 +433,40 @@ export default function Customer() {
 
       {/* 统计区域/类别Tab */}
       <div className={styles.statsContainer}>
-        {categoryStats.map((item, index) => (
-          <div
-            key={item.agent?.id || `category-${index}`}
-            onClick={() => setSelectedCategory(item)}
-            className={`${styles.statsBox} ${
-              selectedCategory.agent?.id === item.agent?.id
-                ? styles.statsBoxActive
-                : ''
-            }`}
-          >
-            <div className={styles.statsTitle}>{item.agent?.title}</div>
-            <div className={styles.statsValue}>{item.count}</div>
-          </div>
-        ))}
+        {statsLoading ? (
+          // 骨架屏
+          <>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className={styles.statsBox}>
+              <Skeleton
+                active
+                paragraph={false}
+                title={{ width: '100%' }}
+              />
+              <Skeleton.Input
+                active
+                size="default"
+                style={{ width: '60%', marginTop: '8px' }}
+                />
+              </div>
+            ))}
+          </>
+        ) : (
+          categoryStats.map((item, index) => (
+            <div
+              key={item.agent?.id || `category-${index}`}
+              onClick={() => setSelectedCategory(item)}
+              className={`${styles.statsBox} ${
+                selectedCategory.agent?.id === item.agent?.id
+                  ? styles.statsBoxActive
+                  : ''
+              }`}
+            >
+              <div className={styles.statsTitle}>{item.agent?.title}</div>
+              <div className={styles.statsValue}>{item.count}</div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* 表格区域 */}
