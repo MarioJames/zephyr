@@ -236,13 +236,12 @@ export async function DELETE(request: NextRequest) {
     // 根据sessionId查找客户扩展信息
     const customerExtend = await customerModel.findBySessionId(sessionId);
     if (!customerExtend) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '客户扩展信息不存在',
-        },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        success: true,
+        data: null,
+        message: '客户扩展信息删除成功',
+        timestamp: Date.now(),
+      });
     }
 
     // 删除客户扩展信息
