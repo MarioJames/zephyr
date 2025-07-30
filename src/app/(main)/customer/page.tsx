@@ -156,6 +156,7 @@ export default function Customer() {
     error,
     selectedCategory,
     categoryStats,
+    total,
 
     // Actions
     setSelectedCategory,
@@ -449,7 +450,7 @@ export default function Customer() {
           pagination={{
             current: page,
             pageSize: pageSize,
-            total: selectedCategory.count,
+            total: total,
             showSizeChanger: true,
             showQuickJumper: false,
             showTotal: (total) => `共 ${total} 条记录`,
