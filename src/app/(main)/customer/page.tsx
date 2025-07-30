@@ -177,7 +177,7 @@ export default function Customer() {
     data: searchResults,
   } = useRequest(
     (keyword: string) => {
-      if (!keyword) return Promise.resolve([]);
+      if (!keyword.trim()) return Promise.resolve([]);
 
       return sessionsAPI.searchSessionList({
         keyword: keyword,
