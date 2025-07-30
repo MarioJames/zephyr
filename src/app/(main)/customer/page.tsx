@@ -204,12 +204,13 @@ export default function Customer() {
     try {
       await deleteCustomer(record.sessionId);
       message.success(`已删除客户: ${record.name}`);
-      refreshCustomers();
+      // 刷新客户列表和统计数据
+      await Promise.all([refreshCustomers(), fetchCategoryStats()]);
     } catch (error) {
       message.error('删除客户失败');
       console.error('删除客户失败:', error);
     }
-  }, [deleteCustomer, message, refreshCustomers]);
+  }, [deleteCustomer, message, refreshCustomers, fetchCategoryStats]);
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
