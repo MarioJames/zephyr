@@ -62,10 +62,11 @@ const useStyles = createStyles(({ css, token, cx, isDarkMode }) => {
 
 interface FileRenderItemProps extends FileItem {
   index: number;
+  onDelete?: () => void;
 }
 
 const FileRenderItem = memo<FileRenderItemProps>(
-  ({ size, url, filename, fileType, id, uploadedAt }) => {
+  ({ size, url, filename, fileType, id, uploadedAt, onDelete }) => {
     const { styles } = useStyles();
     const router = useRouter();
     const displayTime =
@@ -99,7 +100,7 @@ const FileRenderItem = memo<FileRenderItemProps>(
             <FileIcon fileName={filename} fileType={fileType} />
             <span className={styles.name}>{filename}</span>
           </Flexbox>
-          <DropdownMenu id={id} name={filename} url={url} />
+          <DropdownMenu id={id} name={filename} onDelete={onDelete} url={url} />
         </Flexbox>
         <Flexbox className={styles.item} width={FILE_DATE_WIDTH}>
           {displayTime}

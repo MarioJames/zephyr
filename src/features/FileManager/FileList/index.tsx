@@ -3,7 +3,7 @@
 import { createStyles } from 'antd-style';
 import { useQueryState } from 'nuqs';
 import { rgba } from 'polished';
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso } from 'react-virtuoso';
 import { Spin } from 'antd';
@@ -59,7 +59,7 @@ const FileList = memo<FileListProps>(({ category }) => {
   const [hasMore, setHasMore] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-  const fetchData = async (page: number, append = false) => {
+  const fetchData = useCallback(async (page: number, append = false) => {
     if (append) {
       setLoadingMore(true);
     } else {
@@ -80,7 +80,6 @@ const FileList = memo<FileListProps>(({ category }) => {
         setFileData(result.data);
       }
 
-      // 检查是否还有更多数据
       setHasMore(result.data.length === pagination.pageSize);
     } finally {
       if (append) {
@@ -89,11 +88,12 @@ const FileList = memo<FileListProps>(({ category }) => {
         setIsFirstLoad(false);
       }
     }
-  };
+  }, [useFetchFileManage, query, category, pagination.pageSize]);
 
+  // 监听查询条件变化
   useEffect(() => {
     fetchData(1);
-  }, [useFetchFileManage, query, category]);
+  }, [fetchData]);
 
   return !loading && fileData.length === 0 ? (
     <EmptyStatus />
@@ -144,6 +144,7 @@ const FileList = memo<FileListProps>(({ category }) => {
               <FileListItem
                 index={index}
                 key={item.id}
+                onDelete={() => fetchData(1)}
                 {...item}
               />
             )

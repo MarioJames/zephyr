@@ -16,9 +16,10 @@ interface DropdownMenuProps {
   name: string;
   id: string;
   url: string;
+  onDelete?: () => void;
 }
 
-const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
+const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name, onDelete }) => {
   const { message, modal } = App.useApp();
 
   const [removeFile] = useFileStore((s) => [s.removeFileItem]);
@@ -68,12 +69,13 @@ const DropdownMenu = memo<DropdownMenuProps>(({ id, url, name }) => {
             okButtonProps: { danger: true },
             onOk: async () => {
               await removeFile(id);
+              onDelete?.();
             },
           });
         },
       },
     ] as ItemType[];
-  }, []);
+  }, [id, url, name, onDelete]);
 
   return (
     <Dropdown menu={{ items }}>
