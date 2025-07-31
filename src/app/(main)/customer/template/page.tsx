@@ -17,8 +17,8 @@ import { createStyles } from "antd-style";
 import Link from "next/link";
 
 import { useAgentStore } from "@/store/agent/store";
-import { useOIDCStore } from "@/store/oidc";
-import { oidcSelectors } from "@/store/oidc/selectors";
+import { useGlobalStore } from "@/store/global";
+import { globalSelectors } from "@/store/global/selectors";
 import TemplateModal from "./components/templateModal";
 import DeleteModal from "./components/deleteModal";
 import { CreateAgentRequest } from "@/services";
@@ -136,7 +136,7 @@ const useStyles = createStyles(({ css, token }) => ({
 
 export default function CustomerTemplatePage() {
   const { styles } = useStyles();
-  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+  const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   // If not admin, show NoAuthority component
   if (!isAdmin) {

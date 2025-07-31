@@ -1,12 +1,12 @@
 import type { StateCreator } from 'zustand/vanilla';
 
-import type { GlobalStore } from '@/store/global';
+import type { GlobalStore } from '../../store';
 
 /**
  * 全局工作区面板操作接口
  * 定义了工作区面板相关的操作方法
  */
-export interface GlobalWorkspacePaneAction {
+export interface WorkspaceAction {
   /**
    * 设置插槽面板类型
    * @param type 面板类型：'aiHint' | 'history'
@@ -30,11 +30,11 @@ export interface GlobalWorkspacePaneAction {
  * 创建全局工作区面板操作slice的工厂函数
  * 返回包含所有工作区面板相关操作的对象
  */
-export const globalWorkspaceSlice: StateCreator<
+export const workspaceSlice: StateCreator<
   GlobalStore,
   [],
   [],
-  GlobalWorkspacePaneAction
+  WorkspaceAction
 > = (set, get) => ({
   /**
    * 设置插槽面板类型

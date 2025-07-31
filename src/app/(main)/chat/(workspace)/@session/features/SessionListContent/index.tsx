@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import React, { memo, useEffect } from "react";
-import { Flexbox } from "react-layout-kit";
-import { Button } from "@lobehub/ui";
-import { Plus } from "lucide-react";
-import { createStyles } from "antd-style";
-import { useRouter } from "next/navigation";
-import { Empty } from "antd";
+import React, { memo, useEffect } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { Button } from '@lobehub/ui';
+import { Plus } from 'lucide-react';
+import { createStyles } from 'antd-style';
+import { useRouter } from 'next/navigation';
+import { Empty } from 'antd';
 
-import { sessionSelectors, useSessionStore } from "@/store/session";
-import { useOIDCStore } from "@/store/oidc";
-import { oidcSelectors } from "@/store/oidc/selectors";
-import { useChatStore } from "@/store/chat";
-import EmployeeSelector from "@/components/EmployeeSelector";
+import { sessionSelectors, useSessionStore } from '@/store/session';
+import { useChatStore } from '@/store/chat';
+import EmployeeSelector from '@/components/EmployeeSelector';
 
-import { SkeletonList } from "../SkeletonList";
-import ShowMode from "./ShowMode";
-import SearchResult from "./SearchResult";
-import { UserItem } from "@/services";
+import { SkeletonList } from '../SkeletonList';
+import ShowMode from './ShowMode';
+import SearchResult from './SearchResult';
+import { UserItem } from '@/services';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   button: css`
@@ -43,7 +43,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
-  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+  const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   const [
     // state
@@ -61,7 +61,7 @@ const SessionListContent = memo(() => {
     setActiveTopic,
     resetActiveState,
     setTargetUserId,
-    setTargetUser
+    setTargetUser,
   ] = useSessionStore((s) => [
     sessionSelectors.sessions(s),
     sessionSelectors.isLoading(s),
@@ -89,7 +89,7 @@ const SessionListContent = memo(() => {
   }, [isInitialized, fetchSessions, initFromUrlParams]);
 
   const handleAddCustomer = () => {
-    router.push("/customer/form");
+    router.push('/customer/form');
   };
 
   const handleEmployeeSelect = async (userId: string, user: UserItem) => {
@@ -129,8 +129,8 @@ const SessionListContent = memo(() => {
     <>
       <Flexbox
         horizontal
-        align="center"
-        justify="space-between"
+        align='center'
+        justify='space-between'
         className={styles.flexbox}
       >
         {isAdmin && (
@@ -140,13 +140,13 @@ const SessionListContent = memo(() => {
               onClear={handleEmployeeClear}
               value={targetUserId}
               selectedUser={targetUser}
-              placeholder="全部员工"
+              placeholder='全部员工'
             />
           </div>
         )}
         <div style={{ flex: 1 }}>
           <Button
-            type="default"
+            type='default'
             icon={<Plus size={16} />}
             className={styles.button}
             onClick={handleAddCustomer}
@@ -157,7 +157,7 @@ const SessionListContent = memo(() => {
       </Flexbox>
       {isInitialized && sessions.length === 0 ? (
         <Empty
-          description="暂无会话"
+          description='暂无会话'
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{
             marginTop: 120,
@@ -170,6 +170,6 @@ const SessionListContent = memo(() => {
   );
 });
 
-SessionListContent.displayName = "SessionListContent";
+SessionListContent.displayName = 'SessionListContent';
 
 export default SessionListContent;

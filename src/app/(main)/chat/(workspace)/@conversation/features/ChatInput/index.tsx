@@ -5,7 +5,7 @@ import { memo } from 'react';
 import { ActionKeys } from '@/features/ChatInput/ActionBar/config';
 import DesktopChatInput, { FooterRender } from '@/features/ChatInput/Desktop';
 import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { globalSelectors } from '@/store/global/selectors';
 import { useChatStore } from '@/store/chat';
 
 import Footer from './Footer';
@@ -27,7 +27,7 @@ const renderFooter: FooterRender = ({ expand, onExpandChange }) => (
 );
 
 const ChatInput = memo(() => {
-  const inputHeight = useGlobalStore(systemStatusSelectors.inputHeight);
+  const inputHeight = useGlobalStore(globalSelectors.inputHeight);
   const updatePreference = useGlobalStore((s) => s.updateSystemStatus);
 
   // 获取文件上传相关状态

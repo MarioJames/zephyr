@@ -3,24 +3,23 @@ import { SWRResponse } from 'swr';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import type { SystemStatus } from '@/store/global/initialState';
 import { merge } from '@/utils/merge';
 
-import type { GlobalStore } from '../store';
-
+import type { GlobalStore } from '../../store';
+import type { SystemStatus } from './initialState';
 
 /**
  * 全局通用操作接口
  * 定义了全局通用的操作方法
  */
-export interface GlobalGeneralAction {
+export interface GeneralAction {
   /**
    * 更新系统状态
    * @param status 要更新的状态部分
    * @param action 操作名称（用于调试）
    */
   updateSystemStatus: (status: Partial<SystemStatus>, action?: any) => void;
-  
+
   /**
    * 初始化系统状态Hook
    * @returns SWR响应对象
@@ -32,11 +31,11 @@ export interface GlobalGeneralAction {
  * 创建全局通用操作slice的工厂函数
  * 返回包含所有全局通用操作的对象
  */
-export const generalActionSlice: StateCreator<
+export const generalSlice: StateCreator<
   GlobalStore,
   [],
   [],
-  GlobalGeneralAction
+  GeneralAction
 > = (set, get) => ({
   /**
    * 更新系统状态
@@ -72,6 +71,6 @@ export const generalActionSlice: StateCreator<
           // 更新系统状态
           get().updateSystemStatus(status, 'initSystemStatus');
         },
-      },
+      }
     ),
 });

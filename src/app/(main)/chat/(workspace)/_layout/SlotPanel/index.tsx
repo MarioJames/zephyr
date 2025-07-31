@@ -7,7 +7,7 @@ import { memo, useEffect, useState } from 'react';
 
 import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { globalSelectors } from '@/store/global/selectors';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
 import AIHintPanel from './SlotPanelAIHint';
@@ -31,7 +31,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const SlotPanel = memo(() => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
-  const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
+  const showSlotPanel = useGlobalStore(globalSelectors.showSlotPanel);
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore(
     (s) => s.status.slotPanelType || 'aiHint'

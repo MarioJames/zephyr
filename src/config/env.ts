@@ -3,9 +3,13 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
+    // NextAuth 配置
+    NEXTAUTH_SECRET: z.string().min(1, 'NEXTAUTH_SECRET is required'),
+    NEXTAUTH_URL: z.string().url().optional(),
+
     // Clerk 配置
-    CLERK_SECRET_KEY: z.string().min(1, 'CLERK_SECRET_KEY is required'),
-    CLERK_PUBLISHABLE_KEY: z.string().min(1, 'CLERK_PUBLISHABLE_KEY is required'),
+    CLERK_SECRET_KEY: z.string().optional(),
+    CLERK_PUBLISHABLE_KEY: z.string().optional(),
 
     // 邮件服务配置
     ALIYUN_MAIL_SMTP_HOST: z.string().optional(),
@@ -27,6 +31,10 @@ export const env = createEnv({
     NEXT_PUBLIC_OIDC_CLIENT_ID: z.string().optional(),
   },
   runtimeEnv: {
+    // NextAuth 环境变量
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+
     // 服务端环境变量
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,

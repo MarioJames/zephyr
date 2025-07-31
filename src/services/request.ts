@@ -1,38 +1,102 @@
-import { useOIDCStore } from "@/store/oidc";
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { getSession } from 'next-auth/react';
 
-const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || "http://localhost:3010";
+// 扩展 Session 类型以包含自定义属性
+declare module 'next-auth' {
+  interface Session {
+    accessToken?: string;
+    idToken?: string;
+    expiresAt?: number;
+  }
+}
+
+const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
+
+// 简单的内存缓存
+interface TokenCache {
+  accessToken: string | null;
+  idToken: string | null;
+  expiresAt: number | null;
+  lastFetched: number;
+}
+
+let tokenCache: TokenCache = {
+  accessToken: null,
+  idToken: null,
+  expiresAt: null,
+  lastFetched: 0,
+};
+
+// 缓存有效期（5分钟）
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// 清除内存缓存
+function clearTokenCache() {
+  tokenCache = {
+    accessToken: null,
+    idToken: null,
+    expiresAt: null,
+    lastFetched: 0,
+  };
+}
+
+// 检查缓存是否有效（只检查缓存时间，不检查token过期）
+function isCacheValid(): boolean {
+  const now = Date.now();
+  const cacheAge = now - tokenCache.lastFetched;
+
+  // 缓存时间超过5分钟则失效
+  return cacheAge <= CACHE_DURATION;
+}
 
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
   timeout: 300000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
-// 同步获取当前有效的access token
-function getCurrentAccessToken(): string | null {
-  const oidcState = useOIDCStore.getState();
-
-  // 优先使用OIDC token（如果已认证且token未过期）
-  if (oidcState.isAuthenticated && oidcState.tokenInfo) {
-    const now = Date.now() / 1000;
-    // 检查token是否还有效（未过期且不是即将过期）
-    if (now < oidcState.tokenInfo.expiresAt - 60) {
-      // 提前60秒认为过期
-      return oidcState.tokenInfo.accessToken;
+// 同步获取当前有效的id token
+async function getCurrentIdToken(): Promise<string | null> {
+  try {
+    // 1. 优先检查内存缓存
+    if (isCacheValid() && tokenCache.idToken) {
+      return tokenCache.idToken;
     }
+
+    // 2. 从 NextAuth session 获取
+    const session = await getSession();
+    console.log(session, 'session');
+    if ((session as any)?.idToken) {
+      const idToken = (session as any).idToken;
+      const sessionExpiresAt = (session as any).expiresAt;
+
+      // 更新 localStorage
+      localStorage.setItem('idToken', idToken);
+      if (sessionExpiresAt) {
+        localStorage.setItem('tokenExpiresAt', sessionExpiresAt.toString());
+      }
+
+      // 更新内存缓存
+      tokenCache.idToken = idToken;
+      tokenCache.expiresAt = sessionExpiresAt;
+      tokenCache.lastFetched = Date.now();
+
+      return idToken;
+    }
+  } catch (error) {
+    console.warn('Failed to get id token:', error);
   }
 
   return null;
 }
 
 // 请求拦截器：自动带上accessToken
-instance.interceptors.request.use((config) => {
-  const token = getCurrentAccessToken();
+instance.interceptors.request.use(async (config) => {
+  const token = await getCurrentIdToken();
   if (token && config.headers) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 });
@@ -59,7 +123,7 @@ instance.interceptors.response.use(
         // 队列等待token刷新
         return new Promise((resolve) => {
           refreshSubscribers.push((token: string) => {
-            originalRequest.headers["Authorization"] = "Bearer " + token;
+            originalRequest.headers['Authorization'] = 'Bearer ' + token;
             resolve(instance(originalRequest));
           });
         });
@@ -68,48 +132,58 @@ instance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const oidcState = useOIDCStore.getState();
+        // 尝试获取新的 token（NextAuth 会自动处理刷新）
+        const session = await getSession();
+        if ((session as any)?.accessToken) {
+          const accessToken = (session as any).accessToken;
+          const idToken = (session as any).idToken;
+          const sessionExpiresAt = (session as any).expiresAt;
 
-        // 优先尝试使用OIDC的token刷新机制
-        if (oidcState.isAuthenticated && oidcState.refreshTokens) {
-          const success = await oidcState.refreshTokens();
-          if (success) {
-            const newToken = oidcState.tokenInfo?.accessToken;
-            if (newToken) {
-              onRefreshed(newToken);
-              originalRequest.headers["Authorization"] = "Bearer " + newToken;
-              return instance(originalRequest);
-            }
+          // 更新 localStorage
+          localStorage.setItem('accessToken', accessToken);
+          if (idToken) {
+            localStorage.setItem('idToken', idToken);
           }
+          if (sessionExpiresAt) {
+            localStorage.setItem('tokenExpiresAt', sessionExpiresAt.toString());
+          }
+
+          // 更新内存缓存
+          tokenCache.accessToken = accessToken;
+          tokenCache.idToken = idToken;
+          tokenCache.expiresAt = sessionExpiresAt;
+          tokenCache.lastFetched = Date.now();
+
+          onRefreshed(accessToken);
+          originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
+          return instance(originalRequest);
         }
 
-        // 没有可用的刷新token，触发重新登录
-        throw new Error("No refresh token available");
+        // 没有可用的token，触发重新登录
+        throw new Error('No access token available');
       } catch (refreshError) {
         // 刷新失败，清除状态并触发重新登录
-        const oidcState = useOIDCStore.getState();
-        if (oidcState.clearState) {
-          oidcState.clearState();
-        }
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('idToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('tokenExpiresAt');
 
-        // 优先尝试调用 OIDC 的登录方法
-        if (oidcState.login) {
-          try {
-            await oidcState.login();
-          } catch (loginError) {
-            console.error("OIDC login failed, redirecting to home", loginError);
-            window.location.href = "/";
-          }
-        } else {
-          // 降级处理：直接跳转到首页
-          window.location.href = "/";
-        }
+        // 清除内存缓存
+        clearTokenCache();
+
+        // 重定向到登录页面
+        console.error(
+          'Token refresh failed, redirecting to login',
+          refreshError
+        );
+        window.location.href = '/';
 
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
@@ -123,18 +197,34 @@ export async function request<T = any>(
     message?: string;
     timestamp?: number;
   },
-  config?: AxiosRequestConfig,
+  config?: AxiosRequestConfig & { includeIdToken?: boolean }
 ): Promise<T> {
-  const method = (config?.method || "post") as AxiosRequestConfig["method"];
+  const method = (config?.method || 'post') as AxiosRequestConfig['method'];
+  const includeIdToken = config?.includeIdToken || false;
 
-  const isOpenAPI = api.startsWith("/api/v1");
+  const isOpenAPI = api.startsWith('/api/v1');
+
+  let url = isOpenAPI ? `${baseURL}${api}` : api;
+
+  // 如果需要在URL中包含id_token
+  if (includeIdToken) {
+    const idToken = await getCurrentIdToken();
+    if (idToken) {
+      const separator = url.includes('?') ? '&' : '?';
+      url += `${separator}id_token=${encodeURIComponent(idToken)}`;
+    }
+  }
 
   const reqConfig: AxiosRequestConfig = {
-    url: isOpenAPI ? `${baseURL}${api}` : api,
+    url,
     method,
     ...config,
   };
-  if (method === "get") {
+
+  // 移除自定义属性以避免axios报错
+  delete (reqConfig as any).includeIdToken;
+
+  if (method === 'get') {
     reqConfig.params = data;
   } else {
     reqConfig.data = data;
@@ -159,29 +249,29 @@ export const http = {
   get<T = any>(
     api: string,
     params?: any,
-    config?: AxiosRequestConfig,
+    config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
-    return request<T>(api, params, { ...config, method: "get" });
+    return request<T>(api, params, { ...config, method: 'get' });
   },
   post<T = any>(
     api: string,
     data?: any,
-    config?: AxiosRequestConfig,
+    config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
-    return request<T>(api, data, { ...config, method: "post" });
+    return request<T>(api, data, { ...config, method: 'post' });
   },
   put<T = any>(
     api: string,
     data?: any,
-    config?: AxiosRequestConfig,
+    config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
-    return request<T>(api, data, { ...config, method: "put" });
+    return request<T>(api, data, { ...config, method: 'put' });
   },
   delete<T = any>(
     api: string,
     params?: any,
-    config?: AxiosRequestConfig,
+    config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
-    return request<T>(api, params, { ...config, method: "delete" });
+    return request<T>(api, params, { ...config, method: 'delete' });
   },
 };

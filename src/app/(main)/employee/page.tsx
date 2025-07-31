@@ -7,7 +7,6 @@ import {
   Dropdown,
   Form,
   App,
-  Modal,
   Popconfirm,
 } from 'antd';
 import { Button, Input } from '@lobehub/ui';
@@ -16,11 +15,9 @@ import { createStyles } from 'antd-style';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { useEmployeeStore } from '@/store/employee';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 import { UserItem } from '@/services/user';
-import { adminList } from '@/const/role';
-import { RoleItem } from '@/services/roles';
 import { mailAPI } from '@/services';
 import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
 import EmployeeCustomerModal from './components/EmployeeCustomerModal';
@@ -185,7 +182,7 @@ const useStyles = createStyles(({ css, token }) => ({
 export default function EmployeePage() {
   const { message } = App.useApp();
   const { styles, theme } = useStyles();
-  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+  const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   // If not admin, show NoAuthority component
   if (!isAdmin) {
@@ -386,17 +383,20 @@ export default function EmployeePage() {
 
           // 然后更新 Clerk 用户信息
           try {
-            const clerkResponse = await fetch(`/api/clerk/users/${currentEmployee.id}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: values.email,
-                username: values.username,
-                fullName: values.fullName,
-              }),
-            });
+            const clerkResponse = await fetch(
+              `/api/clerk/users/${currentEmployee.id}`,
+              {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  email: values.email,
+                  username: values.username,
+                  fullName: values.fullName,
+                }),
+              }
+            );
 
             if (!clerkResponse.ok) {
               const errorData = await clerkResponse.json();
@@ -719,7 +719,7 @@ export default function EmployeePage() {
 
   const handleSearch = () => {
     // Reset pagination to first page when searching
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
     searchEmployees(searchValue, pagination.pageSize);
   };
 

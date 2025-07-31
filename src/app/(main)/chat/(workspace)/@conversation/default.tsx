@@ -5,7 +5,6 @@ import React from 'react';
 import ChatHydration from './features/ChatHydration';
 import ChatInput from './features/ChatInput/index';
 import ChatList from './features/ChatList';
-import ZenModeToast from './features/ZenModeToast';
 import dynamic from 'next/dynamic';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
@@ -25,18 +24,27 @@ const ChatConversation = (props: DynamicLayoutProps) => {
 
   if (!activeSessionId) {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 18 }}>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#999',
+          fontSize: 18,
+        }}
+      >
         请选择客户后进行对话哦
       </div>
     );
   }
-  
+
   return (
     <>
-      <ZenModeToast />
       <ChatHeader />
       <ChatList />
-      <ChatInput/>
+      <ChatInput />
       <ChatHydration />
     </>
   );

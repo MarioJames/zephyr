@@ -10,8 +10,8 @@ import type { ColumnsType } from 'antd/es/table';
 import { sessionsAPI, topicsAPI, type CustomerItem } from '@/services';
 import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -141,7 +141,7 @@ export default function Customer() {
   const { styles, theme } = useStyles();
   const { message } = App.useApp();
   const router = useRouter();
-  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+  const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   // If not admin, show NoAuthority component
   if (!isAdmin) {
@@ -199,16 +199,19 @@ export default function Customer() {
   }, []);
 
   // 处理删除
-  const handleDelete = useCallback(async (record: CustomerDisplayItem) => {
-    try {
-      await deleteCustomer(record.sessionId);
-      message.success(`已删除客户: ${record.name}`);
-      refreshCustomers();
-    } catch (error) {
-      message.error('删除客户失败');
-      console.error('删除客户失败:', error);
-    }
-  }, [deleteCustomer, message, refreshCustomers]);
+  const handleDelete = useCallback(
+    async (record: CustomerDisplayItem) => {
+      try {
+        await deleteCustomer(record.sessionId);
+        message.success(`已删除客户: ${record.name}`);
+        refreshCustomers();
+      } catch (error) {
+        message.error('删除客户失败');
+        console.error('删除客户失败:', error);
+      }
+    },
+    [deleteCustomer, message, refreshCustomers]
+  );
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {

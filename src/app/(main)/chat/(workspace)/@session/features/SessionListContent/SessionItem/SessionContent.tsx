@@ -8,8 +8,8 @@ import { useRouter } from 'next/navigation';
 
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css }) => ({
   content: css`
@@ -55,7 +55,7 @@ interface SessionContentProps {
 
 const SessionContent = memo<SessionContentProps>(
   ({ id, title, showMore, employeeName, isRecent, avatar }) => {
-    const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+    const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
     const { styles } = useStyles();
     const router = useRouter();
 
