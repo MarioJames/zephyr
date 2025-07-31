@@ -32,4 +32,6 @@ const TogglePanelButton = memo(() => {
   );
 });
 
+TogglePanelButton.displayName = 'TogglePanelButton';
+
 export default TogglePanelButton;

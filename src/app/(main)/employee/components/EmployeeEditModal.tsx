@@ -1,8 +1,8 @@
-import React from "react";
-import { Form, Upload } from "antd";
-import { Button, Input, Modal } from "@lobehub/ui";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
+import React from 'react';
+import { Form, Upload } from 'antd';
+import { Button, Input, Modal } from '@lobehub/ui';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
@@ -98,7 +98,6 @@ export interface EmployeeEditModalProps {
   onSubmit: () => void;
   beforeUpload: (file: File) => Promise<boolean>;
   onAvatarChange: (info: any) => void;
-  setAvatarFile: (file: any) => void;
 }
 
 const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
@@ -111,7 +110,6 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   onSubmit,
   beforeUpload,
   onAvatarChange,
-  setAvatarFile,
 }) => {
   const { styles } = useStyles();
   return (
@@ -126,7 +124,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
     >
       <div>
         <div className={styles.modalTitle}>
-          {isEditMode ? "编辑员工" : "添加员工"}
+          {isEditMode ? '编辑员工' : '添加员工'}
         </div>
         {/* 头像上传区域 */}
         <div className={styles.sectionTitle}>头像</div>
@@ -139,14 +137,14 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
                   (avatarFile.originFileObj &&
                     URL.createObjectURL(avatarFile.originFileObj))
                 }
-                alt="头像"
+                alt='头像'
               />
             ) : (
-              <PlusOutlined style={{ fontSize: 24, color: "#ccc" }} />
+              <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
             )}
           </div>
           <Upload
-            name="avatar"
+            name='avatar'
             showUploadList={false}
             beforeUpload={beforeUpload}
             onChange={onAvatarChange}
@@ -159,43 +157,43 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
         </div>
         {/* 基本信息表单 */}
         <div className={styles.sectionTitle}>基本信息</div>
-        <Form form={form} layout="vertical" requiredMark={true} colon={true}>
+        <Form form={form} layout='vertical' requiredMark={true} colon={true}>
           <Form.Item
-            name="username"
-            label="员工姓名"
-            rules={[{ required: true, message: "请输入员工姓名" }]}
+            name='username'
+            label='员工姓名'
+            rules={[{ required: true, message: '请输入员工姓名' }]}
             className={styles.formItem}
           >
             <Input
-              placeholder="请输入员工姓名"
+              placeholder='请输入员工姓名'
               className={styles.customInput}
             />
           </Form.Item>
           <Form.Item
-            name="email"
-            label="邮箱"
+            name='email'
+            label='邮箱'
             rules={[
-              { required: true, message: "请输入员工邮箱" },
-              { type: "email", message: "请输入有效的邮箱地址" },
+              { required: true, message: '请输入员工邮箱' },
+              { type: 'email', message: '请输入有效的邮箱地址' },
             ]}
             className={styles.formItem}
           >
             <Input
-              placeholder="请输入员工邮箱"
+              placeholder='请输入员工邮箱'
               className={styles.customInput}
             />
           </Form.Item>
           <Form.Item
-            name="phone"
-            label="手机号"
+            name='phone'
+            label='手机号'
             rules={[
-              { required: true, message: "请输入员工手机号" },
-              { pattern: /^1[3-9]\d{9}$/, message: "请输入有效的手机号" },
+              { required: true, message: '请输入员工手机号' },
+              { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
             ]}
             className={styles.formItem}
           >
             <Input
-              placeholder="请输入员工手机号"
+              placeholder='请输入员工手机号'
               className={styles.customInput}
             />
           </Form.Item>
@@ -205,8 +203,8 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
           <Button className={styles.cancelButton} onClick={onCancel}>
             取消
           </Button>
-          <Button type="primary" onClick={onSubmit} loading={loading}>
-            {isEditMode ? "保存修改" : "添加员工"}
+          <Button type='primary' onClick={onSubmit} loading={loading}>
+            {isEditMode ? '保存修改' : '添加员工'}
           </Button>
         </div>
       </div>

@@ -10,7 +10,7 @@ import {
   Popconfirm,
   Skeleton,
 } from 'antd';
-import { Button, Modal, Select, Alert } from '@lobehub/ui';
+import { Button, Select, Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';

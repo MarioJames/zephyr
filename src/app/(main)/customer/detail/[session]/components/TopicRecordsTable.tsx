@@ -4,7 +4,7 @@ import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import topicService, { TopicItem } from '@/services/topics';
 
-const useStyles = createStyles(({ css, token }) => ({
+const useStyles = createStyles(({ css }) => ({
   messagesTitle: css`
     font-size: 16px;
     font-weight: bold;

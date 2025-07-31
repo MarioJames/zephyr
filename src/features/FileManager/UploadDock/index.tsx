@@ -48,7 +48,10 @@ const useStyles = createStyles(({ css, token }) => {
       transition: all 0.3s ease-in-out;
 
       &:hover {
-        background: ${convertAlphaToSolid(token.colorFillTertiary, token.colorBgContainer)};
+        background: ${convertAlphaToSolid(
+          token.colorFillTertiary,
+          token.colorBgContainer
+        )};
       }
     `,
     progress: css`
@@ -77,11 +80,13 @@ const UploadDock = memo(() => {
   const [show, setShow] = useState(true);
 
   const dispatchDockFileList = useFileStore((s) => s.dispatchDockFileList);
-  const totalUploadingProgress = useFileStore(fileCoreSelectors.overviewUploadingProgress);
+  const totalUploadingProgress = useFileStore(
+    fileCoreSelectors.overviewUploadingProgress
+  );
   const fileList = useFileStore(fileCoreSelectors.dockFileList, isEqual);
   const overviewUploadingStatus = useFileStore(
     fileCoreSelectors.overviewUploadingStatus,
-    isEqual,
+    isEqual
   );
   const isUploading = overviewUploadingStatus === 'uploading';
 
@@ -151,7 +156,10 @@ const UploadDock = memo(() => {
             icon={XIcon}
             onClick={() => {
               setShow(false);
-              dispatchDockFileList({ ids: fileList.map((item) => item.id), type: 'removeFiles' });
+              dispatchDockFileList({
+                ids: fileList.map((item) => item.id),
+                type: 'removeFiles',
+              });
             }}
           />
         )}
@@ -177,20 +185,18 @@ const UploadDock = memo(() => {
           </Center>
         </Flexbox>
       ) : (
-        overviewUploadingStatus !== 'pending' && (
-          <div
-            className={styles.progress}
-            style={{
-              borderColor:
-                overviewUploadingStatus === 'success'
-                  ? theme.colorSuccess
-                  : overviewUploadingStatus === 'error'
-                    ? theme.colorError
-                    : undefined,
-              insetInlineEnd: `${100 - totalUploadingProgress}%`,
-            }}
-          />
-        )
+        <div
+          className={styles.progress}
+          style={{
+            borderColor:
+              overviewUploadingStatus === 'success'
+                ? theme.colorSuccess
+                : overviewUploadingStatus === 'error'
+                ? theme.colorError
+                : undefined,
+            insetInlineEnd: `${100 - totalUploadingProgress}%`,
+          }}
+        />
       )}
     </Flexbox>
   );

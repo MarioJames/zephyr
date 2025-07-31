@@ -21,4 +21,6 @@ const Title = memo(() => {
   );
 });
 
+Title.displayName = 'Title';
+
 export default withSuspense(Title);

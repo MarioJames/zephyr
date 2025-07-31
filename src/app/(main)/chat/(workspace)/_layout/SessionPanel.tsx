@@ -95,4 +95,6 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   );
 });
 
+SessionPanel.displayName = 'SessionPanel';
+
 export default SessionPanel;

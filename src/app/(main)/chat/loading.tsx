@@ -1,3 +1,7 @@
 import Loading from '@/components/Loading/BrandTextLoading';
 
-export default () => <Loading />;
+const ChatLoading = () => <Loading />;
+
+ChatLoading.displayName = 'ChatLoading';
+
+export default ChatLoading;

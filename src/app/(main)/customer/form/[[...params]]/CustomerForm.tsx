@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Form, Divider, FormInstance } from 'antd';
 
 // Features
-import Header from './features/Header';
 import CustomerTypeSelector from './features/CustomerTypeSelector';
 import AvatarUploader from './features/AvatarUploader';
 import {

@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useHistoryStyles = createStyles(({ css, token, isDarkMode }) => ({
+export const useHistoryStyles = createStyles(({ css, token }) => ({
   panelBg: css`
     background: ${token.colorBgContainer};
     transition: background 200ms ${token.motionEaseOut};

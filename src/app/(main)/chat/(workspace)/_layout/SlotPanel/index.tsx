@@ -93,4 +93,6 @@ const SlotPanel = memo(() => {
   );
 });
 
+SlotPanel.displayName = 'SlotPanel';
+
 export default SlotPanel;

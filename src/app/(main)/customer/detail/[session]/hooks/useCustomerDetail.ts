@@ -10,7 +10,6 @@ export interface UseCustomerDetailReturn {
   loading: boolean;
   error: string | null;
   deleting: boolean;
-  updating: boolean;
 
   // 方法
   fetchCustomerDetail: () => Promise<void>;
@@ -30,7 +29,6 @@ export const useCustomerDetail = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [updating, setUpdating] = useState(false);
 
   // 获取客户详情
   const fetchCustomerDetail = useCallback(async () => {
@@ -83,7 +81,6 @@ export const useCustomerDetail = (
     loading,
     error,
     deleting,
-    updating,
 
     // 方法
     fetchCustomerDetail,

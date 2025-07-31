@@ -21,7 +21,7 @@ const Content = memo(() => {
   const messagesIds = useChatStore((s) => chatSelectors.messagesIds(s));
 
   const itemContent = useCallback(
-    (index: number, id: string) => <MainChatItem id={id} index={index} />,
+    (_index: number, id: string) => <MainChatItem id={id} />,
     []
   );
 

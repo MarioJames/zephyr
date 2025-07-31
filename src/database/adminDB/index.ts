@@ -17,7 +17,7 @@ export const getAdminDB = async (): Promise<AdminDatabase> => {
   // 如果已经有缓存的实例，直接返回
   if (cachedDB) return cachedDB;
 
-  let connectionString = serverDBEnv.ADMIN_DATABASE_URL;
+  const connectionString = serverDBEnv.ADMIN_DATABASE_URL;
 
   if (serverDBEnv.ADMIN_DATABASE_DRIVER === 'node') {
     const client = new NodePool({ connectionString });

@@ -2,11 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Col,
-  Row,
   Tooltip,
   Typography,
-  Form,
   message,
   Spin,
   Empty,
@@ -154,7 +151,6 @@ export default function CustomerTemplatePage() {
     fetchAgents,
     createAgent,
     updateAgent,
-    deleteAgent,
     transferSessionsToAgent,
   } = useAgentStore();
 
