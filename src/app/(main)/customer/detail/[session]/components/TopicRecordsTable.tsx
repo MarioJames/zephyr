@@ -115,6 +115,7 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       <Table
         columns={columns}
         dataSource={topics}
+        rowKey="id"
         loading={loading}
         pagination={{
           pageSize: 5,
