@@ -83,9 +83,7 @@ const Item = memo<ChatListItemProps>(
           RenderFunction = markdownCustomRenders[item.role];
         if (!RenderFunction) return dom;
 
-        return (
-          <RenderFunction displayMode={'chat'} dom={dom} id={id} text={text} />
-        );
+        return <RenderFunction displayMode={'chat'} dom={dom} text={text} />;
       },
       [item?.role]
     );
@@ -157,9 +155,7 @@ const Item = memo<ChatListItemProps>(
           <ChatItem
             actions={actionBar}
             avatar={
-              item.role === 'user'
-                ? item.session?.avatar
-                : item.user?.avatar
+              item.role === 'user' ? item.session?.avatar : item.user?.avatar
             }
             error={error}
             errorMessage={errorMessage}

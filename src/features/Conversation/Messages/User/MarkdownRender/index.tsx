@@ -6,7 +6,6 @@ import ContentPreview from './ContentPreview';
 export const MarkdownRender: MarkdownCustomRender = ({
   text,
   dom,
-  id,
   displayMode,
 }) => {
   if (text.length > 30_000)

@@ -21,7 +21,6 @@ export type RenderMessageExtra = FC<ChatMessage>;
 export type MarkdownCustomRender = (props: {
   displayMode: 'chat' | 'docs';
   dom: ReactNode;
-  id: string;
   text: string;
 }) => ReactNode;
 
