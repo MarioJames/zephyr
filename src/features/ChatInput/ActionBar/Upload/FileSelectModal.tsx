@@ -6,6 +6,14 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import filesService, { FileItem } from '@/services/files';
 import { useChatStore } from '@/store/chat';
 
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
 interface FileSelectModalProps {
   submitLoading?: boolean;
   open: boolean;
@@ -143,14 +151,6 @@ const FileSelectModal = memo<FileSelectModalProps>(
       setCurrentPage(1);
       onClose();
     }, [onClose]);
-
-    const formatFileSize = (bytes: number) => {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
 
     const getFileIcon = (fileType: string) => {
       if (fileType.startsWith('image/')) {

@@ -15,6 +15,29 @@ import { convertAlphaToSolid } from '@/utils/colorUtils';
 
 import Item from './Item';
 
+const getStatusText = (status: string) => {
+  switch (status) {
+    case 'error': {
+      return '上传出错';
+    }
+    case 'pending': {
+      return '等待上传';
+    }
+    case 'processing': {
+      return '正在上传';
+    }
+    case 'success': {
+      return '上传完成';
+    }
+    case 'uploading': {
+      return '正在上传';
+    }
+    default: {
+      return '';
+    }
+  }
+};
+
 const useStyles = createStyles(({ css, token }) => {
   return {
     body: css`
@@ -113,29 +136,6 @@ const UploadDock = memo(() => {
   }, [isUploading, show]);
 
   if (count === 0 || !show) return;
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'error': {
-        return '上传出错';
-      }
-      case 'pending': {
-        return '等待上传';
-      }
-      case 'processing': {
-        return '正在上传';
-      }
-      case 'success': {
-        return '上传完成';
-      }
-      case 'uploading': {
-        return '正在上传';
-      }
-      default: {
-        return '';
-      }
-    }
-  };
 
   return (
     <Flexbox className={styles.container}>

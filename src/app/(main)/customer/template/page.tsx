@@ -6,6 +6,7 @@ import { Button } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { useAgentStore } from '@/store/agent/store';
 import { useGlobalStore } from '@/store/global';
@@ -279,9 +280,10 @@ export default function CustomerTemplatePage() {
                 <div className={styles.cardContainer} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
-                      <img
+                      <Image
                         alt={agent.title}
                         className={styles.cardImage}
+                        fill
                         src={agent.avatar || '/test.png'}
                       />
                       <div className={styles.cardTitle}>{agent.title}</div>

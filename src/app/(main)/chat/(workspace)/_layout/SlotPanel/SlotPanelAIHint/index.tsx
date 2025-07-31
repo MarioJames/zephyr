@@ -13,6 +13,34 @@ const unit = new Set(["。", "，", "！", "？", "：", "；"]);
 
 const { Paragraph } = Typography;
 
+// 格式化日期
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+/**
+ * 检查字符串是否以指定标点符号结尾
+ * @param {string} str - 要检查的字符串
+ * @returns {boolean} - 如果最后一个字符是unit中的符号则返回true，否则返回false
+ */
+function endsWithUnitSymbol(str: string) {
+  if (typeof str !== "string" || str.length === 0) {
+    return false;
+  }
+
+  const lastChar = str.slice(-1);
+  return unit.has(lastChar);
+}
+
+
+
 function AIHintItem({
   item,
   isLatest,
@@ -28,17 +56,7 @@ function AIHintItem({
   const { styles } = useAIHintStyles();
   const { acceptSuggestion } = useChatStore();
 
-  // 格式化日期
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("zh-CN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+
 
   // 获取知识点作为卡片展示
   const getKnowledgeCards = () => {
@@ -74,20 +92,6 @@ function AIHintItem({
       console.error("采用建议失败:", error);
     }
   };
-
-  /**
-   * 检查字符串是否以指定标点符号结尾
-   * @param {string} str - 要检查的字符串
-   * @returns {boolean} - 如果最后一个字符是unit中的符号则返回true，否则返回false
-   */
-  function endsWithUnitSymbol(str: string) {
-    if (typeof str !== "string" || str.length === 0) {
-      return false;
-    }
-
-    const lastChar = str.slice(-1);
-    return unit.has(lastChar);
-  }
 
   return (
     <Flexbox>
@@ -228,7 +232,7 @@ const AIHintPanel = () => {
     const userMessages = messages
       .filter((msg) => msg.role === 'user')
       .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-    
+
     return userMessages.length > 0 ? userMessages[0].id : null;
   };
 
@@ -251,7 +255,7 @@ const AIHintPanel = () => {
   const shouldShowRegenerateButton = () => {
     // 如果正在生成中，不显示
     if (isGeneratingAI || isFetchingAI) return false;
-    
+
     // 如果没有消息，不显示
     const latestUserMessageId = getLatestUserMessageId();
     if (!latestUserMessageId) return false;
@@ -278,7 +282,7 @@ const AIHintPanel = () => {
             icon={<RefreshCw size={16} />}
             onClick={handleRegenerate}
             size="small"
-            style={{ 
+            style={{
               marginLeft: 'auto',
               color: '#666',
               display: 'flex',

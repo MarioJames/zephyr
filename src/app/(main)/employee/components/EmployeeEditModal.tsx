@@ -3,6 +3,7 @@ import { Form, Upload } from 'antd';
 import { Button, Input, Modal } from '@lobehub/ui';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
+import Image from 'next/image';
 
 const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
@@ -131,8 +132,9 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
         <div className={styles.avatarUploader}>
           <div className={styles.avatarCircle}>
             {avatarFile ? (
-              <img
+              <Image
                 alt='头像'
+                fill
                 src={
                   avatarFile.url ||
                   (avatarFile.originFileObj &&

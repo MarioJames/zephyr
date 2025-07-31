@@ -6,6 +6,7 @@ import { HELLO_IMG } from '@/const/base';
 import { useRouter } from 'next/navigation';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
+import Image from 'next/image';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -109,7 +110,7 @@ const DefaultCreateCustomer = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <img alt='' className={styles.helloImg} src={HELLO_IMG} />
+        <Image alt='' className={styles.helloImg} fill src={HELLO_IMG} />
         Hi！ {username}
       </div>
       <div className={styles.middle}>
@@ -118,9 +119,10 @@ const DefaultCreateCustomer = () => {
       <div className={styles.cardList}>
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
-            <img
+            <Image
               alt={agent.title}
               className={styles.avatar}
+              fill
               src={agent.avatar || '/test.png'}
             />
             <div className={styles.cardTitle}>{agent.title}</div>

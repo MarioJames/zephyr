@@ -5,6 +5,7 @@ import { createStyles } from 'antd-style';
 import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { Trash } from 'lucide-react';
 import { Button , Spin } from 'antd';
+import Image from 'next/image';
 import FileIcon from '@/components/FileIcon';
 
 const formatFileSize = (bytes: number) => {
@@ -132,7 +133,7 @@ const UploadedFileList = memo<UploadedFileListProps>(
       const { fileType, url } = file || {};
 
       if (fileType?.startsWith('image/') && url) {
-        return <img alt='file' height={'auto'} src={url} width={54} />;
+        return <Image alt='file' height={54} src={url} width={54} />;
       }
 
       return (

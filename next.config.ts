@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const isProd = process.env.NODE_ENV === 'production';
-const isDocker = process.env.DOCKER === 'true';
+// const isDocker = process.env.DOCKER === 'true';
 
 const standaloneConfig: NextConfig = {
   output: 'standalone',
@@ -9,7 +9,8 @@ const standaloneConfig: NextConfig = {
 };
 
 const nextConfig: NextConfig = {
-  ...(isDocker ? standaloneConfig : {}),
+  // ...(isDocker ? standaloneConfig : {}),
+  ...standaloneConfig,
   compress: isProd,
   turbopack: {
     resolveAlias: {

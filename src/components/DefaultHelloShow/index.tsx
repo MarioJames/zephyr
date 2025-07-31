@@ -1,6 +1,7 @@
-import React from "react";
-import { createStyles } from "antd-style";
-import { HELLO_IMG } from "@/const/base";
+import React from 'react';
+import { createStyles } from 'antd-style';
+import Image from 'next/image';
+import { HELLO_IMG } from '@/const/base';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -29,9 +30,8 @@ const useStyles = createStyles(({ css, token }) => ({
     color: ${token.colorTextSecondary};
     margin-bottom: 32px;
     text-align: center;
-  `
+  `,
 }));
-
 
 const DefaultHelloShow = () => {
   const { styles } = useStyles();
@@ -39,7 +39,13 @@ const DefaultHelloShow = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <img alt="" className={styles.helloImg} src={HELLO_IMG} />
+        <Image
+          alt=''
+          className={styles.helloImg}
+          height={100}
+          src={HELLO_IMG}
+          width={100}
+        />
         开始会话
       </div>
       <div className={styles.middle}>
