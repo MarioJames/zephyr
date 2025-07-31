@@ -1,4 +1,4 @@
-export const ARTIFACT_TAG_REGEX = /<lobeArtifact\b[^>]*>(?<content>[\S\s]*?)(?:<\/lobeArtifact>|$)/;
+export const ARTIFACT_TAG_REGEX = /<lobeArtifact\b[^>]*>([\S\s]*?)(?:<\/lobeArtifact>|$)/;
 
 // https://regex101.com/r/AvPA2g/1
 export const ARTIFACT_THINKING_TAG_REGEX = /<lobeThinking\b[^>]*>([\S\s]*?)(?:<\/lobeThinking>|$)/;

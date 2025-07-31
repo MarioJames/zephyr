@@ -2,10 +2,8 @@ import { Button } from '@lobehub/ui';
 import { Space } from 'antd';
 import { createStyles } from 'antd-style';
 import { rgba } from 'polished';
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
-
-import { isMacOS } from '@/utils/platform';
 
 import SendMore from './SendMore';
 import ShortcutHint from './ShortcutHint';
@@ -43,7 +41,7 @@ interface FooterProps {
   onExpandChange: (expand: boolean) => void;
 }
 
-const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
+const Footer = memo<FooterProps>(({ onExpandChange }) => {
   const { styles } = useStyles();
 
   const [sendMessage, sendMessageLoading, isUploading] = useChatStore((s) => [
@@ -53,12 +51,6 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
   ]);
 
   const loading = sendMessageLoading || isUploading;
-
-  const [isMac, setIsMac] = useState<boolean>();
-
-  useEffect(() => {
-    setIsMac(isMacOS());
-  }, [setIsMac]);
 
   return (
     <>
@@ -83,7 +75,7 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
           >
             {'发送'}
           </Button>
-          <SendMore disabled={loading} isMac={isMac} />
+          <SendMore disabled={loading} />
         </Space.Compact>
       </Flexbox>
     </>

@@ -75,4 +75,6 @@ const TopActions = memo<TopActionProps>(({ tab }) => {
   );
 });
 
+TopActions.displayName = 'TopActions';
+
 export default TopActions;

@@ -8,6 +8,7 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session';
+import { SessionItem as SessionItemType } from '@/services/sessions';
 
 import { SkeletonList } from '../../SkeletonList';
 import SessionItem from '../SessionItem';
@@ -21,7 +22,7 @@ const SearchResult = memo(() => {
   const sessions = useSessionStore(sessionSelectors.searchResults, isEqual);
 
   const itemContent = useCallback(
-    (index: number, item: any) => {
+    (index: number, item: SessionItemType) => {
       const title = item?.title && item.title.trim() !== '' ? item.title : '默认客户';
       return (
         <SessionItem active={activeSessionId === item?.id} id={item?.id} key={item?.id} title={title} />

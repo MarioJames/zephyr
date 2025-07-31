@@ -18,7 +18,9 @@ export const UserMessage = memo<
   return (
     <Flexbox gap={8} id={id}>
       {editableContent}
-      {imageList && imageList?.length > 0 && <ImageFileListViewer items={imageList} />}
+      {imageList && imageList?.length > 0 && (
+        <ImageFileListViewer items={imageList} />
+      )}
       {fileList && fileList?.length > 0 && (
         <div style={{ marginTop: 8 }}>
           <FileListViewer items={fileList} />

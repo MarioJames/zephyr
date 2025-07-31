@@ -41,4 +41,6 @@ const ShortcutHint = memo(() => {
   );
 });
 
+ShortcutHint.displayName = 'ShortcutHint';
+
 export default ShortcutHint;

@@ -100,4 +100,6 @@ const SessionItem = memo<ConfigCellProps>(
   }
 );
 
+SessionItem.displayName = 'SessionItem';
+
 export default SessionItem;

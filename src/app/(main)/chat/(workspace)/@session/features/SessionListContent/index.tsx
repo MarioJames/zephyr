@@ -57,8 +57,6 @@ const SessionListContent = memo(() => {
     // actions
     fetchSessions,
     initFromUrlParams,
-    setActiveSession,
-    setActiveTopic,
     resetActiveState,
     setTargetUserId,
     setTargetUser,
@@ -72,8 +70,6 @@ const SessionListContent = memo(() => {
 
     s.fetchSessions,
     s.initFromUrlParams,
-    s.setActiveSession,
-    s.setActiveTopic,
     s.resetActiveState,
     s.setTargetUserId,
     s.setTargetUser,

@@ -6,8 +6,14 @@ import userService, {
   UserUpdateRoleRequest,
 } from '@/services/user';
 import filesService from '@/services/files';
-import sessionsService from '@/services/sessions';
+import sessionsService, { SessionItem } from '@/services/sessions';
 import { EmployeeState } from '../../initialState';
+
+// 定义具有其他 slice 方法的扩展状态接口
+interface ExtendedEmployeeState {
+  fetchAllEmployeeStats?: () => Promise<void>;
+  filterEmployees?: () => void;
+}
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
@@ -51,7 +57,7 @@ export const coreSlice: StateCreator<
       set({ employees: res });
 
       // 获取其他slice的方法并调用
-      const state = get() as any;
+      const state = get() as EmployeeState & CoreAction & ExtendedEmployeeState;
 
       // 根据skipStats参数决定是否获取统计数据
       if (!skipStats && state.fetchAllEmployeeStats) {
@@ -61,8 +67,8 @@ export const coreSlice: StateCreator<
       if (state.filterEmployees) {
         state.filterEmployees();
       }
-    } catch (e: any) {
-      set({ error: e?.message || '获取员工列表失败' });
+    } catch (e: unknown) {
+      set({ error: (e as Error)?.message || '获取员工列表失败' });
     } finally {
       set({ loading: false });
     }
@@ -79,8 +85,8 @@ export const coreSlice: StateCreator<
       const createdUser = await userService.createUser(data);
       await get().fetchEmployees();
       return createdUser;
-    } catch (e: any) {
-      set({ error: e?.message || '添加员工失败' });
+    } catch (e: unknown) {
+      set({ error: (e as Error)?.message || '添加员工失败' });
       throw e;
     } finally {
       set({ loading: false });
@@ -92,8 +98,8 @@ export const coreSlice: StateCreator<
     try {
       await userService.updateUser(id, data);
       await get().fetchEmployees();
-    } catch (e: any) {
-      set({ error: e?.message || '修改员工失败' });
+    } catch (e: unknown) {
+      set({ error: (e as Error)?.message || '修改员工失败' });
     } finally {
       set({ loading: false });
     }
@@ -104,8 +110,8 @@ export const coreSlice: StateCreator<
     try {
       await userService.deleteUser(id);
       await get().fetchEmployees();
-    } catch (e: any) {
-      set({ error: e?.message || '删除员工失败' });
+    } catch (e: unknown) {
+      set({ error: (e as Error)?.message || '删除员工失败' });
     } finally {
       set({ loading: false });
     }
@@ -115,8 +121,8 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       await userService.updateUserRole(id, data);
-    } catch (e: any) {
-      set({ error: e?.message || '修改员工角色失败' });
+    } catch (e: unknown) {
+      set({ error: (e as Error)?.message || '修改员工角色失败' });
     } finally {
       set({ loading: false });
     }
@@ -129,8 +135,8 @@ export const coreSlice: StateCreator<
         directory: 'avatar',
       });
       return res.url;
-    } catch (e: any) {
-      throw new Error(e?.message || '头像上传失败');
+    } catch (e: unknown) {
+      throw new Error((e as Error)?.message || '头像上传失败');
     }
   },
 
@@ -143,7 +149,7 @@ export const coreSlice: StateCreator<
     });
 
     // 格式化为{id, customerName, employeeName, userId}
-    return res.sessions.map((s: any) => ({
+    return res.sessions.map((s: SessionItem) => ({
       id: s.id,
       customerName: s.title,
       employeeName: s.user?.username || '',

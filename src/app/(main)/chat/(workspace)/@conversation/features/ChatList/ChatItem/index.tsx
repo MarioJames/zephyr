@@ -5,13 +5,14 @@ import ActionsBar from '@/features/Conversation/components/ChatItem/ActionsBar';
 
 export interface ThreadChatItemProps {
   id: string;
-  index: number;
 }
 
-const MainChatItem = memo<ThreadChatItemProps>(({ id, index }) => {
+const MainChatItem = memo<ThreadChatItemProps>(({ id }) => {
   const actionBar = useMemo(() => <ActionsBar id={id} />, [id]);
 
   return <ChatItem actionBar={actionBar} id={id} />;
 });
+
+MainChatItem.displayName = 'MainChatItem';
 
 export default MainChatItem;

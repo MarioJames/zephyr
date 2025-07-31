@@ -21,7 +21,7 @@ const ChatHydration = memo(() => {
   useSessionStoreUpdater('activeSessionId', session);
 
   // two-way bindings the userId params to session store
-  const [userId, setUserId] = useQueryState('userId', { history: 'replace', throttleMs: 500 });
+  const [, setUserId] = useQueryState('userId', { history: 'replace', throttleMs: 500 });
 
   useLayoutEffect(() => {
     // 订阅topic变化并同步到URL
@@ -57,5 +57,7 @@ const ChatHydration = memo(() => {
 
   return null;
 });
+
+ChatHydration.displayName = 'ChatHydration';
 
 export default ChatHydration;

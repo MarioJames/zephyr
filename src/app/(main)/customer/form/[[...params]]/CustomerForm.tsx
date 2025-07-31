@@ -103,7 +103,7 @@ export default function CustomerForm({
         {/* 提交按钮 */}
         <FormActions
           mode={mode}
-          submitting={submitLoading}
+          submitting={!!submitLoading}
           onCancel={onCancel}
         />
       </Form>

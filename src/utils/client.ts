@@ -11,12 +11,10 @@ export const setCookie = (
     // Set the expiration time to yesterday (expire immediately)
     const expiredDate = new Date(0).toUTCString(); // 1970-01-01T00:00:00Z
 
-    // eslint-disable-next-line unicorn/no-document-cookie
     document.cookie = `${key}=; expires=${expiredDate}; path=/;`;
   } else {
     const expires = dayjs().add(expireDays, 'day').toDate().toUTCString();
 
-    // eslint-disable-next-line unicorn/no-document-cookie
     document.cookie = `${key}=${value};expires=${expires};path=/;`;
   }
 };

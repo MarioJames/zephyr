@@ -22,10 +22,9 @@ const useStyles = createStyles(({ css, prefixCls }) => {
 
 interface SendMoreProps {
   disabled?: boolean;
-  isMac?: boolean;
 }
 
-const SendMore = memo<SendMoreProps>(({ disabled, isMac }) => {
+const SendMore = memo<SendMoreProps>(({ disabled }) => {
   const { styles } = useStyles();
 
   // 本地状态管理发送方式偏好，默认使用 Enter 发送

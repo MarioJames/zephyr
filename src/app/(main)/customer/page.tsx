@@ -1,13 +1,26 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Table, Space, Typography, App, Spin, Popconfirm, Skeleton } from 'antd';
+import {
+  Table,
+  Space,
+  Typography,
+  App,
+  Spin,
+  Popconfirm,
+  Skeleton,
+} from 'antd';
 import { Button, Modal, Select, Alert } from '@lobehub/ui';
 import { SearchOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
-import type { ColumnsType } from 'antd/es/table';
-import { sessionsAPI, topicsAPI, type CustomerItem } from '@/services';
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import {
+  sessionsAPI,
+  topicsAPI,
+  type CustomerItem,
+  type SessionItem,
+} from '@/services';
 import { CustomerAssignee } from '@/components/CustomerAssignee';
 import { useCustomerStore } from '@/store/customer';
 import { useGlobalStore } from '@/store/global';
@@ -33,7 +46,7 @@ interface CustomerDisplayItem {
   conversations: number;
   assignee?: string;
   assigneeId?: string; // 对接人用户ID
-  session: any; // 完整的session对象，用于传递给组件
+  session: SessionItem; // 完整的session对象，用于传递给组件
 }
 
 // 创建样式
@@ -143,11 +156,6 @@ export default function Customer() {
   const router = useRouter();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
-  // If not admin, show NoAuthority component
-  if (!isAdmin) {
-    return <NoAuthority />;
-  }
-
   // Store hooks
   const {
     // 数据
@@ -211,22 +219,25 @@ export default function Customer() {
   }, [fetchCategoryStats]);
 
   // 处理删除
-  const handleDelete = useCallback(async (record: CustomerDisplayItem) => {
-    try {
-      await deleteCustomer(record.sessionId);
-      message.success(`已删除客户: ${record.name}`);
-      // 刷新客户列表和统计数据
-      setStatsLoading(true);
+  const handleDelete = useCallback(
+    async (record: CustomerDisplayItem) => {
       try {
-        await Promise.all([refreshCustomers(), fetchCategoryStats()]);
-      } finally {
-        setStatsLoading(false);
+        await deleteCustomer(record.sessionId);
+        message.success(`已删除客户: ${record.name}`);
+        // 刷新客户列表和统计数据
+        setStatsLoading(true);
+        try {
+          await Promise.all([refreshCustomers(), fetchCategoryStats()]);
+        } finally {
+          setStatsLoading(false);
+        }
+      } catch (error) {
+        message.error('删除客户失败');
+        console.error('删除客户失败:', error);
       }
-    } catch (error) {
-      message.error('删除客户失败');
-      console.error('删除客户失败:', error);
-    }
-  }, [deleteCustomer, message, refreshCustomers, fetchCategoryStats]);
+    },
+    [deleteCustomer, message, refreshCustomers, fetchCategoryStats]
+  );
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
@@ -369,16 +380,19 @@ export default function Customer() {
 
   // 处理表格变化
   const handleTableChange = useCallback(
-    (pagination: any, filters: any, sorter: any) => {
-      if (pagination.current !== page) {
-        setPagination(pagination.current, pagination.pageSize);
-      }
-      if (pagination.pageSize !== pageSize) {
-        setPagination(pagination.current, pagination.pageSize);
-      }
+    (pagination: TablePaginationConfig) => {
+      setPagination(
+        pagination.current || page,
+        pagination.pageSize || pageSize
+      );
     },
     [page, pageSize, setPagination]
   );
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   return (
     <div className={styles.pageContainer}>
@@ -438,15 +452,11 @@ export default function Customer() {
           <>
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className={styles.statsBox}>
-              <Skeleton
-                active
-                paragraph={false}
-                title={{ width: '100%' }}
-              />
-              <Skeleton.Input
-                active
-                size="default"
-                style={{ width: '60%', marginTop: '8px' }}
+                <Skeleton active paragraph={false} title={{ width: '100%' }} />
+                <Skeleton.Input
+                  active
+                  size='default'
+                  style={{ width: '60%', marginTop: '8px' }}
                 />
               </div>
             ))}

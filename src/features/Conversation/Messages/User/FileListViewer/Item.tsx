@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import FileIcon from '@/components/FileIcon';
-import { ChatFileItem } from '@/types/message';
+import { FileItem as FileItemType } from '@/services/files';
 import { formatSize } from '@/utils/format';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -25,14 +25,14 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   `,
 }));
 
-const FileItem = memo<ChatFileItem>(({ id, fileType, size, name }) => {
+const FileItem = memo<FileItemType>(({ id, fileType, size, filename }) => {
   const { styles } = useStyles();
 
   return (
     <Flexbox className={styles.container} gap={12} horizontal key={id}>
-      <FileIcon fileName={name} fileType={fileType} />
+      <FileIcon fileName={filename} fileType={fileType} />
       <Flexbox style={{ overflow: 'hidden' }}>
-        <Typography.Text ellipsis>{name}</Typography.Text>
+        <Typography.Text ellipsis>{filename}</Typography.Text>
         <Typography.Text type={'secondary'}>{formatSize(size)}</Typography.Text>
       </Flexbox>
     </Flexbox>

@@ -12,7 +12,7 @@ export interface MessageItem {
   clientId: string | null;
   content: string | null;
   createdAt: Date;
-  error: any | null;
+  error: Error | null;
   id: string;
   model: string | null;
   observationId: string | null;
@@ -22,7 +22,7 @@ export interface MessageItem {
   role: string;
   sessionId: string | null;
   threadId: string | null;
-  tools: any | null;
+  tools: Record<string, unknown> | null;
   topicId: string | null;
   traceId: string | null;
   updatedAt: Date;

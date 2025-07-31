@@ -9,8 +9,7 @@ import { useSessionStore } from '@/store/session';
 const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
   const [tempValue, setTempValue] = useState('');
   const [searchKeyword, setSearchKeywords] = useState('');
-  const [activeSessionId, searchSessions, clearSearchResults] = useSessionStore((s) => [
-    s.activeSessionId,
+  const [searchSessions, clearSearchResults] = useSessionStore((s) => [
     s.searchSessions,
     s.clearSearchResults,
   ]);
@@ -57,5 +56,7 @@ const SessionSearchBar = memo<{ onClear?: () => void }>(({ onClear }) => {
     />
   );
 });
+
+SessionSearchBar.displayName = 'SessionSearchBar';
 
 export default SessionSearchBar;

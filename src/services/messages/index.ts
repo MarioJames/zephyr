@@ -63,14 +63,17 @@ export interface MessagesCreateRequest {
   observationId?: string; // 可选，观察ID
   files?: string[]; // 可选，文件ID数组
   favorite?: boolean; // 可选，是否收藏，默认false
+  [key: string]: unknown;
 }
 
 export interface MessageCountByTopicsRequest {
   topicIds: string[]; // 话题ID数组
+  [key: string]: unknown;
 }
 
 export interface MessageCountByUserRequest {
   userId: string; // 用户ID
+  [key: string]: unknown;
 }
 
 export interface MessageCountResponse {
@@ -81,6 +84,7 @@ export interface MessagesSearchRequest {
   keyword: string; // 搜索关键词
   limit?: number; // 结果限制
   sessionId: string; // 会话ID
+  [key: string]: unknown;
 }
 
 /**

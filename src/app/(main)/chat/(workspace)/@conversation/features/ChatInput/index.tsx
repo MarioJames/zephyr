@@ -7,6 +7,7 @@ import DesktopChatInput, { FooterRender } from '@/features/ChatInput/Desktop';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { useChatStore } from '@/store/chat';
+import { chatSelectors } from '@/store/chat/selectors';
 
 import Footer from './Footer';
 import TextArea from './TextArea';
@@ -31,8 +32,13 @@ const ChatInput = memo(() => {
   const updatePreference = useGlobalStore((s) => s.updateSystemStatus);
 
   // 获取文件上传相关状态
-  const { chatUploadFileList, isUploading, removeChatUploadFile } =
-    useChatStore();
+  const [isUploading, chatUploadFileList, removeChatUploadFile] = useChatStore(
+    (s) => [
+      chatSelectors.isUploading(s),
+      s.chatUploadFileList,
+      s.removeChatUploadFile,
+    ]
+  );
 
   return (
     <div>
@@ -57,5 +63,7 @@ const ChatInput = memo(() => {
     </div>
   );
 });
+
+ChatInput.displayName = 'ChatInput';
 
 export default ChatInput;

@@ -1,5 +1,4 @@
 'use client';
-import { DynamicLayoutProps } from '@/types/next';
 import React from 'react';
 
 import ChatHydration from './features/ChatHydration';
@@ -12,7 +11,7 @@ import DefaultCreateCustomer from '@/components/DefaultCreateCustomer';
 
 const ChatHeader = dynamic(() => import('../_layout/ChatHeader'));
 
-const ChatConversation = (props: DynamicLayoutProps) => {
+const ChatConversation = () => {
   // 将所有 hooks 调用移到最前面，确保调用顺序一致
   const sessions = useSessionStore(sessionSelectors.sessions);
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);

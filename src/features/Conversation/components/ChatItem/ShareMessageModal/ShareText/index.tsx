@@ -42,14 +42,12 @@ const ShareText = memo<ShareTextProps>(({ item }) => {
   );
 
   return (
-    <>
-      <Flexbox className={styles.body} gap={16} horizontal>
-        <Preview content={content} />
-        <Flexbox className={styles.sidebar} gap={12}>
-          {button}
-        </Flexbox>
+    <Flexbox gap={16} horizontal>
+      <Preview content={content} />
+      <Flexbox className={styles.sidebar} gap={12}>
+        {button}
       </Flexbox>
-    </>
+    </Flexbox>
   );
 });
 

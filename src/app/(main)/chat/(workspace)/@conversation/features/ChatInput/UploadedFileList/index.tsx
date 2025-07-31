@@ -189,4 +189,6 @@ const UploadedFileList = memo<UploadedFileListProps>(
   }
 );
 
+UploadedFileList.displayName = 'UploadedFileList';
+
 export default UploadedFileList;

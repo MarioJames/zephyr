@@ -14,9 +14,9 @@ export interface CreateUserParams {
   firstName?: string;
   lastName?: string;
   username?: string;
-  publicMetadata?: Record<string, any>;
-  privateMetadata?: Record<string, any>;
-  unsafeMetadata?: Record<string, any>;
+  publicMetadata?: Record<string, unknown>;
+  privateMetadata?: Record<string, unknown>;
+  unsafeMetadata?: Record<string, unknown>;
   skipPasswordChecks?: boolean;
   skipPasswordRequirement?: boolean;
   totpSecret?: string;
@@ -36,9 +36,9 @@ export interface UpdateUserParams {
   primaryPhoneNumberID?: string;
   primaryWeb3WalletID?: string;
   profileImageID?: string;
-  publicMetadata?: Record<string, any>;
-  privateMetadata?: Record<string, any>;
-  unsafeMetadata?: Record<string, any>;
+  publicMetadata?: Record<string, unknown>;
+  privateMetadata?: Record<string, unknown>;
+  unsafeMetadata?: Record<string, unknown>;
   deleteProfileImage?: boolean;
   createdAt?: Date;
   passwordDigest?: string;

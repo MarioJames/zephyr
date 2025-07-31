@@ -1,15 +1,16 @@
 import type { NextConfig } from 'next';
 
+const isProd = process.env.NODE_ENV === 'production';
+const isDocker = process.env.DOCKER === 'true';
+
+const standaloneConfig: NextConfig = {
+  output: 'standalone',
+  outputFileTracingIncludes: { '*': ['public/**/*', '.next/static/**/*'] },
+};
+
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/chat',
-        permanent: false,
-      },
-    ];
-  },
+  ...(isDocker ? standaloneConfig : {}),
+  compress: isProd,
   turbopack: {
     resolveAlias: {
       '@': './app',

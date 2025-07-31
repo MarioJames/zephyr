@@ -157,4 +157,6 @@ const SessionContent = memo<SessionContentProps>(
   }
 );
 
+SessionContent.displayName = 'SessionContent';
+
 export default SessionContent;

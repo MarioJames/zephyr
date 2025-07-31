@@ -10,6 +10,13 @@ declare module 'next-auth' {
   }
 }
 
+// 定义扩展的 Session 类型，用于内部使用
+interface ExtendedSession {
+  accessToken?: string;
+  idToken?: string;
+  expiresAt?: number;
+}
+
 const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
 
 // 简单的内存缓存
@@ -67,9 +74,10 @@ async function getCurrentIdToken(): Promise<string | null> {
 
     // 2. 从 NextAuth session 获取
     const session = await getSession();
-    if ((session as any)?.idToken) {
-      const idToken = (session as any).idToken;
-      const sessionExpiresAt = (session as any).expiresAt;
+    const extendedSession = session as ExtendedSession;
+    if (extendedSession?.idToken) {
+      const idToken = extendedSession.idToken;
+      const sessionExpiresAt = extendedSession.expiresAt;
 
       // 更新内存缓存
       tokenCache.idToken = idToken;
@@ -102,9 +110,10 @@ instance.interceptors.response.use(
     // Token 过期时，重新获取token
     if ([401, 403, 500].includes(status)) {
       const session = await getSession();
-      if ((session as any)?.idToken) {
-        const idToken = (session as any).idToken;
-        const sessionExpiresAt = (session as any).expiresAt;
+      const extendedSession = session as ExtendedSession;
+      if (extendedSession?.idToken) {
+        const idToken = extendedSession.idToken;
+        const sessionExpiresAt = extendedSession.expiresAt;
 
         // 更新内存缓存
         tokenCache.idToken = idToken;
@@ -119,15 +128,18 @@ instance.interceptors.response.use(
   }
 );
 
+// 定义 API 响应的通用结构
+interface ApiResponse<T> {
+  data?: T;
+  success?: boolean;
+  message?: string;
+  timestamp?: number;
+}
+
 // 通用request方法，支持类型、方法、headers等
-export async function request<T = any>(
+export async function request<T = unknown>(
   api: string,
-  data?: {
-    data?: T;
-    success?: boolean;
-    message?: string;
-    timestamp?: number;
-  },
+  data?: ApiResponse<T>,
   config?: AxiosRequestConfig & { includeIdToken?: boolean }
 ): Promise<T> {
   const method = (config?.method || 'post') as AxiosRequestConfig['method'];
@@ -153,7 +165,7 @@ export async function request<T = any>(
   };
 
   // 移除自定义属性以避免axios报错
-  delete (reqConfig as any).includeIdToken;
+  delete (reqConfig as AxiosRequestConfig & { includeIdToken?: boolean }).includeIdToken;
 
   if (method === 'get') {
     reqConfig.params = data;
@@ -161,12 +173,7 @@ export async function request<T = any>(
     reqConfig.data = data;
   }
 
-  const res = await instance.request<{
-    data?: T;
-    success?: boolean;
-    message?: string;
-    timestamp?: number;
-  }>(reqConfig);
+  const res = await instance.request<ApiResponse<T>>(reqConfig);
 
   if (res.data.success) {
     return res.data.data as T;
@@ -177,30 +184,30 @@ export async function request<T = any>(
 
 // http对象，简洁调用
 export const http = {
-  get<T = any>(
+  get<T = unknown>(
     api: string,
-    params?: any,
+    params?: Record<string, unknown>,
     config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
     return request<T>(api, params, { ...config, method: 'get' });
   },
-  post<T = any>(
+  post<T = unknown>(
     api: string,
-    data?: any,
+    data?: Record<string, unknown>,
     config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
     return request<T>(api, data, { ...config, method: 'post' });
   },
-  put<T = any>(
+  put<T = unknown>(
     api: string,
-    data?: any,
+    data?: Record<string, unknown>,
     config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
     return request<T>(api, data, { ...config, method: 'put' });
   },
-  delete<T = any>(
+  delete<T = unknown>(
     api: string,
-    params?: any,
+    params?: Record<string, unknown>,
     config?: AxiosRequestConfig & { includeIdToken?: boolean }
   ) {
     return request<T>(api, params, { ...config, method: 'delete' });

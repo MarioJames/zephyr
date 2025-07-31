@@ -6,8 +6,8 @@ import agentService, {
 } from '@/services/agents';
 import { AgentStore } from '../../store';
 import filesService from '@/services/files';
-import sessionsService from '@/services/sessions';
-import modelsService from '@/services/models';
+import sessionsService, { SessionItem } from '@/services/sessions';
+import modelsService, { AggregatedModelItem } from '@/services/models';
 
 export interface AgentCoreAction {
   // 智能体CRUD操作
@@ -64,7 +64,7 @@ export const agentCoreSlice: StateCreator<
 
       // 将 models 数据转换为 Map，方便查找
       const modelsMap = new Map(
-        modelsResponse.data.map((model: any) => [model.id, model])
+        modelsResponse.data.map((model: AggregatedModelItem) => [model.id, model])
       );
 
       // 保存实际使用的模型列表到 store
@@ -183,8 +183,8 @@ export const agentCoreSlice: StateCreator<
         directory: 'avatar',
       });
       return res.url;
-    } catch (e: any) {
-      throw new Error(e?.message || '头像上传失败');
+    } catch (e: unknown) {
+      throw new Error((e as Error)?.message || '头像上传失败');
     }
   },
 
@@ -204,7 +204,7 @@ export const agentCoreSlice: StateCreator<
         page: 1,
         pageSize: 100,
       });
-      const sessionIds = res.sessions.map((s: any) => s.id);
+      const sessionIds = res.sessions.map((s: SessionItem) => s.id);
       if (!sessionIds.length) {
         await get().deleteAgent(fromAgentId);
         set({ isDeleting: false });

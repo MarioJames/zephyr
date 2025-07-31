@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { Skeleton, Popover, Tag } from "antd";
-import { createStyles } from "antd-style";
-import { parseAsBoolean, useQueryState } from "nuqs";
-import { Suspense, memo } from "react";
-import { Flexbox } from "react-layout-kit";
-import { ChevronDown, PencilLine } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Skeleton, Popover, Tag } from 'antd';
+import { createStyles } from 'antd-style';
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import { Suspense, memo } from 'react';
+import { Flexbox } from 'react-layout-kit';
+import { ChevronDown, PencilLine } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-import { useGlobalStore } from "@/store/global";
-import { globalSelectors } from "@/store/global/selectors";
-import { useSessionStore } from "@/store/session";
-import { sessionSelectors } from "@/store/session/selectors";
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session/selectors';
 
-import TogglePanelButton from "@/app/(main)/chat/features/TogglePanelButton";
+import TogglePanelButton from '@/app/(main)/chat/features/TogglePanelButton';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -80,16 +80,14 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-const Main = memo<{ className?: string }>(({ className }) => {
+const MainContent = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
   const router = useRouter();
   const sessionId = useSessionStore(sessionSelectors.activeSessionId);
   const activeSession = useSessionStore(sessionSelectors.activeSession);
-  const [isPinned] = useQueryState("pinned", parseAsBoolean);
+  const [isPinned] = useQueryState('pinned', parseAsBoolean);
 
-  const showSessionPanel = useGlobalStore(
-    globalSelectors.showSessionPanel
-  );
+  const showSessionPanel = useGlobalStore(globalSelectors.showSessionPanel);
 
   const handleEditCustomer = () => {
     router.push(`/customer/form/edit/${sessionId}`);
@@ -103,35 +101,35 @@ const Main = memo<{ className?: string }>(({ className }) => {
   );
 
   return (
-    <Flexbox align={"center"} className={className} gap={12} horizontal>
+    <Flexbox align={'center'} className={className} gap={12} horizontal>
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
       <div className={styles.avatar}>
         {activeSession?.avatar ? (
-          <img src={activeSession?.avatar} alt="头像" />
+          <img src={activeSession?.avatar} alt='头像' />
         ) : (
           <div className={styles.avatarCircle}>
             {activeSession?.title?.slice(0, 1)}
           </div>
         )}
       </div>
-      <Flexbox align={"center"} className={styles.container} gap={8} horizontal>
+      <Flexbox align={'center'} className={styles.container} gap={8} horizontal>
         <Popover
           content={popoverContent}
-          trigger="click"
-          placement="bottomLeft"
+          trigger='click'
+          placement='bottomLeft'
           arrow={false}
           styles={{
             root: {
-              padding: "8px",
-              borderRadius: "8px",
+              padding: '8px',
+              borderRadius: '8px',
             },
             body: {
-              padding: "8px",
+              padding: '8px',
             },
           }}
         >
           <div className={styles.title}>
-            {activeSession?.title || "客户名称"}
+            {activeSession?.title || '客户名称'}
             <ChevronDown size={14} />
           </div>
         </Popover>
@@ -145,17 +143,23 @@ const Main = memo<{ className?: string }>(({ className }) => {
   );
 });
 
-export default memo<{ className?: string }>(({ className }) => (
+MainContent.displayName = 'MainContent';
+
+const Main = memo<{ className?: string }>(({ className }) => (
   <Suspense
     fallback={
       <Skeleton
         active
-        avatar={{ shape: "circle", size: "default" }}
+        avatar={{ shape: 'circle', size: 'default' }}
         paragraph={false}
         title={{ style: { margin: 0, marginTop: 8 }, width: 200 }}
       />
     }
   >
-    <Main className={className} />
+    <MainContent className={className} />
   </Suspense>
 ));
+
+Main.displayName = 'Main';
+
+export default Main;

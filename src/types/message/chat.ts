@@ -1,14 +1,7 @@
 import { IPluginErrorType } from '@lobehub/chat-plugin-sdk';
 
-import { ILobeAgentRuntimeErrorType } from '@/libs/model-runtime';
 import { ErrorType } from '@/types/fetch';
-import { MetaData } from '@/types/meta';
-import { MessageSemanticSearchChunk } from '@/types/rag';
-import { GroundingSearch } from '@/types/search';
 
-import { MessageMetadata, MessageRoleType, ModelReasoning } from './base';
-import { ChatImageItem } from './image';
-import { ChatPluginPayload, ChatToolPayload } from './tools';
 import { Translate } from './translate';
 
 /**
@@ -17,7 +10,7 @@ import { Translate } from './translate';
 export interface ChatMessageError {
   body?: any;
   message: string;
-  type: ErrorType | IPluginErrorType | ILobeAgentRuntimeErrorType;
+  type: ErrorType | IPluginErrorType;
 }
 
 export interface ChatTranslate extends Translate {

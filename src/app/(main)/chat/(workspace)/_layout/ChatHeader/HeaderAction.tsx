@@ -9,7 +9,7 @@ import { FileClock, Search } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
-import { createStyles,useTheme } from 'antd-style';
+import { createStyles, useTheme } from 'antd-style';
 import dayjs from 'dayjs';
 import messageService, { MessageItem } from '@/services/messages';
 import { useSessionStore } from '@/store/session';
@@ -124,7 +124,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const processSearchContent = (
   content: string,
   keyword: string,
-  styles: any
+  styles: ReturnType<typeof useStyles>['styles']
 ) => {
   if (!content) return '';
 
@@ -280,9 +280,9 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
           placement='bottomLeft'
           arrow={false}
           styles={{
-            body:{
+            body: {
               padding: 0,
-            }
+            },
           }}
         >
           <Input
@@ -327,5 +327,7 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
     </Flexbox>
   );
 });
+
+HeaderAction.displayName = 'HeaderAction';
 
 export default HeaderAction;

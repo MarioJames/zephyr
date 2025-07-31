@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import { GroupedVirtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { useSessionStore } from '@/store/session';

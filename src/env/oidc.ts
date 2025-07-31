@@ -31,7 +31,6 @@ export const oidcEnv = getOidcEnv();
 // 获取 OIDC 配置
 export const getProviderConfig = (): Provider => {
   const lobeHost = oidcEnv.NEXT_PUBLIC_LOBE_HOST;
-  const zephyrUrl = oidcEnv.NEXT_PUBLIC_ZEPHYR_URL;
   const issuer = `${lobeHost}/oidc`;
 
   return {
@@ -42,14 +41,13 @@ export const getProviderConfig = (): Provider => {
     clientId: oidcEnv.NEXT_PUBLIC_OIDC_CLIENT_ID,
     clientSecret: oidcEnv.NEXT_PUBLIC_OIDC_CLIENT_SECRET,
     authorization: {
-      url: `${issuer}/oidc/auth`,
+      url: `${issuer}/auth`,
       params: {
         scope: 'openid profile email',
       },
     },
-    token: `${zephyrUrl}/oidc/token`,
+    token: `${issuer}/token`,
     userinfo: {
-      url: `${zephyrUrl}/api/v1/users/me`,
       request: () => ({}),
     },
   };

@@ -184,11 +184,6 @@ export default function EmployeePage() {
   const { styles, theme } = useStyles();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
-  // If not admin, show NoAuthority component
-  if (!isAdmin) {
-    return <NoAuthority />;
-  }
-
   // 使用store
   const {
     employees,
@@ -738,6 +733,11 @@ export default function EmployeePage() {
       });
     }
   };
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   return (
     <div className={styles.container}>

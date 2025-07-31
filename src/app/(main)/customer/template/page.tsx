@@ -138,11 +138,6 @@ export default function CustomerTemplatePage() {
   const { styles } = useStyles();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
-  // If not admin, show NoAuthority component
-  if (!isAdmin) {
-    return <NoAuthority />;
-  }
-
   // 获取模型选项数据
   const modelOptions = useModelStore((s) =>{
     const model = modelCoreSelectors.providerModelOptions(s);
@@ -244,6 +239,11 @@ export default function CustomerTemplatePage() {
   };
 
   console.log("agents", agents);
+
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
 
   return (
     <div className={styles.container}>

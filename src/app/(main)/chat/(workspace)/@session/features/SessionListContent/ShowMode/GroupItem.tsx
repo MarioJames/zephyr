@@ -44,4 +44,7 @@ const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count }) => {
     </>
   );
 });
+
+SessionGroupItem.displayName = 'SessionGroupItem';
+
 export default SessionGroupItem;
