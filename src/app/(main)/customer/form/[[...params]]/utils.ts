@@ -14,10 +14,35 @@ export function customerItemToFormData(
   const region: string[] = [];
   
   return {
-    ...session,
-    ...extend,
+    // Session 字段
+    slug: session.slug,
+    title: session.title,
+    description: session.description,
+    avatar: session.avatar,
+    backgroundColor: session.backgroundColor,
+    type: session.type,
+    userId: session.userId,
+    groupId: session.groupId,
+    clientId: session.clientId,
+    pinned: session.pinned,
+    messageCount: session.messageCount,
+    agentsToSessions: session.agentsToSessions,
+    
+    // Extend 字段
+    gender: extend?.gender ?? null,
+    age: extend?.age ?? null,
+    position: extend?.position ?? null,
+    phone: extend?.phone ?? null,
+    email: extend?.email ?? null,
+    wechat: extend?.wechat ?? null,
+    company: extend?.company ?? null,
+    industry: extend?.industry ?? null,
+    scale: extend?.scale ?? null,
+    address: extend?.address ?? null,
+    chatConfig: extend?.chatConfig,
+    
+    // 表单专用字段
     agentId: session?.agent?.id,
-    description: session.description || '',
     sessionId: session.id,
     region: region.length > 0 ? region : undefined,
   };
@@ -31,7 +56,6 @@ export function formDataToCreateRequest(
 ): CustomerCreateRequest {
   // 提取extend字段，剩下的是session字段
   const {
-    sessionId,
     age,
     gender,
     position,
@@ -42,6 +66,7 @@ export function formDataToCreateRequest(
     industry,
     scale,
     address,
+    chatConfig,
     ...session
   } = formData;
 
@@ -57,6 +82,7 @@ export function formDataToCreateRequest(
       industry,
       scale,
       address,
+      chatConfig,
     },
     session,
   };

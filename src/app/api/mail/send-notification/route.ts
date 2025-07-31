@@ -7,7 +7,7 @@ import { zephyrEnv } from '@/env/zephyr';
 function processTemplate(template: string, variables?: Record<string, string | number | boolean>): string {
   if (!variables) return template;
 
-  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+  return template.replaceAll(/{{(\w+)}}/g, (match, key) => {
     return variables[key] !== undefined ? String(variables[key]) : match;
   });
 }

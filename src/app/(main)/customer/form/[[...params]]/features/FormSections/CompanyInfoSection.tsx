@@ -11,18 +11,18 @@ export default function CompanyInfoSection() {
       <div className={styles.sectionTitle}>个人信息</div>
       <Row gutter={24}>
         <Col span={8}>
-          <Form.Item name='company' label='公司名称'>
-            <Input placeholder='请输入公司名称' className={styles.inputBg} />
+          <Form.Item label='公司名称' name='company'>
+            <Input className={styles.inputBg} placeholder='请输入公司名称' />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name='industry' label='行业'>
-            <Input placeholder='请输入行业' className={styles.inputBg} />
+          <Form.Item label='行业' name='industry'>
+            <Input className={styles.inputBg} placeholder='请输入行业' />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name='scale' label='公司规模'>
-            <Input placeholder='请输入公司规模' className={styles.inputBg} />
+          <Form.Item label='公司规模' name='scale'>
+            <Input className={styles.inputBg} placeholder='请输入公司规模' />
           </Form.Item>
         </Col>
       </Row>

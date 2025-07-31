@@ -95,9 +95,9 @@ const NewTopic = memo(() => {
       onClick={handleCreateNewTopic}
     >
       <Action
-        icon={MessageCirclePlus}
-        disabled={!activeSessionId}
         className={styles.topicIcon}
+        disabled={!activeSessionId}
+        icon={MessageCirclePlus}
         showTooltip={false}
       />
       <span>新开会话</span>

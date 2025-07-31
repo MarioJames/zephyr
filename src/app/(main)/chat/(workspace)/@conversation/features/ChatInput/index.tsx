@@ -23,8 +23,8 @@ const leftActions = [
 const rightActions = ['newTopic'] as ActionKeys[];
 
 const renderTextArea = (onSend: () => void) => <TextArea onSend={onSend} />;
-const renderFooter: FooterRender = ({ expand, onExpandChange }) => (
-  <Footer expand={expand} onExpandChange={onExpandChange} />
+const renderFooter: FooterRender = ({ onExpandChange }) => (
+  <Footer onExpandChange={onExpandChange} />
 );
 
 const ChatInput = memo(() => {

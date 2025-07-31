@@ -100,6 +100,7 @@ export interface SendSingleMailRequest {
   text?: string;
   attachments?: MailAttachment[];
   from?: string | MailAddress;
+  [key: string]: unknown;
 }
 
 export interface SendBatchMailRequest {
@@ -109,12 +110,14 @@ export interface SendBatchMailRequest {
     variables?: Record<string, string | number | boolean>;
   }>;
   from?: string | MailAddress;
+  [key: string]: unknown;
 }
 
 export interface SendNotificationRequest {
   to: string | string[];
   type: 'welcome' | 'password_reset' | 'account_verification' | 'system_alert';
   data?: Record<string, string | number | boolean>;
+  [key: string]: unknown;
 }
 
 export interface TestMailRequest {

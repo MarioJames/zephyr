@@ -155,20 +155,25 @@ export class CustomerModel {
     const sortDirection = sortOrder === 'asc' ? asc : desc;
 
     switch (sortBy) {
-      case 'createdAt':
+      case 'createdAt': {
         orderByClause = sortDirection(customerSessions.createdAt);
         break;
-      case 'updatedAt':
+      }
+      case 'updatedAt': {
         orderByClause = sortDirection(customerSessions.updatedAt);
         break;
-      case 'phone':
+      }
+      case 'phone': {
         orderByClause = sortDirection(customerSessions.phone);
         break;
-      case 'company':
+      }
+      case 'company': {
         orderByClause = sortDirection(customerSessions.company);
         break;
-      default:
+      }
+      default: {
         orderByClause = desc(customerSessions.createdAt);
+      }
     }
 
     // 构建基础查询 - 使用与count方法相似的语法

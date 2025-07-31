@@ -102,16 +102,8 @@ export const CustomerSearchSelect: React.FC<CustomerSearchSelectProps> = ({
 
   return (
     <Select
-      showSearch
-      placeholder={placeholder}
-      suffixIcon={<SearchOutlined />}
-      className={`${styles.searchSelect} ${className || ''}`}
-      style={style}
-      value={searchQuery || undefined}
-      onSearch={setSearchQuery}
-      onChange={handleSelect}
-      onClear={() => setSearchQuery('')}
       allowClear
+      className={`${styles.searchSelect} ${className || ''}`}
       filterOption={false}
       notFoundContent={
         searchLoading || loading ? (
@@ -122,12 +114,20 @@ export const CustomerSearchSelect: React.FC<CustomerSearchSelectProps> = ({
           '请输入关键词搜索客户'
         )
       }
+      onChange={handleSelect}
+      onClear={() => setSearchQuery('')}
+      onSearch={setSearchQuery}
+      placeholder={placeholder}
+      showSearch
+      style={style}
+      suffixIcon={<SearchOutlined />}
+      value={searchQuery || undefined}
     >
       {filteredCustomers.map((customer) => (
         <Select.Option 
           key={customer.sessionId} 
-          value={customer.sessionId}
           label={customer.name}
+          value={customer.sessionId}
         >
           <div style={{ 
             display: 'flex', 

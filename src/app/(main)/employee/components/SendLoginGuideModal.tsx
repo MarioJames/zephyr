@@ -34,17 +34,17 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
   const { styles } = useStyles();
   return (
     <Modal
-      title="发送邮件引导员工登录系统"
-      open={open}
+      closable={false}
       footer={null}
       onCancel={onCancel}
-      width={400}
-      closable={false}
+      open={open}
       styles={{
         content: {
           padding: 16,
         },
       }}
+      title="发送邮件引导员工登录系统"
+      width={400}
     >
       <div>
         <p>将向员工发送登录引导邮件，包含系统访问地址和登录说明。</p>
@@ -67,8 +67,8 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
             取消
           </Button>
           <Button
-            loading={loading}
             disabled={!employee?.email}
+            loading={loading}
             onClick={onSend}
             type="primary"
           >

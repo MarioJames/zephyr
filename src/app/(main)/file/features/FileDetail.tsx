@@ -43,10 +43,10 @@ const FileDetail = memo<FileItem>((props) => {
         colon={false}
         column={1}
         items={items}
+        size={"small"}
         styles={{
           label: { width: 120 },
         }}
-        size={"small"}
         title={"基本信息"}
       />
     </Flexbox>

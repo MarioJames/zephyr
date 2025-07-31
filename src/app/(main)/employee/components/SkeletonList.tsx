@@ -41,11 +41,11 @@ const ListSkeleton = memo(() => (
   <>
     {Array.from({ length: 10 }).map((_, i) => (
       <Skeleton
-        key={i}
         active
-        title={false}
+        key={i}
         paragraph={{ rows: 1, width: '100%' }}
         style={{ height: 32, marginBottom: 0 }}
+        title={false}
       />
     ))}
   </>
@@ -66,8 +66,8 @@ const SkeletonList = memo(() => {
         </div>
       </div>
       <div className={styles.buttonBar}>
-        <Button shape="round" disabled style={{ width: 80 }} />
-        <Button type="primary" shape="round" disabled style={{ width: 80 }} />
+        <Button disabled shape="round" style={{ width: 80 }} />
+        <Button disabled shape="round" style={{ width: 80 }} type="primary" />
       </div>
     </div>
   );

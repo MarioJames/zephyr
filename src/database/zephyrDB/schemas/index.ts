@@ -1,2 +1,2 @@
-export * from './customer';
 export * from './agent_suggestions';
+export * from './customer';

@@ -1,11 +1,11 @@
 // 重新导出各个 slice 的类型和初始状态，保持向后兼容性
-export * from './slices/general/initialState';
-export * from './slices/user/initialState';
-export * from './slices/workspace/initialState';
-
 import { GeneralState, generalInitialState } from './slices/general/initialState';
 import { UserState, userInitialState } from './slices/user/initialState';
 import { WorkspaceState, workspaceInitialState } from './slices/workspace/initialState';
+
+export * from './slices/general/initialState';
+export * from './slices/user/initialState';
+export * from './slices/workspace/initialState';
 
 /**
  * 全局状态接口

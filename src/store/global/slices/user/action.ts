@@ -1,7 +1,6 @@
 import type { StateCreator } from 'zustand/vanilla';
-import UserAPI from '@/services/user';
+import UserAPI, { UserItem } from '@/services/user';
 
-import { UserItem } from '@/services/user';
 import type { GlobalStore } from '../../store';
 
 /**

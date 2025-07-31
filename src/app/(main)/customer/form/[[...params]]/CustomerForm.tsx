@@ -16,13 +16,42 @@ import {
 import FormActions from './features/FormActions';
 import { useSharedStyles } from './features/shared/styles';
 
-import { CustomerItem } from '@/services';
 import { AgentItem } from '@/services/agents';
-import { OmitTimestamps } from '@/types';
 
-export type CustomerFormData = OmitTimestamps<
-  CustomerItem['extend'] & CustomerItem['session']
-> & {
+export type CustomerFormData = {
+  // Session 相关字段 (排除 id)
+  slug: string;
+  title: string;
+  description?: string;
+  avatar?: string;
+  backgroundColor?: string;
+  type?: 'agent' | 'group';
+  userId: string;
+  groupId?: string;
+  clientId?: string;
+  pinned?: boolean;
+  messageCount?: number;
+  agentsToSessions: {
+    agent: AgentItem;
+    agentId: string;
+    sessionId: string;
+    userId: string;
+  }[];
+
+  // Extend 相关字段 (排除 id, sessionId, timestamps)
+  gender: string | null;
+  age: number | null;
+  position: string | null;
+  phone: string | null;
+  email: string | null;
+  wechat: string | null;
+  company: string | null;
+  industry: string | null;
+  scale: string | null;
+  address: string | null;
+  chatConfig: any; // AgentConfig
+
+  // 表单专用字段
   region?: string[];
   sessionId?: string;
   agentId?: string;
@@ -66,13 +95,13 @@ export default function CustomerForm({
   return (
     <div className={styles.formContainer}>
       <Form
+        disabled={submitLoading}
         form={form}
         layout='vertical'
         onFinish={handleSubmit}
-        disabled={submitLoading}
         requiredMark={true}
       >
-        <Form.Item name='sessionId' hidden />
+        <Form.Item hidden name='sessionId' />
         {/* 客户类型选择 */}
         <CustomerTypeSelector agents={agents} />
 
@@ -102,8 +131,8 @@ export default function CustomerForm({
         {/* 提交按钮 */}
         <FormActions
           mode={mode}
-          submitting={!!submitLoading}
           onCancel={onCancel}
+          submitting={!!submitLoading}
         />
       </Form>
     </div>

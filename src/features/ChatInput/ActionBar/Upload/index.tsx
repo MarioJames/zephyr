@@ -62,7 +62,7 @@ const FileUpload = memo(() => {
           } else {
             message.warning(`文档 "${file.name}" 上传成功，但解析失败`);
           }
-        } catch (error) {
+        } catch {
           message.error(`文件上传失败，已自动移除`);
         }
       } else {
@@ -183,18 +183,18 @@ const FileUpload = memo(() => {
   return (
     <>
       <Action
-        title='上传'
-        icon={Paperclip}
         dropdown={{
           menu: { items },
         }}
+        icon={Paperclip}
         showTooltip={false}
+        title='上传'
       />
       <FileSelectModal
-        submitLoading={loading}
-        open={fileSelectModalOpen}
         onClose={() => setFileSelectModalOpen(false)}
         onConfirm={handleFileSelect}
+        open={fileSelectModalOpen}
+        submitLoading={loading}
       />
     </>
   );

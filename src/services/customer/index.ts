@@ -24,7 +24,7 @@ export interface CustomerListResponse {
 
 // 客户创建请求类型（包括 Session 和扩展信息）
 export type CustomerCreateRequest = {
-  extend: Omit<CustomerExtend, 'id' | 'sessionId'>;
+  extend: Omit<CustomerExtend, 'id' | 'sessionId' | 'createdAt' | 'updatedAt' | 'accessedAt'>;
   session: Omit<SessionItem, 'id' | 'sessionId'>;
 };
 
@@ -35,8 +35,7 @@ export type CustomerUpdateRequest = {
 };
 
 // 客户扩展信息更新请求类型
-export interface CustomerExtendUpdateRequest
-  extends Partial<Omit<CustomerExtend, 'sessionId'>> {}
+export type CustomerExtendUpdateRequest = Partial<Omit<CustomerExtend, 'sessionId'>>
 
 /**
  * 获取客户列表

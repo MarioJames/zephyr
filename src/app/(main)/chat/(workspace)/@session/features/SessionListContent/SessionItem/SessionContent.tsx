@@ -98,19 +98,19 @@ const SessionContent = memo<SessionContentProps>(
         >
           {avatar ? (
             <img
-              src={avatar || ''}
               alt='avatar'
               className={styles.avatarImage}
+              src={avatar || ''}
             />
           ) : (
             title?.[0] || ''
           )}
         </div>
         <Flexbox
-          flex={1}
-          style={{ minWidth: 0 }}
           direction='vertical'
+          flex={1}
           justify='center'
+          style={{ minWidth: 0 }}
         >
           {title === LOADING_FLAT ? (
             <Flexbox flex={1} height={28} justify={'center'}>
@@ -126,7 +126,7 @@ const SessionContent = memo<SessionContentProps>(
             </Typography.Paragraph>
           )}
           {isAdmin && (
-            <Typography.Text type='secondary' style={{ fontSize: 12 }}>
+            <Typography.Text style={{ fontSize: 12 }} type='secondary'>
               @{employeeName || '未知员工'}
             </Typography.Text>
           )}

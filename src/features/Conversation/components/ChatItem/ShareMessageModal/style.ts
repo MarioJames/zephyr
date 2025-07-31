@@ -1,6 +1,6 @@
 import { createStyles } from 'antd-style';
 
-export const useContainerStyles = createStyles(({ css, token, stylish, cx, responsive }) => ({
+export const useContainerStyles = createStyles(({ css, token, stylish, cx }) => ({
   preview: cx(
     stylish.noScrollbar,
     css`

@@ -32,6 +32,6 @@ export const getAdminDB = async (): Promise<AdminDatabase> => {
 
 export const adminDB = getAdminDB();
 
-export * from './type';
-export * from './schemas';
 export * from './models/aggregatedModel';
+export * from './schemas';
+export * from './type';

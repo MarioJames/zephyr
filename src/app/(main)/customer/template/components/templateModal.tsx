@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { Upload, message, Form, Spin } from "antd";
-import { Button, TextArea, Input, Select, Modal } from "@lobehub/ui";
+import { Button, TextArea, Input, Select, Modal , SliderWithInput } from "@lobehub/ui";
 import { UploadOutlined } from "@ant-design/icons";
-import { SliderWithInput } from "@lobehub/ui";
 import Image from "next/image";
 import { createStyles } from "antd-style";
 import { useAgentStore } from "@/store/agent";
@@ -243,12 +242,12 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       // 只在打开时设置初始值
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
-        ...(initialValues || {}),
+        ...initialValues,
         provider: "openai",
         model: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
-          ...(initialValues?.params || {}),
+          ...initialValues?.params,
         },
       });
     }
@@ -297,11 +296,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
   return (
     <Modal
-      title="客户类型"
-      open={open}
-      onCancel={handleCancel}
+      centered
       footer={null}
-      width={840}
+      onCancel={handleCancel}
+      open={open}
       styles={{
         body: {
           height: 600,
@@ -312,17 +310,18 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
           justifyContent: "flex-start",
         },
       }}
-      centered
+      title="客户类型"
+      width={840}
     >
       <Spin spinning={loading || uploading}>
-        <Form form={form} layout="vertical" disabled={loading || uploading}>
+        <Form disabled={loading || uploading} form={form} layout="vertical">
           <div className={styles.layout}>
             {/* 左侧大文本编辑区 */}
             <div className={styles.left}>
               <Form.Item name="systemRole">
                 <TextArea
-                  placeholder="请输入系统提示词"
                   className={styles.textarea}
+                  placeholder="请输入系统提示词"
                 />
               </Form.Item>
             </div>
@@ -330,19 +329,19 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
             <div className={styles.right}>
               <div className={styles.contentArea}>
                 <Form.Item label="命名" name="title" required>
-                  <Input placeholder="请输入名称" className={styles.input} />
+                  <Input className={styles.input} placeholder="请输入名称" />
                 </Form.Item>
                 <Form.Item label="简介" name="description">
-                  <Input placeholder="请输入简介" className={styles.input} />
+                  <Input className={styles.input} placeholder="请输入简介" />
                 </Form.Item>
-                <Form.Item label="模型提供商" name="provider" hidden>
+                <Form.Item hidden label="模型提供商" name="provider">
                   <Input />
                 </Form.Item>
                 <Form.Item label="模型" name="model" required>
                   <Select
-                    placeholder="请选择模型"
-                    options={modelOptions}
                     className={styles.select}
+                    options={modelOptions}
+                    placeholder="请选择模型"
                   />
                 </Form.Item>
                 <Form.Item
@@ -350,37 +349,37 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   name={["params", "temperature"]}
                   tooltip="温度越高，模型越随机，温度越低，模型越确定"
                 >
-                  <SliderWithInput min={0} max={2} step={0.1} />
+                  <SliderWithInput max={2} min={0} step={0.1} />
                 </Form.Item>
                 <Form.Item
                   label="最大令牌数"
                   name={["params", "maxTokens"]}
                   tooltip="最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短"
                 >
-                  <SliderWithInput min={256} max={4096} step={1} />
+                  <SliderWithInput max={4096} min={256} step={1} />
                 </Form.Item>
                 <Form.Item
                   label="思维开放度"
                   name={["params", "topP"]}
                   tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"
                 >
-                  <SliderWithInput min={0} max={1} step={0.1} />
+                  <SliderWithInput max={1} min={0} step={0.1} />
                 </Form.Item>
                 <Form.Item
                   label="表达发散度"
                   name={["params", "presencePenalty"]}
                   tooltip="表达发散度越高，模型越随机，表达发散度越低，模型越确定"
                 >
-                  <SliderWithInput min={-2} max={2} step={0.1} />
+                  <SliderWithInput max={2} min={-2} step={0.1} />
                 </Form.Item>
                 <Form.Item
                   label="词汇丰富度"
                   name={["params", "frequencyPenalty"]}
                   tooltip="词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定"
                 >
-                  <SliderWithInput min={-2} max={2} step={0.1} />
+                  <SliderWithInput max={2} min={-2} step={0.1} />
                 </Form.Item>
-                <Form.Item name="avatar" hidden>
+                <Form.Item hidden name="avatar">
                   <Input />
                 </Form.Item>
                 <Form.Item label="示例图" shouldUpdate>
@@ -408,26 +407,26 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
                     return (
                       <Image
-                        src={avatar}
                         alt="示例图"
-                        width={112}
                         height={62}
+                        src={avatar}
+                        width={112}
                       />
                     );
                   }}
                 </Form.Item>
                 <div>
                   <Upload
-                    customRequest={handleUpload}
-                    showUploadList={false}
                     accept="image/*"
+                    customRequest={handleUpload}
                     disabled={uploading}
+                    showUploadList={false}
                   >
                     <Button
-                      type="link"
-                      icon={<UploadOutlined />}
                       className={styles.uploadBtn}
+                      icon={<UploadOutlined />}
                       loading={uploading}
+                      type="link"
                     >
                       上传图片
                     </Button>
@@ -435,14 +434,14 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 </div>
               </div>
               <div className={styles.footer}>
-                <Button onClick={onCancel} className={styles.cancelBtn}>
+                <Button className={styles.cancelBtn} onClick={onCancel}>
                   取消
                 </Button>
                 <Button
-                  type="primary"
-                  onClick={handleOk}
-                  loading={loading || uploading}
                   className={styles.saveBtn}
+                  loading={loading || uploading}
+                  onClick={handleOk}
+                  type="primary"
                 >
                   保存
                 </Button>

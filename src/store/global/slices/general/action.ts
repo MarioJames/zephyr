@@ -41,7 +41,7 @@ export const generalSlice: StateCreator<
    * 更新系统状态
    * 合并状态并保存到本地存储
    */
-  updateSystemStatus: (status, action) => {
+  updateSystemStatus: (status) => {
     // 如果状态未初始化，直接返回
     if (!get().isStatusInit) return;
 

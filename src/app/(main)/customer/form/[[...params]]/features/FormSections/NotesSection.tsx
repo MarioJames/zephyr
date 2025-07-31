@@ -7,8 +7,8 @@ export default function NotesSection() {
   const { styles } = useSharedStyles();
 
   return (
-    <Form.Item name='description' label='备注'>
-      <TextArea rows={2} placeholder='请输入备注信息' className={styles.inputBg} />
+    <Form.Item label='备注' name='description'>
+      <TextArea className={styles.inputBg} placeholder='请输入备注信息' rows={2} />
     </Form.Item>
   );
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Modal, Button, Typography } from 'antd';
 import { MessageOutlined, UserOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
@@ -29,19 +30,19 @@ export const ChatConfirmModal: React.FC<ChatConfirmModalProps> = ({
 
   return (
     <Modal
-      title={<><MessageOutlined /> 开始对话</>}
-      open={visible}
-      onCancel={onCancel}
+      centered
       footer={[
         <Button key="cancel" onClick={onCancel}>
           稍后再说
         </Button>,
-        <Button key="chat" type="primary" onClick={handleStartChat} icon={<MessageOutlined />}>
+        <Button icon={<MessageOutlined />} key="chat" onClick={handleStartChat} type="primary">
           立即对话
         </Button>,
       ]}
+      onCancel={onCancel}
+      open={visible}
+      title={<><MessageOutlined /> 开始对话</>}
       width={400}
-      centered
     >
       <div style={{ textAlign: 'center', padding: '20px 0' }}>
         <UserOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '16px' }} />

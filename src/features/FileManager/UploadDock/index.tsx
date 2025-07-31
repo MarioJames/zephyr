@@ -116,18 +116,24 @@ const UploadDock = memo(() => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'error':
+      case 'error': {
         return '上传出错';
-      case 'pending':
+      }
+      case 'pending': {
         return '等待上传';
-      case 'processing':
+      }
+      case 'processing': {
         return '正在上传';
-      case 'success':
+      }
+      case 'success': {
         return '上传完成';
-      case 'uploading':
+      }
+      case 'uploading': {
         return '正在上传';
-      default:
+      }
+      default: {
         return '';
+      }
     }
   };
 

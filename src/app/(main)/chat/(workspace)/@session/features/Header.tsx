@@ -27,14 +27,12 @@ const Header = memo(() => {
   ) : (
     <SidebarHeader
       actions={
-        <>
-          <ActionIcon
+        <ActionIcon
+            className={styles.container}
             icon={Search}
             onClick={() => setShowSearch(true)}
             size={'middle'}
-            className={styles.container}
           />
-        </>
       }
       title={`对话`}
     />

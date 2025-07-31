@@ -47,19 +47,19 @@ export const CustomerDetailHeader: React.FC<CustomerDetailHeaderProps> = ({
       </div>
       <Space size={10}>
         <Popconfirm
-          title='确定删除该客户吗？'
-          onConfirm={onDelete}
-          okText='确定'
           cancelText='取消'
+          okText='确定'
+          onConfirm={onDelete}
+          title='确定删除该客户吗？'
         >
           <Button
-            loading={deleting}
             className={styles.actionButton}
+            loading={deleting}
           >
             删除
           </Button>
         </Popconfirm>
-        <Button type='primary' className={styles.actionButton} onClick={onEdit}>
+        <Button className={styles.actionButton} onClick={onEdit} type='primary'>
           编辑
         </Button>
       </Space>

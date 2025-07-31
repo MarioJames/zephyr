@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { List, Avatar } from "antd";
-import { Button, Modal } from "@lobehub/ui";
-import { CircleCheck } from "lucide-react";
-import { createStyles } from "antd-style";
-import { useAgentStore } from "@/store/agent";
+import React, { useState } from 'react';
+import { List, Avatar } from 'antd';
+import { Button, Modal } from '@lobehub/ui';
+import { CircleCheck } from 'lucide-react';
+import { createStyles } from 'antd-style';
+import { useAgentStore } from '@/store/agent';
 
 interface AgentItem {
   id: string;
@@ -104,22 +104,22 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   // 过滤掉当前要删除的 agent
   const filteredAgents = agents.filter((a) => a.id !== currentId);
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-  const loading = useAgentStore(state => state.isDeleting);
+  const loading = useAgentStore((state) => state.isDeleting);
 
   return (
     <Modal
-      open={open}
-      title="删除客户类型"
-      onCancel={onCancel}
-      footer={null}
-      width={450}
       centered
+      footer={null}
+      onCancel={onCancel}
+      open={open}
       styles={{
         body: {
           height: 600,
           padding: '0 24px 24px 24px',
         },
       }}
+      title='删除客户类型'
+      width={450}
     >
       <div className={styles.modalBody}>
         <div className={styles.title}>请将该客户类型客户转移到其他类型</div>
@@ -130,15 +130,15 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
               const selected = selectedId === item.id;
               return (
                 <div
-                  key={item.id}
                   className={cx(styles.item, selected && styles.itemSelected)}
+                  key={item.id}
                   onClick={() => setSelectedId(item.id)}
                 >
                   <Avatar
-                    src={item.avatar || "/test.png"}
-                    shape="square"
-                    size={48}
                     className={styles.avatar}
+                    shape='square'
+                    size={48}
+                    src={item.avatar || '/test.png'}
                   />
                   <div className={styles.itemContent}>
                     <div className={styles.itemTitle}>{item.title}</div>
@@ -153,10 +153,10 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
         <div className={styles.footer}>
           <Button onClick={onCancel}>取消</Button>
           <Button
-            type="primary"
             disabled={!selectedId}
-            onClick={() => selectedId && onOk(selectedId, currentId)}
             loading={loading}
+            onClick={() => selectedId && onOk(selectedId, currentId)}
+            type='primary'
           >
             转移并删除
           </Button>

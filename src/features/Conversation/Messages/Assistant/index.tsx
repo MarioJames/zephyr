@@ -10,7 +10,7 @@ export const AssistantMessage = memo<
   ChatMessage & {
     editableContent: ReactNode;
   }
->(({ id, tools, content, search, imageList, ...props }) => {
+>(({ id, content, imageList, ...props }) => {
   const showImageItems = !!imageList && imageList.length > 0;
 
   return (

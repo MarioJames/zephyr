@@ -10,11 +10,9 @@ import {
   agentSuggestionsSlice,
 } from './slices/agent_suggestions/action';
 import { ChatState, initialState } from './initialState';
-import { UploadAction } from './slices/upload/action';
-import { uploadSlice } from './slices/upload/action';
+import { UploadAction , uploadSlice } from './slices/upload/action';
 import { createDevtools } from '@/utils/store';
-import { ChatCoreAction } from './slices/core/action';
-import { chatCoreSlice } from './slices/core/action';
+import { ChatCoreAction , chatCoreSlice } from './slices/core/action';
 
 export interface ChatStore
   extends ChatState,

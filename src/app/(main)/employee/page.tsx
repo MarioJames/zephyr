@@ -456,7 +456,7 @@ export default function EmployeePage() {
           return;
         }
       }
-    } catch (_info) {
+    } catch {
       // 表单校验失败
       setSubmitLoading(false);
     }
@@ -497,6 +497,16 @@ export default function EmployeePage() {
     }
   };
 
+  // 关闭客户管理弹窗时清空相关状态
+  const handleCustomerModalClose = () => {
+    setCustomerModalVisible(false);
+    setSessionList([]);
+    setEmployeeCustomers([]);
+    setSelectedLeft([]);
+    setSelectedRight([]);
+    setCurrentCustomerEmployee(null);
+  };
+
   const onSaveRelation = async () => {
     if (!currentCustomerEmployee) return;
     setSessionLoading(true);
@@ -512,16 +522,6 @@ export default function EmployeePage() {
     } finally {
       setSessionLoading(false);
     }
-  };
-
-  // 关闭客户管理弹窗时清空相关状态
-  const handleCustomerModalClose = () => {
-    setCustomerModalVisible(false);
-    setSessionList([]);
-    setEmployeeCustomers([]);
-    setSelectedLeft([]);
-    setSelectedRight([]);
-    setCurrentCustomerEmployee(null);
   };
 
   // 打开客户管理弹窗
@@ -611,9 +611,9 @@ export default function EmployeePage() {
               <>
                 {count}
                 <SquarePen
+                  onClick={() => handleCustomerManage(record)}
                   size={16}
                   style={{ marginLeft: 10 }}
-                  onClick={() => handleCustomerManage(record)}
                 />
               </>
             )}
@@ -651,7 +651,7 @@ export default function EmployeePage() {
             }}
             trigger={['click']}
           >
-            <a onClick={(e) => e.preventDefault()} className={styles.blackText}>
+            <a className={styles.blackText} onClick={(e) => e.preventDefault()}>
               {displayRole || '暂无角色'} <ChevronDown size={16} />
             </a>
           </Dropdown>
@@ -675,29 +675,29 @@ export default function EmployeePage() {
       render: (_, record) => (
         <Space size='middle'>
           <Button
-            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
+            type='link'
           >
             发送登录引导
           </Button>
           <Button
-            type='link'
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
+            type='link'
           >
             编辑
           </Button>
           <Popconfirm
-            title='确认删除'
+            cancelText='取消'
             description='确定要删除该员工吗？此操作不可撤销。'
             okText='确认'
-            cancelText='取消'
             onConfirm={() => handleDelete(record.id)}
+            title='确认删除'
           >
             <Button
-              type='link'
               className={`${styles.operationButton} ${styles.blackText}`}
+              type='link'
             >
               删除
             </Button>
@@ -743,19 +743,19 @@ export default function EmployeePage() {
     <div className={styles.container}>
       {/* 顶部标题和搜索区 */}
       <div className={styles.header}>
-        <Title level={4} className={styles.title}>
+        <Title className={styles.title} level={4}>
           员工管理
         </Title>
         <div className={styles.headerRight}>
           <Input
-            placeholder='搜索员工'
-            prefix={<SearchOutlined />}
-            value={searchValue}
             onChange={handleSearchChange}
             onPressEnter={handleSearch}
+            placeholder='搜索员工'
+            prefix={<SearchOutlined />}
             style={{ width: 240 }}
+            value={searchValue}
           />
-          <Button type='primary' onClick={showAddEmployeeModal}>
+          <Button onClick={showAddEmployeeModal} type='primary'>
             添加员工
           </Button>
         </div>
@@ -766,63 +766,63 @@ export default function EmployeePage() {
         <Table
           columns={columns}
           dataSource={employees}
-          rowKey='id'
           loading={loading}
+          onChange={handleTableChange}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             showSizeChanger: true,
             showQuickJumper: false,
           }}
-          onChange={handleTableChange}
+          rowKey='id'
         />
       </div>
 
       {/* 登录引导弹窗 */}
       <SendLoginGuideModal
-        open={loginGuideVisible}
-        loading={loginGuideLoading}
         employee={currentEmployee}
-        theme={theme}
+        loading={loginGuideLoading}
         onCancel={() => {
           setLoginGuideVisible(false);
           setLoginGuideLoading(false);
         }}
         onSend={handleConfirmSendLoginGuide}
+        open={loginGuideVisible}
+        theme={theme}
       />
 
       {/* 员工弹窗（新增/编辑） */}
       <EmployeeEditModal
-        open={employeeModalVisible}
+        avatarFile={avatarFile}
+        beforeUpload={beforeUpload}
+        form={form}
         isEditMode={isEditMode}
         loading={submitLoading}
-        form={form}
-        avatarFile={avatarFile}
+        onAvatarChange={handleAvatarChange}
         onCancel={handleEmployeeModalCancel}
         onSubmit={handleEmployeeSubmit}
-        beforeUpload={beforeUpload}
-        onAvatarChange={handleAvatarChange}
+        open={employeeModalVisible}
       />
 
       {/* 员工对接客户管理弹窗 */}
       <EmployeeCustomerModal
-        open={customerModalVisible}
-        onClose={handleCustomerModalClose}
-        employee={currentCustomerEmployee}
-        sessionList={sessionList}
-        employeeCustomers={employeeCustomers}
-        onSave={onSaveRelation}
-        loading={sessionLoading}
         customerTab={customerTab}
-        setCustomerTab={setCustomerTab}
-        selectedLeft={selectedLeft}
-        setSelectedLeft={setSelectedLeft}
-        selectedRight={selectedRight}
-        setSelectedRight={setSelectedRight}
-        moveToRight={moveToRight}
-        moveToLeft={moveToLeft}
+        employee={currentCustomerEmployee}
+        employeeCustomers={employeeCustomers}
         leftList={leftList}
+        loading={sessionLoading}
+        moveToLeft={moveToLeft}
+        moveToRight={moveToRight}
+        onClose={handleCustomerModalClose}
+        onSave={onSaveRelation}
+        open={customerModalVisible}
         rightList={rightList}
+        selectedLeft={selectedLeft}
+        selectedRight={selectedRight}
+        sessionList={sessionList}
+        setCustomerTab={setCustomerTab}
+        setSelectedLeft={setSelectedLeft}
+        setSelectedRight={setSelectedRight}
       />
     </div>
   );

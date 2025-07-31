@@ -11,14 +11,12 @@ const Session = async () => {
   const Layout = Desktop;
 
   return (
-    <>
-      <Layout>
+    <Layout>
         <Suspense fallback={<SkeletonList />}>
           <SessionContent />
         </Suspense>
         <ChatHydration />
       </Layout>
-    </>
   );
 };
 

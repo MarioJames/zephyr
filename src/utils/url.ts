@@ -32,12 +32,11 @@ export const syncUrlParams = (params: Record<string, string | undefined>) => {
  */
 export const getUrlParams = (keys: string[]) => {
   if (typeof window === 'undefined') {
-    return keys.reduce((acc, key) => ({ ...acc, [key]: null }), {});
+    return Object.fromEntries(keys.map(key => [key, null]));
   }
   
   const url = new URL(window.location.href);
-  return keys.reduce((acc, key) => ({
-    ...acc,
-    [key]: url.searchParams.get(key)
-  }), {} as Record<string, string | null>);
+  return Object.fromEntries(
+    keys.map(key => [key, url.searchParams.get(key)])
+  );
 };

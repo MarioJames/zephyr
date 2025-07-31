@@ -27,7 +27,7 @@ const FilePreview = memo<{ id: string }>(({ id }) => {
 
   return (
     <Center height={"100%"}>
-      <Image src={file?.url} alt={file?.filename} />
+      <Image alt={file?.filename} src={file?.url} />
     </Center>
   );
 });

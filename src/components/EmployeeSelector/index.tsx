@@ -246,15 +246,28 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   return (
     <Select
       className={`${styles.selector} ${className || ""}`}
-      placeholder={placeholder}
       disabled={disabled}
-      loading={loading}
-      value={selectedUser ? (selectedUser.fullName || selectedUser.username || "未知用户") : undefined}
-      onSelect={handleSelect}
-      onOpenChange={handleDropdownVisibleChange}
-      suffixIcon={<ChevronDown size={16} />}
-      showSearch={false}
       filterOption={false}
+      labelInValue={false}
+      loading={loading}
+      onOpenChange={handleDropdownVisibleChange}
+      onSelect={handleSelect}
+      optionLabelProp="label"
+      placeholder={placeholder}
+      popupRender={(menu) => (
+        <div className={styles.dropdownContainer}>
+          <Input
+            className={styles.searchInput}
+            onChange={(e) => handleSearch(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            placeholder="搜索员工..."
+            prefix={<SearchOutlined />}
+            value={searchKeyword}
+          />
+          {menu}
+        </div>
+      )}
+      showSearch={false}
       styles={{
         popup: {
           root: {
@@ -263,25 +276,12 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
           },
         },
       }}
-      labelInValue={false}
-      optionLabelProp="label"
-      popupRender={(menu) => (
-        <div className={styles.dropdownContainer}>
-          <Input
-            className={styles.searchInput}
-            placeholder="搜索员工..."
-            prefix={<SearchOutlined />}
-            value={searchKeyword}
-            onChange={(e) => handleSearch(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-          />
-          {menu}
-        </div>
-      )}
+      suffixIcon={<ChevronDown size={16} />}
+      value={selectedUser ? (selectedUser.fullName || selectedUser.username || "未知用户") : undefined}
     >
       {loading ? (
         Array.from({ length: 3 }).map((_, index) => (
-          <Option key={`loading-${index}`} value={`loading-${index}`} disabled>
+          <Option disabled key={`loading-${index}`} value={`loading-${index}`}>
             <div className={styles.userOption}>
               <Skeleton.Avatar active size="small" style={{ width: 40, height: 40, borderRadius: '50%' }} />
               <div className="user-info" style={{ flex: 1 }}>
@@ -298,11 +298,11 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
           return (
             <Option
               key={user.id}
-              value={user.id}
-                             label={user.fullName || user.username || "未知用户"}
+              label={user.fullName || user.username || "未知用户"}
+                             value={user.id}
             >
               <div className={styles.userOption}>
-                <Avatar size={24} src={user.avatar} icon={<UserOutlined />} />
+                <Avatar icon={<UserOutlined />} size={24} src={user.avatar} />
                 <div className="user-info">
                   <div className="user-name">
                     {user.fullName || user.username || "未知用户"}

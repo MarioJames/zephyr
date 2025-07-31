@@ -3,8 +3,7 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { GroupedVirtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
+import { useSessionStore , sessionSelectors } from '@/store/session';
 
 import SessionItem from '../SessionItem';
 import SessionGroupItem from './GroupItem';
@@ -36,12 +35,12 @@ const ShowMode = memo(() => {
       return (
         <SessionItem
           active={activeSessionId === session?.id}
+          avatar={session?.avatar}
           id={session?.id}
+          isRecent={isRecent}
           key={session?.id}
           title={title}
-          isRecent={isRecent}
           user={session?.user}
-          avatar={session?.avatar}
         />
       );
     },

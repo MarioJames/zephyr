@@ -62,7 +62,6 @@ const SessionItem = memo<ConfigCellProps>(
     return (
       <Flexbox style={{ position: 'relative' }}>
         <Flexbox
-          horizontal
           align={'center'}
           className={cx(
             styles.container,
@@ -70,6 +69,7 @@ const SessionItem = memo<ConfigCellProps>(
             active && styles.active
           )}
           distribution={'space-between'}
+          horizontal
           onClick={() => {
             if (activeSessionId !== id) {
               switchSession(id);
@@ -87,12 +87,12 @@ const SessionItem = memo<ConfigCellProps>(
           }}
         >
           <SessionContent
+            avatar={avatar}
+            employeeName={user?.username}
             id={id}
+            isRecent={isRecent}
             showMore={isHover}
             title={title}
-            avatar={avatar}
-            isRecent={isRecent}
-            employeeName={user?.username}
           />
         </Flexbox>
       </Flexbox>

@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { ReactNode, memo } from "react";
 import {
   ConfigProvider,
   NeutralColors,
@@ -11,7 +11,6 @@ import { ThemeAppearance, createStyles } from 'antd-style';
 import 'antd/dist/reset.css';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, memo } from 'react';
 
 import AntdStaticMethods from '@/components/AntdStaticMethods';
 import {
@@ -96,7 +95,7 @@ const AppTheme = memo<AppThemeProps>(
     globalCDN,
   }) => {
     const themeMode = useGlobalStore(globalSelectors.themeMode);
-    const { styles, cx, theme } = useStyles();
+    const { styles, cx } = useStyles();
 
     return (
         <ThemeProvider

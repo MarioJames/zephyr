@@ -3,10 +3,9 @@ import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from 'zustand/vanilla';
 
-import { FileCoreAction } from './slices/core/action';
+import { FileCoreAction , fileCoreSlice } from './slices/core/action';
 import { FileState, initialState } from './initialState';
 import { createDevtools } from '@/utils/store';
-import { fileCoreSlice } from './slices/core/action';
 
 export interface FileStore extends FileState, FileCoreAction {}
 

@@ -21,6 +21,7 @@ export interface AgentSuggestionCreate {
   suggestion: AgentSuggestionContent; // 具体化的建议内容类型
   topicId: string;
   parentMessageId: string;
+  [key: string]: unknown;
 }
 
 export interface AgentSuggestionItem {
@@ -50,16 +51,7 @@ export interface AgentSuggestionListResponse {
   pageSize: number;
 }
 
-// 本地 API 响应格式
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  total?: number;
-  page?: number;
-  pageSize?: number;
-}
+
 
 /**
  * 创建智能体建议

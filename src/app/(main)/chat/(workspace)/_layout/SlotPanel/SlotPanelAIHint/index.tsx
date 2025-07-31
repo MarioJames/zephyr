@@ -9,7 +9,7 @@ import { useAIHintStyles } from "../style";
 import BubblesLoading from "@/components/Loading/BubblesLoading";
 import SkeletonList from "./SkeletonList";
 
-const unit = ["。", "，", "！", "？", "：", "；"];
+const unit = new Set(["。", "，", "！", "？", "：", "；"]);
 
 const { Paragraph } = Typography;
 
@@ -86,7 +86,7 @@ function AIHintItem({
     }
 
     const lastChar = str.slice(-1);
-    return unit.includes(lastChar);
+    return unit.has(lastChar);
   }
 
   return (
@@ -101,8 +101,8 @@ function AIHintItem({
       </div>
       {item.placeholder ? (
         <Flexbox
-          horizontal
           align="center"
+          horizontal
           justify="center"
           style={{ marginTop: 10, marginBottom: 16 }}
         >
@@ -122,16 +122,16 @@ function AIHintItem({
 
           {/* 知识点卡片 */}
           {knowledgeCards.length > 0 && (
-            <Row gutter={[8, 8]} className={styles.cardGrid}>
+            <Row className={styles.cardGrid} gutter={[8, 8]}>
               {knowledgeCards.slice(0, 4).map((card, idx) => (
-                <Col span={12} key={idx}>
+                <Col key={idx} span={12}>
                   <div
                     className={styles.cardItem}
-                    style={{ height: "100%", width: "100%", cursor: "pointer" }}
                     onClick={() => {
                       setSelectedCard(card);
                       setModalVisible(true);
                     }}
+                    style={{ height: "100%", width: "100%", cursor: "pointer" }}
                   >
                     <div className={styles.cardTitle}>{card.title}</div>
                     <div
@@ -150,7 +150,7 @@ function AIHintItem({
 
           {/* 推荐话术列表 */}
           {item.suggestion?.responses?.map((response, idx) => (
-            <div key={idx} className={styles.sectionCard}>
+            <div className={styles.sectionCard} key={idx}>
               <div className={styles.sectionTitle}>{response.type}</div>
               <div className={styles.sectionContent}>
                 <Paragraph
@@ -166,9 +166,9 @@ function AIHintItem({
                 {isLatest && (
                   <div className={styles.sectionFooter}>
                     <Button
-                      type="primary"
                       className={styles.adoptBtn}
                       onClick={() => handleAcceptSuggestion(response.content)}
+                      type="primary"
                     >
                       采用
                     </Button>
@@ -183,12 +183,12 @@ function AIHintItem({
       {/* 知识卡片详情弹窗 */}
       <Modal
         centered
-        width={440}
-        footer={false}
         destroyOnHidden
+        footer={false}
+        onCancel={() => setModalVisible(false)}
         open={modalVisible}
         title={selectedCard?.title}
-        onCancel={() => setModalVisible(false)}
+        width={440}
       >
         <div
           style={{ padding: "16px 0", lineHeight: "24px", fontSize: "14px" }}
@@ -264,20 +264,20 @@ const AIHintPanel = () => {
   };
 
   return (
-    <Flexbox height="100%" className={styles.panelBg}>
+    <Flexbox className={styles.panelBg} height="100%">
       {/* Header */}
-      <Flexbox horizontal align="center" className={styles.header}>
-        <Flexbox horizontal align="center" gap={8}>
+      <Flexbox align="center" className={styles.header} horizontal>
+        <Flexbox align="center" gap={8} horizontal>
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>
         </Flexbox>
         {/* 重新生成按钮 */}
         {shouldShowRegenerateButton() && (
           <Button
-            type="text"
-            size="small"
+            disabled={isGeneratingAI}
             icon={<RefreshCw size={16} />}
             onClick={handleRegenerate}
+            size="small"
             style={{ 
               marginLeft: 'auto',
               color: '#666',
@@ -285,14 +285,14 @@ const AIHintPanel = () => {
               alignItems: 'center',
               gap: '4px'
             }}
-            disabled={isGeneratingAI}
+            type="text"
           >
             重新生成
           </Button>
         )}
       </Flexbox>
       {/* List */}
-      <Flexbox flex={1} className={styles.listWrap}>
+      <Flexbox className={styles.listWrap} flex={1}>
         {isFetchingAI ? (
           <SkeletonList />
         ) : (
@@ -307,10 +307,10 @@ const AIHintPanel = () => {
                   <div>暂无AI建议</div>
                   {shouldShowRegenerateButton() && (
                     <Button
-                      type="primary"
                       icon={<RefreshCw size={16} />}
-                      onClick={handleRegenerate}
                       loading={isGeneratingAI}
+                      onClick={handleRegenerate}
+                      type="primary"
                     >
                       生成建议
                     </Button>
@@ -320,9 +320,9 @@ const AIHintPanel = () => {
             )}
             {suggestions.map((item) => (
               <AIHintItem
-                key={item.id}
-                item={item}
                 isLatest={latestSuggestion?.id === item.id}
+                item={item}
+                key={item.id}
               />
             ))}
           </>

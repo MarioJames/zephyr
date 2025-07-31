@@ -1,10 +1,10 @@
 import React from 'react';
 import { Tabs, Checkbox } from 'antd';
-import { Button, Modal } from '@lobehub/ui';
+import { Button, Modal , Tooltip } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import SkeletonList from './SkeletonList';
 import { DoubleRightOutlined, DoubleLeftOutlined } from '@ant-design/icons';
-import { Tooltip } from '@lobehub/ui';
+
 
 interface Customer {
   id: string;
@@ -170,17 +170,17 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
 
   return (
     <Modal
-      title={null}
-      open={open}
-      footer={null}
-      onCancel={onClose}
-      width={680}
-      style={{ top: 60 }}
       className={styles.modal}
       classNames={{
         body: styles.modalBody,
       }}
       closable={false}
+      footer={null}
+      onCancel={onClose}
+      open={open}
+      style={{ top: 60 }}
+      title={null}
+      width={680}
     >
       {loading && sessionList.length === 0 ? (
         <SkeletonList />
@@ -192,11 +192,11 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             <div className={styles.leftPanel}>
               <Tabs
                 activeKey={customerTab}
-                onChange={setCustomerTab}
                 items={[
                   { key: 'all', label: '全部客户' },
                   { key: 'unassigned', label: '未分配客户' },
                 ]}
+                onChange={setCustomerTab}
                 tabBarStyle={{
                   height: 38,
                   marginBottom: 4,
@@ -242,7 +242,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                 {/* 客户项 */}
                 <div className={styles.panelContent}>
                   {leftList.map((c) => (
-                    <div key={c.id} className={styles.customerItem}>
+                    <div className={styles.customerItem} key={c.id}>
                       <Checkbox
                         checked={selectedLeft.includes(c.id)}
                         onChange={(e) => {
@@ -273,17 +273,17 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             <div className={styles.arrowContainer}>
               <Button
                 className={styles.arrowButton}
-                shadow
-                icon={<DoubleRightOutlined />}
                 disabled={selectedLeft.length === 0}
+                icon={<DoubleRightOutlined />}
                 onClick={moveToRight}
+                shadow
               />
               <Button
                 className={styles.arrowButton}
-                shadow
-                icon={<DoubleLeftOutlined />}
                 disabled={selectedRight.length === 0}
+                icon={<DoubleLeftOutlined />}
                 onClick={moveToLeft}
+                shadow
               />
             </div>
             {/* 右侧 */}
@@ -320,7 +320,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
                 {/* 客户项 */}
                 <div className={styles.panelContent}>
                   {rightList.map((c) => (
-                    <div key={c.id} className={styles.customerItem}>
+                    <div className={styles.customerItem} key={c.id}>
                       <Checkbox
                         checked={selectedRight.includes(c.id)}
                         onChange={(e) => {
@@ -348,7 +348,7 @@ const EmployeeCustomerModal: React.FC<EmployeeCustomerModalProps> = ({
             <Button onClick={onClose} shadow>
               取消
             </Button>
-            <Button loading={loading} onClick={onSave} type='primary' shadow>
+            <Button loading={loading} onClick={onSave} shadow type='primary'>
               保存
             </Button>
           </div>

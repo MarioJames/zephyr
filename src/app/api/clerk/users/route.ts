@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     // 使用 base64 编码用户名用于 Clerk，并转换为 URL 安全格式
     const clerkUsername = Buffer.from(username, 'utf8')
       .toString('base64')
-      .replace(/\+/g, '-')  // 替换 + 为 -
-      .replace(/\//g, '_')  // 替换 / 为 _
-      .replace(/=/g, '');   // 移除填充字符 =
+      .replaceAll('+', '-')  // 替换 + 为 -
+      .replaceAll('/', '_')  // 替换 / 为 _
+      .replaceAll('=', '');   // 移除填充字符 =
 
     // 验证用户名长度（Clerk 要求 4-64 个字符）
     if (clerkUsername.length < 4 || clerkUsername.length > 64) {

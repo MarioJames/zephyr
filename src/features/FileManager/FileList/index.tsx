@@ -51,7 +51,7 @@ const FileList = memo<FileListProps>(({ category }) => {
     clearOnDefault: true,
   });
 
-  const useFetchFileManage = useFileStore((s) => s.useFetchFileManage);
+  const fetchFileManage = useFileStore((s) => s.useFetchFileManage);
   const loading = useFileStore((s) => s.loading);
   const pagination = useFileStore((s) => s.pagination);
   const [fileData, setFileData] = useState<FileItem[]>([]);
@@ -67,7 +67,7 @@ const FileList = memo<FileListProps>(({ category }) => {
     }
 
     try {
-      const result = await useFetchFileManage({
+      const result = await fetchFileManage({
         search: query,
         page,
         pageSize: pagination.pageSize,
@@ -88,7 +88,7 @@ const FileList = memo<FileListProps>(({ category }) => {
         setIsFirstLoad(false);
       }
     }
-  }, [useFetchFileManage, query, category, pagination.pageSize]);
+  }, [fetchFileManage, query, category, pagination.pageSize]);
 
   // 监听查询条件变化
   useEffect(() => {

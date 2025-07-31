@@ -6,8 +6,8 @@ import { createStyles } from 'antd-style';
 import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
+import { useSessionStore , sessionSelectors } from '@/store/session';
+
 import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
 import SkeletonList from './SkeletonList';
@@ -182,33 +182,33 @@ const HistoryPanel = () => {
   ];
 
   return (
-    <Flexbox height='100%' className={styles.panelBg}>
+    <Flexbox className={styles.panelBg} height='100%'>
       {/* Header */}
       <Flexbox
-        horizontal
         align='center'
-        distribution='space-between'
         className={styles.header}
+        distribution='space-between'
+        horizontal
       >
-        <Flexbox horizontal align='center' gap={8}>
+        <Flexbox align='center' gap={8} horizontal>
           <FileClock size={20} />
           <span className={styles.headerTitle}>历史会话</span>
         </Flexbox>
         <X
-          size={16}
-          color='rgba(0, 0, 0, 0.45)'
           className={styles.closeBtn}
+          color='rgba(0, 0, 0, 0.45)'
           onClick={() => setSlotPanelType('aiHint')}
+          size={16}
         />
       </Flexbox>
       {/* List */}
-      <Flexbox flex={1} className={styles.listWrap}>
+      <Flexbox className={styles.listWrap} flex={1}>
         {isLoading ? (
           <SkeletonList />
         ) : topics.length === 0 ? (
           <Flexbox
-            flex={1}
             align='center'
+            flex={1}
             justify='center'
             style={{ color: '#999', fontSize: 16 }}
           >
@@ -219,18 +219,18 @@ const HistoryPanel = () => {
             return (
               <Spin
                 key={item.id}
-                spinning={loadingTopicIds.has(item.id)}
                 size='small'
+                spinning={loadingTopicIds.has(item.id)}
               >
                 <Flexbox
-                  horizontal
-                  distribution='space-between'
                   align='center'
                   className={`
                     ${styles.historyItem}
                     ${item.id === activeTopicId ? styles.activeHistoryItem : ''}
                     ${customStyles.historyItemWrapper}
                     `}
+                  distribution='space-between'
+                  horizontal
                   onClick={() => {
                     if (item.id === activeTopicId) return;
 
@@ -249,7 +249,7 @@ const HistoryPanel = () => {
                         : ''}
                     </div>
                   </Flexbox>
-                  <Flexbox horizontal align='center' gap={8}>
+                  <Flexbox align='center' gap={8} horizontal>
                     <div className={styles.historyCount}>
                       {item.messageCount}
                     </div>
@@ -278,27 +278,27 @@ const HistoryPanel = () => {
 
       {/* 重命名弹窗 */}
       <Modal
-        title='重命名话题'
-        open={isRenameModalOpen}
-        onOk={handleConfirmRename}
+        cancelText='取消'
+        confirmLoading={
+          editingTopic ? loadingTopicIds.has(editingTopic.id) : false
+        }
+        okText='确认'
         onCancel={() => {
           setIsRenameModalOpen(false);
           setEditingTopic(null);
           setNewTitle('');
         }}
-        okText='确认'
-        cancelText='取消'
-        confirmLoading={
-          editingTopic ? loadingTopicIds.has(editingTopic.id) : false
-        }
+        onOk={handleConfirmRename}
+        open={isRenameModalOpen}
+        title='重命名话题'
       >
         <Input
-          placeholder='请输入新的话题标题'
-          value={newTitle}
+          disabled={editingTopic ? loadingTopicIds.has(editingTopic.id) : false}
+          maxLength={100}
           onChange={(e) => setNewTitle(e.target.value)}
           onPressEnter={handleConfirmRename}
-          maxLength={100}
-          disabled={editingTopic ? loadingTopicIds.has(editingTopic.id) : false}
+          placeholder='请输入新的话题标题'
+          value={newTitle}
         />
       </Modal>
     </Flexbox>

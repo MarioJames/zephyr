@@ -64,8 +64,8 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       key: 'messageCount',
       render: (count: number, record: TopicItem) => (
         <a
-          style={{ color: theme.colorPrimary }}
           onClick={() => handleViewTopic(record.id)}
+          style={{ color: theme.colorPrimary }}
         >
           {count}
         </a>
@@ -92,8 +92,8 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       key: 'action',
       render: (_: any, record: any) => (
         <a
-          style={{ color: theme.colorPrimary }}
           onClick={() => handleViewTopic(record.id)}
+          style={{ color: theme.colorPrimary }}
         >
           查看
         </a>
@@ -115,8 +115,14 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       <Table
         columns={columns}
         dataSource={topics}
-        rowKey="id"
         loading={loading}
+        locale={{
+          triggerDesc: '点击降序排列',
+          triggerAsc: '点击升序排列',
+          cancelSort: '取消排序',
+          emptyText: '暂无话题记录',
+        }}
+        onChange={handleTableChange}
         pagination={{
           pageSize: 5,
           showTotal: (total) => `共 ${total} 条记录`,
@@ -126,13 +132,7 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
             page: '页',
           },
         }}
-        onChange={handleTableChange}
-        locale={{
-          triggerDesc: '点击降序排列',
-          triggerAsc: '点击升序排列',
-          cancelSort: '取消排序',
-          emptyText: '暂无话题记录',
-        }}
+        rowKey="id"
       />
     </>
   );

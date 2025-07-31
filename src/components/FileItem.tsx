@@ -2,9 +2,10 @@ import { ActionIcon, Image } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import { Trash } from 'lucide-react';
 import { CSSProperties, memo } from 'react';
-const MIN_IMAGE_SIZE = 64;
 
 import { usePlatform } from '@/hooks/usePlatform';
+
+const MIN_IMAGE_SIZE = 64;
 
 const useStyles = createStyles(({ css, token }) => ({
   deleteButton: css`

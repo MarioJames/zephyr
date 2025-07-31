@@ -10,7 +10,7 @@ import Translate from "./Translate";
 
 export const UserMessageExtra: RenderMessageExtra = memo<
   ChatMessage & { extra?: any }
->(({ extra, id, content }) => {
+>(({ extra, id }) => {
   const isTranslating = useChatStore(chatSelectors.isMessageTranslating(id));
   
   return (

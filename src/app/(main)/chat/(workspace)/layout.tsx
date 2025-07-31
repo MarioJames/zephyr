@@ -14,7 +14,7 @@ export default function Layout({
   conversation,
 }: LayoutProps) {
   return (
-    <Desktop session={session} conversation={conversation}>
+    <Desktop conversation={conversation} session={session}>
       {children}
     </Desktop>
   );

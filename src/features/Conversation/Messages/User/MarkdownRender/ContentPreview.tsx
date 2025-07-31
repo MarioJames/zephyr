@@ -4,10 +4,9 @@ import { Flexbox } from 'react-layout-kit';
 interface ContentPreviewProps {
   content: string;
   displayMode: 'chat' | 'docs';
-  id: string;
 }
 
-const ContentPreview = ({ content, id }: ContentPreviewProps) => {
+const ContentPreview = ({ content }: ContentPreviewProps) => {
   return (
     <Flexbox>
       <MaskShadow>

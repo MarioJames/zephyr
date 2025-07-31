@@ -1,7 +1,5 @@
-import { CoreState } from './slices/core/initialState';
-import { CategoryState } from './slices/category/initialState';
-import { coreInitialState } from './slices/core/initialState';
-import { categoryInitialState } from './slices/category/initialState';
+import { CoreState , coreInitialState } from './slices/core/initialState';
+import { CategoryState , categoryInitialState } from './slices/category/initialState';
 
 // ========== 客户统计数据接口 ==========
 export interface CustomerStatsItem {

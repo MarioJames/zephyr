@@ -12,28 +12,28 @@ export default function ContactInfoSection() {
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item
-            name='phone'
             label='手机号'
+            name='phone'
             rules={[
               { required: true, message: '请输入手机号' },
               { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' },
             ]}
           >
-            <Input placeholder='请输入手机号' className={styles.inputBg} />
+            <Input className={styles.inputBg} placeholder='请输入手机号' />
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item
-            name='email'
             label='邮箱'
+            name='email'
             rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
           >
-            <Input placeholder='请输入邮箱' className={styles.inputBg} />
+            <Input className={styles.inputBg} placeholder='请输入邮箱' />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name='wechat' label='微信号'>
-            <Input placeholder='请输入微信号' className={styles.inputBg} />
+          <Form.Item label='微信号' name='wechat'>
+            <Input className={styles.inputBg} placeholder='请输入微信号' />
           </Form.Item>
         </Col>
       </Row>

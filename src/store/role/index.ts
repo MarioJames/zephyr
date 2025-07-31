@@ -1,8 +1,8 @@
 // ========== Role Store 导出入口 ==========
 
 // 导出store hook
-export { useRoleStore } from './store';
 export type { RoleStore } from './store';
+export { useRoleStore } from './store';
 
 // 导出状态类型
 export type { RoleState } from './initialState';

@@ -43,11 +43,11 @@ export default function CustomerFormPage({ params }: CustomerFormPageProps) {
         <ErrorCapture reset={handleCancel} />
       ) : (
         <CustomerForm
+          agents={agents}
           form={form}
           mode={mode}
-          agents={agents}
-          onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onSubmit={handleSubmit}
           submitLoading={submitLoading}
         />
       )}

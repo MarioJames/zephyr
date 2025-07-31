@@ -6,7 +6,6 @@ import {
   ChevronUp,
   ChevronsRight,
   CopyIcon,
-  TrashIcon,
 } from 'lucide-react';
 import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
@@ -25,7 +24,7 @@ const langMap: Record<string, string> = {
 };
 
 const Translate = memo<TranslateProps>(
-  ({ content = '', from, to, id, loading }) => {
+  ({ content = '', from, to, loading }) => {
     const theme = useTheme();
     const [show, setShow] = useState(true);
 

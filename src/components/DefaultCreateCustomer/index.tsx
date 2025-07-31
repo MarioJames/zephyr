@@ -109,7 +109,7 @@ const DefaultCreateCustomer = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <img src={HELLO_IMG} alt='' className={styles.helloImg} />
+        <img alt='' className={styles.helloImg} src={HELLO_IMG} />
         Hi！ {username}
       </div>
       <div className={styles.middle}>
@@ -119,9 +119,9 @@ const DefaultCreateCustomer = () => {
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
             <img
-              src={agent.avatar || '/test.png'}
               alt={agent.title}
               className={styles.avatar}
+              src={agent.avatar || '/test.png'}
             />
             <div className={styles.cardTitle}>{agent.title}</div>
             <div className={styles.cardDesc}>{agent.description}</div>

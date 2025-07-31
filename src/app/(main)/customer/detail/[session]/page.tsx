@@ -41,12 +41,6 @@ export default function CustomerDetail({
   const { styles } = useStyles();
   const router = useRouter();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
-
-  // If not admin, show NoAuthority component
-  if (!isAdmin) {
-    return <NoAuthority />;
-  }
-
   const { session: sessionId } = use(params);
 
   // 使用自定义hook管理客户详情数据
@@ -85,6 +79,11 @@ export default function CustomerDetail({
     await deleteCustomer(sessionId);
   };
 
+  // If not admin, show NoAuthority component
+  if (!isAdmin) {
+    return <NoAuthority />;
+  }
+
   if (!customerDetail) {
     return (
       <div className={styles.pageContainer}>
@@ -104,10 +103,10 @@ export default function CustomerDetail({
     <div className={styles.pageContainer}>
       {/* 顶部导航 */}
       <CustomerDetailHeader
-        onBack={handleBack}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
         deleting={deleting}
+        onBack={handleBack}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
       />
 
       {/* 客户信息卡片 */}

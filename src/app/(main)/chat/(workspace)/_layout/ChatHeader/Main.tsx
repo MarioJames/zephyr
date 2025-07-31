@@ -105,7 +105,7 @@ const MainContent = memo<{ className?: string }>(({ className }) => {
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
       <div className={styles.avatar}>
         {activeSession?.avatar ? (
-          <img src={activeSession?.avatar} alt='头像' />
+          <img alt='头像' src={activeSession?.avatar} />
         ) : (
           <div className={styles.avatarCircle}>
             {activeSession?.title?.slice(0, 1)}
@@ -114,10 +114,9 @@ const MainContent = memo<{ className?: string }>(({ className }) => {
       </div>
       <Flexbox align={'center'} className={styles.container} gap={8} horizontal>
         <Popover
-          content={popoverContent}
-          trigger='click'
-          placement='bottomLeft'
           arrow={false}
+          content={popoverContent}
+          placement='bottomLeft'
           styles={{
             root: {
               padding: '8px',
@@ -127,6 +126,7 @@ const MainContent = memo<{ className?: string }>(({ className }) => {
               padding: '8px',
             },
           }}
+          trigger='click'
         >
           <div className={styles.title}>
             {activeSession?.title || '客户名称'}

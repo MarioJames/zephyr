@@ -62,15 +62,16 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
     }, []);
 
     return (
-      <>
-        <DraggablePanel
+      <DraggablePanel
           className={expand ? styles.fullscreenPanel : styles.panel}
           classNames={{
             content: styles.content,
           }}
+          expand={expand}
           fullscreen={expand}
           maxHeight={CHAT_TEXTAREA_MAX_HEIGHT}
           minHeight={CHAT_TEXTAREA_HEIGHT}
+          onExpandChange={setExpand}
           onSizeChange={(_, size) => {
             if (!size) return;
             const height =
@@ -80,10 +81,8 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
             onInputHeightChange?.(height);
           }}
           placement="bottom"
-          size={{ height: inputHeight, width: '100%' }}
-          expand={expand}
-          onExpandChange={setExpand}
           showHandleWideArea
+          size={{ height: inputHeight, width: '100%' }}
         >
           <DraggablePanelContainer
             className={expand ? styles.fullscreenContainer : undefined}
@@ -106,7 +105,7 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
                 rightActions={rightActions}
                 setExpand={setExpand}
               />
-              <Flexbox horizontal gap={8} style={{ flex: 1 }}>
+              <Flexbox gap={8} horizontal style={{ flex: 1 }}>
                 <Flexbox style={{ flex: 1 }}>
                   {renderTextArea(onSend)}
                 </Flexbox>
@@ -117,7 +116,6 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
             </Flexbox>
           </DraggablePanelContainer>
         </DraggablePanel>
-      </>
     );
   },
 );

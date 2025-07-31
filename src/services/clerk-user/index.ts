@@ -3,10 +3,6 @@ import type {
   User,
   CreateUserParams,
   UpdateUserParams,
-  UserQueryOptions,
-  PasswordResetOptions,
-  ClerkApiResponse,
-  UserListResponse,
   ServiceResult,
 } from '@/types/clerk';
 
@@ -168,5 +164,5 @@ export class ClerkUserService {
 export const clerkUserService = new ClerkUserService();
 
 // 导出类型
-export type { User } from '@clerk/backend';
 export type { CreateUserParams, UpdateUserParams } from '@/types/clerk';
+export type { User } from '@clerk/backend';

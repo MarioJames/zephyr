@@ -3,7 +3,7 @@ import type {
   SendSingleMailRequest,
   SendBatchMailRequest,
   SendNotificationRequest,
-  TestMailRequest,
+
   MailApiResponse,
   MailResponse,
   MailServiceStatus,
@@ -135,11 +135,11 @@ export default {
 
 // 导出类型定义
 export type {
-  SendSingleMailRequest,
-  SendBatchMailRequest,
-  SendNotificationRequest,
-  TestMailRequest,
   MailApiResponse,
   MailResponse,
   MailServiceStatus,
-};
+  SendBatchMailRequest,
+  SendNotificationRequest,
+  SendSingleMailRequest,
+  TestMailRequest,
+} from '@/types/mail';

@@ -21,14 +21,14 @@ const SkeletonList = () => {
         <Skeleton paragraph={{ rows: 1 }} />
 
         {/* 知识点卡片 */}
-        <Row gutter={[8, 8]} className={styles.cardGrid}>
+        <Row className={styles.cardGrid} gutter={[8, 8]}>
           {[1, 2, 3, 4].map((i) => (
-            <Col span={12} key={i}>
+            <Col key={i} span={12}>
               <div className={styles.cardItem}>
                 <Skeleton
+                  active
                   paragraph={{ rows: 2 }}
                   title={{ width: '40%' }}
-                  active
                 />
               </div>
             </Col>
@@ -42,11 +42,11 @@ const SkeletonList = () => {
 
         {/* 话术卡片 */}
         {[1, 2].map((i) => (
-          <div key={i} className={styles.sectionCard}>
+          <div className={styles.sectionCard} key={i}>
             <Skeleton
+              active
               paragraph={{ rows: 3 }}
               title={{ width: '30%' }}
-              active
             />
           </div>
         ))}
@@ -64,9 +64,9 @@ const SkeletonList = () => {
 
         <div className={styles.sectionCard}>
           <Skeleton
+            active
             paragraph={{ rows: 2 }}
             title={{ width: '30%' }}
-            active
           />
         </div>
       </Flexbox>

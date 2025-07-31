@@ -1,9 +1,9 @@
 import type { 
   User, 
-  EmailAddress,
-  Session,
-  Organization,
-  ClerkClient
+  
+  
+  
+  
 } from '@clerk/backend';
 
 // 定义用户创建参数类型（基于 Clerk 的实际 API）
@@ -49,13 +49,7 @@ export interface UpdateUserParams {
 }
 
 // 重新导出 Clerk 类型
-export type {
-  User,
-  EmailAddress,
-  Session,
-  Organization,
-  ClerkClient
-};
+
 
 // 用户查询选项
 export interface UserQueryOptions {
@@ -88,3 +82,4 @@ export interface UserListResponse {
 
 // 服务方法的返回类型
 export type ServiceResult<T> = Promise<ClerkApiResponse<T>>;
+export {type ClerkClient,type EmailAddress, type Organization, type Session, type User} from '@clerk/backend';

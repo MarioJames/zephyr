@@ -16,11 +16,11 @@ export interface TokenInfo {
 export interface OIDCTokenState {
   // Token信息
   tokenInfo: TokenInfo | null;
-  
+
   // Token刷新相关
   isRefreshing: boolean;
   lastRefreshTime: number | null;
-  refreshTimer: NodeJS.Timeout | null;
+  refreshTimer: ReturnType<typeof setTimeout> | null;
 }
 
 /**

@@ -19,9 +19,9 @@ const FormSkeleton = memo(() => {
             style={{ width: 120, height: 24, marginBottom: 16 }}
           />
           <div className={styles.typeGrid}>
-            <Skeleton className={styles.typeCard} active paragraph={false} />
-            <Skeleton className={styles.typeCard} active paragraph={false} />
-            <Skeleton className={styles.typeCard} active paragraph={false} />
+            <Skeleton active className={styles.typeCard} paragraph={false} />
+            <Skeleton active className={styles.typeCard} paragraph={false} />
+            <Skeleton active className={styles.typeCard} paragraph={false} />
           </div>
         </div>
 
@@ -41,7 +41,7 @@ const FormSkeleton = memo(() => {
 
         <Divider className={styles.divider} />
 
-        <Skeleton paragraph={{ rows: 1 }} active />
+        <Skeleton active paragraph={{ rows: 1 }} />
 
         {/* 底部按钮组 */}
         <div className={styles.buttonGroup}>

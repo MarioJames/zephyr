@@ -30,18 +30,16 @@ const SessionGroupItem = memo<SessionGroupItemProps>(({ title, count }) => {
   const { styles } = useStyles();
 
   return (
-    <>
-      <Flexbox
+    <Flexbox
+        align="center"
         className={styles.container}
+        horizontal
         paddingBlock={"12px 8px"}
         paddingInline={12}
-        horizontal
-        align="center"
       >
         <span className={styles.sessionTitle}>{title}</span>
         {typeof count === "number" && <span className={styles.count}>{count}</span>}
       </Flexbox>
-    </>
   );
 });
 

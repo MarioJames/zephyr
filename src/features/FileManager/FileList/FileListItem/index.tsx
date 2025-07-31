@@ -1,4 +1,3 @@
-import { Checkbox } from "antd";
 import { createStyles } from "antd-style";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -6,7 +5,7 @@ import "dayjs/locale/zh-cn";
 import { useRouter } from "next/navigation";
 import { rgba } from "polished";
 import { memo } from "react";
-import { Center, Flexbox } from "react-layout-kit";
+import { Flexbox } from "react-layout-kit";
 
 import FileIcon from "@/components/FileIcon";
 import { FileItem } from "@/services/files";
@@ -92,10 +91,10 @@ const FileRenderItem = memo<FileRenderItemProps>(
           <Flexbox
             align={"center"}
             horizontal
-            style={{ cursor: "pointer" }}
             onClick={() => {
               router.push(`/file/${id}`);
             }}
+            style={{ cursor: "pointer" }}
           >
             <FileIcon fileName={filename} fileType={fileType} />
             <span className={styles.name}>{filename}</span>

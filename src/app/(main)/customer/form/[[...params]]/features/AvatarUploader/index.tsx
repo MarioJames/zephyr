@@ -72,7 +72,7 @@ export default function AvatarUploader({
   return (
     <>
       <Title level={5}>头像</Title>
-      <Form.Item name='avatar' hidden>
+      <Form.Item hidden name='avatar'>
         <Input />
       </Form.Item>
       <div className={styles.avatarContainer}>
@@ -80,15 +80,15 @@ export default function AvatarUploader({
           {avatarUrl ? (
             isValidImageUrl(avatarUrl) ? (
               <Image
-                src={avatarUrl}
                 alt='avatar'
-                width={80}
                 height={80}
+                src={avatarUrl}
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
                 }}
+                width={80}
               />
             ) : (
               <div
@@ -110,15 +110,15 @@ export default function AvatarUploader({
           )}
         </div>
         <Upload
-          showUploadList={false}
           beforeUpload={beforeUpload}
           customRequest={handleCustomRequest}
           disabled={disabled || uploading}
+          showUploadList={false}
         >
           <Button
+            disabled={disabled || uploading}
             icon={<UploadOutlined />}
             loading={uploading}
-            disabled={disabled || uploading}
           >
             {uploading ? '上传中...' : '上传头像'}
           </Button>

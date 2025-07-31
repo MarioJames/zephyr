@@ -344,12 +344,12 @@ export default function Customer() {
       key: 'assignee',
       render: (text: string, record: CustomerDisplayItem) => (
         <CustomerAssignee
-          session={record.session}
-          title=''
+          onAssignSuccess={refreshCustomers}
           placeholder='未分配'
           popoverPlacement='right'
-          onAssignSuccess={refreshCustomers}
+          session={record.session}
           style={{ fontSize: '14px' }}
+          title=''
         />
       ),
     },
@@ -359,17 +359,17 @@ export default function Customer() {
       render: (_: any, record: CustomerDisplayItem) => (
         <Space size='middle'>
           <a
-            style={{ color: theme.colorPrimary }}
             onClick={() => handleEditCustomer(record)}
+            style={{ color: theme.colorPrimary }}
           >
             编辑
           </a>
           <Popconfirm
-            title='确认删除'
+            cancelText='取消'
             description='确定要删除该客户吗？此操作不可撤销。'
             okText='确认'
-            cancelText='取消'
             onConfirm={() => handleDelete(record)}
+            title='确认删除'
           >
             <a style={{ color: theme.colorPrimary }}>删除</a>
           </Popconfirm>
@@ -403,23 +403,8 @@ export default function Customer() {
         </Title>
         <Space>
           <Select
-            showSearch
             allowClear
-            placeholder='搜索客户'
-            suffixIcon={<SearchOutlined />}
             className={styles.searchBox}
-            onSearch={searchSessions}
-            onChange={(value: string | undefined) => {
-              if (value) {
-                // 直接跳转到客户详情页
-                router.push(`/customer/detail?id=${value}`);
-              }
-            }}
-            options={searchResults?.map((item) => ({
-              label: item.title,
-              value: item.id,
-            }))}
-            onClear={() => searchSessions('')}
             filterOption={false}
             notFoundContent={
               searchLoading ? (
@@ -430,15 +415,30 @@ export default function Customer() {
                 '请输入关键词搜索客户'
               )
             }
+            onChange={(value: string | undefined) => {
+              if (value) {
+                // 直接跳转到客户详情页
+                router.push(`/customer/detail?id=${value}`);
+              }
+            }}
+            onClear={() => searchSessions('')}
+            onSearch={searchSessions}
+            options={searchResults?.map((item) => ({
+              label: item.title,
+              value: item.id,
+            }))}
+            placeholder='搜索客户'
+            showSearch
             style={{ minWidth: 240 }}
+            suffixIcon={<SearchOutlined />}
           />
           <Link href='/customer/template'>
             <Button className={styles.actionButton}>客户模版配置</Button>
           </Link>
           <Button
-            type='primary'
             className={styles.actionButton}
             onClick={handleAddCustomer}
+            type='primary'
           >
             添加客户
           </Button>
@@ -451,7 +451,7 @@ export default function Customer() {
           // 骨架屏
           <>
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className={styles.statsBox}>
+              <div className={styles.statsBox} key={index}>
                 <Skeleton active paragraph={false} title={{ width: '100%' }} />
                 <Skeleton.Input
                   active
@@ -464,13 +464,13 @@ export default function Customer() {
         ) : (
           categoryStats.map((item, index) => (
             <div
-              key={item.agent?.id || `category-${index}`}
-              onClick={() => setSelectedCategory(item)}
               className={`${styles.statsBox} ${
                 selectedCategory.agent?.id === item.agent?.id
                   ? styles.statsBoxActive
                   : ''
               }`}
+              key={item.agent?.id || `category-${index}`}
+              onClick={() => setSelectedCategory(item)}
             >
               <div className={styles.statsTitle}>{item.agent?.title}</div>
               <div className={styles.statsValue}>{item.count}</div>
@@ -483,17 +483,23 @@ export default function Customer() {
       <div className={styles.tableContainer}>
         {error && (
           <Alert
-            message='加载客户数据失败'
-            description={error}
-            type='error'
-            style={{ marginBottom: 16 }}
             closable
+            description={error}
+            message='加载客户数据失败'
+            style={{ marginBottom: 16 }}
+            type='error'
           />
         )}
         <Table
           columns={columns}
           dataSource={displayCustomers}
           loading={loading}
+          locale={{
+            triggerDesc: '点击降序排列',
+            triggerAsc: '点击升序排列',
+            cancelSort: '取消排序',
+          }}
+          onChange={handleTableChange}
           pagination={{
             current: page,
             pageSize: pageSize,
@@ -506,12 +512,6 @@ export default function Customer() {
               jump_to: '跳至',
               page: '页',
             },
-          }}
-          onChange={handleTableChange}
-          locale={{
-            triggerDesc: '点击降序排列',
-            triggerAsc: '点击升序排列',
-            cancelSort: '取消排序',
           }}
         />
       </div>

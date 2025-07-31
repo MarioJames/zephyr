@@ -37,15 +37,6 @@ let tokenCache: TokenCache = {
 // 缓存有效期（5分钟）
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// 清除内存缓存
-function clearTokenCache() {
-  tokenCache = {
-    accessToken: null,
-    idToken: null,
-    expiresAt: null,
-    lastFetched: 0,
-  };
-}
 
 // 检查缓存是否有效（只检查缓存时间，不检查token过期）
 function isCacheValid(): boolean {
@@ -58,7 +49,7 @@ function isCacheValid(): boolean {
 
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
-  timeout: 300000,
+  timeout: 300_000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -124,7 +115,7 @@ instance.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   }
 );
 

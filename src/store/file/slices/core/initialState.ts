@@ -1,4 +1,4 @@
-import { FileAccessResponse, FileItem, FileParseResponse } from '@/services/files';
+import { FileAccessResponse, FileItem } from '@/services/files';
 
 export interface ParsedFileContent {
   /** 文件ID */

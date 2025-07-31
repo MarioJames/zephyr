@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, Row, Col, Avatar, Tag } from "antd";
-import { createStyles } from "antd-style";
-import { CustomerItem } from "@/services/customer";
-import { EmployeeAssignmentPanel } from "./EmployeeAssignmentPanel";
-import { UserItem } from "@/services/user";
+import React from 'react';
+import { Card, Row, Col, Avatar, Tag } from 'antd';
+import { createStyles } from 'antd-style';
+import { CustomerItem } from '@/services/customer';
+import { EmployeeAssignmentPanel } from './EmployeeAssignmentPanel';
+import { UserItem } from '@/services/user';
 
 const useStyles = createStyles(({ css, token }) => ({
   customerCard: css`
@@ -48,13 +48,11 @@ const useStyles = createStyles(({ css, token }) => ({
 export interface CustomerInfoCardProps {
   customer: CustomerItem;
   onAssignSuccess?: (employee: UserItem) => void;
-  onAssignError?: (error: any) => void;
 }
 
 export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
   customer,
   onAssignSuccess,
-  onAssignError,
 }) => {
   const { styles } = useStyles();
 
@@ -75,13 +73,13 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
               {session.avatar ? (
                 <Avatar size={58} src={session.avatar} />
               ) : (
-                <Avatar>{(session.title || "客户").charAt(0)}</Avatar>
+                <Avatar>{(session.title || '客户').charAt(0)}</Avatar>
               )}
             </div>
             <div>
               <div className={styles.customerBaseInfo}>
                 <div style={{ marginRight: 8 }}>
-                  {session.title || "未命名客户"}
+                  {session.title || '未命名客户'}
                 </div>
                 {session?.agent?.title && (
                   <Tag className={styles.tags}>{session?.agent?.title}</Tag>
@@ -90,7 +88,7 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
                   <Tag className={styles.tags}>{extend.gender}</Tag>
                 )}
                 {extend?.age && (
-                  <Tag className={styles.tags}>{extend.age + "岁"}</Tag>
+                  <Tag className={styles.tags}>{extend.age + '岁'}</Tag>
                 )}
                 {extend?.industry && (
                   <Tag className={styles.tags}>{extend.industry}</Tag>
@@ -103,28 +101,27 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
                 <div>
                   创建时间：
                   {session.createdAt
-                    ? new Date(session.createdAt).toLocaleString("zh-CN")
-                    : "-"}
+                    ? new Date(session.createdAt).toLocaleString('zh-CN')
+                    : '-'}
                 </div>
                 <div className={styles.customerMetaSeparator}>|</div>
                 <div>
                   更新时间：
                   {session.updatedAt
-                    ? new Date(session.updatedAt).toLocaleString("zh-CN")
-                    : "-"}
+                    ? new Date(session.updatedAt).toLocaleString('zh-CN')
+                    : '-'}
                 </div>
               </div>
               <div className={styles.customerNotes}>
-                备注：{session.description || "-"}
+                备注：{session.description || '-'}
               </div>
             </div>
           </div>
         </Col>
         <Col span={6}>
           <EmployeeAssignmentPanel
-            session={session}
             onAssignSuccess={onAssignSuccess}
-            onAssignError={onAssignError}
+            session={session}
           />
         </Col>
       </Row>

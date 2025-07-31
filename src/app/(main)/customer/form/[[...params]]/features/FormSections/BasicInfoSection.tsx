@@ -13,32 +13,32 @@ export default function BasicInfoSection() {
       <Row gutter={24}>
         <Col span={6}>
           <Form.Item
-            name='title'
             label='姓名'
+            name='title'
             rules={[{ required: true, message: '请输入姓名' }]}
           >
-            <Input placeholder='请输入姓名' className={styles.inputBg} />
+            <Input className={styles.inputBg} placeholder='请输入姓名' />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name='gender' label='性别'>
-            <Select placeholder='请选择性别' options={GENDER_OPTIONS} className={styles.selectBg} />
+          <Form.Item label='性别' name='gender'>
+            <Select className={styles.selectBg} options={GENDER_OPTIONS} placeholder='请选择性别' />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name='age' label='年龄'>
+          <Form.Item label='年龄' name='age'>
             <InputNumber
-              min={18}
+              className={styles.inputBg}
               max={100}
+              min={18}
               placeholder='请输入年龄'
               style={{ width: '100%' }}
-              className={styles.inputBg}
             />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item name='position' label='职位'>
-            <Input placeholder='请输入职位' className={styles.inputBg} />
+          <Form.Item label='职位' name='position'>
+            <Input className={styles.inputBg} placeholder='请输入职位' />
           </Form.Item>
         </Col>
       </Row>

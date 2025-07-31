@@ -4,9 +4,16 @@ import { memo } from 'react';
 import { createStyles } from 'antd-style';
 import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { Trash } from 'lucide-react';
-import { Button } from 'antd';
-import { Spin } from 'antd';
+import { Button , Spin } from 'antd';
 import FileIcon from '@/components/FileIcon';
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -125,20 +132,12 @@ const UploadedFileList = memo<UploadedFileListProps>(
       const { fileType, url } = file || {};
 
       if (fileType?.startsWith('image/') && url) {
-        return <img src={url} alt='file' width={54} height={'auto'} />;
+        return <img alt='file' height={'auto'} src={url} width={54} />;
       }
 
       return (
         <FileIcon fileName={file?.filename || ''} fileType={file?.fileType} />
       );
-    };
-
-    const formatFileSize = (bytes: number) => {
-      if (bytes === 0) return '0 B';
-      const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
     return (
@@ -153,7 +152,7 @@ const UploadedFileList = memo<UploadedFileListProps>(
         {files.length > 0 && (
           <div className={styles.fileList}>
             {files.map((file) => (
-              <div key={file.id || file.filename} className={styles.fileItem}>
+              <div className={styles.fileItem} key={file.id || file.filename}>
                 {getFileIcon(file)}
 
                 <div className={styles.fileInfo}>
@@ -173,11 +172,11 @@ const UploadedFileList = memo<UploadedFileListProps>(
                 {/* 删除按钮 - 只在上传成功后显示 */}
                 {file.status === 'success' && file.id && (
                   <Button
-                    type='text'
-                    size='small'
                     className={styles.removeButton}
-                    onClick={() => onRemoveFile(file.id!)}
                     icon={<Trash size={12} />}
+                    onClick={() => onRemoveFile(file.id!)}
+                    size='small'
+                    type='text'
                   />
                 )}
               </div>

@@ -32,7 +32,7 @@ export const getZephyrDB = async (): Promise<ZephyrDatabase> => {
 
 export const zephyrDB = getZephyrDB();
 
-export * from './type';
-export * from './schemas';
 export * from './models/agent_suggestions';
 export * from './models/customer';
+export * from './schemas';
+export * from './type';

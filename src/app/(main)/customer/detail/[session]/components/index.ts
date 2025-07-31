@@ -1,20 +1,14 @@
-export { CustomerDetailHeader } from './CustomerDetailHeader';
-export type { CustomerDetailHeaderProps } from './CustomerDetailHeader';
-
-export { CustomerInfoCard } from './CustomerInfoCard';
-export type { CustomerInfoCardProps } from './CustomerInfoCard';
-
-export { CustomerContactInfo } from './CustomerContactInfo';
-export type { CustomerContactInfoProps } from './CustomerContactInfo';
-
-export { CustomerCompanyInfo } from './CustomerCompanyInfo';
-export type { CustomerCompanyInfoProps } from './CustomerCompanyInfo';
-
-export { CustomerAddressInfo } from './CustomerAddressInfo';
 export type { CustomerAddressInfoProps } from './CustomerAddressInfo';
-
-export { EmployeeAssignmentPanel } from './EmployeeAssignmentPanel';
+export { CustomerAddressInfo } from './CustomerAddressInfo';
+export type { CustomerCompanyInfoProps } from './CustomerCompanyInfo';
+export { CustomerCompanyInfo } from './CustomerCompanyInfo';
+export type { CustomerContactInfoProps } from './CustomerContactInfo';
+export { CustomerContactInfo } from './CustomerContactInfo';
+export type { CustomerDetailHeaderProps } from './CustomerDetailHeader';
+export { CustomerDetailHeader } from './CustomerDetailHeader';
+export type { CustomerInfoCardProps } from './CustomerInfoCard';
+export { CustomerInfoCard } from './CustomerInfoCard';
 export type { EmployeeAssignmentPanelProps } from './EmployeeAssignmentPanel';
-
-export { TopicRecordsTable } from './TopicRecordsTable';
+export { EmployeeAssignmentPanel } from './EmployeeAssignmentPanel';
 export type { TopicRecordsTableProps } from './TopicRecordsTable';
+export { TopicRecordsTable } from './TopicRecordsTable';

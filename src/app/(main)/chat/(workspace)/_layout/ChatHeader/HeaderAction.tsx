@@ -2,10 +2,9 @@
 
 import { ActionIcon, Tooltip, Input } from '@lobehub/ui';
 import { Spin, List, Popover } from 'antd';
-import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { PanelRightClose, PanelRightOpen , FileClock, Search } from 'lucide-react';
 import React, { memo, useState, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { FileClock, Search } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
@@ -270,38 +269,38 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   );
 
   return (
-    <Flexbox className={className} gap={4} horizontal align='center'>
+    <Flexbox align='center' className={className} gap={4} horizontal>
       <div className={styles.search}>
-        <Search size={16} color={theme.colorText} />
+        <Search color={theme.colorText} size={16} />
         <Popover
-          open={showResults}
-          content={searchContent}
-          trigger='click'
-          placement='bottomLeft'
           arrow={false}
+          content={searchContent}
+          open={showResults}
+          placement='bottomLeft'
           styles={{
             body: {
               padding: 0,
             },
           }}
+          trigger='click'
         >
           <Input
-            placeholder='搜索历史消息'
-            className={styles.searchInput}
             allowClear
-            value={searchValue}
+            className={styles.searchInput}
+            onBlur={() => {
+              setTimeout(() => {
+                setShowResults(false);
+              }, 200);
+            }}
             onChange={(e) => setSearchValue(e.target.value)}
             onFocus={() => {
               if (searchValue.trim()) {
                 setShowResults(true);
               }
             }}
-            onBlur={() => {
-              setTimeout(() => {
-                setShowResults(false);
-              }, 200);
-            }}
             onPressEnter={handleSearch}
+            placeholder='搜索历史消息'
+            value={searchValue}
           />
         </Popover>
       </div>
@@ -318,10 +317,10 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
       </div>
       <Tooltip title={'显示/隐藏右侧面板'}>
         <ActionIcon
+          className={styles.toggleSlotPanel}
           icon={showSlotPanel ? PanelRightClose : PanelRightOpen}
           onClick={() => toggleSlotPanel()}
           size={20}
-          className={styles.toggleSlotPanel}
         />
       </Tooltip>
     </Flexbox>

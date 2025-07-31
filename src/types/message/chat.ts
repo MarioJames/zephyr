@@ -4,6 +4,8 @@ import { ErrorType } from '@/types/fetch';
 
 import { Translate } from './translate';
 
+import { MessageItem } from '@/services/messages';
+
 /**
  * 聊天消息错误对象
  */
@@ -50,7 +52,5 @@ export interface ChatMessageExtra {
   // TTS
   tts?: ChatTTS;
 }
-
-import { MessageItem } from '@/services/messages';
 
 export type ChatMessage = MessageItem;

@@ -1,4 +1,4 @@
-import { AggregatedModelItem, ModelItem } from '@/services/models';
+import { AggregatedModelItem } from '@/services/models';
 
 export interface ModelCoreState {
   // 模型列表是否已初始化

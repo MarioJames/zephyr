@@ -3,8 +3,7 @@ import { Button, Checkbox, Empty, Input, Pagination, Spin, Tag } from 'antd';
 import { createStyles, cx } from 'antd-style';
 import { FileIcon, SearchIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { FileItem } from '@/services/files';
-import filesService from '@/services/files';
+import filesService, { FileItem } from '@/services/files';
 import { useChatStore } from '@/store/chat';
 
 interface FileSelectModalProps {
@@ -176,10 +175,6 @@ const FileSelectModal = memo<FileSelectModalProps>(
 
     return (
       <Modal
-        open={open}
-        onCancel={handleCancel}
-        title='选择文件'
-        width={800}
         footer={
           <div
             style={{
@@ -194,30 +189,34 @@ const FileSelectModal = memo<FileSelectModalProps>(
                 取消
               </Button>
               <Button
-                loading={submitLoading}
-                type='primary'
-                onClick={handleConfirm}
                 disabled={selectedFileIds.length === 0}
+                loading={submitLoading}
+                onClick={handleConfirm}
+                type='primary'
               >
                 确定
               </Button>
             </div>
           </div>
         }
+        onCancel={handleCancel}
+        open={open}
+        title='选择文件'
+        width={800}
       >
         <div style={{ overflowY: 'hidden' }}>
           <Input.Search
-            placeholder='搜索文件名...'
             allowClear
-            onSearch={handleSearch}
             className={styles.searchBox}
+            onSearch={handleSearch}
+            placeholder='搜索文件名...'
             prefix={<SearchIcon size={16} />}
           />
           {files.length > 0 && (
             <div style={{ marginBottom: 16 }}>
               <Checkbox
-                indeterminate={indeterminate}
                 checked={allSelected}
+                indeterminate={indeterminate}
                 onChange={(e) => handleSelectAll(e.target.checked)}
               >
                 全选
@@ -229,16 +228,16 @@ const FileSelectModal = memo<FileSelectModalProps>(
             <div className={styles.list}>
               {files.length === 0 ? (
                 <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description='暂无文件'
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               ) : (
                 files.map((file) => (
                   <div
-                    key={file.id}
                     className={cx(styles.fileItem, {
                       selected: selectedFileIds.includes(file.id),
                     })}
+                    key={file.id}
                     onClick={() => handleFileSelect(file.id)}
                   >
                     <Checkbox
@@ -263,15 +262,15 @@ const FileSelectModal = memo<FileSelectModalProps>(
           {total > pageSize && (
             <Pagination
               current={currentPage}
-              total={total}
-              pageSize={pageSize}
               onChange={handlePageChange}
-              showSizeChanger={false}
+              pageSize={pageSize}
               showQuickJumper
+              showSizeChanger={false}
               showTotal={(total, range) =>
                 `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
               }
               style={{ marginTop: 16, textAlign: 'center' }}
+              total={total}
             />
           )}
         </div>

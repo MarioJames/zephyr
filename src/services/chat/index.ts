@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useAgentStore } from '@/store/agent';
 import { isEmpty } from 'lodash-es';
 import { useGlobalStore } from '@/store/global';
-import { globalSelectors } from '@/store/global/selectors';
 
 export type ChatMessage = {
   role: 'user' | 'system' | 'assistant' | 'tool';
@@ -81,7 +80,7 @@ export interface GenerateReplyResponse {
 
 // 获取 Authorization header
 const getAuthHeader = () => {
-  const virtualKey = useGlobalStore(globalSelectors.virtualKey);
+  const virtualKey = useGlobalStore.getState().virtualKey;
   return virtualKey ? { Authorization: `Bearer sk-${virtualKey}` } : undefined;
 };
 
@@ -116,7 +115,7 @@ async function chat(data: ChatRequest) {
       ...(isEmpty(fallbackModels) ? {} : { fallbacks }),
     },
     {
-      timeout: 300000,
+      timeout: 300_000,
       headers: {
         ...(authorization
           ? { Authorization: authorization.Authorization }
@@ -128,7 +127,7 @@ async function chat(data: ChatRequest) {
   const choices = res?.data?.choices;
   const chatResponse = {
     ...res.data,
-    content: choices[choices.length - 1]?.message?.content,
+    content: choices.at(-1)?.message?.content,
   };
   return chatResponse;
 }

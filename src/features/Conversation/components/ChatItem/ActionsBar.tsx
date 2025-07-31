@@ -71,9 +71,7 @@ const Actions = memo<ActionsProps>(({ id }) => {
   if (!item) return null;
 
   return (
-    <>
-      <RenderFunction {...item} onActionClick={handleActionClick} />
-    </>
+    <RenderFunction {...item} onActionClick={handleActionClick} />
   );
 });
 

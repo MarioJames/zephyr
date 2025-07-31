@@ -19,8 +19,7 @@ export interface ConfigAction {
 }
 
 export const configSlice: StateCreator<AgentStore, [], [], ConfigAction> = (
-  set,
-  get
+  set
 ) => ({
   updateAgentConfig: (config: Partial<AgentChatConfig>) => {
     set((state) => ({

@@ -8,8 +8,7 @@ import { memo, useEffect, useState } from 'react';
 import { CHAT_SLOT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
+import { useSessionStore , sessionSelectors } from '@/store/session';
 import AIHintPanel from './SlotPanelAIHint';
 import HistoryPanel from './SlotPanelHistory';
 

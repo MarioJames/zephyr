@@ -225,8 +225,6 @@ export default function CustomerTemplatePage() {
     setEditing(null);
   };
 
-  console.log('agents', agents);
-
   // If not admin, show NoAuthority component
   if (!isAdmin) {
     return <NoAuthority />;
@@ -236,7 +234,7 @@ export default function CustomerTemplatePage() {
     <div className={styles.container}>
       {/* 顶部导航 */}
       <div className={styles.header}>
-        <Link href='/customer' className={styles.backButton}>
+        <Link className={styles.backButton} href='/customer'>
           <ArrowLeftOutlined style={{ marginRight: 8 }} />
           返回客户管理
         </Link>
@@ -247,7 +245,7 @@ export default function CustomerTemplatePage() {
         <Title level={4} style={{ margin: 0 }}>
           客户模版配置
         </Title>
-        <Button type='primary' onClick={() => openModal()}>
+        <Button onClick={() => openModal()} type='primary'>
           添加客户类型
         </Button>
       </div>
@@ -278,13 +276,13 @@ export default function CustomerTemplatePage() {
           ) : (
             <div className={styles.cardGrid}>
               {agents.map((agent) => (
-                <div key={agent.id} className={styles.cardContainer}>
+                <div className={styles.cardContainer} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <img
-                        src={agent.avatar || '/test.png'}
                         alt={agent.title}
                         className={styles.cardImage}
+                        src={agent.avatar || '/test.png'}
                       />
                       <div className={styles.cardTitle}>{agent.title}</div>
                       <Tooltip title={agent.description}>
@@ -295,17 +293,17 @@ export default function CustomerTemplatePage() {
                     </div>
                     <div className={styles.cardFooter}>
                       <Button
-                        type='text'
                         className={styles.footerButton}
                         onClick={() => openModal(agent)}
+                        type='text'
                       >
                         编辑
                       </Button>
                       <div className={styles.footerDivider} />
                       <Button
-                        type='text'
                         className={styles.footerButton}
                         onClick={() => handleDelete(agent.id)}
+                        type='text'
                       >
                         删除
                       </Button>
@@ -319,21 +317,18 @@ export default function CustomerTemplatePage() {
       </Spin>
 
       <TemplateModal
-        open={modalOpen}
-        onCancel={handleModalCancel}
-        onOk={handleModalOk}
-        loading={submitting}
         initialValues={editing?.initial}
+        loading={submitting}
         modelOptions={modelOptions?.map((item) => ({
           label: item.id,
           value: item.id,
           key: item.id,
         }))}
+        onCancel={handleModalCancel}
+        onOk={handleModalOk}
+        open={modalOpen}
       />
       <DeleteModal
-        open={deleteModalOpen}
-        onCancel={handleDeleteModalCancel}
-        onOk={handleDeleteModalOk}
         agents={agents.map((a) => ({
           id: a.id,
           title: a.title || '',
@@ -341,6 +336,9 @@ export default function CustomerTemplatePage() {
           avatar: a.avatar || '',
         }))}
         currentId={deleteTargetId || ''}
+        onCancel={handleDeleteModalCancel}
+        onOk={handleDeleteModalOk}
+        open={deleteModalOpen}
       />
     </div>
   );

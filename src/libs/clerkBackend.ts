@@ -65,4 +65,4 @@ export const clerkBackend = new ClerkBackend();
 
 // 导出类型
 export type { ClerkClient } from '@clerk/backend';
-export type { User, EmailAddress, Session, Organization } from '@clerk/backend';
+export type { EmailAddress, Organization,Session, User } from '@clerk/backend';

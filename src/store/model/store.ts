@@ -6,7 +6,6 @@ import { StateCreator } from 'zustand/vanilla';
 import { ModelCoreAction, modelCoreSlice } from './slices/core/action';
 import { ModelState, initialState } from './initialState';
 import { createDevtools } from '@/utils/store';
-import { modelCoreSelectors } from './slices/core/selectors';
 
 export interface ModelStore extends ModelState, ModelCoreAction {}
 

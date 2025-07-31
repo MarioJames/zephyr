@@ -5,7 +5,6 @@ import customerAPI, { CustomerItem } from '@/services/customer';
 
 export interface UseCustomerDetailReturn {
   // 状态
-  sessionId: string;
   customerDetail: CustomerItem | null;
   loading: boolean;
   error: string | null;
@@ -67,7 +66,7 @@ export const useCustomerDetail = (
     } finally {
       setDeleting(false);
     }
-  }, [router]);
+  }, [router, sessionId]);
 
   // 清除错误
   const clearError = useCallback(() => {
@@ -76,7 +75,6 @@ export const useCustomerDetail = (
 
   return {
     // 状态
-    sessionId,
     customerDetail,
     loading,
     error,

@@ -10,8 +10,7 @@ const Layout = ({
   conversation,
 }: LayoutProps) => {
   return (
-    <>
-      <Flexbox
+    <Flexbox
         height={'100%'}
         horizontal
         style={{ overflow: 'hidden', position: 'relative' }}
@@ -28,7 +27,6 @@ const Layout = ({
         {children}
         <SlotPanel />
       </Flexbox>
-    </>
   );
 };
 

@@ -1,8 +1,7 @@
 import { http } from '../request';
 import { RoleItem } from '../roles';
 import { SessionItem } from '../sessions';
-import topicsAPI, { TopicCreateRequest, TopicItem } from '../topics';
-import sessionsAPI from '../sessions';
+
 
 // 用户相关类型定义
 export interface UserItem {

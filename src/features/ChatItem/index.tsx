@@ -14,11 +14,11 @@ const ChatItem = memo<ZephyrChatItemProps>(
     const displayAvatar = {
       avatar: (
         <Avatar
+          avatar={avatar || name?.[0] || '客'}
+          size={40}
           style={{
             fontSize: 18,
           }}
-          size={40}
-          avatar={avatar || name?.[0] || '客'}
         />
       ),
       backgroundColor: 'rgba(0,0,0,0)',

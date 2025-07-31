@@ -28,7 +28,7 @@ const RootLayout = async ({ children, params, modal }: RootLayoutProps) => {
   const themeClass = theme === 'dark' ? 'dark' : '';
 
   return (
-    <html lang='zh' className={themeClass}>
+    <html className={themeClass} lang='zh'>
       <body>
         <SessionProvider>
           <NuqsAdapter>

@@ -5,8 +5,7 @@ import ChatHydration from './features/ChatHydration';
 import ChatInput from './features/ChatInput/index';
 import ChatList from './features/ChatList';
 import dynamic from 'next/dynamic';
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
+import { useSessionStore , sessionSelectors } from '@/store/session';
 import DefaultCreateCustomer from '@/components/DefaultCreateCustomer';
 
 const ChatHeader = dynamic(() => import('../_layout/ChatHeader'));

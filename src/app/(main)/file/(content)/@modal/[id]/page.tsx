@@ -1,13 +1,13 @@
+import FileDetail from './FileDetail';
+import FilePreview from './FilePreview';
+import FullscreenModal from './FullscreenModal';
+
 interface PageProps<Params, SearchParams = undefined> {
   params: Promise<Params>;
   searchParams: Promise<SearchParams>;
 }
 
 type PagePropsWithId = PageProps<{ id: string }>;
-
-import FileDetail from './FileDetail';
-import FilePreview from './FilePreview';
-import FullscreenModal from './FullscreenModal';
 
 const Page = async (props: PagePropsWithId) => {
   const params = await props.params;

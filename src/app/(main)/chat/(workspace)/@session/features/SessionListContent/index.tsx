@@ -124,28 +124,28 @@ const SessionListContent = memo(() => {
   return (
     <>
       <Flexbox
-        horizontal
         align='center'
-        justify='space-between'
         className={styles.flexbox}
+        horizontal
+        justify='space-between'
       >
         {isAdmin && (
           <div style={{ flex: 1 }}>
             <EmployeeSelector
               onChange={handleEmployeeSelect}
               onClear={handleEmployeeClear}
-              value={targetUserId}
-              selectedUser={targetUser}
               placeholder='全部员工'
+              selectedUser={targetUser}
+              value={targetUserId}
             />
           </div>
         )}
         <div style={{ flex: 1 }}>
           <Button
-            type='default'
-            icon={<Plus size={16} />}
             className={styles.button}
+            icon={<Plus size={16} />}
             onClick={handleAddCustomer}
+            type='default'
           >
             创建客户
           </Button>

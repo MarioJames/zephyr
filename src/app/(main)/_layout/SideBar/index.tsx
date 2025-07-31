@@ -37,13 +37,13 @@ const Nav = memo(() => {
   return (
     <SideNav
       avatar={<Avatar />}
+      bottomActions={null}
       className={styles.sideNav}
       topActions={
         <Suspense>
           <Top />
         </Suspense>
       }
-      bottomActions={<></>}
     />
   );
 });

@@ -161,12 +161,12 @@ const Item = memo<ChatListItemProps>(
                 ? item.session?.avatar
                 : item.user?.avatar
             }
-            name={item.session?.title}
             error={error}
             errorMessage={errorMessage}
             markdownProps={markdownProps}
             message={displayContent}
             messageExtra={messageExtra}
+            name={item.session?.title}
             placement={item.role === 'user' ? 'left' : 'right'}
             primary={item.role === 'assistant'}
             renderMessage={renderMessage}

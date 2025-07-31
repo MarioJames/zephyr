@@ -37,7 +37,6 @@ const useStyles = createStyles(({ css, prefixCls, token }) => {
 });
 
 interface FooterProps {
-  expand: boolean;
   onExpandChange: (expand: boolean) => void;
 }
 
@@ -53,8 +52,7 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
   const loading = sendMessageLoading || isUploading;
 
   return (
-    <>
-      <Flexbox
+    <Flexbox
         align={'center'}
         className={styles.overrideAntdIcon}
         flex={'none'}
@@ -69,7 +67,7 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
             loading={loading}
             onClick={() => {
               sendMessage('user');
-              onExpandChange?.(false);
+              onExpandChange(false);
             }}
             type={'primary'}
           >
@@ -78,7 +76,6 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
           <SendMore disabled={loading} />
         </Space.Compact>
       </Flexbox>
-    </>
   );
 });
 

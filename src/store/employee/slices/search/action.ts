@@ -45,7 +45,7 @@ export const searchSlice: StateCreator<
         loading: false,
         pendingSearchKeys: finalPendingKeys
       });
-    } catch (e: any) {
+    } catch {
       // 移除请求标记
       const finalPendingKeys = new Set(get().pendingSearchKeys);
       finalPendingKeys.delete(searchKey);

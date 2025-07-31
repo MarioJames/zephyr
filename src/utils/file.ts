@@ -23,11 +23,11 @@ export async function downloadFile(fileUrl: string, fileName: string) {
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName; // 设置下载文件名
-    document.body.appendChild(link);
+    document.body.append(link);
     link.click();
 
     // 清理资源
-    document.body.removeChild(link);
+    link.remove();
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error('下载过程中发生错误:', error);

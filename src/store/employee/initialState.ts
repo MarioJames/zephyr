@@ -1,9 +1,6 @@
-import { SearchState } from './slices/search/initialState';
-import { CoreState } from './slices/core/initialState';
-import { NotificationState } from './slices/notification/initialState';
-import { searchInitialState } from './slices/search/initialState';
-import { coreInitialState } from './slices/core/initialState';
-import { notificationInitialState } from './slices/notification/initialState';
+import { SearchState , searchInitialState } from './slices/search/initialState';
+import { CoreState , coreInitialState } from './slices/core/initialState';
+import { NotificationState , notificationInitialState } from './slices/notification/initialState';
 
 // ========== 全局类型定义 ==========
 export interface EmployeeStatsItem {

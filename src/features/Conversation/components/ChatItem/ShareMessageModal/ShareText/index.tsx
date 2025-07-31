@@ -25,8 +25,7 @@ const ShareText = memo<ShareTextProps>(({ item }) => {
   }).replaceAll('\n\n\n', '\n');
 
   const button = (
-    <>
-      <Button
+    <Button
         block
         icon={CopyIcon}
         onClick={async () => {
@@ -38,7 +37,6 @@ const ShareText = memo<ShareTextProps>(({ item }) => {
       >
         {'复制'}
       </Button>
-    </>
   );
 
   return (

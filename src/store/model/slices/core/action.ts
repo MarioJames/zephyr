@@ -26,7 +26,7 @@ export const modelCoreSlice: StateCreator<
   ModelCoreAction
 > = (set, get) => ({
   // 模型列表相关操作
-  fetchModelsList: async (params: GetModelsRequest = {}) => {
+  fetchModelsList: async () => {
     set({
       isLoadingModelsList: true,
       modelError: undefined,

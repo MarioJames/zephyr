@@ -18,16 +18,16 @@ export default function CustomerTypeSelector({
   return (
     <>
       <Title level={5}>选择客户类型</Title>
-      <Form.Item name="agentId" hidden />
+      <Form.Item hidden name="agentId" />
       <div className={styles.typeContainer}>
         {agents.map((agent) => (
           <div
-            key={agent.id}
             className={`${styles.typeBox} ${
               agentId === agent.id
                 ? styles.typeBoxSelected
                 : styles.typeBoxUnselected
             }`}
+            key={agent.id}
             onClick={() =>
               form.setFields([
                 {

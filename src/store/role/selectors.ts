@@ -2,7 +2,7 @@
 
 // 导出核心功能选择器
 export {
-  selectLoading,
   selectError,
+  selectLoading,
   selectRoleCount,
 } from './slices/core/selectors';

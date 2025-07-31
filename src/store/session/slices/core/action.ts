@@ -4,7 +4,7 @@ import sessionService, {
   SessionSearchRequest,
 } from '@/services/sessions';
 import { SessionStore } from '@/store/session';
-import { topicsAPI, TopicItem } from '@/services';
+import { topicsAPI } from '@/services';
 import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
 import { useModelStore } from '@/store/model';
@@ -38,7 +38,7 @@ export const sessionCoreAction: StateCreator<
     set({ isLoading: true, error: undefined });
     try {
       const { autoSelectFirst = true, ...sessionParams } = params || {};
-      const { sessions = [], total = 0 } = await sessionService.getSessionList(
+      const { sessions = [] } = await sessionService.getSessionList(
         sessionParams
       );
 

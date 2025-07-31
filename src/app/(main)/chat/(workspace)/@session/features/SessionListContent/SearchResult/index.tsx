@@ -6,8 +6,7 @@ import React, { memo, useCallback, useRef } from 'react';
 import { Center } from 'react-layout-kit';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { useSessionStore } from '@/store/session';
-import { sessionSelectors } from '@/store/session';
+import { useSessionStore , sessionSelectors } from '@/store/session';
 import { SessionItem as SessionItemType } from '@/services/sessions';
 
 import { SkeletonList } from '../../SkeletonList';

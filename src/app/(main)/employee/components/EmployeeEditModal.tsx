@@ -114,13 +114,13 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   const { styles } = useStyles();
   return (
     <Modal
-      title={null}
-      open={open}
-      footer={null}
-      onCancel={onCancel}
-      width={414}
       className={styles.addEmployeeModal}
       closable={true}
+      footer={null}
+      onCancel={onCancel}
+      open={open}
+      title={null}
+      width={414}
     >
       <div>
         <div className={styles.modalTitle}>
@@ -132,22 +132,22 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
           <div className={styles.avatarCircle}>
             {avatarFile ? (
               <img
+                alt='头像'
                 src={
                   avatarFile.url ||
                   (avatarFile.originFileObj &&
                     URL.createObjectURL(avatarFile.originFileObj))
                 }
-                alt='头像'
               />
             ) : (
               <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
             )}
           </div>
           <Upload
-            name='avatar'
-            showUploadList={false}
             beforeUpload={beforeUpload}
+            name='avatar'
             onChange={onAvatarChange}
+            showUploadList={false}
           >
             <div className={styles.uploadText}>
               <UploadOutlined />
@@ -157,44 +157,44 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
         </div>
         {/* 基本信息表单 */}
         <div className={styles.sectionTitle}>基本信息</div>
-        <Form form={form} layout='vertical' requiredMark={true} colon={true}>
+        <Form colon={true} form={form} layout='vertical' requiredMark={true}>
           <Form.Item
-            name='username'
-            label='员工姓名'
-            rules={[{ required: true, message: '请输入员工姓名' }]}
             className={styles.formItem}
+            label='员工姓名'
+            name='username'
+            rules={[{ required: true, message: '请输入员工姓名' }]}
           >
             <Input
-              placeholder='请输入员工姓名'
               className={styles.customInput}
+              placeholder='请输入员工姓名'
             />
           </Form.Item>
           <Form.Item
-            name='email'
+            className={styles.formItem}
             label='邮箱'
+            name='email'
             rules={[
               { required: true, message: '请输入员工邮箱' },
               { type: 'email', message: '请输入有效的邮箱地址' },
             ]}
-            className={styles.formItem}
           >
             <Input
-              placeholder='请输入员工邮箱'
               className={styles.customInput}
+              placeholder='请输入员工邮箱'
             />
           </Form.Item>
           <Form.Item
-            name='phone'
+            className={styles.formItem}
             label='手机号'
+            name='phone'
             rules={[
               { required: true, message: '请输入员工手机号' },
               { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
             ]}
-            className={styles.formItem}
           >
             <Input
-              placeholder='请输入员工手机号'
               className={styles.customInput}
+              placeholder='请输入员工手机号'
             />
           </Form.Item>
         </Form>
@@ -203,7 +203,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
           <Button className={styles.cancelButton} onClick={onCancel}>
             取消
           </Button>
-          <Button type='primary' onClick={onSubmit} loading={loading}>
+          <Button loading={loading} onClick={onSubmit} type='primary'>
             {isEditMode ? '保存修改' : '添加员工'}
           </Button>
         </div>

@@ -10,7 +10,7 @@ const SkeletonList = () => {
     <Flexbox gap={16} padding={16}>
       {/* 历史会话项 */}
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className={styles.historyItem}>
+        <div className={styles.historyItem} key={i}>
           <Flexbox horizontal justify="space-between">
             <Flexbox>
               {/* 标题 */}
@@ -23,7 +23,7 @@ const SkeletonList = () => {
                 }}
               />
               {/* 元信息 */}
-              <Flexbox horizontal gap={8}>
+              <Flexbox gap={8} horizontal>
                 <Skeleton.Button
                   active
                   size="small"

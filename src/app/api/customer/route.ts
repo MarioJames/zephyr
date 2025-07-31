@@ -177,7 +177,7 @@ export async function PUT(request: NextRequest) {
 
     // 更新客户扩展信息
     const customerUpdateData = {
-      ...(customerExtend || {}),
+      ...customerExtend,
       ...body,
     };
 

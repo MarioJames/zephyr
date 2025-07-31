@@ -141,9 +141,9 @@ export const agentSuggestionsSlice: StateCreator<
         let pureReply = '';
 
         // 用正则表达式提取JSON内容
-        const match = aiResponse.reply.match(/```json\s*\n([\s\S]*?)\n```/);
+        const match = aiResponse.reply.match(/```json\s*\n([\S\s]*?)\n```/);
         if (match) {
-          pureReply = match[1].trim().replace(/\[\d+(?:,\d+)*\]/g, '');
+          pureReply = match[1].trim().replaceAll(/\[\d+(?:,\d+)*]/g, '');
         }
 
         if (!pureReply) {
