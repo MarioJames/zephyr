@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AliyunMailServerService } from '@/libs/aliyunMailServer';
 import type { MailOptions } from '@/types/mail';
+import { zephyrEnv } from '@/env/zephyr';
 
 // 处理模板变量替换
 function processTemplate(template: string, variables?: Record<string, string | number | boolean>): string {
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     const template = templates[type];
     const defaultData = {
-      appName: process.env.APP_NAME || '保险客户管理系统',
+      appName: zephyrEnv.NEXT_PUBLIC_APP_NAME,
       timestamp: new Date().toLocaleString('zh-CN'),
       ...data,
     };

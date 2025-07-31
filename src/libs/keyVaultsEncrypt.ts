@@ -1,4 +1,4 @@
-import { serverDBEnv } from '@/config/db';
+import { serverDBEnv } from '@/env/database';
 
 interface DecryptionResult {
   plaintext: string;

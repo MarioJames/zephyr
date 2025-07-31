@@ -4,7 +4,7 @@ import { drizzle as nodeDrizzle } from 'drizzle-orm/node-postgres';
 import { Pool as NodePool } from 'pg';
 
 import { AdminDatabase } from './type';
-import { serverDBEnv } from '@/config/db';
+import { serverDBEnv } from '@/env/database';
 import * as schema from './schemas';
 
 /**

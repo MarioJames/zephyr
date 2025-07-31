@@ -67,16 +67,9 @@ async function getCurrentIdToken(): Promise<string | null> {
 
     // 2. 从 NextAuth session 获取
     const session = await getSession();
-    console.log(session, 'session');
     if ((session as any)?.idToken) {
       const idToken = (session as any).idToken;
       const sessionExpiresAt = (session as any).expiresAt;
-
-      // 更新 localStorage
-      localStorage.setItem('idToken', idToken);
-      if (sessionExpiresAt) {
-        localStorage.setItem('tokenExpiresAt', sessionExpiresAt.toString());
-      }
 
       // 更新内存缓存
       tokenCache.idToken = idToken;
@@ -101,86 +94,24 @@ instance.interceptors.request.use(async (config) => {
   return config;
 });
 
-// 响应拦截器：处理token过期自动刷新
-let isRefreshing = false;
-let refreshSubscribers: Array<(token: string) => void> = [];
-
-function onRefreshed(token: string) {
-  refreshSubscribers.forEach((cb) => cb(token));
-  refreshSubscribers = [];
-}
-
 instance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
-    ) {
-      if (isRefreshing) {
-        // 队列等待token刷新
-        return new Promise((resolve) => {
-          refreshSubscribers.push((token: string) => {
-            originalRequest.headers['Authorization'] = 'Bearer ' + token;
-            resolve(instance(originalRequest));
-          });
-        });
-      }
-      originalRequest._retry = true;
-      isRefreshing = true;
+    const status = error.response?.status;
 
-      try {
-        // 尝试获取新的 token（NextAuth 会自动处理刷新）
-        const session = await getSession();
-        if ((session as any)?.accessToken) {
-          const accessToken = (session as any).accessToken;
-          const idToken = (session as any).idToken;
-          const sessionExpiresAt = (session as any).expiresAt;
+    // Token 过期时，重新获取token
+    if ([401, 403, 500].includes(status)) {
+      const session = await getSession();
+      if ((session as any)?.idToken) {
+        const idToken = (session as any).idToken;
+        const sessionExpiresAt = (session as any).expiresAt;
 
-          // 更新 localStorage
-          localStorage.setItem('accessToken', accessToken);
-          if (idToken) {
-            localStorage.setItem('idToken', idToken);
-          }
-          if (sessionExpiresAt) {
-            localStorage.setItem('tokenExpiresAt', sessionExpiresAt.toString());
-          }
+        // 更新内存缓存
+        tokenCache.idToken = idToken;
+        tokenCache.expiresAt = sessionExpiresAt;
+        tokenCache.lastFetched = Date.now();
 
-          // 更新内存缓存
-          tokenCache.accessToken = accessToken;
-          tokenCache.idToken = idToken;
-          tokenCache.expiresAt = sessionExpiresAt;
-          tokenCache.lastFetched = Date.now();
-
-          onRefreshed(accessToken);
-          originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
-          return instance(originalRequest);
-        }
-
-        // 没有可用的token，触发重新登录
-        throw new Error('No access token available');
-      } catch (refreshError) {
-        // 刷新失败，清除状态并触发重新登录
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('idToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('tokenExpiresAt');
-
-        // 清除内存缓存
-        clearTokenCache();
-
-        // 重定向到登录页面
-        console.error(
-          'Token refresh failed, redirecting to login',
-          refreshError
-        );
-        window.location.href = '/';
-
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+        return instance(error.config);
       }
     }
 

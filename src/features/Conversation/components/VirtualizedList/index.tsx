@@ -14,12 +14,10 @@ import React, {
 import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { isServerMode } from '@/const/version';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 
 import AutoScroll from '../AutoScroll';
-import SkeletonList from '../SkeletonList';
 import { VirtuosoContext } from './VirtuosoContext';
 
 interface VirtualizedListProps {
@@ -63,11 +61,8 @@ const VirtualizedList = memo<VirtualizedListProps>(
     const overscan = typeof window !== 'undefined' ? window.innerHeight * 3 : 0;
 
     if (!isCurrentChatLoaded)
-      // use skeleton list when not loaded in server mode due to the loading duration is much longer than client mode
-      return isServerMode ? (
-        <SkeletonList />
-      ) : (
-        // in client mode and switch page, using the center loading for smooth transition
+      // in client mode and switch page, using the center loading for smooth transition
+      return (
         <Center height={'100%'} width={'100%'}>
           <Icon
             icon={Loader2Icon}

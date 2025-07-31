@@ -1,53 +1,8 @@
 import NextAuth from 'next-auth';
-
-interface Tokens {
-  id_token: string;
-  expires_in: number;
-  access_token: string;
-  token_type: 'bearer';
-  scope: string;
-}
+import { providerConfig } from '@/env/oidc';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    {
-      id: 'oidc',
-      name: 'Lobe Hub',
-      type: 'oauth',
-      clientId: 'zephyr',
-      clientSecret: 'zephyr-secret',
-      issuer: 'http://localhost:3010/oidc',
-      authorization: {
-        url: 'http://localhost:3010/oidc/auth',
-        params: {
-          scope: 'openid profile email',
-          resource: 'urn:lobehub:chat',
-          response_type: 'code',
-        },
-      },
-      token: 'http://localhost:3010/oidc/token',
-      userinfo: {
-        url: 'http://localhost:3010/api/v1/users/me',
-        async request({ tokens }: { tokens: Tokens }) {
-          console.log(tokens, 'tokens');
-
-          const response = await fetch(
-            'http://localhost:3010/api/v1/users/me',
-            {
-              headers: {
-                Authorization: `Bearer ${tokens.id_token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-
-          const data = (await response.json()) as { data: any };
-
-          return data.data;
-        },
-      },
-    },
-  ],
+  providers: [providerConfig],
   session: {
     strategy: 'jwt',
   },
