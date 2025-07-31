@@ -4,8 +4,8 @@ import React, { use, useEffect } from 'react';
 import { Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcSelectors } from '@/store/oidc/selectors';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 import { useCustomerDetail } from './hooks/useCustomerDetail';
 import {
   CustomerDetailHeader,
@@ -40,7 +40,7 @@ export default function CustomerDetail({
 }) {
   const { styles } = useStyles();
   const router = useRouter();
-  const isAdmin = useOIDCStore(oidcSelectors.isCurrentUserAdmin);
+  const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   // If not admin, show NoAuthority component
   if (!isAdmin) {

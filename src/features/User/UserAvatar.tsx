@@ -5,8 +5,8 @@ import { createStyles } from 'antd-style';
 import { forwardRef } from 'react';
 
 import { DEFAULT_USER_AVATAR_URL } from '@/const/base';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcAuthSelectors, oidcUserSelectors } from '@/store/oidc/selectors';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   clickable: css`
@@ -47,18 +47,18 @@ export interface UserAvatarProps extends AvatarProps {
 const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ size = 40, background, clickable, className, style, ...rest }, ref) => {
     const { styles, cx } = useStyles();
-    const [avatar, username] = useOIDCStore((s) => [
-      oidcUserSelectors.userAvatar(s),
-      oidcUserSelectors.username(s),
+    const [avatar, username] = useGlobalStore((s) => [
+      globalSelectors.userAvatar(s),
+      globalSelectors.userName(s),
     ]);
 
-    const isSignedIn = useOIDCStore(oidcAuthSelectors.isLogin);
+    const userInit = useGlobalStore(globalSelectors.userInit);
 
     return (
       <Avatar
-        alt={isSignedIn && !!username ? username : '默认'}
-        avatar={isSignedIn && !!avatar ? avatar : DEFAULT_USER_AVATAR_URL}
-        background={isSignedIn && avatar ? background : 'transparent'}
+        alt={userInit && !!username ? username : '默认'}
+        avatar={userInit && !!avatar ? avatar : DEFAULT_USER_AVATAR_URL}
+        background={userInit && avatar ? background : 'transparent'}
         className={cx(clickable && styles.clickable, className)}
         ref={ref}
         size={size}
@@ -67,7 +67,7 @@ const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
         {...rest}
       />
     );
-  },
+  }
 );
 
 UserAvatar.displayName = 'UserAvatar';

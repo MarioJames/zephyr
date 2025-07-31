@@ -7,7 +7,7 @@ import { PropsWithChildren, memo, useEffect, useState } from 'react';
 
 import { CHAT_SIDEBAR_WIDTH } from '@/const/layoutTokens';
 import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { globalSelectors } from '@/store/global/selectors';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session/selectors';
 
@@ -32,10 +32,10 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   const isInitialized = useSessionStore((s) => s.isInitialized);
 
   // 使用全局状态管理
-  const showSessionPanel = useGlobalStore(systemStatusSelectors.showSessionPanel);
+  const showSessionPanel = useGlobalStore(globalSelectors.showSessionPanel);
   const toggleSessionPanel = useGlobalStore((s) => s.toggleSessionPanel);
   const [cacheExpand, setCacheExpand] = useState<boolean>(Boolean(showSessionPanel));
-  
+
   // 获取 sessions 状态
   const sessions = useSessionStore(sessionSelectors.sessions);
   const [userCollapsed, setUserCollapsed] = useState<boolean>(false);

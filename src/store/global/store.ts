@@ -3,14 +3,9 @@ import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { StateCreator } from "zustand/vanilla";
 
-import {
-  type GlobalGeneralAction,
-  generalActionSlice,
-} from "./actions/general";
-import {
-  type GlobalWorkspacePaneAction,
-  globalWorkspaceSlice,
-} from "./actions/workspacePane";
+import { GeneralAction, generalSlice } from './slices/general/action';
+import { UserAction, userSlice } from './slices/user/action';
+import { WorkspaceAction, workspaceSlice } from './slices/workspace/action';
 import { type GlobalState, initialState } from "./initialState";
 import { createDevtools } from '@/utils/store';
 
@@ -21,13 +16,15 @@ import { createDevtools } from '@/utils/store';
  * 通过交叉类型(&)将所有状态和操作组合在一起
  * 包含以下模块：
  * - GlobalState: 全局状态数据
- * - GlobalWorkspacePaneAction: 工作区面板相关操作
- * - GlobalGeneralAction: 通用操作
+ * - GeneralAction: 通用操作
+ * - UserAction: 用户相关操作
+ * - WorkspaceAction: 工作区面板相关操作
  */
 export interface GlobalStore
   extends GlobalState,
-    GlobalWorkspacePaneAction,
-    GlobalGeneralAction {}
+    GeneralAction,
+    UserAction,
+    WorkspaceAction {}
 
 /**
  * 创建全局Store的工厂函数
@@ -39,8 +36,9 @@ const createStore: StateCreator<GlobalStore, [['zustand/devtools', never]]> = (
   ...parameters
 ) => ({
   ...initialState,
-  ...globalWorkspaceSlice(...parameters),
-  ...generalActionSlice(...parameters),
+  ...generalSlice(...parameters),
+  ...userSlice(...parameters),
+  ...workspaceSlice(...parameters),
 });
 
 //  ===============  实装 useStore ============ //

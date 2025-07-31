@@ -1,17 +1,16 @@
-import { useOIDC } from '@/hooks/useOIDC';
 import { useAgentStore } from '@/store/agent';
+import { useGlobalStore } from '@/store/global';
 import { useModelStore } from '@/store/model';
 
 export const useInitializing = () => {
-  const { isAuthenticated, isLoading } = useOIDC();
-
   const { agentsInit } = useAgentStore();
   const { modelsInit } = useModelStore();
+  const { userInit } = useGlobalStore();
 
   return {
-    initializing: !isAuthenticated || !agentsInit || !modelsInit,
-    authLoading: isLoading,
+    initializing: !agentsInit || !modelsInit || !userInit,
     agentsLoading: !agentsInit,
     modelsLoading: !modelsInit,
+    userLoading: !userInit,
   };
 };

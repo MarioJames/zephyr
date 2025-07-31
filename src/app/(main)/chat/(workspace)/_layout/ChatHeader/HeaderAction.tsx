@@ -8,7 +8,7 @@ import { Flexbox } from 'react-layout-kit';
 import { FileClock, Search } from 'lucide-react';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { globalSelectors } from '@/store/global/selectors';
 import { createStyles,useTheme } from 'antd-style';
 import dayjs from 'dayjs';
 import messageService, { MessageItem } from '@/services/messages';
@@ -165,7 +165,7 @@ const processSearchContent = (
 
 const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const { styles } = useStyles();
-  const showSlotPanel = useGlobalStore(systemStatusSelectors.showSlotPanel);
+  const showSlotPanel = useGlobalStore(globalSelectors.showSlotPanel);
   const toggleSlotPanel = useGlobalStore((s) => s.toggleSlotPanel);
   const slotPanelType = useGlobalStore(
     (s) => s.status.slotPanelType || 'aiHint'

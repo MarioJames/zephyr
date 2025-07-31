@@ -1,10 +1,11 @@
-import React from "react";
-import { createStyles } from "antd-style";
-import { useAgentStore } from "@/store/agent/store";
-import { Button } from "@lobehub/ui";
-import { useOIDCStore } from "@/store/oidc";
-import { HELLO_IMG } from "@/const/base";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import { createStyles } from 'antd-style';
+import { useAgentStore } from '@/store/agent/store';
+import { Button } from '@lobehub/ui';
+import { HELLO_IMG } from '@/const/base';
+import { useRouter } from 'next/navigation';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -99,20 +100,18 @@ const getCurrentTime = () => {
   const now = new Date();
   const hours = now.getHours();
   if (hours < 12) {
-    return "早上好";
+    return '早上好';
   }
   if (hours < 18) {
-    return "下午好";
+    return '下午好';
   }
-  return "晚上好";
+  return '晚上好';
 };
 
 const DefaultCreateCustomer = () => {
   const { styles } = useStyles();
   const agents = useAgentStore((s) => s.agents);
-  const username = useOIDCStore(
-    (s) => s.userInfo?.username || s.user?.profile?.name || getCurrentTime()
-  );
+  const username = useGlobalStore(globalSelectors.userName);
   const router = useRouter();
 
   const onCreateCustomer = (agentId: string) => {
@@ -121,7 +120,10 @@ const DefaultCreateCustomer = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.top}><img src={HELLO_IMG} alt="" className={styles.helloImg} />Hi！ {username}</div>
+      <div className={styles.top}>
+        <img src={HELLO_IMG} alt='' className={styles.helloImg} />
+        Hi！ {username}
+      </div>
       <div className={styles.middle}>
         我是您的私人智能助理，点击下方客户类型开始创建您的客户吧~
       </div>
@@ -129,14 +131,17 @@ const DefaultCreateCustomer = () => {
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
             <img
-              src={agent.avatar || "/test.png"}
+              src={agent.avatar || '/test.png'}
               alt={agent.title}
               className={styles.avatar}
             />
             <div className={styles.cardTitle}>{agent.title}</div>
             <div className={styles.cardDesc}>{agent.description}</div>
-            <div className={styles.cardFooter} onClick={() => onCreateCustomer(agent.id)}>
-              <Button type="primary">创建</Button>
+            <div
+              className={styles.cardFooter}
+              onClick={() => onCreateCustomer(agent.id)}
+            >
+              <Button type='primary'>创建</Button>
             </div>
           </div>
         ))}

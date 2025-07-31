@@ -70,7 +70,6 @@ export const HotkeyEnum = {
   SwitchAgent: 'switchAgent',
   ToggleLeftPanel: 'toggleLeftPanel',
   ToggleRightPanel: 'toggleRightPanel',
-  ToggleZenMode: 'toggleZenMode',
 } as const;
 
 export const HotkeyGroupEnum = {

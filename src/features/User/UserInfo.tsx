@@ -5,10 +5,10 @@ import { memo } from 'react';
 import { Flexbox, FlexboxProps } from 'react-layout-kit';
 
 import PlanTag from '@/features/User/PlanTag';
-import { useOIDCStore } from '@/store/oidc';
-import { oidcAuthSelectors, oidcUserSelectors } from '@/store/oidc/selectors';
 
 import UserAvatar, { type UserAvatarProps } from './UserAvatar';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   nickname: css`
@@ -29,10 +29,9 @@ export interface UserInfoProps extends FlexboxProps {
 
 const UserInfo = memo<UserInfoProps>(({ avatarProps, onClick, ...rest }) => {
   const { styles, theme } = useStyles();
-  const isSignedIn = useOIDCStore(oidcAuthSelectors.isLogin);
-  const [nickname, username] = useOIDCStore((s) => [
-    oidcUserSelectors.nickName(s),
-    oidcUserSelectors.username(s),
+  const [userInit, userName] = useGlobalStore((s) => [
+    globalSelectors.userInit(s),
+    globalSelectors.userName(s),
   ]);
 
   return (
@@ -47,12 +46,9 @@ const UserInfo = memo<UserInfoProps>(({ avatarProps, onClick, ...rest }) => {
     >
       <Flexbox align={'center'} gap={12} horizontal onClick={onClick}>
         <UserAvatar background={theme.colorFill} size={48} {...avatarProps} />
-        <Flexbox flex={1} gap={6}>
-          <div className={styles.nickname}>{nickname}</div>
-          <div className={styles.username}>{username}</div>
-        </Flexbox>
+        <div className={styles.nickname}>{userName}</div>
       </Flexbox>
-      {isSignedIn && <PlanTag />}
+      {userInit && <PlanTag />}
     </Flexbox>
   );
 });

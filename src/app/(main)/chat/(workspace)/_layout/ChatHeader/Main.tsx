@@ -9,7 +9,7 @@ import { ChevronDown, PencilLine } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useGlobalStore } from "@/store/global";
-import { systemStatusSelectors } from "@/store/global/selectors";
+import { globalSelectors } from "@/store/global/selectors";
 import { useSessionStore } from "@/store/session";
 import { sessionSelectors } from "@/store/session/selectors";
 
@@ -88,7 +88,7 @@ const Main = memo<{ className?: string }>(({ className }) => {
   const [isPinned] = useQueryState("pinned", parseAsBoolean);
 
   const showSessionPanel = useGlobalStore(
-    systemStatusSelectors.showSessionPanel
+    globalSelectors.showSessionPanel
   );
 
   const handleEditCustomer = () => {

@@ -19,7 +19,7 @@ import {
   customThemeToken,
 } from '@/const/theme';
 import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
+import { globalSelectors } from '@/store/global/selectors';
 import { GlobalStyle } from '@/styles';
 import { setCookie } from '@/utils/client';
 
@@ -95,7 +95,7 @@ const AppTheme = memo<AppThemeProps>(
     defaultNeutralColor,
     globalCDN,
   }) => {
-    const themeMode = useGlobalStore(systemStatusSelectors.themeMode);
+    const themeMode = useGlobalStore(globalSelectors.themeMode);
     const { styles, cx, theme } = useStyles();
 
     return (
