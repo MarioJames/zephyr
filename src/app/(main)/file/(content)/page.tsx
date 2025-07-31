@@ -18,8 +18,12 @@ const tabNames = {
   [FilesTabs.Websites]: '网页',
 };
 
-export default () => {
+const FilePage = () => {
   const [category] = useFileCategory();
 
   return <FileManager category={category} title={tabNames[category as FilesTabs]} />;
 };
+
+FilePage.displayName = 'FilePage';
+
+export default FilePage;

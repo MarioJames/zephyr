@@ -411,7 +411,7 @@ export default function EmployeePage() {
             message.warning('员工信息更新成功，但 Clerk 用户更新失败');
             handleEmployeeModalCancel();
           }
-        } catch (e) {
+        } catch {
           message.error('修改员工失败');
           return;
         }
@@ -456,7 +456,7 @@ export default function EmployeePage() {
           return;
         }
       }
-    } catch (info) {
+    } catch (_info) {
       // 表单校验失败
       setSubmitLoading(false);
     }
@@ -802,7 +802,6 @@ export default function EmployeePage() {
         onSubmit={handleEmployeeSubmit}
         beforeUpload={beforeUpload}
         onAvatarChange={handleAvatarChange}
-        setAvatarFile={setAvatarFile}
       />
 
       {/* 员工对接客户管理弹窗 */}

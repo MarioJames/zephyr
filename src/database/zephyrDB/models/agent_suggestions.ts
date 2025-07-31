@@ -1,4 +1,4 @@
-import { and, eq, inArray, like, or, desc, asc } from 'drizzle-orm/expressions';
+import { and, eq, inArray, desc, asc } from 'drizzle-orm/expressions';
 import { sql } from 'drizzle-orm';
 
 import { ZephyrDatabase } from '../type';

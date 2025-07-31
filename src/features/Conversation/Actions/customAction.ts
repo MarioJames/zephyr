@@ -1,6 +1,6 @@
 import type { ActionIconGroupItemType } from '@lobehub/ui';
 import { css, cx } from 'antd-style';
-import { LanguagesIcon, Play } from 'lucide-react';
+import { LanguagesIcon } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { localeOptions } from '@/config/translate';

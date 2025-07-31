@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Popover, List, Spin, App } from "antd";
 import { Input } from "@lobehub/ui";
 import { SearchOutlined, DownOutlined } from "@ant-design/icons";

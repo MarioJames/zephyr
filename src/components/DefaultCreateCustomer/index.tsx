@@ -96,18 +96,6 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-const getCurrentTime = () => {
-  const now = new Date();
-  const hours = now.getHours();
-  if (hours < 12) {
-    return '早上好';
-  }
-  if (hours < 18) {
-    return '下午好';
-  }
-  return '晚上好';
-};
-
 const DefaultCreateCustomer = () => {
   const { styles } = useStyles();
   const agents = useAgentStore((s) => s.agents);

@@ -1,5 +1,9 @@
 import { PropsWithChildren } from 'react';
 
-export default ({ children }: PropsWithChildren) => {
+const FileLayout = ({ children }: PropsWithChildren) => {
   return children;
 };
+
+FileLayout.displayName = 'FileLayout';
+
+export default FileLayout;

@@ -51,6 +51,8 @@ const ListSkeleton = memo(() => (
   </>
 ));
 
+ListSkeleton.displayName = 'ListSkeleton';
+
 const SkeletonList = memo(() => {
   const { styles } = useStyles();
   return (
@@ -70,5 +72,7 @@ const SkeletonList = memo(() => {
     </div>
   );
 });
+
+SkeletonList.displayName = 'SkeletonList';
 
 export default SkeletonList;

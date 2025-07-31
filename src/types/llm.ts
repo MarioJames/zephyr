@@ -1,7 +1,4 @@
-import { ReactNode } from 'react';
-
 import { ChatModelPricing } from '@/types/aiModel';
-import { AiProviderSettings } from '@/types/aiProvider';
 
 export type ModelPriceCurrency = 'CNY' | 'USD';
 

@@ -100,8 +100,6 @@ export default function CustomerDetail({
     );
   }
 
-  const { session, extend } = customerDetail;
-
   return (
     <div className={styles.pageContainer}>
       {/* 顶部导航 */}
@@ -121,30 +119,13 @@ export default function CustomerDetail({
       {/* 详细信息区域 */}
       <div className={styles.infoContainer}>
         {/* 联系方式 */}
-        <CustomerContactInfo
-          contactInfo={{
-            phone: extend?.phone,
-            email: extend?.email,
-            wechat: extend?.wechat,
-          }}
-        />
+        <CustomerContactInfo customer={customerDetail.extend} />
 
         {/* 公司信息 */}
-        <CustomerCompanyInfo
-          companyInfo={{
-            company: extend?.company,
-            industry: extend?.industry,
-            scale: extend?.scale,
-            position: extend?.position,
-          }}
-        />
+        <CustomerCompanyInfo customer={customerDetail.extend} />
 
         {/* 地址信息 */}
-        <CustomerAddressInfo
-          addressInfo={{
-            address: extend?.address,
-          }}
-        />
+        <CustomerAddressInfo customer={customerDetail.extend} />
       </div>
 
       {/* 话题记录 */}

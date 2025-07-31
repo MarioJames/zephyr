@@ -25,7 +25,7 @@ interface CustomerSearchSelectProps {
   onSelect?: (customerId: string) => void;
 }
 
-const useStyles = createStyles(({ css, token }) => ({
+const useStyles = createStyles(({ css }) => ({
   searchSelect: css`
     .ant-select-dropdown {
       max-height: 400px;

@@ -5,7 +5,10 @@ const Layout = Desktop;
 
 Layout.displayName = 'FileLayout';
 
-export default (props: LayoutProps) => {
-
+const FileContentLayout = (props: LayoutProps) => {
   return <Layout {...props} />;
 };
+
+FileContentLayout.displayName = 'FileContentLayout';
+
+export default FileContentLayout;

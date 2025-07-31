@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getAdminDB } from '@/database/adminDB';
 import { AggregatedModelModel } from '@/database/adminDB/models/aggregatedModel';
 
@@ -6,7 +6,7 @@ import { AggregatedModelModel } from '@/database/adminDB/models/aggregatedModel'
  * 获取所有启用的聚合模型
  * curl 'http://localhost:3000/api/aggregated-model'
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const db = await getAdminDB();
     const aggregatedModelModel = new AggregatedModelModel(db);

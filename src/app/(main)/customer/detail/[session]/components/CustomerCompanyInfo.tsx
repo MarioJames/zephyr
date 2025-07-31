@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
+import { CustomerExtend } from '@/types/customer';
 
 const useStyles = createStyles(({ css, token }) => ({
   infoBox: css`
@@ -35,16 +36,11 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 export interface CustomerCompanyInfoProps {
-  companyInfo: {
-    company?: string | null;
-    industry?: string | null;
-    scale?: string | null;
-    position?: string | null;
-  };
+  customer?: CustomerExtend;
 }
 
 export const CustomerCompanyInfo: React.FC<CustomerCompanyInfoProps> = ({
-  companyInfo,
+  customer,
 }) => {
   const { styles } = useStyles();
 
@@ -53,15 +49,15 @@ export const CustomerCompanyInfo: React.FC<CustomerCompanyInfoProps> = ({
       <div className={styles.infoTitle}>个人信息</div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>公司名称：</div>
-        <div className={styles.infoValue}>{companyInfo.company || '-'}</div>
+        <div className={styles.infoValue}>{customer?.company || '-'}</div>
       </div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>行业：</div>
-        <div className={styles.infoValue}>{companyInfo.industry || '-'}</div>
+        <div className={styles.infoValue}>{customer?.industry || '-'}</div>
       </div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>规模：</div>
-        <div className={styles.infoValue}>{companyInfo.scale || '-'}</div>
+        <div className={styles.infoValue}>{customer?.scale || '-'}</div>
       </div>
     </div>
   );

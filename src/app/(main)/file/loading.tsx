@@ -1,3 +1,7 @@
 import Loading from '@/components/Loading/BrandTextLoading';
 
-export default () => <Loading />;
+const FileLoading = () => <Loading />;
+
+FileLoading.displayName = 'FileLoading';
+
+export default FileLoading;

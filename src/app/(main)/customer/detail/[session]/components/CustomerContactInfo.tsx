@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
+import { CustomerExtend } from '@/types/customer';
 
 const useStyles = createStyles(({ css, token }) => ({
   infoBox: css`
@@ -35,15 +36,11 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 export interface CustomerContactInfoProps {
-  contactInfo: {
-    phone?: string | null;
-    email?: string | null;
-    wechat?: string | null;
-  };
+  customer?: CustomerExtend;
 }
 
 export const CustomerContactInfo: React.FC<CustomerContactInfoProps> = ({
-  contactInfo,
+  customer,
 }) => {
   const { styles } = useStyles();
 
@@ -52,15 +49,15 @@ export const CustomerContactInfo: React.FC<CustomerContactInfoProps> = ({
       <div className={styles.infoTitle}>联系方式</div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>手机号：</div>
-        <div className={styles.infoValue}>{contactInfo.phone || '-'}</div>
+        <div className={styles.infoValue}>{customer?.phone || '-'}</div>
       </div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>邮箱：</div>
-        <div className={styles.infoValue}>{contactInfo.email || '-'}</div>
+        <div className={styles.infoValue}>{customer?.email || '-'}</div>
       </div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>微信号：</div>
-        <div className={styles.infoValue}>{contactInfo.wechat || '-'}</div>
+        <div className={styles.infoValue}>{customer?.wechat || '-'}</div>
       </div>
     </div>
   );

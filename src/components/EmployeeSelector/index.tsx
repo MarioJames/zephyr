@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Select, Avatar, Space, Input, Skeleton } from "antd";
+import { Select, Avatar, Input, Skeleton } from "antd";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { createStyles } from "antd-style";
 import { ChevronDown } from "lucide-react";
 
 import userService, { UserItem } from "@/services/user";
-import Image from "next/image";
 
 const { Option } = Select;
 

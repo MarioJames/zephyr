@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getZephyrDB } from '@/database/zephyrDB';
 import {
   CustomerModel,
-  type CreateCustomerSessionParams,
 } from '@/database';
 import { AgentChatConfig } from '@/types/agent';
-import type { CustomerSessionItem } from '@/database';
 
 // 客户扩展信息创建请求类型
 export interface CustomerExtendCreateRequest {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
+import { CustomerExtend } from '@/types/customer';
 
 const useStyles = createStyles(({ css, token }) => ({
   infoBox: css`
@@ -35,13 +36,11 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 export interface CustomerAddressInfoProps {
-  addressInfo: {
-    address?: string | null;
-  };
+  customer?: CustomerExtend;
 }
 
 export const CustomerAddressInfo: React.FC<CustomerAddressInfoProps> = ({
-  addressInfo,
+  customer,
 }) => {
   const { styles } = useStyles();
 
@@ -50,7 +49,7 @@ export const CustomerAddressInfo: React.FC<CustomerAddressInfoProps> = ({
       <div className={styles.infoTitle}>地址信息</div>
       <div className={styles.infoItem}>
         <div className={styles.infoLabel}>详细地址：</div>
-        <div className={styles.infoValue}>{addressInfo.address || '-'}</div>
+        <div className={styles.infoValue}>{customer?.address || '-'}</div>
       </div>
     </div>
   );
