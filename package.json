@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
@@ -88,13 +89,17 @@
     "zustand-utils": "^2.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.32.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.15.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.29.0",
     "eslint-config-next": "15.3.4",
+    "husky": "^8.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
