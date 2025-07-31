@@ -281,7 +281,7 @@ export default function CustomerTemplatePage() {
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <Image
-                        alt={agent.title}
+                        alt={agent.title || ''}
                         className={styles.cardImage}
                         fill
                         src={agent.avatar || '/test.png'}

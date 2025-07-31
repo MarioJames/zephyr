@@ -36,6 +36,7 @@ export interface SessionListRequest {
   targetUserId?: string;
   agentId?: string;
   keyword?: string;
+  [key: string]: unknown;
 }
 
 export interface SessionListResponse {
@@ -47,10 +48,12 @@ export interface SessionSearchRequest {
   keyword: string;
   page?: number;
   pageSize?: number;
+  [key: string]: unknown;
 }
 
 export interface BatchSessionListRequest {
   sessionIds: string[];
+  [key: string]: unknown;
 }
 
 export interface SessionCreateRequest {
@@ -60,6 +63,7 @@ export interface SessionCreateRequest {
   backgroundColor?: string;
   groupId?: string;
   agentId?: string;
+  [key: string]: unknown;
 }
 
 export interface SessionUpdateRequest {
@@ -71,6 +75,7 @@ export interface SessionUpdateRequest {
   agentId?: string;
   userId?: string;
   pinned?: boolean;
+  [key: string]: unknown;
 }
 
 export interface BatchSessionUpdateRequest {

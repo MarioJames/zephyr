@@ -39,6 +39,10 @@ export interface AggregatedModelItem {
     imageOutput: boolean;
     functionCall: boolean;
   };
+  settings: {
+    searchImpl: 'params' | 'internal';
+    searchProvider: string;
+  };
   contextWindowTokens: number;
   createdAt: string;
   createdBy: string;
@@ -85,6 +89,7 @@ export interface GetModelsRequest {
   page?: number;
   pageSize?: number;
   groupByProvider?: boolean; // true: 按provider分组返回, false: 返回扁平列表
+  [key: string]: unknown;
 }
 
 export interface GetModelConfigRequest {

@@ -2,7 +2,6 @@ import { http } from '../request';
 import { RoleItem } from '../roles';
 import { SessionItem } from '../sessions';
 
-
 // 用户相关类型定义
 export interface UserItem {
   id: string;
@@ -21,6 +20,7 @@ export interface UserItem {
   updatedAt?: string;
   roles?: RoleItem[];
   sessions?: SessionItem[];
+  [key: string]: unknown;
 }
 
 export interface UserCreateRequest {
@@ -30,6 +30,7 @@ export interface UserCreateRequest {
   fullName?: string;
   avatar?: string;
   roleId?: string;
+  [key: string]: unknown;
 }
 
 export interface VirtualKeyResponse {
@@ -46,17 +47,20 @@ export interface UserUpdateRequest {
   fullName?: string;
   avatar?: string;
   roleId?: string;
+  [key: string]: unknown;
 }
 
 export interface UserSearchRequest {
   keyword: string;
   page?: number;
   pageSize?: number;
+  [key: string]: unknown;
 }
 
 export interface UserListRequest {
   page?: number;
   pageSize?: number;
+  [key: string]: unknown;
 }
 
 export interface UserUpdateRoleRequest {
@@ -65,6 +69,7 @@ export interface UserUpdateRoleRequest {
     roleId: number;
   }[];
   removeRoleIds?: number[];
+  [key: string]: unknown;
 }
 
 /**
@@ -155,7 +160,9 @@ function updateUserRole(id: string, data: UserUpdateRoleRequest) {
  * @returns { key: string }
  */
 function getVirtualKey(userId: string, roleId: string) {
-  return http.get<VirtualKeyResponse>(`/api/virtual-key?userId=${userId}&roleId=${roleId}`);
+  return http.get<VirtualKeyResponse>(
+    `/api/virtual-key?userId=${userId}&roleId=${roleId}`
+  );
 }
 
 export default {

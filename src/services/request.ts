@@ -23,7 +23,7 @@ const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
 interface TokenCache {
   accessToken: string | null;
   idToken: string | null;
-  expiresAt: number | null;
+  expiresAt: number | null | undefined;
   lastFetched: number;
 }
 
@@ -36,7 +36,6 @@ let tokenCache: TokenCache = {
 
 // 缓存有效期（5分钟）
 const CACHE_DURATION = 5 * 60 * 1000;
-
 
 // 检查缓存是否有效（只检查缓存时间，不检查token过期）
 function isCacheValid(): boolean {
@@ -156,7 +155,8 @@ export async function request<T = unknown>(
   };
 
   // 移除自定义属性以避免axios报错
-  delete (reqConfig as AxiosRequestConfig & { includeIdToken?: boolean }).includeIdToken;
+  delete (reqConfig as AxiosRequestConfig & { includeIdToken?: boolean })
+    .includeIdToken;
 
   if (method === 'get') {
     reqConfig.params = data;

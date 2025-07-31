@@ -1,10 +1,11 @@
-import { http } from "../request";
+import { http } from '../request';
 
 // 通知相关类型定义
 export interface SendLoginGuideRequest {
   employeeId: string;
   email: string;
   employeeName?: string;
+  [key: string]: unknown;
 }
 
 export interface NotificationResponse {
@@ -31,7 +32,10 @@ function sendLoginGuideEmail(data: SendLoginGuideRequest) {
  * @returns NotificationResponse
  */
 function sendPasswordResetEmail(employeeId: string, email?: string) {
-  return http.post<NotificationResponse>('/api/mail/send-password-reset', { employeeId, email });
+  return http.post<NotificationResponse>('/api/mail/send-password-reset', {
+    employeeId,
+    email,
+  });
 }
 
 export default {

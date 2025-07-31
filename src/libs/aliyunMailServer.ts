@@ -51,7 +51,7 @@ export class AliyunMailServerService {
         attachments: options.attachments,
       };
 
-      const info = await this.transporter.sendMail(mailOptions);
+      const info = await this.transporter.sendMail(mailOptions as any);
 
       return {
         success: true,

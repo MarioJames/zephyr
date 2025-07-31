@@ -23,15 +23,18 @@ export interface TopicCreateRequest {
   title: string;
   sessionId: string;
   favorite?: boolean;
+  [key: string]: unknown;
 }
 
 export interface TopicTitleSummaryRequest {
   id: string;
   lang?: string;
+  [key: string]: unknown;
 }
 
 export interface TopicUpdateRequest {
   title: string;
+  [key: string]: unknown;
 }
 
 /**

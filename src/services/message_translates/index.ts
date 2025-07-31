@@ -1,7 +1,7 @@
-import { http } from "../request";
-import chatService from "../chat";
-import messageService from "../messages";
-import { AgentConfig } from "@/types";
+import { http } from '../request';
+import chatService from '../chat';
+import messageService from '../messages';
+import { AgentConfig } from '@/types';
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
@@ -15,6 +15,7 @@ export interface MessageTranslateItem {
 
 export interface MessageTranslateQueryRequest {
   messageId: string; // 翻译内容关联的消息ID
+  [key: string]: unknown;
 }
 
 export interface MessageTranslateTriggerRequest {
@@ -30,6 +31,7 @@ export interface MessageTranslateInfoRequest {
   from: string;
   to: string;
   translatedContent: string;
+  [key: string]: unknown;
 }
 
 /**
@@ -39,7 +41,7 @@ export interface MessageTranslateInfoRequest {
  * @returns MessageTranslateItem
  */
 function getMessageTranslate(params: MessageTranslateQueryRequest) {
-  return http.get<MessageTranslateItem>("/api/v1/message-translates", params);
+  return http.get<MessageTranslateItem>('/api/v1/message-translates', params);
 }
 
 /**
@@ -49,8 +51,14 @@ function getMessageTranslate(params: MessageTranslateQueryRequest) {
  * @param data MessageTranslateInfoRequest
  * @returns MessageTranslateItem
  */
-function updateMessageTranslate(messageId: string, data: MessageTranslateInfoRequest) {
-  return http.put<MessageTranslateItem>(`/api/v1/message-translates/${messageId}`, data);
+function updateMessageTranslate(
+  messageId: string,
+  data: MessageTranslateInfoRequest
+) {
+  return http.put<MessageTranslateItem>(
+    `/api/v1/message-translates/${messageId}`,
+    data
+  );
 }
 
 /**
@@ -64,7 +72,7 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
   const originalMessage = await messageService.queryMessage(data.messageId);
 
   if (!originalMessage?.content) {
-    throw new Error("未找到要翻译的消息内容");
+    throw new Error('未找到要翻译的消息内容');
   }
 
   // 2. 使用通用聊天接口进行翻译
@@ -76,7 +84,8 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
     provider: data.provider,
     chatConfig: data.chatConfig,
   });
-  const translatedContent = translationResult?.content;
+
+  const translatedContent = translationResult?.content || '';
   // 3. 保存翻译结果
   return updateMessageTranslate(originalMessage?.id, {
     from: data.from,

@@ -52,10 +52,12 @@ export interface CreateAgentRequest {
   tts?: any;
   openingMessage?: string;
   openingQuestions?: string[];
+  [key: string]: unknown;
 }
 
 export interface UpdateAgentRequest extends CreateAgentRequest {
   id: string;
+  [key: string]: unknown;
 }
 
 export interface AgentDetailResponse {

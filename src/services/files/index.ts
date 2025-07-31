@@ -31,6 +31,7 @@ export interface FileUploadRequest {
   skipCheckFileType?: boolean;
   directory?: string;
   sessionId?: string;
+  [key: string]: unknown;
 }
 
 export interface BatchUploadRequest {
@@ -38,6 +39,7 @@ export interface BatchUploadRequest {
   sessionId?: string;
   skipCheckFileType?: boolean;
   directory?: string;
+  [key: string]: unknown;
 }
 
 export interface BatchUploadResponse {
@@ -58,6 +60,7 @@ export interface FileListRequest {
   pageSize?: number;
   fileType?: string;
   search?: string | null;
+  [key: string]: unknown;
 }
 
 export interface FileListResponse {
@@ -83,12 +86,14 @@ export interface FileAccessResponse {
 
 export interface DocumentParseRequest {
   file: File;
+  [key: string]: unknown;
 }
 
 export interface UploadAndParseRequest {
   file: File;
   skipCheckFileType?: boolean;
   directory?: string;
+  [key: string]: unknown;
 }
 
 /**
@@ -146,7 +151,7 @@ export interface BatchGetFileAndParseContentResponse {
  * @returns FileUploadResponse
  */
 function upload(data: FileUploadRequest) {
-  const formData = new FormData();
+  const formData = new FormData() as any;
 
   formData.append('file', data.file);
 
@@ -169,7 +174,7 @@ function upload(data: FileUploadRequest) {
  * @returns BatchUploadResponse
  */
 function batchUpload(data: BatchUploadRequest) {
-  const formData = new FormData();
+  const formData = new FormData() as any;
   data.files.forEach((file) => {
     formData.append('files', file);
   });
@@ -196,7 +201,7 @@ function batchUpload(data: BatchUploadRequest) {
  * @returns FileUploadResponse
  */
 function uploadPublic(data: FileUploadRequest) {
-  const formData = new FormData();
+  const formData = new FormData() as any;
   formData.append('file', data.file);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
@@ -283,7 +288,7 @@ function parseDocumentById(
  * @returns UploadAndParseResponse
  */
 function uploadAndParseDocument(data: UploadAndParseRequest) {
-  const formData = new FormData();
+  const formData = new FormData() as any;
   formData.append('file', data.file);
 
   if (data.skipCheckFileType !== undefined)

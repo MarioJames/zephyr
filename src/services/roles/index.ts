@@ -11,6 +11,7 @@ export interface RoleItem {
   updatedAt?: string;
   isActive?: boolean;
   isSystem?: boolean;
+  [key: string]: unknown;
 }
 
 /**

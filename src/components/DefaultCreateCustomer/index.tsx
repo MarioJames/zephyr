@@ -120,7 +120,7 @@ const DefaultCreateCustomer = () => {
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
             <Image
-              alt={agent.title}
+              alt={agent.title || ''}
               className={styles.avatar}
               fill
               src={agent.avatar || '/test.png'}

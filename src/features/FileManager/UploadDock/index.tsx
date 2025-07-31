@@ -11,7 +11,6 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { Center, Flexbox } from 'react-layout-kit';
 
 import { fileCoreSelectors, useFileStore } from '@/store/file';
-import { convertAlphaToSolid } from '@/utils/colorUtils';
 
 import Item from './Item';
 
@@ -71,10 +70,7 @@ const useStyles = createStyles(({ css, token }) => {
       transition: all 0.3s ease-in-out;
 
       &:hover {
-        background: ${convertAlphaToSolid(
-          token.colorFillTertiary,
-          token.colorBgContainer
-        )};
+        background: ${token.colorFillTertiary};
       }
     `,
     progress: css`
