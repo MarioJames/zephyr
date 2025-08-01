@@ -83,7 +83,6 @@ export default function CustomerForm({
       const submitData = {
         ...values,
       };
-
       await onSubmit(submitData);
       // 成功消息由父组件处理，不在这里显示
     } catch (error) {
