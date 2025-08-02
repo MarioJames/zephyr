@@ -1,12 +1,12 @@
-import React from 'react';
-import { createStyles } from 'antd-style';
-import { useAgentStore } from '@/store/agent/store';
-import { Button } from '@lobehub/ui';
-import { HELLO_IMG } from '@/const/base';
-import { useRouter } from 'next/navigation';
-import { useGlobalStore } from '@/store/global';
-import { globalSelectors } from '@/store/global/selectors';
-import Image from 'next/image';
+import React from "react";
+import { createStyles } from "antd-style";
+import { useAgentStore } from "@/store/agent/store";
+import { Button } from "@lobehub/ui";
+import { HELLO_IMG } from "@/const/base";
+import { useRouter } from "next/navigation";
+import { useGlobalStore } from "@/store/global";
+import { globalSelectors } from "@/store/global/selectors";
+import Image from "next/image";
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -19,8 +19,6 @@ const useStyles = createStyles(({ css, token }) => ({
     box-sizing: border-box;
   `,
   helloImg: css`
-    width: 40px;
-    height: 40px;
     margin-right: 16px;
   `,
   top: css`
@@ -60,7 +58,6 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   avatar: css`
     width: 100%;
-    height: 96px;
     border-radius: 4px;
     margin-bottom: 16px;
     overflow: hidden;
@@ -84,11 +81,14 @@ const useStyles = createStyles(({ css, token }) => ({
     margin-bottom: 16px;
     text-align: center;
     width: 100%;
+    height: 40px;
+    line-height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    word-break: break-word;
   `,
   cardFooter: css`
     width: 100%;
@@ -110,7 +110,13 @@ const DefaultCreateCustomer = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <Image alt='' className={styles.helloImg} fill src={HELLO_IMG} />
+        <Image
+          alt=""
+          className={styles.helloImg}
+          height={40}
+          src={HELLO_IMG}
+          width={40}
+        />
         Hi！ {username}
       </div>
       <div className={styles.middle}>
@@ -120,10 +126,11 @@ const DefaultCreateCustomer = () => {
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
             <Image
-              alt={agent.title || ''}
+              alt={agent.title || ""}
               className={styles.avatar}
-              fill
-              src={agent.avatar || '/test.png'}
+              src={agent.avatar || "/test.png"}
+              height={96}
+              width={96}
             />
             <div className={styles.cardTitle}>{agent.title}</div>
             <div className={styles.cardDesc}>{agent.description}</div>
@@ -131,7 +138,7 @@ const DefaultCreateCustomer = () => {
               className={styles.cardFooter}
               onClick={() => onCreateCustomer(agent.id)}
             >
-              <Button type='primary'>创建</Button>
+              <Button type="primary">创建</Button>
             </div>
           </div>
         ))}
