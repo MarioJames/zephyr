@@ -1,3 +1,5 @@
+'use client';
+
 import BubblesLoading from "@/components/Loading/BubblesLoading";
 import { Suspense } from 'react';
 
