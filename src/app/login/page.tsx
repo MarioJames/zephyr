@@ -6,7 +6,7 @@ import Client from './Client';
 export default function Login() {
 
   return (
-    <Suspense fallback={BubblesLoading}>
+    <Suspense fallback={<BubblesLoading />}>
       <Client />
     </Suspense>
   );
