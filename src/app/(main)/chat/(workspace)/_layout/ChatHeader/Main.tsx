@@ -106,7 +106,7 @@ const MainContent = memo<{ className?: string }>(({ className }) => {
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
       <div className={styles.avatar}>
         {activeSession?.avatar ? (
-          <Image alt='头像' fill src={activeSession?.avatar} />
+          <Image alt='头像' src={activeSession?.avatar} width={28} height={28} />
         ) : (
           <div className={styles.avatarCircle}>
             {activeSession?.title?.slice(0, 1)}

@@ -283,8 +283,9 @@ export default function CustomerTemplatePage() {
                       <Image
                         alt={agent.title || ''}
                         className={styles.cardImage}
-                        fill
                         src={agent.avatar || '/test.png'}
+                        width={132}
+                        height={132}
                       />
                       <div className={styles.cardTitle}>{agent.title}</div>
                       <Tooltip title={agent.description}>

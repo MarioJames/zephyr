@@ -101,8 +101,9 @@ const SessionContent = memo<SessionContentProps>(
             <Image
               alt='avatar'
               className={styles.avatarImage}
-              fill
               src={avatar || ''}
+              width={32}
+              height={32}
             />
           ) : (
             title?.[0] || ''
