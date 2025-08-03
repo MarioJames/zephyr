@@ -17,3 +17,10 @@ export interface SendMessageParams {
   message: string;
   onlyAddUserMessage?: boolean;
 }
+
+export interface UpdateMessageParams {
+  content?: string;
+  model?: string;
+  provider?: string;
+  role?: string;
+}
