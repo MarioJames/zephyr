@@ -38,7 +38,7 @@ const SendMore = memo<SendMoreProps>(({ disabled }) => {
           {
             icon: <Icon icon={BotMessageSquare} />,
             key: 'addAi',
-            label: '添加一条 AI 消息',
+            label: '添加一条员工消息',
             onClick: () => {
               sendMessage('assistant');
             },
@@ -48,7 +48,7 @@ const SendMore = memo<SendMoreProps>(({ disabled }) => {
             key: 'addUser',
             label: (
               <Flexbox align={'center'} gap={24} horizontal>
-                {'添加一条用户消息'}
+                {'添加一条客户消息'}
               </Flexbox>
             ),
             onClick: () => {
