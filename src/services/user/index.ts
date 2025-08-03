@@ -97,12 +97,16 @@ function getAllUsers(params?: UserListRequest) {
  * @description 根据关键字搜索用户
  * @param keyword string
  * @param pageSize number
+ * @param page number
  * @returns UserItem[]
  */
-function searchUsers(keyword: string, pageSize?: number) {
-  return http.get<UserItem[]>(
-    `/api/v1/users/search?keyword=${keyword}&pageSize=${pageSize}`
-  );
+function searchUsers(keyword: string, pageSize?: number, page?: number) {
+  const params = new URLSearchParams();
+  params.append('keyword', keyword);
+  if (pageSize) params.append('pageSize', pageSize.toString());
+  if (page) params.append('page', page.toString());
+  
+  return http.get<UserItem[]>(`/api/v1/users/search?${params.toString()}`);
 }
 
 /**

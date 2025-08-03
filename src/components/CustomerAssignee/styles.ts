@@ -49,7 +49,7 @@ export const useCustomerAssigneeStyles = createStyles(({ css, token }) => ({
 
   popoverContent: css`
     width: 260px;
-    max-height: 300px;
+    max-height: 400px;
     padding: 0;
   `,
 
@@ -63,8 +63,6 @@ export const useCustomerAssigneeStyles = createStyles(({ css, token }) => ({
   `,
 
   employeeList: css`
-    max-height: 200px;
-    overflow-y: auto;
     padding: 4px 0;
 
     .ant-list-item {
@@ -114,5 +112,28 @@ export const useCustomerAssigneeStyles = createStyles(({ css, token }) => ({
   loadingState: css`
     padding: 24px 12px;
     text-align: center;
+  `,
+
+  employeeListContainer: css`
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 4px 0;
+  `,
+
+  loadingMore: css`
+    padding: 12px;
+    text-align: center;
+    color: ${token.colorTextSecondary};
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `,
+
+  noMoreData: css`
+    padding: 12px;
+    text-align: center;
+    color: ${token.colorTextSecondary};
+    font-size: 12px;
   `,
 }));
