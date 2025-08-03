@@ -99,7 +99,11 @@ const FileSelectModal = memo<FileSelectModalProps>(
     useEffect(() => {
       if (open) {
         fetchFiles(1, searchText);
+      }
+    }, [open, fetchFiles, searchText]);
 
+    useEffect(() => {
+      if (open) {
         // 弹窗打开时，实时获取已添加的文件ID并设置为选中状态
         setSelectedFileIds(
           useChatStore
@@ -108,7 +112,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
             .map((file) => file.id!) || []
         );
       }
-    }, [open, fetchFiles, searchText]);
+    }, [open]);
 
     const handleSearch = useCallback((value: string) => {
       setSearchText(value);
@@ -116,11 +120,12 @@ const FileSelectModal = memo<FileSelectModalProps>(
     }, []);
 
     const handleFileSelect = useCallback((fileId: string) => {
-      setSelectedFileIds((prev) =>
-        prev.includes(fileId)
+      setSelectedFileIds((prev) => {
+        const isCurrentlySelected = prev.includes(fileId);
+        return isCurrentlySelected
           ? prev.filter((id) => id !== fileId)
-          : [...prev, fileId]
-      );
+          : [...prev, fileId];
+      });
     }, []);
 
     const handleSelectAll = useCallback(
@@ -175,6 +180,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
 
     return (
       <Modal
+        centered
         footer={
           <div
             style={{
@@ -203,6 +209,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
         open={open}
         title='选择文件'
         width={800}
+        style={{ top: 20 }}
       >
         <div style={{ overflowY: 'hidden' }}>
           <Input.Search
@@ -235,10 +242,16 @@ const FileSelectModal = memo<FileSelectModalProps>(
                 files.map((file) => (
                   <div
                     className={cx(styles.fileItem, {
-                      selected: selectedFileIds.includes(file.id),
+                      [styles.fileItemSelected]: selectedFileIds.includes(file.id),
                     })}
                     key={file.id}
-                    onClick={() => handleFileSelect(file.id)}
+                    onClick={(e) => {
+                      // 如果点击的是 Checkbox 或其子元素，不处理点击事件
+                      if ((e.target as HTMLElement).closest('.ant-checkbox')) {
+                        return;
+                      }
+                      handleFileSelect(file.id);
+                    }}
                   >
                     <Checkbox
                       checked={selectedFileIds.includes(file.id)}
