@@ -260,7 +260,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
             className={styles.searchInput}
             onChange={(e) => handleSearch(e.target.value)}
             onClick={(e) => e.stopPropagation()}
-            placeholder="搜索员工..."
+            placeholder="搜索员工"
             prefix={<SearchOutlined />}
             value={searchKeyword}
           />
