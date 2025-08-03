@@ -136,6 +136,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   // 处理搜索输入
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    if(value.trim() === '') return;
     setSearchText(value);
     debouncedSearchEmployees(value);
   }, [debouncedSearchEmployees]);
