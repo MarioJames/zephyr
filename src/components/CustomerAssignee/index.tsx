@@ -68,16 +68,22 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   } = useEmployeeStore();
 
   const { run: debouncedSearchEmployees } = useDebounceFn(
-    (keyword: string) => searchEmployees(keyword, 10, true),
+    (keyword: string) => {
+      // 只有当关键词不为空时才搜索
+      if (keyword.trim()) {
+        searchEmployees(keyword.trim(), 10, true);
+      }
+      // 移除空搜索的逻辑，避免与初始搜索冲突
+    },
     { wait: 500 }
   );
 
   // 进入页面发现没有搜索员工，则先搜索一次
   useEffect(() => {
-    if (!searchedEmployees.length) {
+    if (!searchedEmployees.length && !employeesLoading) {
       searchEmployees('', 10, true);
     }
-  }, []);
+  }, [searchedEmployees.length, employeesLoading]);
 
   // 处理滚动加载更多
   const handleScroll = useCallback(() => {
@@ -136,7 +142,6 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   // 处理搜索输入
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if(value.trim() === '') return;
     setSearchText(value);
     debouncedSearchEmployees(value);
   }, [debouncedSearchEmployees]);
