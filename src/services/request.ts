@@ -13,7 +13,7 @@ declare module 'next-auth' {
 // 定义扩展的 Session 类型，用于内部使用
 interface ExtendedSession {
   accessToken?: string;
-  idToken?: string;
+  bearerToken?: string;
   expiresAt?: number;
 }
 
@@ -22,17 +22,20 @@ const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
 // 简单的内存缓存
 interface TokenCache {
   accessToken: string | null;
-  idToken: string | null;
+  bearerToken: string | null;
   expiresAt: number | null | undefined;
   lastFetched: number;
 }
 
 let tokenCache: TokenCache = {
   accessToken: null,
-  idToken: null,
+  bearerToken: null,
   expiresAt: null,
   lastFetched: 0,
 };
+
+// Promise缓存，用于防止并发请求导致多个session请求
+let sessionPromise: Promise<any> | null = null;
 
 // 缓存有效期（5分钟）
 const CACHE_DURATION = 5 * 60 * 1000;
@@ -58,26 +61,49 @@ const instance: AxiosInstance = axios.create({
 async function getCurrentIdToken(): Promise<string | null> {
   try {
     // 1. 优先检查内存缓存
-    if (isCacheValid() && tokenCache.idToken) {
-      return tokenCache.idToken;
+    if (isCacheValid() && tokenCache.bearerToken) {
+      console.debug('使用缓存的bearerToken');
+      return tokenCache.bearerToken;
     }
 
-    // 2. 从 NextAuth session 获取
-    const session = await getSession();
-    const extendedSession = session as ExtendedSession;
-    if (extendedSession?.idToken) {
-      const idToken = extendedSession.idToken;
-      const sessionExpiresAt = extendedSession.expiresAt;
-
-      // 更新内存缓存
-      tokenCache.idToken = idToken;
-      tokenCache.expiresAt = sessionExpiresAt;
-      tokenCache.lastFetched = Date.now();
-
-      return idToken;
+    // 2. 检查是否已有进行中的session请求，如果有则等待
+    if (sessionPromise) {
+      console.debug('等待进行中的session请求');
+      const session = await sessionPromise;
+      const extendedSession = session as ExtendedSession;
+      return extendedSession?.bearerToken || null;
     }
+
+    // 3. 创建新的session请求（只有第一个请求会执行到这里）
+    console.debug('创建新的session请求');
+    sessionPromise = getSession();
+
+    try {
+      const session = await sessionPromise;
+      const extendedSession = session as ExtendedSession;
+
+      if (extendedSession?.bearerToken) {
+        const bearerToken = extendedSession.bearerToken;
+        const sessionExpiresAt = extendedSession.expiresAt;
+
+        // 更新内存缓存
+        tokenCache.bearerToken = bearerToken;
+        tokenCache.expiresAt = sessionExpiresAt;
+        tokenCache.lastFetched = Date.now();
+
+        console.debug('session请求成功，缓存已更新');
+      }
+
+      return extendedSession?.bearerToken || null;
+    } finally {
+      // 只有创建sessionPromise的请求才负责清除，确保在主线程中同步清除
+      sessionPromise = null;
+    }
+    
   } catch (error) {
     console.warn('Failed to get id token:', error);
+    // 确保异常时也清除Promise缓存
+    sessionPromise = null;
   }
 
   return null;
@@ -99,17 +125,10 @@ instance.interceptors.response.use(
 
     // Token 过期时，重新获取token
     if ([401, 403, 500].includes(status)) {
-      const session = await getSession();
-      const extendedSession = session as ExtendedSession;
-      if (extendedSession?.idToken) {
-        const idToken = extendedSession.idToken;
-        const sessionExpiresAt = extendedSession.expiresAt;
-
-        // 更新内存缓存
-        tokenCache.idToken = idToken;
-        tokenCache.expiresAt = sessionExpiresAt;
-        tokenCache.lastFetched = Date.now();
-
+      console.debug('token过期，通过getCurrentIdToken重新获取');
+      const token = await getCurrentIdToken();
+      if (token) {
+        // token已通过getCurrentIdToken更新到缓存，直接重试请求
         return instance(error.config);
       }
     }

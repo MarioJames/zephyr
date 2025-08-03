@@ -5,7 +5,6 @@ import AppTheme from './AppTheme';
 import QueryProvider from './Query';
 import ReactScan from './ReactScan';
 import StyleRegistry from './StyleRegistry';
-import SessionProvider from '@/components/SessionProvider';
 
 interface GlobalLayoutProps {
   appearance: string;
@@ -23,18 +22,16 @@ const GlobalLayout = async ({
 }: GlobalLayoutProps) => {
   return (
     <StyleRegistry>
-      <SessionProvider>
-        <AppTheme
-          defaultAppearance={appearance}
-          defaultNeutralColor={neutralColor as any}
-          defaultPrimaryColor={primaryColor as any}
-        >
-            <QueryProvider>{children}</QueryProvider>
-            <Suspense>
-              <ReactScan />
-            </Suspense>
-        </AppTheme>
-      </SessionProvider>
+      <AppTheme
+        defaultAppearance={appearance}
+        defaultNeutralColor={neutralColor as any}
+        defaultPrimaryColor={primaryColor as any}
+      >
+        <QueryProvider>{children}</QueryProvider>
+        <Suspense>
+          <ReactScan />
+        </Suspense>
+      </AppTheme>
       <AntdV5MonkeyPatch />
     </StyleRegistry>
   );
