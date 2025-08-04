@@ -1,20 +1,19 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getSession } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
+import { shouldReLogin, getValidAccessToken } from '@/libs/auth';
 
 // 扩展 Session 类型以包含自定义属性
 declare module 'next-auth' {
   interface Session {
     accessToken?: string;
-    idToken?: string;
-    expiresAt?: number;
+    error?: string;
   }
 }
 
 // 定义扩展的 Session 类型，用于内部使用
 interface ExtendedSession {
   accessToken?: string;
-  bearerToken?: string;
-  expiresAt?: number;
+  error?: string;
 }
 
 const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
@@ -22,15 +21,13 @@ const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
 // 简单的内存缓存
 interface TokenCache {
   accessToken: string | null;
-  bearerToken: string | null;
-  expiresAt: number | null | undefined;
+  hasError: boolean;
   lastFetched: number;
 }
 
 let tokenCache: TokenCache = {
   accessToken: null,
-  bearerToken: null,
-  expiresAt: null,
+  hasError: false,
   lastFetched: 0,
 };
 
@@ -57,13 +54,13 @@ const instance: AxiosInstance = axios.create({
   },
 });
 
-// 同步获取当前有效的id token
-async function getCurrentIdToken(): Promise<string | null> {
+// 获取当前有效的 access token
+async function getCurrentAccessToken(): Promise<string | null> {
   try {
     // 1. 优先检查内存缓存
-    if (isCacheValid() && tokenCache.bearerToken) {
-      console.debug('使用缓存的bearerToken');
-      return tokenCache.bearerToken;
+    if (isCacheValid() && tokenCache.accessToken && !tokenCache.hasError) {
+      console.debug('使用缓存的accessToken');
+      return tokenCache.accessToken;
     }
 
     // 2. 检查是否已有进行中的session请求，如果有则等待
@@ -71,7 +68,13 @@ async function getCurrentIdToken(): Promise<string | null> {
       console.debug('等待进行中的session请求');
       const session = await sessionPromise;
       const extendedSession = session as ExtendedSession;
-      return extendedSession?.bearerToken || null;
+      
+      // 如果session有错误，返回null
+      if (shouldReLogin(extendedSession)) {
+        return null;
+      }
+      
+      return getValidAccessToken(extendedSession);
     }
 
     // 3. 创建新的session请求（只有第一个请求会执行到这里）
@@ -82,28 +85,36 @@ async function getCurrentIdToken(): Promise<string | null> {
       const session = await sessionPromise;
       const extendedSession = session as ExtendedSession;
 
-      if (extendedSession?.bearerToken) {
-        const bearerToken = extendedSession.bearerToken;
-        const sessionExpiresAt = extendedSession.expiresAt;
-
-        // 更新内存缓存
-        tokenCache.bearerToken = bearerToken;
-        tokenCache.expiresAt = sessionExpiresAt;
+      // 检查session是否需要重新登录
+      if (shouldReLogin(extendedSession)) {
+        console.warn('Token刷新失败，需要重新登录');
+        tokenCache.hasError = true;
+        tokenCache.accessToken = null;
         tokenCache.lastFetched = Date.now();
+        return null;
+      }
 
+      const accessToken = getValidAccessToken(extendedSession);
+      if (accessToken) {
+        // 更新内存缓存
+        tokenCache.accessToken = accessToken;
+        tokenCache.hasError = false;
+        tokenCache.lastFetched = Date.now();
+        
         console.debug('session请求成功，缓存已更新');
       }
 
-      return extendedSession?.bearerToken || null;
+      return accessToken;
     } finally {
       // 只有创建sessionPromise的请求才负责清除，确保在主线程中同步清除
       sessionPromise = null;
     }
     
   } catch (error) {
-    console.warn('Failed to get id token:', error);
+    console.warn('Failed to get access token:', error);
     // 确保异常时也清除Promise缓存
     sessionPromise = null;
+    tokenCache.hasError = true;
   }
 
   return null;
@@ -111,25 +122,51 @@ async function getCurrentIdToken(): Promise<string | null> {
 
 // 请求拦截器：自动带上accessToken
 instance.interceptors.request.use(async (config) => {
-  const token = await getCurrentIdToken();
+  const token = await getCurrentAccessToken();
   if (token && config.headers) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 });
 
+// 添加重试标记以避免无限重试
+const MAX_RETRY_COUNT = 1;
+
 instance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
     const status = error.response?.status;
+    const config = error.config;
 
-    // Token 过期时，重新获取token
-    if ([401, 403, 500].includes(status)) {
-      console.debug('token过期，通过getCurrentIdToken重新获取');
-      const token = await getCurrentIdToken();
+    // 避免无限重试
+    if (config._retryCount >= MAX_RETRY_COUNT) {
+      console.warn('已达到最大重试次数，停止重试');
+      throw error;
+    }
+
+    // Token 过期或服务器错误时尝试刷新 token
+    if ([401, 500].includes(status)) {
+      console.debug(`收到${status}错误，尝试刷新token`);
+      
+      // 清除缓存，强制重新获取session
+      tokenCache.accessToken = null;
+      tokenCache.hasError = false;
+      tokenCache.lastFetched = 0;
+      
+      const token = await getCurrentAccessToken();
+      
       if (token) {
-        // token已通过getCurrentIdToken更新到缓存，直接重试请求
-        return instance(error.config);
+        // 设置重试标记
+        config._retryCount = (config._retryCount || 0) + 1;
+        console.debug('token刷新成功，重试请求');
+        return instance(config);
+      } else {
+        // Token 刷新失败，触发重新登录
+        console.warn('Token刷新失败，需要重新登录');
+        if (typeof window !== 'undefined') {
+          // 只在客户端环境下触发登录
+          signIn();
+        }
       }
     }
 
@@ -158,12 +195,12 @@ export async function request<T = unknown>(
 
   let url = isOpenAPI ? `${baseURL}${api}` : api;
 
-  // 如果需要在URL中包含id_token
+  // 如果需要在URL中包含access_token
   if (includeIdToken) {
-    const idToken = await getCurrentIdToken();
-    if (idToken) {
+    const accessToken = await getCurrentAccessToken();
+    if (accessToken) {
       const separator = url.includes('?') ? '&' : '?';
-      url += `${separator}id_token=${encodeURIComponent(idToken)}`;
+      url += `${separator}access_token=${encodeURIComponent(accessToken)}`;
     }
   }
 
@@ -190,6 +227,24 @@ export async function request<T = unknown>(
   } else {
     throw new Error(res.data.message);
   }
+}
+
+// 清除token缓存的工具函数
+export function clearTokenCache() {
+  tokenCache.accessToken = null;
+  tokenCache.hasError = false;
+  tokenCache.lastFetched = 0;
+  sessionPromise = null;
+  console.debug('Token缓存已清除');
+}
+
+// 检查当前session状态的工具函数
+export async function checkSessionStatus() {
+  const token = await getCurrentAccessToken();
+  return {
+    hasValidToken: !!token,
+    hasError: tokenCache.hasError
+  };
 }
 
 // http对象，简洁调用

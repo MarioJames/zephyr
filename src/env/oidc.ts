@@ -34,18 +34,17 @@ export const getProviderConfig = (): Provider => {
   const issuer = `${lobeHost}/oidc`;
 
   return {
-    id: 'oidc',
+    id: 'lobe',
     name: 'Lobe Hub',
     type: 'oauth',
     issuer,
     clientId: oidcEnv.NEXT_PUBLIC_OIDC_CLIENT_ID,
-    clientSecret: oidcEnv.NEXT_PUBLIC_OIDC_CLIENT_SECRET,
     authorization: {
       url: `${issuer}/auth`,
       params: {
-        scope: 'openid offline_access',
-        resource: 'urn:lobehub:chat',
+        scope: 'profile offline_access',
         response_type: 'code',
+        resource: 'urn:lobehub:chat',
       },
     },
     token: `${issuer}/token`,
@@ -53,7 +52,7 @@ export const getProviderConfig = (): Provider => {
       request: () => ({}),
     },
     client: {
-      token_endpoint_auth_method: 'client_secret_post',
+      token_endpoint_auth_method: 'none',
     },
   };
 };

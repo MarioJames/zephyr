@@ -1,17 +1,56 @@
 import NextAuth from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 import { providerConfig } from '@/env/oidc';
 import { oidcEnv } from '@/env/oidc';
-import { NextResponse } from 'next/server';
 
-// 直接跳转到 /login 页面触发刷新
-async function refreshAccessToken() {
-  const url = new URL(oidcEnv.NEXT_PUBLIC_ZEPHYR_URL!);
+// 扩展 JWT 类型定义
+interface ExtendedJWT extends JWT {
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpires?: number;
+  error?: string;
+}
 
-  url.searchParams.set('callbackUrl', window.location.href);
+// 使用 refresh_token 刷新 access_token
+async function refreshAccessToken(token: ExtendedJWT): Promise<ExtendedJWT> {
+  try {
+    const lobeHost = oidcEnv.NEXT_PUBLIC_LOBE_HOST;
+    const tokenEndpoint = `${lobeHost}/oidc/token`;
 
-  NextResponse.redirect(url.toString());
+    const response = await fetch(tokenEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: token.refreshToken || '',
+        client_id: oidcEnv.NEXT_PUBLIC_OIDC_CLIENT_ID || '',
+      }),
+    });
 
-  return {};
+    if (!response.ok) {
+      throw new Error(`Token refresh failed: ${response.status}`);
+    }
+
+    const refreshedTokens = await response.json();
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access_token,
+      accessTokenExpires:
+        Date.now() + (refreshedTokens.expires_in ?? 90000) * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
+    };
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+
+    // 刷新失败，返回错误标记，触发重新登录
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
+    };
+  }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -25,28 +64,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async jwt({ token, account }) {
+      // 初次登录，存储所有必要的 token 信息
       if (account) {
-        // 初次登录
         return {
           ...token,
           accessToken: account.access_token,
-          bearerToken: account.id_token,
-          accessTokenExpires: Date.now() + (account.expires_in ?? 0) * 1000,
+          refreshToken: account.refresh_token,
+          accessTokenExpires: account.expires_at
+            ? account.expires_at * 1000
+            : Date.now() + (account.expires_in ?? 90000) * 1000,
         };
       }
 
-      // 检查是否需要刷新
+      // 检查 token 是否有错误（刷新失败）
+      if ((token as any).error) {
+        return { ...token };
+      }
+
+      // 检查是否需要刷新 token
       if (Date.now() < (token as any).accessTokenExpires) {
         return token;
       }
 
-      // 自动调用刷新函数
-      refreshAccessToken();
-
-      return {};
+      // 调用刷新函数
+      return refreshAccessToken(token);
     },
     async session({ session, token }) {
-      (session as any).bearerToken = token.bearerToken;
+      // 如果 token 刷新失败，标记 session 错误
+      if ((token as any).error) {
+        (session as any).error = (token as any).error;
+      }
+
+      // 传递 access token 给 session
+      (session as any).accessToken = (token as any).accessToken;
+      (session as any).error = (token as any).error;
 
       return session;
     },
@@ -65,3 +116,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   debug: process.env.NODE_ENV === 'development',
 });
+
+// 工具函数：检查用户是否需要重新登录
+export const shouldReLogin = (session: any) => {
+  return session?.error === 'RefreshAccessTokenError';
+};
+
+// 工具函数：获取有效的 access token
+export const getValidAccessToken = (session: any) => {
+  if (shouldReLogin(session)) {
+    return null;
+  }
+  return session?.accessToken;
+};

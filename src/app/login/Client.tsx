@@ -6,15 +6,15 @@ import { useSearchParams } from 'next/navigation';
 
 export default function Client() {
   const searchParams = useSearchParams();
-  
+
   useEffect(() => {
     // 获取 callbackUrl 参数，如果没有则默认跳转到首页
     const callbackUrl = searchParams.get('callbackUrl') || '/';
-    
+
     // 重定向到 oidc登录页，并传递 callbackUrl
-    signIn('oidc', { 
+    signIn('lobe', {
       callbackUrl: decodeURIComponent(callbackUrl),
-      redirect: true 
+      redirect: true,
     });
   }, [searchParams]);
 
