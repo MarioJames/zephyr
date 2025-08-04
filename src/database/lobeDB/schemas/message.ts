@@ -3,9 +3,7 @@ import {
   boolean,
   index,
   jsonb,
-  numeric,
   pgTable,
-  primaryKey,
   text,
   uniqueIndex,
   uuid,
@@ -13,7 +11,10 @@ import {
 import { createSelectSchema } from 'drizzle-zod';
 
 import { idGenerator } from '@/database/utils/idGenerator';
-import { ModelReasoning, GroundingSearch } from '@/database/lobeDB/type/message';
+import {
+  ModelReasoning,
+  GroundingSearch,
+} from '@/database/lobeDB/type/message';
 
 import { timestamps } from './_helpers';
 import { sessions } from './session';
@@ -28,7 +29,9 @@ export const messages = pgTable(
       .$defaultFn(() => idGenerator('messages'))
       .primaryKey(),
 
-    role: text('role', { enum: ['user', 'system', 'assistant', 'tool'] }).notNull(),
+    role: text('role', {
+      enum: ['user', 'system', 'assistant', 'tool'],
+    }).notNull(),
     content: text('content'),
     reasoning: jsonb('reasoning').$type<ModelReasoning>(),
     search: jsonb('search').$type<GroundingSearch>(),
@@ -51,12 +54,22 @@ export const messages = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
-    sessionId: text('session_id').references(() => sessions.id, { onDelete: 'cascade' }),
-    topicId: text('topic_id').references(() => topics.id, { onDelete: 'cascade' }),
-    threadId: text('thread_id').references(() => threads.id, { onDelete: 'cascade' }),
+    sessionId: text('session_id').references(() => sessions.id, {
+      onDelete: 'cascade',
+    }),
+    topicId: text('topic_id').references(() => topics.id, {
+      onDelete: 'cascade',
+    }),
+    threadId: text('thread_id').references(() => threads.id, {
+      onDelete: 'cascade',
+    }),
     // @ts-ignore
-    parentId: text('parent_id').references(() => messages.id, { onDelete: 'set null' }),
-    quotaId: text('quota_id').references(() => messages.id, { onDelete: 'set null' }),
+    parentId: text('parent_id').references(() => messages.id, {
+      onDelete: 'set null',
+    }),
+    quotaId: text('quota_id').references(() => messages.id, {
+      onDelete: 'set null',
+    }),
 
     ...timestamps,
   },
@@ -64,12 +77,12 @@ export const messages = pgTable(
     createdAtIdx: index('messages_created_at_idx').on(table.createdAt),
     messageClientIdUnique: uniqueIndex('message_client_id_user_unique').on(
       table.clientId,
-      table.userId,
+      table.userId
     ),
     topicIdIdx: index('messages_topic_id_idx').on(table.topicId),
     parentIdIdx: index('messages_parent_id_idx').on(table.parentId),
     quotaIdIdx: index('messages_quota_id_idx').on(table.quotaId),
-  }),
+  })
 );
 
 export type MessageItem = typeof messages.$inferSelect;
@@ -100,9 +113,9 @@ export const messagePlugins = pgTable(
   (t) => ({
     clientIdUnique: uniqueIndex('message_plugins_client_id_user_id_unique').on(
       t.clientId,
-      t.userId,
+      t.userId
     ),
-  }),
+  })
 );
 
 export type MessagePluginItem = typeof messagePlugins.$inferSelect;
@@ -122,8 +135,11 @@ export const messageTTS = pgTable(
       .notNull(),
   },
   (t) => ({
-    clientIdUnique: uniqueIndex('message_tts_client_id_user_id_unique').on(t.clientId, t.userId),
-  }),
+    clientIdUnique: uniqueIndex('message_tts_client_id_user_id_unique').on(
+      t.clientId,
+      t.userId
+    ),
+  })
 );
 
 export const messageTranslates = pgTable(
@@ -141,11 +157,10 @@ export const messageTranslates = pgTable(
       .notNull(),
   },
   (t) => ({
-    clientIdUnique: uniqueIndex('message_translates_client_id_user_id_unique').on(
-      t.clientId,
-      t.userId,
-    ),
-  }),
+    clientIdUnique: uniqueIndex(
+      'message_translates_client_id_user_id_unique'
+    ).on(t.clientId, t.userId),
+  })
 );
 
 export type MessageTranslateItem = typeof messageTranslates.$inferSelect;
@@ -167,9 +182,9 @@ export const messageQueries = pgTable(
   (t) => ({
     clientIdUnique: uniqueIndex('message_queries_client_id_user_id_unique').on(
       t.clientId,
-      t.userId,
+      t.userId
     ),
-  }),
+  })
 );
 
 export type NewMessageQuery = typeof messageQueries.$inferInsert;

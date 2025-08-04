@@ -200,7 +200,7 @@ function deleteSession(id: string) {
  * @param newUserId string 目标用户ID
  * @returns 转移结果
  */
-function transferSession(sessionId: string, newUserId: string) {
+function transferSessionRequest(sessionId: string, newUserId: string) {
   return http.post<transferSession>('/api/session-transfer', {
     sessionId,
     newUserId,
@@ -231,6 +231,6 @@ export default {
   getSessionsGroupedByAgent,
   batchUpdateSessions,
   deleteSession,
-  transferSession,
+  transferSession: transferSessionRequest,
   batchTransferSessions,
 };

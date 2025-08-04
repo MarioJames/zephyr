@@ -19,10 +19,10 @@ export const agentsToSessions = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.sessionId] }),
-  }),
+  })
 );
 
-export const topicRelations = relations(topics, ({ one, many }) => ({
+export const topicRelations = relations(topics, ({ one }) => ({
   session: one(sessions, {
     fields: [topics.sessionId],
     references: [sessions.id],
@@ -36,7 +36,7 @@ export const threadsRelations = relations(threads, ({ one }) => ({
   }),
 }));
 
-export const messagesRelations = relations(messages, ({ many, one }) => ({
+export const messagesRelations = relations(messages, ({ one }) => ({
   session: one(sessions, {
     fields: [messages.sessionId],
     references: [sessions.id],
@@ -89,12 +89,15 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
 }));
 
-export const messageTranslatesRelations = relations(messageTranslates, ({ one }) => ({
-  message: one(messages, {
-    fields: [messageTranslates.id],
-    references: [messages.id],
-  }),
-}));
+export const messageTranslatesRelations = relations(
+  messageTranslates,
+  ({ one }) => ({
+    message: one(messages, {
+      fields: [messageTranslates.id],
+      references: [messages.id],
+    }),
+  })
+);
 
 export const messageTTSRelations = relations(messageTTS, ({ one }) => ({
   message: one(messages, {

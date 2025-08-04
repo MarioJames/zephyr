@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import { JWT } from 'next-auth/jwt';
-import { providerConfig } from '@/env/oidc';
-import { oidcEnv } from '@/env/oidc';
+import { providerConfig, oidcEnv } from '@/env/oidc';
 
 // 扩展 JWT 类型定义
 interface ExtendedJWT extends JWT {
@@ -39,7 +38,7 @@ async function refreshAccessToken(token: ExtendedJWT): Promise<ExtendedJWT> {
       ...token,
       accessToken: refreshedTokens.access_token,
       accessTokenExpires:
-        Date.now() + (refreshedTokens.expires_in ?? 90000) * 1000,
+        Date.now() + (refreshedTokens.expires_in ?? 90_000) * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
     };
   } catch (error) {
@@ -72,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           refreshToken: account.refresh_token,
           accessTokenExpires: account.expires_at
             ? account.expires_at * 1000
-            : Date.now() + (account.expires_in ?? 90000) * 1000,
+            : Date.now() + (account.expires_in ?? 90_000) * 1000,
         };
       }
 

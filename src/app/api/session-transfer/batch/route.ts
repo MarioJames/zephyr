@@ -8,7 +8,12 @@ export async function POST(request: NextRequest) {
   try {
     const { sessionIds, newUserId } = await request.json();
 
-    if (!sessionIds || !Array.isArray(sessionIds) || sessionIds.length === 0 || !newUserId) {
+    if (
+      !sessionIds ||
+      !Array.isArray(sessionIds) ||
+      sessionIds.length === 0 ||
+      !newUserId
+    ) {
       return NextResponse.json(
         { error: 'sessionIds (array) and newUserId are required' },
         { status: 400 }
@@ -35,8 +40,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (sourceSessions.length !== sessionIds.length) {
-      const foundIds = sourceSessions.map(s => s.id);
-      const missingIds = sessionIds.filter(id => !foundIds.includes(id));
+      const foundIds = new Set(sourceSessions.map((s) => s.id));
+      const missingIds = sessionIds.filter((id) => !foundIds.has(id));
       return NextResponse.json(
         { error: `Sessions not found: ${missingIds.join(', ')}` },
         { status: 404 }
@@ -78,7 +83,9 @@ export async function POST(request: NextRequest) {
           .select({ id: messages.id })
           .from(messages)
           .where(inArray(messages.topicId, topicIds));
-        messageIds = sessionMessages.map((message: { id: string }) => message.id);
+        messageIds = sessionMessages.map(
+          (message: { id: string }) => message.id
+        );
       }
 
       // 5. 批量更新所有相关messages的userId
@@ -106,15 +113,14 @@ export async function POST(request: NextRequest) {
       message: 'Batch session transfer completed successfully',
       data: result,
     });
-
   } catch (error) {
     console.error('Batch session transfer error:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to transfer sessions',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
   }
-} 
+}

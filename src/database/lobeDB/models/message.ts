@@ -1,32 +1,23 @@
-import { count, sql } from "drizzle-orm";
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  gt,
-  inArray,
-  isNotNull,
-  isNull,
-} from "drizzle-orm/expressions";
+import { count, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm/expressions';
 
-import { LobeChatDatabase } from "@/database/lobeDB/type";
+import { LobeChatDatabase } from '@/database/lobeDB/type';
 import {
   genEndDateWhere,
   genRangeWhere,
   genStartDateWhere,
   genWhere,
-} from "@/database/utils/genWhere";
-import { idGenerator } from "@/database/utils/idGenerator";
-import { ChatTranslate, UpdateMessageParams } from "@/types/message";
-import { merge } from "@/utils/merge";
+} from '@/database/utils/genWhere';
+import { idGenerator } from '@/database/utils/idGenerator';
+import { ChatTranslate, UpdateMessageParams } from '@/types/message';
+import { merge } from '@/utils/merge';
 
 import {
   MessagePluginItem,
   messagePlugins,
   messageTranslates,
   messages,
-} from "../schemas";
+} from '../schemas';
 
 export interface QueryMessageParams {
   current?: number;
@@ -93,7 +84,7 @@ export class MessageModel {
   }): Promise<number> => {
     const result = await this.db
       .select({
-        count: sql<string>`sum(length(${messages.content}))`.as("total_length"),
+        count: sql<string>`sum(length(${messages.content}))`.as('total_length'),
       })
       .from(messages)
       .where(
@@ -148,7 +139,7 @@ export class MessageModel {
     const item = await this.db.query.messagePlugins.findFirst({
       where: eq(messagePlugins.id, id),
     });
-    if (!item) throw new Error("Plugin not found");
+    if (!item) throw new Error('Plugin not found');
 
     return this.db
       .update(messagePlugins)
@@ -163,7 +154,7 @@ export class MessageModel {
     const item = await this.db.query.messagePlugins.findFirst({
       where: eq(messagePlugins.id, id),
     });
-    if (!item) throw new Error("Plugin not found");
+    if (!item) throw new Error('Plugin not found');
 
     return this.db
       .update(messagePlugins)
@@ -244,7 +235,7 @@ export class MessageModel {
 
   // **************** Helper *************** //
 
-  private genId = () => idGenerator("messages", 14);
+  private genId = () => idGenerator('messages', 14);
 
   private matchSession = (sessionId?: string | null) =>
     sessionId ? eq(messages.sessionId, sessionId) : isNull(messages.sessionId);

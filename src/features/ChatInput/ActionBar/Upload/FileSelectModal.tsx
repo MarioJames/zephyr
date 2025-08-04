@@ -207,9 +207,9 @@ const FileSelectModal = memo<FileSelectModalProps>(
         }
         onCancel={handleCancel}
         open={open}
+        style={{ top: 20 }}
         title='选择文件'
         width={800}
-        style={{ top: 20 }}
       >
         <div style={{ overflowY: 'hidden' }}>
           <Input.Search
@@ -242,7 +242,9 @@ const FileSelectModal = memo<FileSelectModalProps>(
                 files.map((file) => (
                   <div
                     className={cx(styles.fileItem, {
-                      [styles.fileItemSelected]: selectedFileIds.includes(file.id),
+                      [styles.fileItemSelected]: selectedFileIds.includes(
+                        file.id
+                      ),
                     })}
                     key={file.id}
                     onClick={(e) => {

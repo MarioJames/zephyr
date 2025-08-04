@@ -1,12 +1,12 @@
-import React from "react";
-import { createStyles } from "antd-style";
-import { useAgentStore } from "@/store/agent/store";
-import { Button } from "@lobehub/ui";
-import { HELLO_IMG } from "@/const/base";
-import { useRouter } from "next/navigation";
-import { useGlobalStore } from "@/store/global";
-import { globalSelectors } from "@/store/global/selectors";
-import Image from "next/image";
+import React from 'react';
+import { createStyles } from 'antd-style';
+import { useAgentStore } from '@/store/agent/store';
+import { Button } from '@lobehub/ui';
+import { HELLO_IMG } from '@/const/base';
+import { useRouter } from 'next/navigation';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
+import Image from 'next/image';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -111,7 +111,7 @@ const DefaultCreateCustomer = () => {
     <div className={styles.container}>
       <div className={styles.top}>
         <Image
-          alt=""
+          alt=''
           className={styles.helloImg}
           height={40}
           src={HELLO_IMG}
@@ -126,10 +126,10 @@ const DefaultCreateCustomer = () => {
         {agents?.map((agent) => (
           <div className={styles.card} key={agent.id}>
             <Image
-              alt={agent.title || ""}
+              alt={agent.title || ''}
               className={styles.avatar}
-              src={agent.avatar || "/test.png"}
               height={96}
+              src={agent.avatar || '/test.png'}
               width={96}
             />
             <div className={styles.cardTitle}>{agent.title}</div>
@@ -138,7 +138,7 @@ const DefaultCreateCustomer = () => {
               className={styles.cardFooter}
               onClick={() => onCreateCustomer(agent.id)}
             >
-              <Button type="primary">创建</Button>
+              <Button type='primary'>创建</Button>
             </div>
           </div>
         ))}
