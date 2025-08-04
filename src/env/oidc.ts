@@ -43,12 +43,17 @@ export const getProviderConfig = (): Provider => {
     authorization: {
       url: `${issuer}/auth`,
       params: {
-        scope: 'openid profile email',
+        scope: 'openid offline_access',
+        resource: 'urn:lobehub:chat',
+        response_type: 'code',
       },
     },
     token: `${issuer}/token`,
     userinfo: {
       request: () => ({}),
+    },
+    client: {
+      token_endpoint_auth_method: 'client_secret_post',
     },
   };
 };
