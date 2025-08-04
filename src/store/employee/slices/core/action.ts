@@ -39,7 +39,10 @@ export interface CoreAction {
     userId: string,
     sessionIds: string[]
   ) => Promise<void>;
-  updateEmployeeRole: (id: string, data: UserUpdateRoleRequest) => Promise<void>;
+  updateEmployeeRole: (
+    id: string,
+    data: UserUpdateRoleRequest
+  ) => Promise<void>;
 }
 
 // ========== 核心功能Slice ==========
@@ -159,8 +162,11 @@ export const coreSlice: StateCreator<
 
   updateEmployeeSessions: async (userId, sessionIds) => {
     // 使用新的batchTransferSessions API来完整转移sessions及其相关数据
-    const result = await sessionsService.batchTransferSessions(sessionIds, userId);
-    console.log(`批量转移完成: ${result.data.sessions.length} 个会话, ${result.data.updatedTopicsCount} 个话题, ${result.data.updatedMessagesCount} 条消息`);
+    const result = await sessionsService.batchTransferSessions(
+      sessionIds,
+      userId
+    );
+    console.log(`批量转移完成: ${result.length} 个会话`);
     await get().fetchEmployees();
   },
 });
