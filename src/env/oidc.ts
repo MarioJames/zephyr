@@ -10,7 +10,6 @@ function getOidcEnv() {
       NEXT_PUBLIC_LOBE_HOST: z.string().optional(),
       NEXT_PUBLIC_ZEPHYR_URL: z.string().optional(),
       NEXT_PUBLIC_OIDC_CLIENT_ID: z.string().optional(),
-      NEXT_PUBLIC_OIDC_CLIENT_SECRET: z.string().optional(),
     },
     runtimeEnv: {
       // zephyr 环境变量
@@ -20,8 +19,6 @@ function getOidcEnv() {
       NEXT_PUBLIC_LOBE_HOST: process.env.NEXT_PUBLIC_LOBE_HOST,
       NEXT_PUBLIC_OIDC_CLIENT_ID:
         process.env.NEXT_PUBLIC_OIDC_CLIENT_ID || 'zephyr',
-      NEXT_PUBLIC_OIDC_CLIENT_SECRET:
-        process.env.NEXT_PUBLIC_OIDC_CLIENT_SECRET || 'zephyr-secret',
     },
   });
 }
