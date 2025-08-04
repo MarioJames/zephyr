@@ -158,9 +158,9 @@ export const coreSlice: StateCreator<
   },
 
   updateEmployeeSessions: async (userId, sessionIds) => {
-    // 用batchUpdateSessions批量更新session的userId，参数为SessionUpdateRequest[]
-    const updateList = sessionIds.map((id) => ({ id, userId }));
-    await sessionsService.batchUpdateSessions(updateList);
+    // 使用新的batchTransferSessions API来完整转移sessions及其相关数据
+    const result = await sessionsService.batchTransferSessions(sessionIds, userId);
+    console.log(`批量转移完成: ${result.data.sessions.length} 个会话, ${result.data.updatedTopicsCount} 个话题, ${result.data.updatedMessagesCount} 条消息`);
     await get().fetchEmployees();
   },
 });

@@ -87,6 +87,14 @@ export interface SessionStatGroupedByAgentItem {
   count: number;
 }
 
+export interface transferSession{
+  session: SessionItem;
+  updatedTopicsCount: number;
+  updatedMessagesCount: number;
+  topicIds: string[];
+  messageIds: string[];
+}
+
 /**
  * 获取会话列表
  * @description 获取会话列表，支持分页和筛选
@@ -185,6 +193,34 @@ function deleteSession(id: string) {
   return http.delete<SessionItem>(`/api/v1/sessions/${id}`);
 }
 
+/**
+ * 转移会话
+ * @description 将会话及其相关的所有话题和消息转移给新用户
+ * @param sessionId string 要转移的会话ID
+ * @param newUserId string 目标用户ID
+ * @returns 转移结果
+ */
+function transferSession(sessionId: string, newUserId: string) {
+  return http.post<transferSession>('/api/session-transfer', {
+    sessionId,
+    newUserId,
+  });
+}
+
+/**
+ * 批量转移会话
+ * @description 将多个会话及其相关的所有话题和消息转移给新用户
+ * @param sessionIds string[] 要转移的会话ID数组
+ * @param newUserId string 目标用户ID
+ * @returns 转移结果
+ */
+function batchTransferSessions(sessionIds: string[], newUserId: string) {
+  return http.post<transferSession[]>('/api/session-transfer/batch', {
+    sessionIds,
+    newUserId,
+  });
+}
+
 export default {
   getSessionList,
   searchSessionList,
@@ -195,4 +231,6 @@ export default {
   getSessionsGroupedByAgent,
   batchUpdateSessions,
   deleteSession,
+  transferSession,
+  batchTransferSessions,
 };

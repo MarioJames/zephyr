@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Popover, List, Spin, App } from 'antd';
-import { Input } from '@lobehub/ui';
-import { SearchOutlined, DownOutlined } from '@ant-design/icons';
-import { useEmployeeStore } from '@/store/employee';
-import { sessionsAPI } from '@/services';
-import { UserItem } from '@/services/user';
-import { useCustomerAssigneeStyles } from './styles';
-import { CustomerAssigneeProps, EmployeeListItemProps } from './types';
-import { useDebounceFn } from 'ahooks';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { Popover, List, Spin, App } from "antd";
+import { Input } from "@lobehub/ui";
+import { SearchOutlined, DownOutlined } from "@ant-design/icons";
+import { useEmployeeStore } from "@/store/employee";
+import { sessionsAPI } from "@/services";
+import { UserItem } from "@/services/user";
+import { useCustomerAssigneeStyles } from "./styles";
+import { CustomerAssigneeProps, EmployeeListItemProps } from "./types";
+import { useDebounceFn } from "ahooks";
 
 // 员工列表项组件
 const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
@@ -18,7 +18,7 @@ const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
 }) => {
   const { styles } = useCustomerAssigneeStyles();
 
-  const employeeName = employee.fullName || employee.username || '未知员工';
+  const employeeName = employee.fullName || employee.username || "未知员工";
   const employeeEmail = employee.email;
 
   return (
@@ -34,9 +34,9 @@ const EmployeeListItem: React.FC<EmployeeListItemProps> = ({
 // 主组件
 export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   session,
-  title = '对接人',
-  placeholder = '未分配',
-  popoverPlacement = 'bottom',
+  title = "对接人",
+  placeholder = "未分配",
+  popoverPlacement = "bottom",
   disabled = false,
   onAssignSuccess,
   className,
@@ -47,7 +47,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   const { message } = App.useApp();
 
   // 组件状态
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
 
@@ -81,7 +81,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   // 进入页面发现没有搜索员工，则先搜索一次
   useEffect(() => {
     if (!searchedEmployees.length && !employeesLoading) {
-      searchEmployees('', 10, true);
+      searchEmployees("", 10, true);
     }
   }, [searchedEmployees.length, employeesLoading]);
 
@@ -89,7 +89,8 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current || loadingMore || !hasMore) return;
 
-    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
     const threshold = 50; // 距离底部50px时开始加载
 
     if (scrollTop + clientHeight >= scrollHeight - threshold) {
@@ -105,20 +106,24 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
       setUpdating(true);
 
       try {
-        await sessionsAPI.updateSession(sessionId, {
-          userId: employee.id,
-        });
+        // 使用新的transferSession API来完整转移session及其相关数据
+        const result = await sessionsAPI.transferSession(
+          sessionId,
+          employee.id
+        );
 
         const employeeName =
-          employee.fullName || employee.username || '未知员工';
-        message.success(`已成功分配给 ${employeeName}`);
+          employee.fullName || employee.username || "未知员工";
+        message.success(
+          `已成功分配给 ${employeeName} (转移了 ${result?.updatedTopicsCount} 个话题和 ${result?.updatedMessagesCount} 条消息)`
+        );
 
         setPopoverOpen(false);
-        setSearchText('');
+        setSearchText("");
         onAssignSuccess?.(employee);
       } catch (error) {
-        console.error('分配员工失败:', error);
-        message.error('分配员工失败，请重试');
+        console.error("分配员工失败:", error);
+        message.error("分配员工失败，请重试");
       } finally {
         setUpdating(false);
       }
@@ -133,18 +138,21 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
 
       setPopoverOpen(open);
       if (!open) {
-        setSearchText('');
+        setSearchText("");
       }
     },
     [disabled, updating]
   );
 
   // 处理搜索输入
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchText(value);
-    debouncedSearchEmployees(value);
-  }, [debouncedSearchEmployees]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchText(value);
+      debouncedSearchEmployees(value);
+    },
+    [debouncedSearchEmployees]
+  );
 
   // 渲染弹窗内容
   const popoverContent = (
@@ -156,7 +164,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
           className={styles.searchInput}
           value={searchText}
           onChange={handleSearchChange}
-          placeholder='搜索员工姓名、邮箱'
+          placeholder="搜索员工姓名、邮箱"
           prefix={<SearchOutlined />}
         />
       </div>
@@ -164,11 +172,11 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
       {/* 员工列表 */}
       {employeesLoading ? (
         <div className={styles.loadingState}>
-          <Spin size='small' />
+          <Spin size="small" />
           <div style={{ marginTop: 8 }}>加载中...</div>
         </div>
       ) : searchedEmployees.length > 0 ? (
-        <div 
+        <div
           ref={scrollContainerRef}
           className={styles.employeeListContainer}
           onScroll={handleScroll}
@@ -184,25 +192,23 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
                 />
               </List.Item>
             )}
-            size='small'
+            size="small"
           />
           {/* 加载更多指示器 */}
           {loadingMore && (
             <div className={styles.loadingMore}>
-              <Spin size='small' />
+              <Spin size="small" />
               <span style={{ marginLeft: 8 }}>加载更多...</span>
             </div>
           )}
           {/* 没有更多数据提示 */}
           {!hasMore && searchedEmployees.length > 0 && (
-            <div className={styles.noMoreData}>
-              没有更多数据了
-            </div>
+            <div className={styles.noMoreData}>没有更多数据了</div>
           )}
         </div>
       ) : (
         <div className={styles.emptyState}>
-          {searchText ? '暂无匹配的员工' : '暂无员工数据'}
+          {searchText ? "暂无匹配的员工" : "暂无员工数据"}
         </div>
       )}
     </div>
@@ -210,12 +216,12 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
 
   // 获取显示文本
   const displayText = session.user
-    ? session.user.fullName || session.user.username || '未知员工'
+    ? session.user.fullName || session.user.username || "未知员工"
     : placeholder;
 
   return (
     <div
-      className={`${styles.assigneeContainer} ${className || ''}`}
+      className={`${styles.assigneeContainer} ${className || ""}`}
       style={style}
     >
       {title && <div className={styles.assigneeTitle}>{title}</div>}
@@ -226,20 +232,20 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
         onOpenChange={handlePopoverOpenChange}
         open={popoverOpen}
         placement={popoverPlacement}
-        title='选择对接人'
-        trigger='click'
+        title="选择对接人"
+        trigger="click"
       >
         <div
-          className={`${styles.assigneeValue} ${disabled ? 'disabled' : ''}`}
+          className={`${styles.assigneeValue} ${disabled ? "disabled" : ""}`}
         >
           {updating ? (
             <>
-              <Spin size='small' style={{ marginRight: 8 }} />
+              <Spin size="small" style={{ marginRight: 8 }} />
               更新中...
             </>
           ) : (
             <>
-              <div className={isTitle ? styles.assigneeValueText : ''}>
+              <div className={isTitle ? styles.assigneeValueText : ""}>
                 {displayText}
               </div>
               {!disabled && <DownOutlined className={styles.dropdownIcon} />}
