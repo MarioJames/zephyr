@@ -60,11 +60,11 @@ ENV NODE_OPTIONS="--max-old-space-size=6144"
 ENV DATABASE_URL="${DATABASE_URL}" \
     DATABASE_DRIVER="${DATABASE_DRIVER:-node}" \
     NEXT_PUBLIC_APP_URL="${NEXT_PUBLIC_APP_URL}" \
-    NEXT_PUBLIC_APP_NAME="${NEXT_PUBLIC_APP_NAME:-保险客户管理系统}" \
+    NEXT_PUBLIC_APP_NAME="${NEXT_PUBLIC_APP_NAME:-保险客户管理系统}"
 
 # OIDC 环境变量
-NEXT_PUBLIC_OIDC_CLIENT_ID="${NEXT_PUBLIC_OIDC_CLIENT_ID:-zephyr}"
-AUTH_SECRET="${AUTH_SECRET}"
+ENV NEXT_PUBLIC_OIDC_CLIENT_ID="${NEXT_PUBLIC_OIDC_CLIENT_ID:-zephyr}" \
+    AUTH_SECRET="${AUTH_SECRET}"
 
 # Clerk 环境变量
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}" \
@@ -87,9 +87,8 @@ ENV ALIYUN_MAIL_SMTP_HOST="${ALIYUN_MAIL_SMTP_HOST}" \
 
 WORKDIR /app
 
-COPY package.json pnpm-workspace.yaml ./
+COPY package.json ./
 COPY .npmrc ./
-COPY packages ./packages
 
 RUN \
     # If you want to build docker in China, build with --build-arg USE_CN_MIRROR=true
@@ -164,23 +163,18 @@ ENV NODE_ENV="production" \
 ENV HOSTNAME="0.0.0.0" \
     PORT="3020"
 
-# Litellm 相关
-ENV LITELLM_DATABASE_URL="" \
-    LITELLM_DATABASE_DRIVER="node" \
-    LITELLM_MASTER_KEY=""
-
-# LobeHub Admin 相关
+# Zephyr 相关
 ENV DATABASE_URL="" \
     DATABASE_DRIVER="node"
 
-# LobeHub Chat 相关
-ENV CHAT_DATABASE_DRIVER="node" \
-    CHAT_DATABASE_URL="" \
-    CHAT_KEY_VAULTS_SECRET=""
+# LobeHub Admin 相关
+ENV ADMIN_DATABASE_URL="" \
+    ADMIN_DATABASE_DRIVER="node" \
+    ADMIN_KEY_VAULTS_SECRET=""
 
-# LobeHub Cloud 相关
-ENV CHAT_CLOUD_DATABASE_DRIVER="node" \
-    CHAT_CLOUD_DATABASE_URL=""
+# LobeHub Chat 相关
+ENV LOBE_DATABASE_DRIVER="node" \
+    LOBE_DATABASE_URL=""
 
 USER nextjs
 

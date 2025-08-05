@@ -1,48 +1,46 @@
-# 依赖目录
+# Dependencies
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# 构建产物
-.next/
+# Next.js build output (保留 standalone 和 static)
+.next/*
+!.next/standalone
+!.next/static
 out/
-dist/
+
+# Production build
 build/
+dist/
 
-# 环境变量文件
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# 日志文件
-*.log
-
-# 运行时数据
+# Runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
 
-# 覆盖率目录
+# Coverage directory used by tools like istanbul
 coverage/
-.nyc_output
+*.lcov
 
-# 依赖锁定文件（保留 pnpm-lock.yaml）
-package-lock.json
-yarn.lock
+# Logs
+logs
+*.log
 
-# IDE 和编辑器文件
+# Environment files
+.env*.local
+.env.example
+
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# 操作系统生成的文件
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -51,18 +49,58 @@ yarn.lock
 ehthumbs.db
 Thumbs.db
 
-# Git 相关
-.git
+# Git
+.git/
 .gitignore
+.gitattributes
 
-# 测试相关
-.jest/
-test-results/
-playwright-report/
+# Testing
+.nyc_output
+coverage/
+*.coverage
+.cache/
 
-# 其他
+# Documentation
 README.md
-CLAUDE.md
-store-refactor-task.md
-Dockerfile
+CHANGELOG.md
+LICENSE
+docs/
+
+# Development files
+.husky/
+.eslintcache
+.prettierignore
+.stylelintrc.js
+vitest.config.ts
+renovate.json
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
 .dockerignore
+
+# Misc
+.cursor/
+.claude/
+tests/
+scripts/
+!scripts/migrateServerDB/
+!scripts/serverLauncher/
+
+# Vercel
+.vercel
+
+# Deployment
+docker-deploy.md

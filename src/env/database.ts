@@ -13,15 +13,13 @@ export const getServerDBConfig = () => {
       LOBE_DATABASE_DRIVER: process.env.LOBE_DATABASE_DRIVER || 'neon',
     },
     server: {
-      DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+      DATABASE_URL: z.string(),
       DATABASE_DRIVER: z.enum(['neon', 'node']),
-      ADMIN_DATABASE_URL: z.string().min(1, 'ADMIN_DATABASE_URL is required'),
+      ADMIN_DATABASE_URL: z.string(),
       ADMIN_DATABASE_DRIVER: z.enum(['neon', 'node']),
-      LOBE_DATABASE_URL: z.string().min(1, 'LOBE_DATABASE_URL is required'),
+      LOBE_DATABASE_URL: z.string(),
       LOBE_DATABASE_DRIVER: z.enum(['neon', 'node']),
-      ADMIN_KEY_VAULTS_SECRET: z
-        .string()
-        .min(1, 'ADMIN_KEY_VAULTS_SECRET is required'),
+      ADMIN_KEY_VAULTS_SECRET: z.string(),
     },
   });
 };
