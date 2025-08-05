@@ -6,7 +6,7 @@ function getZephyrEnv() {
     client: {
       NEXT_PUBLIC_APP_URL: z.string(),
       NEXT_PUBLIC_APP_NAME: z.string(),
-      NEXT_PUBLIC_OPENAPI_ENDPOINT: z.string(),
+      NEXT_PUBLIC_OPENAPI_ENDPOINT: z.string().optional(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,

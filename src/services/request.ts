@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { getSession, signIn } from 'next-auth/react';
 import { shouldReLogin, getValidAccessToken } from '@/libs/auth';
+import { zephyrEnv } from '@/env/zephyr';
 
 // 扩展 Session 类型以包含自定义属性
 declare module 'next-auth' {
@@ -16,7 +17,7 @@ interface ExtendedSession {
   error?: string;
 }
 
-const baseURL = process.env.NEXT_PUBLIC_LOBE_HOST || 'http://localhost:3010';
+const baseURL = zephyrEnv.NEXT_PUBLIC_OPENAPI_ENDPOINT;
 
 // 简单的内存缓存
 interface TokenCache {
@@ -68,12 +69,12 @@ async function getCurrentAccessToken(): Promise<string | null> {
       console.debug('等待进行中的session请求');
       const session = await sessionPromise;
       const extendedSession = session as ExtendedSession;
-      
+
       // 如果session有错误，返回null
       if (shouldReLogin(extendedSession)) {
         return null;
       }
-      
+
       return getValidAccessToken(extendedSession);
     }
 
@@ -100,7 +101,7 @@ async function getCurrentAccessToken(): Promise<string | null> {
         tokenCache.accessToken = accessToken;
         tokenCache.hasError = false;
         tokenCache.lastFetched = Date.now();
-        
+
         console.debug('session请求成功，缓存已更新');
       }
 
@@ -109,7 +110,6 @@ async function getCurrentAccessToken(): Promise<string | null> {
       // 只有创建sessionPromise的请求才负责清除，确保在主线程中同步清除
       sessionPromise = null;
     }
-    
   } catch (error) {
     console.warn('Failed to get access token:', error);
     // 确保异常时也清除Promise缓存
@@ -147,14 +147,14 @@ instance.interceptors.response.use(
     // Token 过期或服务器错误时尝试刷新 token
     if ([401, 500].includes(status)) {
       console.debug(`收到${status}错误，尝试刷新token`);
-      
+
       // 清除缓存，强制重新获取session
       tokenCache.accessToken = null;
       tokenCache.hasError = false;
       tokenCache.lastFetched = 0;
-      
+
       const token = await getCurrentAccessToken();
-      
+
       if (token) {
         // 设置重试标记
         config._retryCount = (config._retryCount || 0) + 1;
@@ -243,7 +243,7 @@ export async function checkSessionStatus() {
   const token = await getCurrentAccessToken();
   return {
     hasValidToken: !!token,
-    hasError: tokenCache.hasError
+    hasError: tokenCache.hasError,
   };
 }
 
