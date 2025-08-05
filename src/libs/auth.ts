@@ -13,10 +13,7 @@ interface ExtendedJWT extends JWT {
 // 使用 refresh_token 刷新 access_token
 async function refreshAccessToken(token: ExtendedJWT): Promise<ExtendedJWT> {
   try {
-    const lobeHost = oidcEnv.NEXT_PUBLIC_LOBE_HOST;
-    const tokenEndpoint = `${lobeHost}/oidc/token`;
-
-    const response = await fetch(tokenEndpoint, {
+    const response = await fetch(`${oidcEnv.NEXT_PUBLIC_OIDC_ISSUER}/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

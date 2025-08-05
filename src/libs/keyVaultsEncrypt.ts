@@ -1,5 +1,3 @@
-import { serverDBEnv } from '@/env/database';
-
 interface DecryptionResult {
   plaintext: string;
   wasAuthentic: boolean;
@@ -18,8 +16,6 @@ export interface KeyVaultItem {
   sessionToken?: string;
 }
 
-type UserKeyVaults = Record<string, KeyVaultItem>;
-
 export class KeyVaultsGateKeeper {
   private aesKey: CryptoKey;
 
@@ -27,20 +23,19 @@ export class KeyVaultsGateKeeper {
     this.aesKey = aesKey;
   }
 
-  static initWithEnvKey = async () => {
-    const { KEY_VAULTS_SECRET } = serverDBEnv;
-    if (!KEY_VAULTS_SECRET)
+  static initWithEnvKey = async (keyVaultsSecret: string) => {
+    if (!keyVaultsSecret)
       throw new Error(
-        `\`KEY_VAULTS_SECRET\` is not set, please set it in your environment variables.`,
+        `\`keyVaultsSecret\` is not set, please set it in your environment variables.`
       );
 
-    const rawKey = Buffer.from(KEY_VAULTS_SECRET, 'base64'); // 确保密钥是32字节（256位）
+    const rawKey = Buffer.from(keyVaultsSecret, 'base64'); // 确保密钥是32字节（256位）
     const aesKey = await crypto.subtle.importKey(
       'raw',
       rawKey,
       { length: 256, name: 'AES-GCM' },
       false,
-      ['encrypt', 'decrypt'],
+      ['encrypt', 'decrypt']
     );
 
     return new KeyVaultsGateKeeper(aesKey);
@@ -60,14 +55,16 @@ export class KeyVaultsGateKeeper {
         name: 'AES-GCM',
       },
       this.aesKey,
-      encodedKeyVault,
+      encodedKeyVault
     );
 
     const buffer = Buffer.from(encryptedData);
     const authTag = buffer.slice(-16); // 认证标签在加密数据的最后16字节
     const encrypted = buffer.slice(0, -16); // 剩下的是加密数据
 
-    return `${Buffer.from(iv).toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`;
+    return `${Buffer.from(iv).toString('hex')}:${authTag.toString(
+      'hex'
+    )}:${encrypted.toString('hex')}`;
   };
 
   decrypt = async (encryptedData: string): Promise<DecryptionResult> => {
@@ -90,7 +87,7 @@ export class KeyVaultsGateKeeper {
           name: 'AES-GCM',
         },
         this.aesKey,
-        combined,
+        combined
       );
 
       const decrypted = new TextDecoder().decode(decryptedBuffer);
@@ -104,44 +101,5 @@ export class KeyVaultsGateKeeper {
         wasAuthentic: false,
       };
     }
-  };
-
-  static getUserKeyVaults = async (
-    keyVaultsSecret: string,
-    encryptedKeyVaults: string | null,
-    userId?: string,
-  ): Promise<UserKeyVaults> => {
-    if (!encryptedKeyVaults) return {};
-    // Decrypt keyVaults
-    let decryptKeyVaults = {};
-
-    const gateKeeper = await KeyVaultsGateKeeper.initWithEnvKey();
-    const { wasAuthentic, plaintext } = await gateKeeper.decrypt(encryptedKeyVaults);
-
-    if (wasAuthentic) {
-      try {
-        if (!!plaintext) decryptKeyVaults = JSON.parse(plaintext);
-      } catch (e) {
-        console.error(`Failed to parse keyVaults, userId: ${userId}. Error:`, e);
-      }
-    }
-
-    return decryptKeyVaults as UserKeyVaults;
-  };
-
-  static getUserBudgetKey = async (budgetKey: string) => {
-    const gateKeeper = await KeyVaultsGateKeeper.initWithEnvKey();
-    let result;
-
-    try {
-      result = await gateKeeper.decrypt(budgetKey);
-    } catch {
-      throw new Error('key failed to  decrypt, please check the program and key');
-    }
-
-    if (!result.wasAuthentic)
-      throw new Error('key failed to  decrypt, please check the program and key');
-
-    return result.plaintext;
   };
 }

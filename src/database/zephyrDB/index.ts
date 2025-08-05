@@ -17,9 +17,9 @@ export const getZephyrDB = async (): Promise<ZephyrDatabase> => {
   // 如果已经有缓存的实例，直接返回
   if (cachedDB) return cachedDB;
 
-  const connectionString = serverDBEnv.ZEPHYR_DATABASE_URL;
+  const connectionString = serverDBEnv.DATABASE_URL;
 
-  if (serverDBEnv.ZEPHYR_DATABASE_DRIVER === 'node') {
+  if (serverDBEnv.DATABASE_DRIVER === 'node') {
     const client = new NodePool({ connectionString });
     cachedDB = nodeDrizzle(client, { schema });
   } else {

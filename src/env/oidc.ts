@@ -3,22 +3,15 @@ import { Provider } from 'next-auth/providers';
 import { z } from 'zod';
 
 // OIDC 环境变量配置
-
 function getOidcEnv() {
   return createEnv({
     client: {
-      NEXT_PUBLIC_LOBE_HOST: z.string().optional(),
-      NEXT_PUBLIC_ZEPHYR_URL: z.string().optional(),
+      NEXT_PUBLIC_OIDC_ISSUER: z.string().optional(),
       NEXT_PUBLIC_OIDC_CLIENT_ID: z.string().optional(),
     },
     runtimeEnv: {
-      // zephyr 环境变量
-      NEXT_PUBLIC_ZEPHYR_URL: process.env.NEXT_PUBLIC_ZEPHYR_URL,
-
-      // OIDC Provider 环境变量
-      NEXT_PUBLIC_LOBE_HOST: process.env.NEXT_PUBLIC_LOBE_HOST,
-      NEXT_PUBLIC_OIDC_CLIENT_ID:
-        process.env.NEXT_PUBLIC_OIDC_CLIENT_ID || 'zephyr',
+      NEXT_PUBLIC_OIDC_ISSUER: process.env.NEXT_PUBLIC_OIDC_ISSUER,
+      NEXT_PUBLIC_OIDC_CLIENT_ID: process.env.NEXT_PUBLIC_OIDC_CLIENT_ID,
     },
   });
 }
@@ -27,8 +20,7 @@ export const oidcEnv = getOidcEnv();
 
 // 获取 OIDC 配置
 export const getProviderConfig = (): Provider => {
-  const lobeHost = oidcEnv.NEXT_PUBLIC_LOBE_HOST;
-  const issuer = `${lobeHost}/oidc`;
+  const issuer = oidcEnv.NEXT_PUBLIC_OIDC_ISSUER;
 
   return {
     id: 'lobe',

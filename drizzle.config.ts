@@ -4,7 +4,7 @@ import type { Config } from 'drizzle-kit';
 
 // dotenv_config_path parameter that's passed to Node.js
 
-let connectionString = process.env.ZEPHYR_DATABASE_URL;
+let connectionString = process.env.DATABASE_URL;
 
 if (!connectionString)
   throw new Error(
@@ -16,7 +16,7 @@ export default {
     url: connectionString,
   },
   dialect: 'postgresql',
-  out: './src/database/zephyrDB/migrations',
+  out: './src/database/migrations',
 
   schema: './src/database/zephyrDB/schemas',
   strict: true,

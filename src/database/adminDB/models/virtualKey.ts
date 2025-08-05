@@ -3,6 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { AdminDatabase } from '../type';
 import { userVirtualKeys } from '../schemas';
 import { KeyVaultsGateKeeper, KeyVaultItem } from '@/libs/keyVaultsEncrypt';
+import { serverDBEnv } from '@/env/database';
 
 export type UserVirtualKeySelect = typeof userVirtualKeys.$inferSelect;
 
@@ -40,16 +41,15 @@ export class VirtualKeyModel {
         return null;
       }
 
-      // 解密 keyVaults 字段
-      const decryptedKeyVaults = await KeyVaultsGateKeeper.getUserKeyVaults(
-        '', // keyVaultsSecret 在方法内部从环境变量获取
-        result.keyVaults,
-        result.userId
+      const { decrypt } = await KeyVaultsGateKeeper.initWithEnvKey(
+        serverDBEnv.ADMIN_KEY_VAULTS_SECRET
       );
+
+      const { wasAuthentic, plaintext } = await decrypt(result.keyVaults);
 
       return {
         ...result,
-        keyVaults: decryptedKeyVaults,
+        keyVaults: wasAuthentic ? JSON.parse(plaintext) : {},
       };
     } catch (error) {
       console.error('查询虚拟KEY失败:', error);
