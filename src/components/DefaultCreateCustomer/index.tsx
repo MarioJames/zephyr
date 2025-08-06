@@ -103,8 +103,12 @@ const DefaultCreateCustomer = () => {
   const username = useGlobalStore(globalSelectors.userName);
   const router = useRouter();
 
-  const onCreateCustomer = (agentId: string) => {
-    router.push(`/customer/form?agentId=${agentId}`);
+  const onCreateCustomer = (agentId?: string) => {
+    if (agentId) {
+      router.push(`/customer/form?agentId=${agentId}`);
+    } else {
+      router.push('/customer/form');
+    }
   };
 
   return (
@@ -122,27 +126,35 @@ const DefaultCreateCustomer = () => {
       <div className={styles.middle}>
         我是您的私人智能助理，点击下方客户类型开始创建您的客户吧~
       </div>
-      <div className={styles.cardList}>
-        {agents?.map((agent) => (
-          <div className={styles.card} key={agent.id}>
-            <Image
-              alt={agent.title || ''}
-              className={styles.avatar}
-              height={96}
-              src={agent.avatar || '/test.png'}
-              width={96}
-            />
-            <div className={styles.cardTitle}>{agent.title}</div>
-            <div className={styles.cardDesc}>{agent.description}</div>
-            <div
-              className={styles.cardFooter}
-              onClick={() => onCreateCustomer(agent.id)}
-            >
-              <Button type='primary'>创建</Button>
+      {agents && agents.length > 0 ? (
+        <div className={styles.cardList}>
+          {agents.map((agent) => (
+            <div className={styles.card} key={agent.id}>
+              <Image
+                alt={agent.title || ''}
+                className={styles.avatar}
+                height={96}
+                src={agent.avatar || '/test.png'}
+                width={96}
+              />
+              <div className={styles.cardTitle}>{agent.title}</div>
+              <div className={styles.cardDesc}>{agent.description}</div>
+              <div
+                className={styles.cardFooter}
+                onClick={() => onCreateCustomer(agent.id)}
+              >
+                <Button type='primary'>创建</Button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.cardFooter}>
+          <Button onClick={() => onCreateCustomer()} size='large' type='primary'>
+            创建客户
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
