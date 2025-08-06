@@ -1,5 +1,4 @@
 import { AgentConfig } from '@/types/agent';
-import { LITELLM_URL } from '@/const/base';
 import axios from 'axios';
 import { useAgentStore } from '@/store/agent';
 import { isEmpty } from 'lodash-es';

@@ -9,6 +9,5 @@ export const DEFAULT_USER_AVATAR_URL =
 
 export const ARTIFACT_THINKING_TAG = 'lobeThinking';
 
-export const HELLO_IMG = 'https://registry.npmmirror.com/@lobehub/fluent-emoji-anim-1/1.0.0/files/assets/1f44b.webp';
-
-export const LITELLM_URL = 'http://localhost:4000';
+export const HELLO_IMG =
+  'https://registry.npmmirror.com/@lobehub/fluent-emoji-anim-1/1.0.0/files/assets/1f44b.webp';
