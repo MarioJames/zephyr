@@ -92,7 +92,7 @@ export const userSlice: StateCreator<GlobalStore, [], [], UserAction> = (
     try {
       const virtualKeyResponse = await UserAPI.getVirtualKey(userId, roleId);
 
-      set({ virtualKey: virtualKeyResponse?.keyVaults?.api_key || null });
+      set({ virtualKey: virtualKeyResponse?.keyVaults?.virtualKey || null });
     } catch (error) {
       console.error('获取虚拟key失败:', error);
       set({

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAgentStore } from '@/store/agent';
 import { isEmpty } from 'lodash-es';
 import { useGlobalStore } from '@/store/global';
+import { zephyrEnv } from '@/env/zephyr';
 
 export type ChatMessage = {
   role: 'user' | 'system' | 'assistant' | 'tool';
@@ -81,7 +82,7 @@ export interface GenerateReplyResponse {
 // 获取 Authorization header
 const getAuthHeader = () => {
   const virtualKey = useGlobalStore.getState().virtualKey;
-  return virtualKey ? { Authorization: `Bearer sk-${virtualKey}` } : undefined;
+  return virtualKey ? { Authorization: `Bearer ${virtualKey}` } : undefined;
 };
 
 // 获取 fallback 模型
@@ -109,7 +110,7 @@ async function chat(data: ChatRequest) {
   }));
 
   const res = await axios.post<LiteLLMChatResponse>(
-    `${LITELLM_URL}/chat/completions`,
+    `${zephyrEnv.NEXT_PUBLIC_LITELLM_URL}/chat/completions`,
     {
       ...data,
       ...(isEmpty(fallbackModels) ? {} : { fallbacks }),

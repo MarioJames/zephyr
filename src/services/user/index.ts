@@ -35,7 +35,8 @@ export interface UserCreateRequest {
 
 export interface VirtualKeyResponse {
   keyVaults: {
-    api_key: string;
+    virtualKeyId: string;
+    virtualKey: string;
   };
   roleId: string;
   userId: string;
@@ -105,7 +106,7 @@ function searchUsers(keyword: string, pageSize?: number, page?: number) {
   params.append('keyword', keyword);
   if (pageSize) params.append('pageSize', pageSize.toString());
   if (page) params.append('page', page.toString());
-  
+
   return http.get<UserItem[]>(`/api/v1/users/search?${params.toString()}`);
 }
 
