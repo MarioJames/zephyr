@@ -76,6 +76,7 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   `,
   statsBox: css`
     flex: 1 0 280px;
+    max-width: 320px;
     cursor: pointer;
     border: 1px solid ${token.colorBorderSecondary};
     padding: 12px;
