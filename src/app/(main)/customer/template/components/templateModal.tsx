@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Upload, message, Form, Spin } from "antd";
+import { Upload, Form, Spin, App } from "antd";
 import { Button, TextArea, Input, Select, Modal , SliderWithInput } from "@lobehub/ui";
 import { UploadOutlined } from "@ant-design/icons";
 import Image from "next/image";
@@ -226,6 +226,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
   modelOptions,
 }) => {
   const { styles, theme } = useStyles();
+  const { message } = App.useApp();
   const uploadAvatar = useAgentStore((s) => s.uploadAvatar);
 
   const [form] = Form.useForm();
