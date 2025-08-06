@@ -21,6 +21,7 @@ export const useCustomerTypeSelectorStyles = createStyles(({ css, token, isDarkM
   typeBox: css`
     flex: 1;
     min-width: 240px;
+    max-width: 320px;
     padding: 12px;
     display: flex;
     flex-direction: column;

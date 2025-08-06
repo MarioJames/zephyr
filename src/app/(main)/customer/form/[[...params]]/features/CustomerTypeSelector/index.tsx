@@ -20,7 +20,7 @@ export default function CustomerTypeSelector({
       <Title level={5}>选择客户类型</Title>
       <Form.Item hidden name="agentId" />
       <div className={styles.typeContainer}>
-        {agents.map((agent) => (
+        {agents?.map((agent) => (
           <div
             className={`${styles.typeBox} ${
               agentId === agent.id
