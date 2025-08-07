@@ -7,12 +7,14 @@ function getZephyrEnv() {
       NEXT_PUBLIC_APP_URL: z.string(),
       NEXT_PUBLIC_APP_NAME: z.string(),
       NEXT_PUBLIC_OPENAPI_ENDPOINT: z.string().optional(),
+      NEXT_PUBLIC_LITELLM_URL: z.string().optional(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
       NEXT_PUBLIC_APP_NAME:
         process.env.NEXT_PUBLIC_APP_NAME || '保险客户管理系统',
       NEXT_PUBLIC_OPENAPI_ENDPOINT: process.env.NEXT_PUBLIC_OPENAPI_ENDPOINT,
+      NEXT_PUBLIC_LITELLM_URL: process.env.NEXT_PUBLIC_LITELLM_URL,
     },
   });
 }
