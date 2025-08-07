@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand/vanilla';
 import UserAPI, { UserItem } from '@/services/user';
+import { isEmpty } from 'lodash-es';
 
 import type { GlobalStore } from '../../store';
 
@@ -121,9 +122,12 @@ export const userSlice: StateCreator<GlobalStore, [], [], UserAction> = (
 
   checkUserRoleEnabled: () => {
     const { currentUser } = get();
-    
     // 如果没有用户信息，返回false
     if (!currentUser) {
+      return false;
+    }
+
+    if (isEmpty(currentUser?.roles)) {
       return false;
     }
 
