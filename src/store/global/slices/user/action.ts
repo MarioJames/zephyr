@@ -42,6 +42,12 @@ export interface UserAction {
    * 清除用户状态
    */
   clearUserState: () => void;
+
+  /**
+   * 检查用户角色是否可用
+   * @returns boolean 角色是否可用
+   */
+  checkUserRoleEnabled: () => boolean;
 }
 
 /**
@@ -112,4 +118,20 @@ export const userSlice: StateCreator<GlobalStore, [], [], UserAction> = (
       userError: null,
     });
   },
+
+  checkUserRoleEnabled: () => {
+    const { currentUser } = get();
+    
+    // 如果没有用户信息，返回false
+    if (!currentUser) {
+      return false;
+    }
+
+    // 检查用户角色是否被禁用
+    if (currentUser.roles?.[0] && !currentUser.roles[0].isActive) {
+      return false;
+    }
+
+    return true;
+  }
 });
