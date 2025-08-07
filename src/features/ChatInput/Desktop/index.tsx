@@ -28,7 +28,6 @@ const useStyles = createStyles(({ css, token }) => ({
   content: css`
     display: flex;
     flex-direction: column;
-    height: 100% !important;
     overflow: hidden;
   `,
   panel: css`
@@ -56,28 +55,43 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
     renderFooter,
   }) => {
     const { styles } = useStyles();
-    const [expand, setExpand] = useState<boolean>(false);
+    const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+    
     const onSend = useCallback(() => {
-      setExpand(false);
+      setIsFullscreen(false);
     }, []);
+
+    // 处理展开/收起切换
+    const handleExpandToggle = useCallback(() => {
+      if (isFullscreen) {
+        // 如果当前是全屏，点击收起按钮应该回到正常状态
+        setIsFullscreen(false);
+      } else {
+        // 如果当前是正常状态，点击展开按钮应该进入全屏
+        setIsFullscreen(true);
+      }
+    }, [isFullscreen]);
 
     return (
       <DraggablePanel
-          className={expand ? styles.fullscreenPanel : styles.panel}
+          className={isFullscreen ? styles.fullscreenPanel : styles.panel}
           classNames={{
             content: styles.content,
           }}
-          expand={expand}
-          fullscreen={expand}
+          expand={!isCollapsed} // 根据收起状态决定面板是否展开
+          fullscreen={isFullscreen}
           maxHeight={CHAT_TEXTAREA_MAX_HEIGHT}
           minHeight={CHAT_TEXTAREA_HEIGHT}
-          onExpandChange={setExpand}
+          onExpandChange={(expand) => {
+            // DraggablePanel自身的展开/收起逻辑
+            setIsCollapsed(!expand);
+          }}
           onSizeChange={(_, size) => {
             if (!size) return;
             const height =
               typeof size.height === 'string' ? Number.parseInt(size.height) : size.height;
             if (!height) return;
-
             onInputHeightChange?.(height);
           }}
           placement="bottom"
@@ -85,7 +99,7 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
           size={{ height: inputHeight, width: '100%' }}
         >
           <DraggablePanelContainer
-            className={expand ? styles.fullscreenContainer : undefined}
+            className={isFullscreen ? styles.fullscreenContainer : undefined}
             style={{
               flex: 'none',
               height: '100%',
@@ -100,17 +114,17 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
               style={{ minHeight: CHAT_TEXTAREA_HEIGHT, position: 'relative' }}
             >
               <Head
-                expand={expand}
+                expand={isFullscreen}
                 leftActions={leftActions}
                 rightActions={rightActions}
-                setExpand={setExpand}
+                setExpand={handleExpandToggle}
               />
               <Flexbox gap={8} horizontal style={{ flex: 1 }}>
                 <Flexbox style={{ flex: 1 }}>
                   {renderTextArea(onSend)}
                 </Flexbox>
                 <Flexbox style={{ flex: 'none', alignSelf: 'end' }}>
-                  {renderFooter({ expand, onExpandChange: setExpand })}
+                  {renderFooter({ expand: isFullscreen, onExpandChange: setIsFullscreen })}
                 </Flexbox>
               </Flexbox>
             </Flexbox>
