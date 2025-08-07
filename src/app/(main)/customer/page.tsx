@@ -360,6 +360,12 @@ export default function Customer() {
       render: (_: any, record: CustomerDisplayItem) => (
         <Space size='middle'>
           <a
+            onClick={() => handleViewConversations(record)}
+            style={{ color: theme.colorPrimary }}
+          >
+            对话
+          </a>
+          <a
             onClick={() => handleEditCustomer(record)}
             style={{ color: theme.colorPrimary }}
           >
