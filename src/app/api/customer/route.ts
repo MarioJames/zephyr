@@ -107,6 +107,22 @@ export async function POST(request: NextRequest) {
     const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
 
+    // Phone 唯一性校验
+    if (body.phone?.trim()) {
+      const existingCustomer = await customerModel.findByPhone(body.phone.trim());
+      if (existingCustomer) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: '手机号已存在',
+            message: `手机号 ${body.phone} 已被其他客户使用，请使用其他手机号`,
+            timestamp: Date.now(),
+          },
+          { status: 409 } // 409 Conflict
+        );
+      }
+    }
+
     // 创建客户扩展信息
     await customerModel.create(body);
 
@@ -156,6 +172,22 @@ export async function PUT(request: NextRequest) {
 
     const db = await getZephyrDB();
     const customerModel = new CustomerModel(db);
+
+    // Phone 唯一性校验
+    if (body.phone?.trim()) {
+      const existingCustomer = await customerModel.findByPhone(body.phone.trim());
+      if (existingCustomer && existingCustomer.sessionId !== sessionId) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: '手机号已存在',
+            message: `手机号 ${body.phone} 已被其他客户使用，请使用其他手机号`,
+            timestamp: Date.now(),
+          },
+          { status: 409 } // 409 Conflict
+        );
+      }
+    }
 
     // 根据sessionId查找客户扩展信息
     const customerExtend = await customerModel.findBySessionId(sessionId);

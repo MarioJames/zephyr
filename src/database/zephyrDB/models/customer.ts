@@ -114,11 +114,23 @@ export class CustomerModel {
     });
   };
 
+  // 根据手机号查找客户
+  findByPhone = async (
+    phone: string
+  ): Promise<CustomerSessionItem | undefined> => {
+    if (!phone?.trim()) return undefined;
+    
+    return this.db.query.customerSessions.findFirst({
+      where: eq(customerSessions.phone, phone.trim()),
+    });
+  };
+
   count = async (): Promise<number> => {
     const result = await this.db
       .select({ count: sql<number>`count(*)` })
       .from(customerSessions);
-    return result[0]?.count || 0;
+
+    return Number(result[0]?.count || 0);
   };
 
   // ========== 列表查询操作 ==========
