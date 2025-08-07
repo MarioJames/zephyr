@@ -79,8 +79,21 @@ export interface GenerateReplyResponse {
 }
 
 // 获取 Authorization header
-const getAuthHeader = () => {
-  const virtualKey = useGlobalStore.getState().virtualKey;
+const getAuthHeader = async () => {
+  const globalState = useGlobalStore.getState();
+  let { virtualKey, currentUser } = globalState;
+  
+  // 如果virtualKey不存在，尝试重新加载
+  if (!virtualKey && currentUser?.id && currentUser?.roles?.[0]?.id) {
+    try {
+      await globalState.loadVirtualKey(currentUser.id, currentUser.roles[0].id);
+      // 重新获取virtualKey
+      virtualKey = useGlobalStore.getState().virtualKey;
+    } catch (error) {
+      console.error('重新获取virtualKey失败:', error);
+    }
+  }
+  
   return virtualKey ? { Authorization: `Bearer ${virtualKey}` } : undefined;
 };
 
@@ -101,7 +114,7 @@ const getFallbackModel = () => {
  */
 
 async function chat(data: ChatRequest) {
-  const authorization = getAuthHeader();
+  const authorization = await getAuthHeader();
   const fallbackModels = getFallbackModel();
   const fallbacks = fallbackModels.map((model) => ({
     model,
