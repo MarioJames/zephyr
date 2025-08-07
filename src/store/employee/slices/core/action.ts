@@ -101,7 +101,6 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       await userService.updateUser(id, data);
-      await get().fetchEmployees();
     } catch (e: unknown) {
       set({ error: (e as Error)?.message || '修改员工失败' });
     } finally {

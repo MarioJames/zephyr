@@ -400,6 +400,7 @@ export default function EmployeePage() {
               handleEmployeeModalCancel();
               return;
             }
+            fetchEmployees()
 
             // 先关闭弹窗
             handleEmployeeModalCancel();
@@ -449,6 +450,7 @@ export default function EmployeePage() {
           await updateEmployeeRole(clerkData.userId, {
             addRoles: [{ roleId: 7 }],
           });
+          fetchEmployees()
 
           // 先关闭弹窗
           handleEmployeeModalCancel();
