@@ -14,6 +14,10 @@ import { sessionActiveSelectors } from '../active/selectors';
 export interface SessionCoreAction {
   // 获取会话列表
   fetchSessions: (params?: SessionListRequest & { autoSelectFirst?: boolean }) => Promise<void>;
+
+  // 强制刷新sessions，忽略缓存
+  forceRefreshSessions: (params?: SessionListRequest & { autoSelectFirst?: boolean }) => Promise<void>;
+
   // 切换会话
   switchSession: (sessionId: string, topicId?: string) => Promise<void>;
   // 搜索会话
@@ -22,6 +26,8 @@ export interface SessionCoreAction {
   clearSearchResults: () => void;
   // 设置加载状态
   setLoading: (loading: boolean) => void;
+  // 设置是否需要刷新标记
+  setNeedsRefresh: (needsRefresh: boolean) => void;
   // 设置错误信息
   setError: (error?: string) => void;
   // 清除错误
@@ -61,6 +67,12 @@ export const sessionCoreAction: StateCreator<
         error: error instanceof Error ? error.message : '获取会话列表失败',
       });
     }
+  },
+
+  forceRefreshSessions: async (params?: SessionListRequest & { autoSelectFirst?: boolean }) => {
+    // 强制刷新时，先重置初始化状态，然后调用fetchSessions
+    set({ isInitialized: false });
+    await get().fetchSessions(params);
   },
 
   switchSession: async (sessionId: string, topicId?: string) => {
@@ -141,6 +153,10 @@ export const sessionCoreAction: StateCreator<
 
   setLoading: (loading: boolean) => {
     set({ isLoading: loading });
+  },
+
+  setNeedsRefresh: (needsRefresh: boolean) => {
+    set({ needsRefresh });
   },
 
   setError: (error?: string) => {

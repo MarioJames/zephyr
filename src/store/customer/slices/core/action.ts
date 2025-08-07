@@ -79,6 +79,9 @@ export const coreSlice: StateCreator<
         loading: false,
       }));
 
+      // 标记session数据需要刷新
+      useSessionStore.getState().setNeedsRefresh(true);
+
       return newCustomer;
     } catch (error) {
       console.error('创建客户失败:', error);
@@ -96,14 +99,16 @@ export const coreSlice: StateCreator<
 
       // 更新本地状态
       set((state) => ({
-        customers: state?.customers?.map((customer) =>{
-          return customer?.session?.id === sessionId
-          ? { ...customer, ...updatedCustomer }
-          : customer
-        }
+        customers: state?.customers?.map((customer) =>
+          customer?.session?.id === sessionId
+            ? { ...customer, ...updatedCustomer }
+            : customer
         ),
         loading: false,
       }));
+
+      // 标记session数据需要刷新
+      useSessionStore.getState().setNeedsRefresh(true);
     } catch (error) {
       console.error('更新客户失败:', error);
       set({
@@ -126,6 +131,9 @@ export const coreSlice: StateCreator<
         total: state.total - 1,
         loading: false,
       }));
+
+      // 标记session数据需要刷新
+      useSessionStore.getState().setNeedsRefresh(true);
     } catch (error) {
       console.error('删除客户失败:', error);
       set({

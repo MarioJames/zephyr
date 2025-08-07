@@ -53,13 +53,16 @@ const SessionListContent = memo(() => {
     isInitialized,
     targetUserId,
     targetUser,
+    needsRefresh,
 
     // actions
     fetchSessions,
+    forceRefreshSessions,
     initFromUrlParams,
     resetActiveState,
     setTargetUserId,
     setTargetUser,
+    setNeedsRefresh,
   ] = useSessionStore((s) => [
     sessionSelectors.sessions(s),
     sessionSelectors.isLoading(s),
@@ -67,12 +70,15 @@ const SessionListContent = memo(() => {
     sessionSelectors.isInitialized(s),
     sessionSelectors.targetUserId(s),
     sessionSelectors.targetUser(s),
+    sessionSelectors.needsRefresh(s),
 
     s.fetchSessions,
+    s.forceRefreshSessions,
     s.initFromUrlParams,
     s.resetActiveState,
     s.setTargetUserId,
     s.setTargetUser,
+    s.setNeedsRefresh,
   ]);
 
   const [resetChatState] = useChatStore((s) => [s.resetChatState]);
@@ -83,6 +89,29 @@ const SessionListContent = memo(() => {
       initFromUrlParams();
     }
   }, [isInitialized, fetchSessions, initFromUrlParams]);
+
+  // 检测是否需要刷新session数据（从客户管理页面返回时）
+  useEffect(() => {
+    if (needsRefresh && isInitialized) {
+      forceRefreshSessions({ targetUserId });
+      setNeedsRefresh(false);
+    }
+  }, [needsRefresh, isInitialized, forceRefreshSessions, targetUserId, setNeedsRefresh]);
+
+  // 监听页面可见性变化，当用户返回聊天页面时检查是否需要刷新
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && needsRefresh && isInitialized) {
+        forceRefreshSessions({ targetUserId });
+        setNeedsRefresh(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [needsRefresh, isInitialized, forceRefreshSessions, targetUserId, setNeedsRefresh]);
 
   const handleAddCustomer = () => {
     router.push('/customer/form');
