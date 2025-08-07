@@ -15,8 +15,7 @@ export default function ContactInfoSection() {
             label='手机号'
             name='phone'
             rules={[
-              { required: true, message: '请输入手机号' },
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' },
+              { required: true, message: '请输入手机号' }
             ]}
           >
             <Input className={styles.inputBg} placeholder='请输入手机号' />

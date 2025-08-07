@@ -192,7 +192,6 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
             name='phone'
             rules={[
               { required: true, message: '请输入员工手机号' },
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
             ]}
           >
             <Input
