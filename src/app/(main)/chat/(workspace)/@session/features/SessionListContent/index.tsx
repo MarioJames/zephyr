@@ -85,8 +85,10 @@ const SessionListContent = memo(() => {
 
   useEffect(() => {
     if (!isInitialized) {
-      fetchSessions();
-      initFromUrlParams();
+      (async () => {
+        await fetchSessions();
+        initFromUrlParams();
+      })();
     }
   }, [isInitialized, fetchSessions, initFromUrlParams]);
 
@@ -96,7 +98,13 @@ const SessionListContent = memo(() => {
       forceRefreshSessions({ targetUserId });
       setNeedsRefresh(false);
     }
-  }, [needsRefresh, isInitialized, forceRefreshSessions, targetUserId, setNeedsRefresh]);
+  }, [
+    needsRefresh,
+    isInitialized,
+    forceRefreshSessions,
+    targetUserId,
+    setNeedsRefresh,
+  ]);
 
   // 监听页面可见性变化，当用户返回聊天页面时检查是否需要刷新
   useEffect(() => {
@@ -111,7 +119,13 @@ const SessionListContent = memo(() => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [needsRefresh, isInitialized, forceRefreshSessions, targetUserId, setNeedsRefresh]);
+  }, [
+    needsRefresh,
+    isInitialized,
+    forceRefreshSessions,
+    targetUserId,
+    setNeedsRefresh,
+  ]);
 
   const handleAddCustomer = () => {
     router.push('/customer/form');

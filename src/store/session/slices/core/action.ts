@@ -13,10 +13,14 @@ import { sessionActiveSelectors } from '../active/selectors';
 
 export interface SessionCoreAction {
   // 获取会话列表
-  fetchSessions: (params?: SessionListRequest & { autoSelectFirst?: boolean }) => Promise<void>;
+  fetchSessions: (
+    params?: SessionListRequest & { autoSelectFirst?: boolean }
+  ) => Promise<void>;
 
   // 强制刷新sessions，忽略缓存
-  forceRefreshSessions: (params?: SessionListRequest & { autoSelectFirst?: boolean }) => Promise<void>;
+  forceRefreshSessions: (
+    params?: SessionListRequest & { autoSelectFirst?: boolean }
+  ) => Promise<void>;
 
   // 切换会话
   switchSession: (sessionId: string, topicId?: string) => Promise<void>;
@@ -40,7 +44,9 @@ export const sessionCoreAction: StateCreator<
   [],
   SessionCoreAction
 > = (set, get) => ({
-  fetchSessions: async (params?: SessionListRequest & { autoSelectFirst?: boolean }) => {
+  fetchSessions: async (
+    params?: SessionListRequest & { autoSelectFirst?: boolean }
+  ) => {
     set({ isLoading: true, error: undefined });
     try {
       const { autoSelectFirst = true, ...sessionParams } = params || {};
@@ -69,7 +75,9 @@ export const sessionCoreAction: StateCreator<
     }
   },
 
-  forceRefreshSessions: async (params?: SessionListRequest & { autoSelectFirst?: boolean }) => {
+  forceRefreshSessions: async (
+    params?: SessionListRequest & { autoSelectFirst?: boolean }
+  ) => {
     // 强制刷新时，先重置初始化状态，然后调用fetchSessions
     set({ isInitialized: false });
     await get().fetchSessions(params);
@@ -91,7 +99,9 @@ export const sessionCoreAction: StateCreator<
     const activeSessionAgent = sessionActiveSelectors.activeSessionAgent(state);
 
     // 获取模型配置
-    useModelStore.getState().fetchModelConfig({ model: activeSessionAgent?.model });
+    useModelStore
+      .getState()
+      .fetchModelConfig({ model: activeSessionAgent?.model });
 
     // 如果没有传入话题ID，则获取会话下的所有话题
     if (!activeTopicId) {

@@ -133,7 +133,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         get().generateAISuggestion(createdMessage.id);
       }
 
-      // 🆕 自动触发翻译
+      // 自动触发翻译
       if (createdMessage.id) {
         get().autoTranslateMessage(role, createdMessage.id);
       }
@@ -174,7 +174,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
         // 处理图片文件 - 直接使用已经转换好的base64
         if (fileItem.fileType?.startsWith('image/')) {
-          fileForAI.url = fileItem.url;
+          fileForAI.base64 = fileItem.base64;
         } else {
           // 处理文档文件，获取解析后的内容
           const parsedContent = get().getParsedFileContent(fileItem.id!);
