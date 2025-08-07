@@ -86,17 +86,6 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const createdUser = await userService.createUser(data);
-      console.log('createdUser',createdUser)
-      
-      // 给新员工分配初始权限
-      try {
-        await userService.updateUserRole(createdUser.id, {
-          addRoles: [{ roleId: 7 }],
-        });
-      } catch (roleError) {
-        console.error('分配初始角色失败:', roleError);
-        // 角色分配失败不影响员工创建，只记录错误
-      }
       
       await get().fetchEmployees();
       return createdUser;

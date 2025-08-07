@@ -439,11 +439,15 @@ export default function EmployeePage() {
           // 使用 Clerk 返回的 userId 调用本地 API
           // 注意：这里使用原始的中文用户名，不需要编码
 
-          // 先更新本地员工记录
+          // 为避免clerk和lobe addUser发生入库冲突，直接改为调用update
           await updateEmployee(clerkData.userId, {
             ...values,
             username: values.username,
             avatar: avatarFile?.url,
+          });
+          // 创建员工时，添加默认员工角色
+          await updateEmployeeRole(clerkData.userId, {
+            addRoles: [{ roleId: 7 }],
           });
 
           // 先关闭弹窗
