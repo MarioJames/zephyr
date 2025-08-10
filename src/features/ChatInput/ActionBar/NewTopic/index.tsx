@@ -9,6 +9,7 @@ import { useSessionStore } from "@/store/session";
 import { sessionSelectors } from "@/store/session/selectors";
 import { useRouter } from "next/navigation";
 import topicService from "@/services/topics";
+import { topicsAPI } from "@/services";
 import { createStyles } from "antd-style";
 
 import Action from "../components/Action";
@@ -34,9 +35,10 @@ const NewTopic = memo(() => {
   const { message } = App.useApp();
   const router = useRouter();
 
-  const { createTopic, switchTopic } = useChatStore((s) => ({
+  const { createTopic, switchTopic, updateTopic } = useChatStore((s) => ({
     createTopic: s.createTopic,
     switchTopic: s.switchTopic,
+    updateTopic: s.updateTopic,
   }));
 
   const [activeSessionId, activeTopicId] = useSessionStore((s) => [
@@ -51,10 +53,25 @@ const NewTopic = memo(() => {
     }
 
     try {
-      // 异步调用总结话题接口（不需要等待）
-      topicService.summaryTopicTitle({ id: activeTopicId! }).catch((error) => {
-        console.warn("话题总结失败:", error);
-      });
+      // 如果有当前话题，异步调用总结话题接口为当前话题生成标题并更新
+      if (activeTopicId) {
+        (async () => {
+          try {
+            // 生成新标题
+            const newTitle = await topicService.summaryTopicTitle({ id: activeTopicId });
+            
+            // 更新话题标题
+            const updatedTopic = await topicsAPI.updateTopic(activeTopicId, {
+              title: newTitle,
+            });
+            
+            // 更新本地状态
+            updateTopic(activeTopicId, updatedTopic);
+          } catch (error) {
+            console.warn("话题总结失败:", error);
+          }
+        })();
+      }
 
       message.loading("正在创建新话题...", 0);
 

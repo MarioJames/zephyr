@@ -99,13 +99,20 @@ const HistoryPanel = () => {
       // 添加loading状态
       setLoadingTopicIds((prev) => new Set(prev).add(topicId));
 
-      const newTopic = await topicService.summaryTopicTitle({ id: topicId });
-      updateTopic(topicId, newTopic);
+      // 生成新标题
+      const newTitle = await topicService.summaryTopicTitle({ id: topicId });
+      
+      // 更新话题标题
+      const updatedTopic = await topicsAPI.updateTopic(topicId, {
+        title: newTitle,
+      });
+      
+      updateTopic(topicId, updatedTopic);
 
       message.success('AI 重命名成功');
     } catch (error) {
       console.error('AI重命名失败:', error);
-      message.error('AI重命名失败：');
+      message.error('AI重命名失败');
     } finally {
       // 移除loading状态
       setLoadingTopicIds((prev) => {

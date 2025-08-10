@@ -1,5 +1,7 @@
 import { http } from '../request';
 import { UserItem } from '../user';
+import chatService from '../chat';
+import messagesAPI, { MessageItem } from '../messages';
 
 // 话题相关类型定义
 export interface TopicItem {
@@ -92,13 +94,50 @@ function createTopic(data: TopicCreateRequest) {
 
 /**
  * 总结话题标题
- * @description 对指定话题进行总结标题
- * @param id string
- * @param data TopicSummaryRequest
- * @returns TopicItem
+ * @description 基于chat接口对指定话题进行总结标题
+ * @param data TopicTitleSummaryRequest
+ * @returns Promise<string> 返回生成的标题
  */
-function summaryTopicTitle(data?: TopicTitleSummaryRequest) {
-  return http.post<TopicItem>(`/api/v1/topics/summary-title`, data || {});
+async function summaryTopicTitle(data?: TopicTitleSummaryRequest): Promise<string> {
+  if (!data?.id) {
+    throw new Error('话题ID不能为空');
+  }
+
+  try {
+    // 获取话题下的所有消息
+    const topicMessages: MessageItem[] = await messagesAPI.queryByTopic(data.id);
+
+    // 如果没有消息，返回默认标题
+    if (topicMessages.length === 0) {
+      return '默认话题';
+    }
+
+    // 构建消息历史用于摘要生成，按照后端逻辑
+    const messagesContent = topicMessages
+      .map((message) => `${message.role}: ${message.content}`)
+      .join('\n');
+
+    // 构建总结标题的prompt，参照后端实现
+    const systemPrompt = '你是一名擅长会话的助理，你需要将用户的会话总结为 10 个字以内的标题';
+    
+    const userPrompt = `${messagesContent}
+
+  请总结上述对话为10个字以内的标题，不要添加标点符号，输出语言语种为：'zh-CN'，标题要简洁明了，便于用户理解，如果对话内容很少或不清晰，生成一个通用但有意义的标题`;
+
+    const response = await chatService.chat({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
+
+    const title = response.content?.trim() || '默认话题';
+    // 移除可能的引号和标点符号
+    return title.replace(/^["']|["']$/g, '').replace(/[。！，：；？]/g, '');
+  } catch (error) {
+    console.error('生成话题标题失败:', error);
+    throw new Error('生成话题标题失败');
+  }
 }
 
 export default {
