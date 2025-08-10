@@ -23,6 +23,7 @@ config.rules['unicorn/no-array-callback-reference'] = 0;
 config.rules['@typescript-eslint/no-useless-constructor'] = 0;
 config.rules['sort-keys-fix/sort-keys-fix'] = 0;
 config.rules['typescript-sort-keys/interface'] = 0;
+config.rules['react/jsx-sort-props'] = 0;
 
 config.overrides = [
   {
