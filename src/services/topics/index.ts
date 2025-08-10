@@ -113,7 +113,12 @@ async function summaryTopicTitle(data?: TopicTitleSummaryRequest): Promise<strin
     }
 
     // 构建消息历史用于摘要生成，按照后端逻辑
-    const messagesContent = topicMessages
+    // 按时间排序，最早的对话在最上面
+    const sortedMessages = topicMessages.sort((a, b) => 
+      new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+    );
+    
+    const messagesContent = sortedMessages
       .map((message) => `${message.role}: ${message.content}`)
       .join('\n');
 
