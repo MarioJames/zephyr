@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Popover,
@@ -12,17 +12,19 @@ import {
   Button,
   Tag,
   message,
-} from "antd";
-import { createStyles } from "antd-style";
-import { PropsWithChildren, memo, useState } from "react";
+} from 'antd';
+import { createStyles } from 'antd-style';
+import { PropsWithChildren, memo, useState } from 'react';
 import {
   UserOutlined,
   KeyOutlined,
   LogoutOutlined,
   MailOutlined,
-} from "@ant-design/icons";
-import { useGlobalStore } from "@/store/global";
-import { globalSelectors } from "@/store/global/selectors";
+} from '@ant-design/icons';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
+import { signOut } from 'next-auth/react';
+import { zephyrEnv } from '@/env/zephyr';
 
 const { Text } = Typography;
 
@@ -86,9 +88,9 @@ const useStyles = createStyles(({ css, token }) => {
 
 // 处理退出登录
 const handleLogout = () => {
-  // TODO: 调用退出登录接口
-  console.log("退出登录");
-  message.success("退出登录成功");
+  signOut({ redirectTo: zephyrEnv.NEXT_PUBLIC_APP_URL });
+
+  message.success('退出登录成功');
 };
 
 const PanelContent = memo(() => {
@@ -106,12 +108,12 @@ const PanelContent = memo(() => {
     try {
       // TODO: 调用重置密码接口
       // await resetPasswordAPI(values.email);
-      console.log("重置密码邮箱:", values.email);
-      message.success("重置密码邮件已发送，请查看邮箱");
+      console.log('重置密码邮箱:', values.email);
+      message.success('重置密码邮件已发送，请查看邮箱');
       setResetPasswordModalOpen(false);
       form.resetFields();
     } catch {
-      message.error("发送重置密码邮件失败");
+      message.error('发送重置密码邮件失败');
     } finally {
       setLoading(false);
     }
@@ -119,19 +121,19 @@ const PanelContent = memo(() => {
 
   const menuItems = [
     {
-      key: "resetPassword",
+      key: 'resetPassword',
       icon: (
         <KeyOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
       ),
-      label: "修改密码",
+      label: '修改密码',
       onClick: () => setResetPasswordModalOpen(true),
     },
     {
-      key: "logout",
+      key: 'logout',
       icon: (
         <LogoutOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
       ),
-      label: "退出登录",
+      label: '退出登录',
       onClick: handleLogout,
     },
   ];
@@ -142,25 +144,25 @@ const PanelContent = memo(() => {
         <Avatar size={40} src={currentUser?.avatar} icon={<UserOutlined />} />
         <div className={styles.userDetails}>
           <Text className={styles.userName}>
-            {currentUser?.fullName || currentUser?.username || "未知用户"}
+            {currentUser?.fullName || currentUser?.username || '未知用户'}
           </Text>
           <Text className={styles.userEmail}>
-            {currentUser?.email || "未设置邮箱"}
+            {currentUser?.email || '未设置邮箱'}
           </Text>
         </div>
-        <Tag className={styles.roleTag} color={isAdmin ? "red" : "blue"}>
-          {isAdmin ? "管理员" : "普通员工"}
+        <Tag className={styles.roleTag} color={isAdmin ? 'red' : 'blue'}>
+          {isAdmin ? '管理员' : '普通员工'}
         </Tag>
       </div>
 
       <Divider style={{ margin: 0 }} />
 
       <div className={styles.menuContainer}>
-        <Menu mode="vertical" items={menuItems} selectable={false} />
+        <Menu mode='vertical' items={menuItems} selectable={false} />
       </div>
 
       <Modal
-        title="修改密码"
+        title='修改密码'
         open={resetPasswordModalOpen}
         onCancel={() => {
           setResetPasswordModalOpen(false);
@@ -171,24 +173,24 @@ const PanelContent = memo(() => {
       >
         <Form
           form={form}
-          layout="vertical"
+          layout='vertical'
           onFinish={handleResetPassword}
           initialValues={{ email: currentUser?.email }}
         >
           <Form.Item
-            label="邮箱地址"
-            name="email"
+            label='邮箱地址'
+            name='email'
             rules={[
-              { required: true, message: "请输入邮箱地址" },
-              { type: "email", message: "请输入有效的邮箱地址" },
+              { required: true, message: '请输入邮箱地址' },
+              { type: 'email', message: '请输入有效的邮箱地址' },
             ]}
           >
-            <Input prefix={<MailOutlined />} placeholder="请输入邮箱地址" />
+            <Input prefix={<MailOutlined />} placeholder='请输入邮箱地址' />
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
             <div
-              style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}
+              style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}
             >
               <Button
                 onClick={() => {
@@ -198,7 +200,7 @@ const PanelContent = memo(() => {
               >
                 取消
               </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button type='primary' htmlType='submit' loading={loading}>
                 发送重置邮件
               </Button>
             </div>
@@ -219,18 +221,18 @@ const UserPanel = memo<PropsWithChildren>(({ children }) => {
       content={<PanelContent />}
       onOpenChange={setOpen}
       open={open}
-      placement={"topRight"}
+      placement={'topRight'}
       rootClassName={styles.popover}
       styles={{
         body: { padding: 0 },
       }}
-      trigger={["click"]}
+      trigger={['click']}
     >
       {children}
     </Popover>
   );
 });
 
-UserPanel.displayName = "UserPanel";
+UserPanel.displayName = 'UserPanel';
 
 export default UserPanel;

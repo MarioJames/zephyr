@@ -86,7 +86,7 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const createdUser = await userService.createUser(data);
-      
+
       await get().fetchEmployees();
       return createdUser;
     } catch (e: unknown) {
@@ -133,7 +133,7 @@ export const coreSlice: StateCreator<
 
   uploadAvatar: async (file) => {
     try {
-      const res = await filesService.uploadPublic({
+      const res = await filesService.upload({
         file,
         directory: 'avatar',
       });

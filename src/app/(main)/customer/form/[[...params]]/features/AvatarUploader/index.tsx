@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Upload, App, Form } from 'antd';
-import { Button,Input } from '@lobehub/ui';
+import { Button, Input } from '@lobehub/ui';
 import { UploadOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import { AvatarUploaderProps } from '../shared/types';
@@ -29,7 +29,7 @@ export default function AvatarUploader({
       setUploading(true);
 
       // 调用文件上传服务
-      const response = await filesService.uploadPublic({
+      const response = await filesService.upload({
         file: file as File,
         directory: 'avatars',
         skipCheckFileType: false,
