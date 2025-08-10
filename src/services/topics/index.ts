@@ -138,7 +138,7 @@ async function summaryTopicTitle(data?: TopicTitleSummaryRequest): Promise<strin
 
     const title = response.content?.trim() || '默认话题';
     // 移除可能的引号和标点符号
-    return title.replace(/^["']|["']$/g, '').replace(/[。！，：；？]/g, '');
+    return title.replaceAll(/^["']|["']$/g, '').replaceAll(/[。！，：；？]/g, '');
   } catch (error) {
     console.error('生成话题标题失败:', error);
     throw new Error('生成话题标题失败');
