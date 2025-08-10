@@ -95,6 +95,7 @@ export interface EmployeeEditModalProps {
   loading: boolean;
   form: any;
   avatarFile: any;
+  avatarUploading?: boolean;
   onCancel: () => void;
   onSubmit: () => void;
   beforeUpload: (file: File) => Promise<boolean>;
@@ -107,6 +108,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   loading,
   form,
   avatarFile,
+  avatarUploading = false,
   onCancel,
   onSubmit,
   beforeUpload,
@@ -148,14 +150,19 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
           </div>
           <Upload
             beforeUpload={beforeUpload}
+            disabled={avatarUploading}
             name='avatar'
             onChange={onAvatarChange}
             showUploadList={false}
           >
-            <div className={styles.uploadText}>
-              <UploadOutlined />
-              <span>上传头像</span>
-            </div>
+            <Button
+              disabled={avatarUploading}
+              icon={<UploadOutlined />}
+              loading={avatarUploading}
+              type="text"
+            >
+              {avatarUploading ? '上传中...' : '上传头像'}
+            </Button>
           </Upload>
         </div>
         {/* 基本信息表单 */}

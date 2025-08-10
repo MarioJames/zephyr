@@ -212,6 +212,7 @@ export default function EmployeePage() {
   const [avatarFile, setAvatarFile] = useState<UploadFile | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [customerTab, setCustomerTab] = useState("all");
@@ -468,6 +469,7 @@ export default function EmployeePage() {
       return false;
     }
     try {
+      setAvatarUploading(true);
       const url = await uploadAvatar(file);
       setAvatarFile({
         uid: `${Date.now()}_${file.name}`,
@@ -478,6 +480,8 @@ export default function EmployeePage() {
       message.success("头像上传成功");
     } catch (e: any) {
       message.error(e.message || "头像上传失败");
+    } finally {
+      setAvatarUploading(false);
     }
     // 阻止Upload组件自动上传
     return false;
@@ -787,6 +791,7 @@ export default function EmployeePage() {
       {/* 员工弹窗（新增/编辑） */}
       <EmployeeEditModal
         avatarFile={avatarFile}
+        avatarUploading={avatarUploading}
         beforeUpload={beforeUpload}
         form={form}
         isEditMode={isEditMode}
