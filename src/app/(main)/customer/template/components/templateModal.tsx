@@ -279,13 +279,10 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
   const handleOk = async () => {
     const values = form.getFieldsValue();
-    if (!values.provider || !values.model) {
-      message.error("请选择模型后再进行保存");
-      return;
-    }
-    if (!values.avatar) {
-      values.avatar = "";
-    }
+      if (!values.avatar) {
+        values.avatar = "";
+      }
+      values.title = values.title.trim();
     try {
       await Promise.resolve(onOk(values));
       form.resetFields();
@@ -329,7 +326,22 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
             {/* 右侧表单区 */}
             <div className={styles.right}>
               <div className={styles.contentArea}>
-                <Form.Item label="命名" name="title" required>
+                <Form.Item 
+                  label="命名" 
+                  name="title" 
+                  required
+                  rules={[
+                    { required: true, message: "请输入客户类型名称" },
+                    { 
+                      validator: (_, value) => {
+                        if (value && value.trim() === '') {
+                          return Promise.reject(new Error('客户类型名称不能为空'));
+                        }
+                        return Promise.resolve();
+                      }
+                    }
+                  ]}
+                >
                   <Input className={styles.input} placeholder="请输入名称" />
                 </Form.Item>
                 <Form.Item label="简介" name="description">

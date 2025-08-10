@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Tooltip, Typography, message, Spin, Empty } from 'antd';
+import { Tooltip, Typography, App, Spin, Empty } from 'antd';
 import { Button } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -148,6 +148,7 @@ export default function CustomerTemplatePage() {
     updateAgent,
     transferSessionsToAgent,
   } = useAgentStore();
+  const { message } = App.useApp();
 
   // 弹窗表单相关
   const [modalOpen, setModalOpen] = useState(false);
