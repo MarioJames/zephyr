@@ -53,6 +53,7 @@ function AIHintItem({
     title: string;
     desc: string;
   } | null>(null);
+  const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
   const { styles } = useAIHintStyles();
   const { acceptSuggestion } = useChatStore();
 
@@ -85,11 +86,14 @@ function AIHintItem({
   const knowledgeCards = getKnowledgeCards();
 
   // 处理采用建议
-  const handleAcceptSuggestion = async (content: string) => {
+  const handleAcceptSuggestion = async (content: string, index: number) => {
     try {
+      setAdoptingIndex(index);
       await acceptSuggestion(content);
     } catch (error) {
       console.error("采用建议失败:", error);
+    } finally {
+      setAdoptingIndex(null);
     }
   };
 
@@ -171,7 +175,8 @@ function AIHintItem({
                   <div className={styles.sectionFooter}>
                     <Button
                       className={styles.adoptBtn}
-                      onClick={() => handleAcceptSuggestion(response.content)}
+                      loading={adoptingIndex === idx}
+                      onClick={() => handleAcceptSuggestion(response.content, idx)}
                       type="primary"
                     >
                       采用
