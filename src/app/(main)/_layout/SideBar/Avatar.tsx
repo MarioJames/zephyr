@@ -1,11 +1,14 @@
 import { Suspense, memo } from "react";
 
 import UserAvatar from "@/features/User/UserAvatar";
+import UserPanel from "@/features/User/UserPanel";
 
 const Avatar = memo(() => {
   return (
     <Suspense fallback={<UserAvatar />}>
-      <UserAvatar clickable />
+      <UserPanel>
+        <UserAvatar clickable />
+      </UserPanel>
     </Suspense>
   );
 });
