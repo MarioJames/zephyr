@@ -365,13 +365,6 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   <SliderWithInput max={2} min={0} step={0.1} />
                 </Form.Item>
                 <Form.Item
-                  label="最大令牌数"
-                  name={["params", "maxTokens"]}
-                  tooltip="最大令牌数越大，模型生成的内容越长，最大令牌数越小，模型生成的内容越短"
-                >
-                  <SliderWithInput max={4096} min={256} step={1} />
-                </Form.Item>
-                <Form.Item
                   label="思维开放度"
                   name={["params", "topP"]}
                   tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"

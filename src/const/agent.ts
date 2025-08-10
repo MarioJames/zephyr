@@ -8,7 +8,6 @@ export const AGAENT_DEFAULT_CONFIG = {
   model: '',
   params: {
     temperature: 1,
-    maxTokens: 2048,
     topP: 1,
     presencePenalty: 0,
     frequencyPenalty: 0,
