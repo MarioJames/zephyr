@@ -61,4 +61,17 @@ export const useCustomerTypeSelectorStyles = createStyles(({ css, token, isDarkM
     color: ${token.colorText};
     font-size: 18px;
   `,
+  emptyState: css`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${token.colorTextSecondary};
+    font-size: 14px;
+    text-align: center;
+    background-color: ${token.colorBgContainer};
+    border: 1px dashed ${token.colorBorder};
+    border-radius: 4px;
+  `,
 }));
