@@ -368,58 +368,17 @@ export default function EmployeePage() {
       setSubmitLoading(true);
 
       if (isEditMode && currentEmployee) {
-        try {
-          // 先更新本地员工记录
-          await updateEmployee(currentEmployee.id, {
-            ...values,
-            avatar: avatarFile?.url,
-          });
+        // 编辑员工
+        await updateEmployee(currentEmployee.id, {
+          ...values,
+          ...(avatarFile?.url && { avatar: avatarFile?.url }),
+        });
 
-          // 然后更新 Clerk 用户信息
-          try {
-            const clerkResponse = await fetch(
-              `/api/clerk/users/${currentEmployee.id}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  email: values.email,
-                  username: values.username,
-                  fullName: values.fullName,
-                }),
-              }
-            );
-
-            if (!clerkResponse.ok) {
-              const errorData = await clerkResponse.json();
-              console.error("Clerk 用户更新失败:", errorData);
-              // 这里不抛出错误，因为本地员工已经更新成功
-              message.warning("员工信息更新成功，但 Clerk 用户更新失败");
-              handleEmployeeModalCancel();
-              return;
-            }
-            fetchEmployees()
-
-            // 先关闭弹窗
-            handleEmployeeModalCancel();
-            // 再显示成功消息
-            message.success("修改员工成功");
-          } catch (clerkError: any) {
-            console.error("Clerk 用户更新异常:", clerkError);
-            message.warning("员工信息更新成功，但 Clerk 用户更新失败");
-            handleEmployeeModalCancel();
-          }
-        } catch {
-          message.error("修改员工失败");
-          return;
-        }
-      } else {
-        try {
-          // 先调用 API 在 Clerk 中创建用户
-          const clerkResponse = await fetch("/api/clerk/users", {
-            method: "POST",
+        // 更新 Clerk 用户信息
+        const clerkResponse = await fetch(
+          `/api/clerk/users/${currentEmployee.id}`,
+          {
+            method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
@@ -428,43 +387,71 @@ export default function EmployeePage() {
               username: values.username,
               fullName: values.fullName,
             }),
-          });
-
-          if (!clerkResponse.ok) {
-            const errorData = await clerkResponse.json();
-            throw new Error(errorData.error || "创建用户失败");
           }
+        );
 
-          const clerkData = await clerkResponse.json();
+        if (!clerkResponse.ok) {
+          const errorData = await clerkResponse.json();
+          console.error("Clerk 用户更新失败:", errorData);
+          // 本地员工已经更新成功，但 Clerk 更新失败
+          message.warning("员工信息更新成功，但 Clerk 用户更新失败");
+          handleEmployeeModalCancel();
+          return;
+        }
+
+        fetchEmployees();
+        handleEmployeeModalCancel();
+        message.success("修改员工成功");
+      } else {
+        // 创建员工
+        // 先在 Clerk 中创建用户
+        const clerkResponse = await fetch("/api/clerk/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: values.email,
+            username: values.username,
+            fullName: values.fullName,
+          }),
+        });
+
+        if (!clerkResponse.ok) {
+          const errorData = await clerkResponse.json();
+          throw new Error(errorData.error || "创建用户失败");
+        }
+
+        const clerkData = await clerkResponse.json();
 
           // 使用 Clerk 返回的 userId 调用本地 API
           // 注意：这里使用原始的中文用户名，不需要编码
 
           // 为避免clerk和lobe addUser发生入库冲突，直接改为调用update
-          await updateEmployee(clerkData.userId, {
-            ...values,
-            username: values.username,
-            avatar: avatarFile?.url,
-          });
+        await updateEmployee(clerkData.userId, {
+          ...values,
+          username: values.username,
+          avatar: avatarFile?.url,
+        });
           // 创建员工时，添加默认员工角色
-          await updateEmployeeRole(clerkData.userId, {
-            addRoles: [{ roleId: 7 }],
-          });
-          fetchEmployees()
+        await updateEmployeeRole(clerkData.userId, {
+          addRoles: [{ roleId: 7 }],
+        });
 
-          // 先关闭弹窗
-          handleEmployeeModalCancel();
-          // 再显示成功消息
-          message.success("添加员工成功");
-        } catch (e: any) {
-          console.error("添加员工失败:", e);
-          message.error(e.message || "添加员工失败");
-          return;
-        }
+        fetchEmployees();
+        handleEmployeeModalCancel();
+        message.success("添加员工成功");
       }
-    } catch {
-      // 表单校验失败
+    } catch (error: any) {
+      console.error("员工操作失败:", error);
       setSubmitLoading(false);
+      
+      // 统一错误处理
+      if (isEditMode) {
+        message.error(error.message || "修改员工失败");
+      } else {
+        message.error(error.message || "添加员工失败");
+      }
     }
   };
 
