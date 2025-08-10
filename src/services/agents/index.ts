@@ -103,8 +103,10 @@ export interface AgentDetailResponse {
  * @param null
  * @returns AgentItem[]
  */
-function getAgentList() {
-  return http.get<AgentItem[]>('/api/v1/agents');
+async function getAgentList() {
+  const response = await http.get<AgentItem[]>('/api/v1/agents');
+  // 过滤掉title为空的agent，排除脏数据
+  return response.filter(agent => agent.title && agent.title.trim() !== '');
 }
 
 /**
