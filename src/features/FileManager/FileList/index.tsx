@@ -8,7 +8,7 @@ import { Center, Flexbox } from 'react-layout-kit';
 import { Virtuoso } from 'react-virtuoso';
 import { Spin } from 'antd';
 
-import { useFileStore } from '@/store/file';
+import { useFileStore, fileCoreSelectors } from '@/store/file';
 import { FileItem } from '@/services/files';
 
 import EmptyStatus from './EmptyStatus';
@@ -54,10 +54,12 @@ const FileList = memo<FileListProps>(({ category }) => {
   const fetchFileManage = useFileStore((s) => s.useFetchFileManage);
   const loading = useFileStore((s) => s.loading);
   const pagination = useFileStore((s) => s.pagination);
+  const overviewUploadingStatus = useFileStore(fileCoreSelectors.overviewUploadingStatus);
   const [fileData, setFileData] = useState<FileItem[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [prevUploadStatus, setPrevUploadStatus] = useState(overviewUploadingStatus);
 
   const fetchData = useCallback(async (page: number, append = false) => {
     if (append) {
@@ -94,6 +96,15 @@ const FileList = memo<FileListProps>(({ category }) => {
   useEffect(() => {
     fetchData(1);
   }, [fetchData]);
+
+  // 监听上传状态变化，上传完成后刷新文件列表
+  useEffect(() => {
+    if (prevUploadStatus === 'uploading' && overviewUploadingStatus === 'success') {
+      // 上传完成，刷新文件列表
+      fetchData(1);
+    }
+    setPrevUploadStatus(overviewUploadingStatus);
+  }, [overviewUploadingStatus, prevUploadStatus, fetchData]);
 
   return !loading && fileData.length === 0 ? (
     <EmptyStatus />
