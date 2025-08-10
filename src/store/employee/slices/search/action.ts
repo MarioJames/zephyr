@@ -6,6 +6,7 @@ import { userAPI } from '@/services';
 export interface SearchAction {
   searchEmployees: (keyword: string, pageSize: number, reset?: boolean) => Promise<void>;
   loadMoreEmployees: (keyword: string, pageSize: number) => Promise<void>;
+  clearSearch: () => void;
 }
 
 // ========== 搜索功能Slice ==========
@@ -59,6 +60,7 @@ export const searchSlice: StateCreator<
       if (reset) {
         // 重置搜索，直接替换结果
         set({ 
+          searchQuery: keyword,
           searchedEmployees: employees,
           loading: false,
           pendingSearchKeys: finalPendingKeys,
@@ -106,5 +108,16 @@ export const searchSlice: StateCreator<
     }
     
     await get().searchEmployees(keyword, pageSize, false);
+  },
+
+  clearSearch: () => {
+    set({
+      searchQuery: '',
+      searchedEmployees: [],
+      currentPage: 1,
+      hasMore: true,
+      loadingMore: false,
+      pendingSearchKeys: new Set(),
+    });
   },
 });

@@ -196,6 +196,9 @@ export default function EmployeePage() {
     updateEmployeeSessions,
     searchEmployees,
     updateEmployeeRole,
+    searchedEmployees,
+    searchQuery,
+    clearSearch,
   } = useEmployeeStore();
 
   const { roles } = useRoleStore();
@@ -224,6 +227,8 @@ export default function EmployeePage() {
     useState<UserItem | null>(null);
   const [sessionList, setSessionList] = useState<any[]>([]);
   const [sessionLoading, setSessionLoading] = useState(false);
+
+  const displayEmployees = searchQuery ? searchedEmployees : employees;
 
   // 页面初始化加载员工和角色
   React.useEffect(() => {
@@ -707,6 +712,11 @@ export default function EmployeePage() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
+    
+    // 如果搜索框为空，清空搜索状态，显示所有员工
+    if (!value.trim()) {
+      clearSearch();
+    }
   };
 
   const handleSearch = () => {
@@ -762,7 +772,7 @@ export default function EmployeePage() {
       <div className={styles.tableContainer}>
         <Table
           columns={columns}
-          dataSource={employees}
+          dataSource={displayEmployees}
           loading={loading}
           onChange={handleTableChange}
           pagination={{
