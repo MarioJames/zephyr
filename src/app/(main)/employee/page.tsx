@@ -430,16 +430,16 @@ export default function EmployeePage() {
 
         const clerkData = await clerkResponse.json();
 
-          // 使用 Clerk 返回的 userId 调用本地 API
-          // 注意：这里使用原始的中文用户名，不需要编码
+        // 使用 Clerk 返回的 userId 调用本地 API
+        // 注意：这里使用原始的中文用户名，不需要编码
 
-          // 为避免clerk和lobe addUser发生入库冲突，直接改为调用update
+        // 为避免clerk和lobe addUser发生入库冲突，直接改为调用update
         await updateEmployee(clerkData.userId, {
           ...values,
           username: values.username,
           avatar: avatarFile?.url,
         });
-          // 创建员工时，添加默认员工角色
+        // 创建员工时，添加默认员工角色
         await updateEmployeeRole(clerkData.userId, {
           addRoles: [{ roleId: 7 }],
         });
@@ -451,7 +451,7 @@ export default function EmployeePage() {
     } catch (error: any) {
       console.error("员工操作失败:", error);
       setSubmitLoading(false);
-      
+
       // 统一错误处理
       if (isEditMode) {
         message.error(error.message || "修改员工失败");
@@ -597,7 +597,7 @@ export default function EmployeePage() {
       key: "customerCount",
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
-        const count = customerList?.length;
+        const count = customerList?.length > 0 ? customerList?.length - 1 : 0;
 
         return (
           <span
@@ -712,7 +712,7 @@ export default function EmployeePage() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
-    
+
     // 如果搜索框为空，清空搜索状态，显示所有员工
     if (!value.trim()) {
       clearSearch();
