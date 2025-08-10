@@ -293,7 +293,11 @@ export default function Customer() {
       render: (text: string, record: CustomerDisplayItem) => (
         <a
           onClick={() => handleViewCustomerDetail(record)}
-          style={{ color: theme.colorText }}
+          style={{ 
+            color: theme.isDarkMode ? '#69b1ff' : '#1677ff',
+            cursor: 'pointer',
+            textDecoration: 'none'
+          }}
         >
           {text}
         </a>
@@ -318,13 +322,11 @@ export default function Customer() {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
-      sorter: true,
     },
     {
       title: '最后联系时间',
       dataIndex: 'lastContactTime',
       key: 'lastContactTime',
-      sorter: true,
     },
     {
       title: '对话记录',
@@ -333,7 +335,11 @@ export default function Customer() {
       render: (text: number, record: CustomerDisplayItem) => (
         <a
           onClick={() => handleViewConversations(record)}
-          style={{ color: theme.colorPrimary }}
+          style={{ 
+            color: theme.isDarkMode ? '#69b1ff' : '#1677ff',
+            cursor: 'pointer',
+            textDecoration: 'none'
+          }}
         >
           {text}条
         </a>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, message } from 'antd';
+import { Table, App } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRouter } from 'next/navigation';
 import topicService, { TopicItem } from '@/services/topics';
@@ -21,11 +21,10 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
 }) => {
   const { styles, theme } = useStyles();
   const router = useRouter();
+  const { message } = App.useApp();
 
   const [topics, setTopics] = useState<TopicItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
 
   // 加载话题列表
   const loadTopics = async (sessionId: string) => {
@@ -65,7 +64,11 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       render: (count: number, record: TopicItem) => (
         <a
           onClick={() => handleViewTopic(record.id)}
-          style={{ color: theme.colorPrimary }}
+          style={{ 
+            color: theme.isDarkMode ? '#69b1ff' : '#1677ff',
+            cursor: 'pointer',
+            textDecoration: 'none'
+          }}
         >
           {count}
         </a>
@@ -75,8 +78,6 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
       title: '创建时间',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      sorter: true,
-      sortOrder: sortField === 'createdAt' ? (sortOrder as any) : null,
       render: (date: string) =>
         date ? new Date(date).toLocaleString('zh-CN') : '-',
     },
@@ -101,14 +102,6 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
     },
   ];
 
-  // 处理表格变化
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    if (sorter.field) {
-      setSortField(sorter.field);
-      setSortOrder(sorter.order);
-    }
-  };
-
   return (
     <>
       <div className={styles.messagesTitle}>话题记录</div>
@@ -122,7 +115,6 @@ export const TopicRecordsTable: React.FC<TopicRecordsTableProps> = ({
           cancelSort: '取消排序',
           emptyText: '暂无话题记录',
         }}
-        onChange={handleTableChange}
         pagination={{
           pageSize: 5,
           showTotal: (total) => `共 ${total} 条记录`,
