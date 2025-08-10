@@ -1,5 +1,6 @@
 // 统一导出所有API模块
 export { default as agentsAPI } from './agents';
+export { casdoorAPI } from './casdoor';
 export { default as chatAPI } from './chat';
 export { default as customerAPI } from './customer';
 export { default as filesAPI } from './files';
@@ -19,6 +20,7 @@ export type {
   CreateAgentRequest,
   UpdateAgentRequest,
 } from './agents';
+export type { CasdoorApiResponse } from './casdoor';
 export type {
   ChatMessage,
   ChatRequest,

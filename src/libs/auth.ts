@@ -110,7 +110,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return url;
     },
   },
-  debug: process.env.NODE_ENV === 'development',
 });
 
 // 工具函数：检查用户是否需要重新登录

@@ -18,7 +18,7 @@ import { useEmployeeStore } from "@/store/employee";
 import { useGlobalStore } from "@/store/global";
 import { globalSelectors } from "@/store/global/selectors";
 import { UserItem } from "@/services/user";
-import { mailAPI } from "@/services";
+import { mailAPI, casdoorAPI } from "@/services";
 import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
 import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
 import EmployeeEditModal from "./components/EmployeeEditModal";
@@ -321,27 +321,23 @@ export default function EmployeePage() {
   // 处理删除员工
   const handleDelete = async (employeeId: string) => {
     try {
+      // 获取员工信息用于删除 Casdoor 用户
+      const employee = employees.find((emp) => emp.id === employeeId);
+      
       // 先删除本地员工记录
       await deleteEmployee(employeeId);
 
-      // 然后删除 Clerk 用户
-      try {
-        const clerkResponse = await fetch(`/api/clerk/users/${employeeId}`, {
-          method: "DELETE",
-        });
-
-        if (!clerkResponse.ok) {
-          const errorData = await clerkResponse.json();
-          console.error("Clerk 用户删除失败:", errorData);
-          // 这里不抛出错误，因为本地员工已经删除成功
-          message.warning("员工删除成功，但 Clerk 用户删除失败");
-          return;
+      // 然后删除 Casdoor 用户
+      if (employee?.username) {
+        try {
+          await casdoorAPI.deleteUser(employee.username);
+          message.success("删除成功");
+        } catch (casdoorError: any) {
+          console.error("Casdoor 用户删除失败:", casdoorError);
+          message.warning("员工删除成功，但 Casdoor 用户删除失败");
         }
-
+      } else {
         message.success("删除成功");
-      } catch (clerkError: any) {
-        console.error("Clerk 用户删除异常:", clerkError);
-        message.warning("员工删除成功，但 Clerk 用户删除失败");
       }
     } catch (e: any) {
       message.error(e.message || "删除失败");
@@ -380,29 +376,19 @@ export default function EmployeePage() {
           ...(avatarFile?.url && { avatar: avatarFile?.url }),
         });
 
-        // 更新 Clerk 用户信息
-        const clerkResponse = await fetch(
-          `/api/clerk/users/${currentEmployee.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        // 更新 Casdoor 用户信息
+        if (currentEmployee.username) {
+          try {
+            await casdoorAPI.updateUser(currentEmployee.username, {
+              displayName: values.username,
               email: values.email,
-              username: values.username,
-              fullName: values.fullName,
-            }),
+              phone: values.phone,
+              avatar: avatarFile?.url || '',
+            });
+          } catch (casdoorError: any) {
+            console.error("Casdoor 用户更新失败:", casdoorError);
+            message.warning("员工信息更新成功，但 Casdoor 用户更新失败");
           }
-        );
-
-        if (!clerkResponse.ok) {
-          const errorData = await clerkResponse.json();
-          console.error("Clerk 用户更新失败:", errorData);
-          // 本地员工已经更新成功，但 Clerk 更新失败
-          message.warning("员工信息更新成功，但 Clerk 用户更新失败");
-          handleEmployeeModalCancel();
-          return;
         }
 
         fetchEmployees();
@@ -410,37 +396,26 @@ export default function EmployeePage() {
         message.success("修改员工成功");
       } else {
         // 创建员工
-        // 先在 Clerk 中创建用户
-        const clerkResponse = await fetch("/api/clerk/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: values.email,
-            username: values.username,
-            fullName: values.fullName,
-          }),
+        // 先在 Casdoor 中创建用户
+        await casdoorAPI.createUser({
+          name: values.username,
+          displayName: values.username,
+          email: values.email,
+          phone: values.phone,
+          avatar: avatarFile?.url || '',
         });
 
-        if (!clerkResponse.ok) {
-          const errorData = await clerkResponse.json();
-          throw new Error(errorData.error || "创建用户失败");
-        }
-
-        const clerkData = await clerkResponse.json();
-
-          // 使用 Clerk 返回的 userId 调用本地 API
-          // 注意：这里使用原始的中文用户名，不需要编码
-
-          // 为避免clerk和lobe addUser发生入库冲突，直接改为调用update
-        await updateEmployee(clerkData.userId, {
+        // 使用用户名作为 ID 创建本地员工记录
+        const employeeId = values.username;
+        
+        await updateEmployee(employeeId, {
           ...values,
           username: values.username,
           avatar: avatarFile?.url,
         });
-          // 创建员工时，添加默认员工角色
-        await updateEmployeeRole(clerkData.userId, {
+        
+        // 创建员工时，添加默认员工角色
+        await updateEmployeeRole(employeeId, {
           addRoles: [{ roleId: 7 }],
         });
 
