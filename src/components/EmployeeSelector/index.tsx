@@ -83,6 +83,15 @@ const useStyles = createStyles(({ css, token }) => ({
         }
       }
     }
+
+    /* 自定义选中样式 - 使用更高优先级 */
+    .ant-select-item.selected-option {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+      
+      .user-name {
+        font-weight: 600 !important;
+      }
+    }
   `,
 
   searchInput: css`
@@ -206,16 +215,31 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
     return () => clearTimeout(timer);
   }, [searchKeyword, isDropdownOpen]);
 
-  // 过滤后的员工列表
+  // 过滤后的员工列表，并处理选中项置顶
   const filteredEmployees = useMemo(() => {
-    if (!searchKeyword) return employees;
-    return employees.filter(
-      (user) =>
-        user.fullName?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-        user.username?.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
-  }, [employees, searchKeyword]);
+    let filtered = employees;
+    
+    // 如果有搜索关键字，先进行过滤
+    if (searchKeyword) {
+      filtered = employees.filter(
+        (user) =>
+          user.fullName?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          user.email?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          user.username?.toLowerCase().includes(searchKeyword.toLowerCase())
+      );
+    }
+    
+    // 如果有选中的用户且在过滤结果中，将其置顶
+    if (value) {
+      const selectedUser = filtered.find(user => user.id === value);
+      if (selectedUser) {
+        const othersUsers = filtered.filter(user => user.id !== value);
+        return [selectedUser, ...othersUsers];
+      }
+    }
+    
+    return filtered;
+  }, [employees, searchKeyword, value]);
 
   const handleSelect = (userId: string) => {
     // 如果点击的是已选中的用户，则取消选择
@@ -299,7 +323,8 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
             <Option
               key={user.id}
               label={user.fullName || user.username || "未知用户"}
-                             value={user.id}
+              value={user.id}
+              className={isSelected ? 'selected-option' : ''}
             >
               <div className={styles.userOption}>
                 <Avatar icon={<UserOutlined />} size={24} src={user.avatar} />
