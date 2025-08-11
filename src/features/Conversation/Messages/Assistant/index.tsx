@@ -2,12 +2,12 @@ import { ReactNode, memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import ImageFileListViewer from '@/features/Conversation/Messages/User/ImageFileListViewer';
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services';
 
 import { DefaultMessage } from '../Default';
 
 export const AssistantMessage = memo<
-  ChatMessage & {
+  MessageItem & {
     editableContent: ReactNode;
   }
 >(({ id, content, imageList, ...props }) => {

@@ -1,16 +1,16 @@
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services';
 
-export const getMessageById = (messages: ChatMessage[], id: string) =>
+export const getMessageById = (messages: MessageItem[], id: string) =>
   messages.find((m) => m.id === id);
 
 const getSlicedMessages = (
-  messages: ChatMessage[],
+  messages: MessageItem[],
   options: {
     enableHistoryCount?: boolean;
     historyCount?: number;
     includeNewUserMessage?: boolean;
   }
-): ChatMessage[] => {
+): MessageItem[] => {
   // if historyCount is not enabled, return all messages
   if (!options.enableHistoryCount || options.historyCount === undefined)
     return messages;

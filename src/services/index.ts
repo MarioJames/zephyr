@@ -22,7 +22,6 @@ export type {
 } from './agents';
 export type { CasdoorApiResponse } from './casdoor';
 export type {
-  ChatMessage,
   ChatRequest,
   ChatResponse,
   GenerateReplyRequest,

@@ -3,13 +3,13 @@ import { Flexbox } from 'react-layout-kit';
 
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services';
 
 import FileListViewer from './FileListViewer';
 import ImageFileListViewer from './ImageFileListViewer';
 
 export const UserMessage = memo<
-  ChatMessage & {
+  MessageItem & {
     editableContent: ReactNode;
   }
 >(({ id, editableContent, content, imageList, fileList }) => {
