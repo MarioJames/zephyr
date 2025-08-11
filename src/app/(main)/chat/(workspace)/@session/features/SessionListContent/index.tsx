@@ -18,6 +18,7 @@ import SearchResult from './SearchResult';
 import { UserItem } from '@/services';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
+import { userSelectors } from '@/store/global/slices/user/selectors';
 
 const useStyles = createStyles(({ css, token }) => ({
   button: css`
@@ -44,6 +45,7 @@ const SessionListContent = memo(() => {
   const router = useRouter();
   const { styles } = useStyles();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
+  const currentUser = useGlobalStore(userSelectors.currentUser);
 
   const [
     // state
@@ -177,7 +179,7 @@ const SessionListContent = memo(() => {
             <EmployeeSelector
               onChange={handleEmployeeSelect}
               onClear={handleEmployeeClear}
-              placeholder='全部员工'
+              placeholder={currentUser?.fullName || currentUser?.username || '切换员工'}
               selectedUser={targetUser}
               value={targetUserId}
             />
