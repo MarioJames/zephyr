@@ -14,9 +14,14 @@ const ChatConversation = () => {
   // 将所有 hooks 调用移到最前面，确保调用顺序一致
   const sessions = useSessionStore(sessionSelectors.sessions);
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
-  const isInitialized = useSessionStore((s) => s.isInitialized);
+  const targetUserId = useSessionStore(sessionSelectors.targetUserId);
+  const isInitialized = useSessionStore(sessionSelectors.isInitialized);
+  const isLoading = useSessionStore(sessionSelectors.isLoading);
 
-  if (isInitialized && (!sessions || sessions.length === 0)) {
+  // 只有在本人登录且没有sessions时才显示DefaultCreateCustomer
+  // 如果targetUserId有值，说明正在查看别人的对话，不应该显示创建客户界面
+  // 如果正在加载中，也不应该显示，避免取消选中时的中间态闪烁
+  if (isInitialized && (!sessions || sessions.length === 0) && !targetUserId && !isLoading) {
     return <DefaultCreateCustomer />;
   }
 
@@ -33,7 +38,7 @@ const ChatConversation = () => {
           fontSize: 18,
         }}
       >
-        请选择客户后进行对话哦
+        {targetUserId ? '请选择要查看的对话' : '请选择客户后进行对话哦'}
       </div>
     );
   }
