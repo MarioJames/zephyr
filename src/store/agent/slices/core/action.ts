@@ -46,7 +46,7 @@ export const agentCoreSlice: StateCreator<
   AgentCoreAction
 > = (set, get) => ({
   isDeleting: false,
-  
+
   fetchAgents: async () => {
     set({ isLoading: true, error: undefined });
     try {
@@ -178,7 +178,7 @@ export const agentCoreSlice: StateCreator<
    */
   uploadAvatar: async (file: File) => {
     try {
-      const res = await filesService.uploadPublic({
+      const res = await filesService.upload({
         file,
         directory: 'avatar',
       });
@@ -196,7 +196,7 @@ export const agentCoreSlice: StateCreator<
   transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
     console.log('transferSessionsToAgent agent slice action');
     set({ isDeleting: true });
-    
+
     try {
       // 1. 查找当前 agent 下所有 session
       const res = await sessionsService.getSessionList({

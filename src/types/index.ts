@@ -37,3 +37,6 @@ export * from './mail';
 
 // 导出 Agent 相关类型
 export * from './agent';
+
+// 导出 Casdoor 相关类型
+export * from './casdoor';

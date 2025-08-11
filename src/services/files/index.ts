@@ -145,26 +145,27 @@ export interface BatchGetFileAndParseContentResponse {
 }
 
 /**
- * 单文件上传
+ * 单文件上传（公共读）
  * @description 上传单个文件到服务器
  * @param data FileUploadRequest
  * @returns FileUploadResponse
  */
 function upload(data: FileUploadRequest) {
   const formData = new FormData() as any;
-
   formData.append('file', data.file);
-
-  if (data.sessionId) formData.append('sessionId', data.sessionId);
   if (data.skipCheckFileType !== undefined)
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
 
-  return http.post<FileItem>('/api/v1/files/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  return http.post<FilePublicUploadResponse>(
+    '/api/v1/files/upload',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 }
 
 /**
@@ -185,30 +186,6 @@ function batchUpload(data: BatchUploadRequest) {
 
   return http.post<BatchUploadResponse>(
     '/api/v1/files/batch-upload',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
-}
-
-/**
- * 单文件上传（公共读）
- * @description 上传单个文件到服务器
- * @param data FileUploadRequest
- * @returns FileUploadResponse
- */
-function uploadPublic(data: FileUploadRequest) {
-  const formData = new FormData() as any;
-  formData.append('file', data.file);
-  if (data.skipCheckFileType !== undefined)
-    formData.append('skipCheckFileType', String(data.skipCheckFileType));
-  if (data.directory) formData.append('directory', data.directory);
-
-  return http.post<FilePublicUploadResponse>(
-    '/api/v1/files/upload-public',
     formData,
     {
       headers: {
@@ -308,7 +285,6 @@ function uploadAndParseDocument(data: UploadAndParseRequest) {
 
 export default {
   upload,
-  uploadPublic,
   batchUpload,
   getFileList,
   getFileDetail,
