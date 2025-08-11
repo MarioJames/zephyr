@@ -30,6 +30,7 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
   const { styles } = useStyles();
   const { md = true, lg = true } = useResponsive();
   const isInitialized = useSessionStore((s) => s.isInitialized);
+  const isLoading = useSessionStore((s) => s.isLoading);
 
   // 使用全局状态管理
   const showSessionPanel = useGlobalStore(globalSelectors.showSessionPanel);
@@ -38,6 +39,7 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
 
   // 获取 sessions 状态
   const sessions = useSessionStore(sessionSelectors.sessions);
+  const targetUserId = useSessionStore(sessionSelectors.targetUserId);
   const [userCollapsed, setUserCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,14 +56,14 @@ const SessionPanel = memo(({ children }: PropsWithChildren) => {
 
   // 根据 sessions 自动控制展开状态
   useEffect(() => {
-    if (sessions.length === 0 && isInitialized) {
+    if (!targetUserId && sessions.length === 0 && isInitialized && !isLoading && !userCollapsed) {
       toggleSessionPanel(false);
       setCacheExpand(false);
     } else if (!userCollapsed) {
       toggleSessionPanel(true);
       setCacheExpand(true);
     }
-  }, [sessions, toggleSessionPanel, userCollapsed, isInitialized]);
+  }, [sessions, toggleSessionPanel, userCollapsed, isInitialized, targetUserId, isLoading]);
 
   useEffect(() => {
     if (lg && cacheExpand) toggleSessionPanel(true);
