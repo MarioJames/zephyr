@@ -41,15 +41,15 @@ const Actions = memo<ActionsProps>(({ id }) => {
       if (!item) return;
 
       if (action.key === 'copy') {
-        await copyMessage(id, item.content);
+        await copyMessage(id);
         message.success('复制成功');
         return;
       }
 
       if (action.key === 'regenerate') {
-        const suggestion = await regenerateMessage(item.id);
+        const { success } = await regenerateMessage(item.id);
 
-        if (!suggestion) {
+        if (!success) {
           message.error('AI 建议生成失败，请稍后再试');
           return;
         }
@@ -70,9 +70,7 @@ const Actions = memo<ActionsProps>(({ id }) => {
 
   if (!item) return null;
 
-  return (
-    <RenderFunction {...item} onActionClick={handleActionClick} />
-  );
+  return <RenderFunction {...item} onActionClick={handleActionClick} />;
 });
 
 export default Actions;

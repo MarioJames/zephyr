@@ -40,10 +40,7 @@ const currentModelSupportReasoning = (s: ModelCoreState): boolean =>
 
 // 只有模型本身支持搜索，且搜索实现方式为params时，才允许用户配置联网搜索功能
 const currentModelSupportSearch = (s: ModelCoreState): boolean =>
-  s.currentModelConfig?.abilities?.search &&
-  s.currentModelConfig?.settings?.searchImpl === 'params'
-    ? true
-    : false;
+  !!s.currentModelConfig?.abilities?.search;
 
 const currentModelContextWindowTokens = (
   s: ModelCoreState
@@ -67,5 +64,4 @@ export const modelCoreSelectors = {
 
   // 模型选项选择器
   providerModelOptions,
-
 };

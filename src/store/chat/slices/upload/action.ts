@@ -115,30 +115,27 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         sessionId: useSessionStore.getState().activeSessionId,
       });
 
-      // 处理图片文件的 base64 编码
-      const processedFiles = await Promise.all(
-        res.successful.map(async (uploadedFile) => {
-          const resultFile: ChatFileItem = {
-            ...uploadedFile,
-            status: 'success' as const,
-          };
+      // // 处理图片文件的 base64 编码
+      // const processedFiles = await Promise.all(
+      //   res.successful.map(async (uploadedFile) => {
+      //     const resultFile: ChatFileItem = {
+      //       ...uploadedFile,
+      //       status: 'success' as const,
+      //     };
 
-          // 如果是图片文件，生成 base64 编码
-          if (file.type.startsWith('image/')) {
-            try {
-              const arrayBuffer = await file.arrayBuffer();
-              const base64 = btoa(
-                String.fromCharCode(...new Uint8Array(arrayBuffer))
-              );
-              resultFile.base64 = `data:${file.type};base64,${base64}`;
-            } catch (error) {
-              console.error('图片 base64 编码失败:', error);
-            }
-          }
+      //     // 如果是图片文件，生成 base64 编码
+      //     if (file.type.startsWith('image/')) {
+      //       try {
+      //         const { base64 } = await parseImageToBase64(file);
+      //         resultFile.base64 = base64;
+      //       } catch (error) {
+      //         console.error('图片 base64 编码失败:', error);
+      //       }
+      //     }
 
-          return resultFile;
-        })
-      );
+      //     return resultFile;
+      //   })
+      // );
 
       set({
         chatUploadFileList: [
@@ -147,7 +144,10 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
             (chatFile) => chatFile.originalFile !== file
           ),
           // 添加上传成功的文件
-          ...processedFiles,
+          ...res.successful.map((file) => ({
+            ...file,
+            status: 'success' as const,
+          })),
         ],
       });
     } catch (error) {

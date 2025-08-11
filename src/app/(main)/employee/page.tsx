@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 import {
   Table,
   Typography,
@@ -8,24 +8,24 @@ import {
   Form,
   App,
   Popconfirm,
-} from "antd";
-import { Button, Input } from "@lobehub/ui";
-import { SearchOutlined } from "@ant-design/icons";
-import { createStyles } from "antd-style";
-import type { ColumnsType } from "antd/es/table";
-import type { UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useEmployeeStore } from "@/store/employee";
-import { useGlobalStore } from "@/store/global";
-import { globalSelectors } from "@/store/global/selectors";
-import { UserItem } from "@/services/user";
-import { mailAPI, casdoorAPI } from "@/services";
-import { CircleCheck, SquarePen, ChevronDown } from "lucide-react";
-import EmployeeCustomerModal from "./components/EmployeeCustomerModal";
-import EmployeeEditModal from "./components/EmployeeEditModal";
-import SendLoginGuideModal from "./components/SendLoginGuideModal";
-import NoAuthority from "@/components/NoAuthority";
+} from 'antd';
+import { Button, Input } from '@lobehub/ui';
+import { SearchOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import type { ColumnsType } from 'antd/es/table';
+import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { useEmployeeStore } from '@/store/employee';
+import { useGlobalStore } from '@/store/global';
+import { globalSelectors } from '@/store/global/selectors';
+import { UserItem } from '@/services/user';
+import { mailAPI, casdoorAPI } from '@/services';
+import { CircleCheck, SquarePen, ChevronDown } from 'lucide-react';
+import EmployeeCustomerModal from './components/EmployeeCustomerModal';
+import EmployeeEditModal from './components/EmployeeEditModal';
+import SendLoginGuideModal from './components/SendLoginGuideModal';
+import NoAuthority from '@/components/NoAuthority';
 
-import { useRoleStore } from "@/store/role";
+import { useRoleStore } from '@/store/role';
 
 const { Title } = Typography;
 
@@ -207,7 +207,7 @@ export default function EmployeePage() {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   // 页面状态
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const [loginGuideVisible, setLoginGuideVisible] = useState(false);
   const [loginGuideLoading, setLoginGuideLoading] = useState(false);
   const [employeeModalVisible, setEmployeeModalVisible] = useState(false);
@@ -218,7 +218,7 @@ export default function EmployeePage() {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [form] = Form.useForm();
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [customerTab, setCustomerTab] = useState("all");
+  const [customerTab, setCustomerTab] = useState('all');
   const [selectedLeft, setSelectedLeft] = useState<string[]>([]);
   const [selectedRight, setSelectedRight] = useState<string[]>([]);
 
@@ -243,14 +243,14 @@ export default function EmployeePage() {
       await updateEmployeeRole(employeeId, {
         addRoles: [{ roleId: Number(newRoleId) }],
       });
-      message.success("修改成功");
+      message.success('修改成功');
 
       fetchEmployees({
         page: pagination.current,
         pageSize: pagination.pageSize,
       });
     } catch (e: any) {
-      message.error(e.message || "修改失败");
+      message.error(e.message || '修改失败');
     }
   };
 
@@ -263,12 +263,12 @@ export default function EmployeePage() {
   // 确认发送登录引导邮件
   const handleConfirmSendLoginGuide = async () => {
     if (!currentEmployee) {
-      message.error("员工信息不存在");
+      message.error('员工信息不存在');
       return;
     }
 
     if (!currentEmployee.email) {
-      message.error("员工邮箱不存在，无法发送登录引导");
+      message.error('员工邮箱不存在，无法发送登录引导');
       return;
     }
 
@@ -277,15 +277,15 @@ export default function EmployeePage() {
       await mailAPI.sendLoginGuideMail(
         currentEmployee.id,
         currentEmployee.email,
-        currentEmployee.username || currentEmployee.fullName || "员工"
+        currentEmployee.username || currentEmployee.fullName || '员工'
       );
 
-      message.success("登录引导邮件发送成功");
+      message.success('登录引导邮件发送成功');
 
       setLoginGuideVisible(false);
     } catch (error: any) {
-      console.error("发送登录引导邮件失败:", error);
-      message.error(error.message || "登录引导邮件发送失败");
+      console.error('发送登录引导邮件失败:', error);
+      message.error(error.message || '登录引导邮件发送失败');
     } finally {
       setLoginGuideLoading(false);
     }
@@ -307,9 +307,9 @@ export default function EmployeePage() {
       setAvatarFile(
         employee.avatar
           ? {
-              uid: "-1",
-              name: "avatar.png",
-              status: "done",
+              uid: '-1',
+              name: 'avatar.png',
+              status: 'done',
               url: employee.avatar,
             }
           : null
@@ -323,7 +323,7 @@ export default function EmployeePage() {
     try {
       // 获取员工信息用于删除 Casdoor 用户
       const employee = employees.find((emp) => emp.id === employeeId);
-      
+
       // 先删除本地员工记录
       await deleteEmployee(employeeId);
 
@@ -331,16 +331,16 @@ export default function EmployeePage() {
       if (employee?.username) {
         try {
           await casdoorAPI.deleteUser(employee.username);
-          message.success("删除成功");
+          message.success('删除成功');
         } catch (casdoorError: any) {
-          console.error("Casdoor 用户删除失败:", casdoorError);
-          message.warning("员工删除成功，但 Casdoor 用户删除失败");
+          console.error('Casdoor 用户删除失败:', casdoorError);
+          message.warning('员工删除成功，但 Casdoor 用户删除失败');
         }
       } else {
-        message.success("删除成功");
+        message.success('删除成功');
       }
     } catch (e: any) {
-      message.error(e.message || "删除失败");
+      message.error(e.message || '删除失败');
     }
   };
 
@@ -386,14 +386,14 @@ export default function EmployeePage() {
               avatar: avatarFile?.url || '',
             });
           } catch (casdoorError: any) {
-            console.error("Casdoor 用户更新失败:", casdoorError);
-            message.warning("员工信息更新成功，但 Casdoor 用户更新失败");
+            console.error('Casdoor 用户更新失败:', casdoorError);
+            message.warning('员工信息更新成功，但 Casdoor 用户更新失败');
           }
         }
 
         fetchEmployees();
         handleEmployeeModalCancel();
-        message.success("修改员工成功");
+        message.success('修改员工成功');
       } else {
         // 创建员工
         // 先在 Casdoor 中创建用户
@@ -407,13 +407,13 @@ export default function EmployeePage() {
 
         // 使用用户名作为 ID 创建本地员工记录
         const employeeId = values.username;
-        
+
         await updateEmployee(employeeId, {
           ...values,
           username: values.username,
           avatar: avatarFile?.url,
         });
-        
+
         // 创建员工时，添加默认员工角色
         await updateEmployeeRole(employeeId, {
           addRoles: [{ roleId: 7 }],
@@ -421,31 +421,31 @@ export default function EmployeePage() {
 
         fetchEmployees();
         handleEmployeeModalCancel();
-        message.success("添加员工成功");
+        message.success('添加员工成功');
       }
     } catch (error: any) {
-      console.error("员工操作失败:", error);
+      console.error('员工操作失败:', error);
       setSubmitLoading(false);
 
       // 统一错误处理
       if (isEditMode) {
-        message.error(error.message || "修改员工失败");
+        message.error(error.message || '修改员工失败');
       } else {
-        message.error(error.message || "添加员工失败");
+        message.error(error.message || '添加员工失败');
       }
     }
   };
 
   // 头像上传前处理
   const beforeUpload = async (file: File) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error("只能上传 JPG/PNG 格式的图片!");
+      message.error('只能上传 JPG/PNG 格式的图片!');
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("图片大小不能超过 2MB!");
+      message.error('图片大小不能超过 2MB!');
       return false;
     }
     try {
@@ -454,12 +454,12 @@ export default function EmployeePage() {
       setAvatarFile({
         uid: `${Date.now()}_${file.name}`,
         name: file.name,
-        status: "done",
+        status: 'done',
         url,
       });
-      message.success("头像上传成功");
+      message.success('头像上传成功');
     } catch (e: any) {
-      message.error(e.message || "头像上传失败");
+      message.error(e.message || '头像上传失败');
     } finally {
       setAvatarUploading(false);
     }
@@ -468,7 +468,7 @@ export default function EmployeePage() {
   };
 
   // 头像上传变更处理
-  const handleAvatarChange: UploadProps["onChange"] = ({ fileList }) => {
+  const handleAvatarChange: UploadProps['onChange'] = ({ fileList }) => {
     if (fileList.length === 0) {
       setAvatarFile(null);
     }
@@ -492,10 +492,10 @@ export default function EmployeePage() {
         currentCustomerEmployee.id,
         employeeCustomers
       );
-      message.success("保存成功");
+      message.success('保存成功');
       handleCustomerModalClose();
     } catch (e: any) {
-      message.error(e.message || "保存失败");
+      message.error(e.message || '保存失败');
     } finally {
       setSessionLoading(false);
     }
@@ -532,8 +532,8 @@ export default function EmployeePage() {
   };
   // 左侧客户列表过滤
   const leftList = sessionList.filter((c) => {
-    if (customerTab === "all") return !employeeCustomers.includes(c.id);
-    if (customerTab === "unassigned") {
+    if (customerTab === 'all') return !employeeCustomers.includes(c.id);
+    if (customerTab === 'unassigned') {
       return !c.userId;
     }
 
@@ -543,33 +543,33 @@ export default function EmployeePage() {
   const rightList = sessionList.filter((c) => employeeCustomers.includes(c.id));
   const columns: ColumnsType<UserItem> = [
     {
-      title: "员工姓名",
-      dataIndex: "username",
-      key: "username",
-      render: (text) => text || "-",
+      title: '员工姓名',
+      dataIndex: 'username',
+      key: 'username',
+      render: (text) => text || '-',
     },
     {
-      title: "登录邮箱",
-      dataIndex: "email",
-      key: "email",
-      render: (text) => text || "-",
+      title: '登录邮箱',
+      dataIndex: 'email',
+      key: 'email',
+      render: (text) => text || '-',
     },
     {
-      title: "联系电话",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text) => text || "-",
+      title: '联系电话',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (text) => text || '-',
     },
     {
-      title: "账户ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => text || "-",
+      title: '账户ID',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text) => text || '-',
     },
     {
-      title: "客户数量",
-      dataIndex: "customerCount",
-      key: "customerCount",
+      title: '客户数量',
+      dataIndex: 'customerCount',
+      key: 'customerCount',
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
         const count = customerList?.length > 0 ? customerList?.length - 1 : 0;
@@ -577,13 +577,13 @@ export default function EmployeePage() {
         return (
           <span
             style={{
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
             }}
           >
             {count === undefined || count === null ? (
-              "-"
+              '-'
             ) : (
               <>
                 {count}
@@ -599,9 +599,9 @@ export default function EmployeePage() {
       },
     },
     {
-      title: "员工角色",
-      dataIndex: "roles",
-      key: "roles",
+      title: '员工角色',
+      dataIndex: 'roles',
+      key: 'roles',
       render: (_: any, record: UserItem) => {
         const currentRole = record.roles?.[0];
 
@@ -626,55 +626,55 @@ export default function EmployeePage() {
               onClick: ({ key }) => handleRoleChange(record.id, key),
               className: styles.roleDropdown,
             }}
-            trigger={["click"]}
+            trigger={['click']}
           >
             <a className={styles.blackText} onClick={(e) => e.preventDefault()}>
-              {displayRole || "暂无角色"} <ChevronDown size={16} />
+              {displayRole || '暂无角色'} <ChevronDown size={16} />
             </a>
           </Dropdown>
         );
       },
     },
     {
-      title: "员工消息记录",
-      dataIndex: "messageCount",
-      key: "messageCount",
+      title: '员工消息记录',
+      dataIndex: 'messageCount',
+      key: 'messageCount',
       render: (text: number) => {
         if (text === undefined || text === null) {
-          return "-";
+          return '-';
         }
         return <span className={styles.blackText}>{text}</span>;
       },
     },
     {
-      title: "操作",
-      key: "action",
+      title: '操作',
+      key: 'action',
       render: (_, record) => (
-        <Space size="middle">
+        <Space size='middle'>
           <Button
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleSendLoginGuide(record)}
-            type="link"
+            type='link'
           >
             发送登录引导
           </Button>
           <Button
             className={`${styles.operationButton} ${styles.blackText}`}
             onClick={() => handleEdit(record.id)}
-            type="link"
+            type='link'
           >
             编辑
           </Button>
           <Popconfirm
-            cancelText="取消"
-            description="确定要删除该员工吗？此操作不可撤销。"
-            okText="确认"
+            cancelText='取消'
+            description='确定要删除该员工吗？此操作不可撤销。'
+            okText='确认'
             onConfirm={() => handleDelete(record.id)}
-            title="确认删除"
+            title='确认删除'
           >
             <Button
               className={`${styles.operationButton} ${styles.blackText}`}
-              type="link"
+              type='link'
             >
               删除
             </Button>
@@ -732,12 +732,12 @@ export default function EmployeePage() {
           <Input
             onChange={handleSearchChange}
             onPressEnter={handleSearch}
-            placeholder="搜索员工"
+            placeholder='搜索员工'
             prefix={<SearchOutlined />}
             style={{ width: 240 }}
             value={searchValue}
           />
-          <Button onClick={showAddEmployeeModal} type="primary">
+          <Button onClick={showAddEmployeeModal} type='primary'>
             添加员工
           </Button>
         </div>
@@ -756,7 +756,7 @@ export default function EmployeePage() {
             showSizeChanger: true,
             showQuickJumper: false,
           }}
-          rowKey="id"
+          rowKey='id'
         />
       </div>
 

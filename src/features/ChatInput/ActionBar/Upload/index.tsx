@@ -4,10 +4,7 @@ import { createStyles } from 'antd-style';
 import { FileUp, FolderUp, ImageUp, Paperclip, Files } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useChatStore } from '@/store/chat';
-import {
-  isDocumentFile,
-  isSupportedFileType,
-} from '@/utils/fileContextFormatter';
+import { isDocumentFile, isSupportedFileType } from '@/utils/file';
 
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';

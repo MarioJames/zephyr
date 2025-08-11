@@ -1,6 +1,7 @@
-import React from "react";
+import React from 'react';
 import { Button, Modal } from '@lobehub/ui';
-import { createStyles } from "antd-style";
+import { createStyles } from 'antd-style';
+import { Flex } from 'antd';
 
 const useStyles = createStyles(({ css, token }) => ({
   cardActions: css`
@@ -43,24 +44,24 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
           padding: 16,
         },
       }}
-      title="发送邮件引导员工登录系统"
+      title='发送邮件引导员工登录系统'
       width={400}
     >
-      <div>
+      <Flex vertical gap={8}>
         <p>将向员工发送登录引导邮件，包含系统访问地址和登录说明。</p>
         <p>
           <strong>收件邮箱：</strong>
           <span
             style={{
-              color: employee?.email ? theme.colorText : "#ff4d4f",
+              color: employee?.email ? theme.colorText : '#ff4d4f',
             }}
           >
-            {employee?.email || "邮箱地址不存在"}
+            {employee?.email || '邮箱地址不存在'}
           </span>
         </p>
         <p>
           <strong>员工姓名：</strong>
-          {employee?.username || employee?.fullName || "未设置"}
+          {employee?.username || employee?.fullName || '未设置'}
         </p>
         <div className={styles.cardActions}>
           <Button className={styles.cancelButton} onClick={onCancel}>
@@ -70,14 +71,14 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
             disabled={!employee?.email}
             loading={loading}
             onClick={onSend}
-            type="primary"
+            type='primary'
           >
             确认发送
           </Button>
         </div>
-      </div>
+      </Flex>
     </Modal>
   );
 };
 
-export default SendLoginGuideModal; 
+export default SendLoginGuideModal;

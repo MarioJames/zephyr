@@ -5,28 +5,28 @@ import { FC, ReactNode } from 'react';
 import { LLMRoleType } from '@/types/llm';
 
 import { type ActionsBarProps } from '../components/ChatItem/ActionsBar';
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services';
 
 export type OnActionsClick = (
   action: ActionIconGroupEvent,
-  message: ChatMessage
+  message: MessageItem
 ) => void;
 export type OnAvatarsClick = (
   role: RenderRole
 ) => ChatItemProps['onAvatarClick'];
 export type RenderRole = LLMRoleType | 'default' | 'history' | string;
-export type RenderMessage = FC<ChatMessage & { editableContent: ReactNode }>;
-export type RenderBelowMessage = FC<ChatMessage>;
-export type RenderMessageExtra = FC<ChatMessage>;
+export type RenderMessage = FC<MessageItem & { editableContent: ReactNode }>;
+export type RenderBelowMessage = FC<MessageItem>;
+export type RenderMessageExtra = FC<MessageItem>;
 export type MarkdownCustomRender = (props: {
   displayMode: 'chat' | 'docs';
   dom: ReactNode;
   text: string;
 }) => ReactNode;
 
-export type RenderAction = FC<ActionsBarProps & ChatMessage>;
+export type RenderAction = FC<ActionsBarProps & MessageItem>;
 
-export type RenderItem = FC<{ key: string } & ChatMessage & ListItemProps>;
+export type RenderItem = FC<{ key: string } & MessageItem & ListItemProps>;
 
 export interface ListItemProps {
   groupNav?: ChatItemProps['avatarAddon'];

@@ -9,6 +9,8 @@ import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
 import { useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
+import { transformMessageToOpenAIFormat } from '@/utils/message';
+import { useCustomerStore } from '@/store/customer';
 
 export interface AgentSuggestionsAction {
   // 基础操作
@@ -22,7 +24,7 @@ export interface AgentSuggestionsAction {
   // AI 生成相关
   generateAISuggestion: (
     parentMessageId: string
-  ) => Promise<AgentSuggestionItem | null>;
+  ) => Promise<{ success: boolean }>;
 
   // 状态管理
   setGeneratingAI: (loading: boolean) => void;
@@ -44,9 +46,8 @@ export const agentSuggestionsSlice: StateCreator<
       set({ error: undefined, suggestionsLoading: true });
 
       // 调用服务获取建议列表
-      const suggestions = await agentSuggestionsService.getSuggestionsByTopic(
-        finalTopicId
-      );
+      const suggestions =
+        await agentSuggestionsService.getSuggestionsByTopic(finalTopicId);
 
       set({
         suggestions,
@@ -83,9 +84,15 @@ export const agentSuggestionsSlice: StateCreator<
 
   generateAISuggestion: async (
     parentMessageId: string
-  ): Promise<AgentSuggestionItem | null> => {
+  ): Promise<{ success: boolean }> => {
     const { activeSessionId, activeTopicId, sessions } =
       useSessionStore.getState();
+
+    // 是否打开联网搜索
+    const { currentCustomerExtend } = useCustomerStore.getState();
+
+    const enableSearch =
+      currentCustomerExtend?.chatConfig?.searchMode === 'auto';
 
     const state = get();
 
@@ -115,11 +122,13 @@ export const agentSuggestionsSlice: StateCreator<
         .filter(
           (msg) => msg.content && ['user', 'assistant'].includes(msg.role)
         )
-        .slice(-historyCount);
+        .slice(-historyCount)
+        .map(transformMessageToOpenAIFormat); // 转换为OpenAI格式
 
       // 调用 AI 生成服务
       const aiResponse = await chatService.generateReply({
-        userMessage: '',
+        // 拿最后一条消息作为用户消息
+        userMessage: historyMessages.at(-1)?.content || '',
         model: activeAgent?.model,
         provider: activeAgent?.provider,
         sessionId: activeSessionId!,
@@ -129,12 +138,16 @@ export const agentSuggestionsSlice: StateCreator<
             role: 'system',
             content: prompt,
           },
-          ...historyMessages.map((msg) => ({
+          // 去掉最后一条消息，因为最后一条消息是当前轮次对话的用户消息
+          ...historyMessages.slice(0, -1).map((msg) => ({
             role: msg.role,
             content: msg.content!,
           })),
         ],
-        chatConfig: activeAgent?.params,
+        chatConfig: {
+          ...activeAgent?.params,
+          web_search_options: enableSearch ? {} : undefined,
+        },
       });
 
       if (aiResponse.reply) {
@@ -155,7 +168,7 @@ export const agentSuggestionsSlice: StateCreator<
               (s) => s.id !== PLACEHOLDER_SUGGESTION.id
             ),
           });
-          return null;
+          return { success: false };
         }
 
         let suggestion: AgentSuggestionContent;
@@ -167,12 +180,12 @@ export const agentSuggestionsSlice: StateCreator<
           set({
             isGeneratingAI: false,
           });
-          return null;
+          return { success: false };
         }
 
         if (!suggestion) {
           set({ isGeneratingAI: false });
-          return null;
+          return { success: false };
         }
 
         // 创建建议对象
@@ -200,11 +213,13 @@ export const agentSuggestionsSlice: StateCreator<
         }
 
         set({ isGeneratingAI: false });
-        return null;
+
+        return { success: true };
       }
 
       set({ isGeneratingAI: false });
-      return null;
+
+      return { success: false };
     } catch (error) {
       console.error('Failed to generate AI suggestion:', error);
       set({
@@ -217,7 +232,7 @@ export const agentSuggestionsSlice: StateCreator<
             ? error.message
             : 'Failed to generate AI suggestion',
       });
-      return null;
+      return { success: false };
     }
   },
 

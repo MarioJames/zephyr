@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
   try {
     const topic = request.nextUrl.searchParams.get('topic');
 
-    console.log('topic', topic);
-
     if (!topic) {
       return NextResponse.json(
         {

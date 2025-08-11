@@ -2,7 +2,12 @@
 
 import { ActionIcon, Tooltip, Input } from '@lobehub/ui';
 import { Spin, List, Popover } from 'antd';
-import { PanelRightClose, PanelRightOpen , FileClock, Search } from 'lucide-react';
+import {
+  PanelRightClose,
+  PanelRightOpen,
+  FileClock,
+  Search,
+} from 'lucide-react';
 import React, { memo, useState, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { useChatStore } from '@/store/chat';
@@ -13,7 +18,7 @@ import dayjs from 'dayjs';
 import messageService, { MessageItem } from '@/services/messages';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session/selectors';
-import { removeSystemContext } from '@/utils/messageContentFilter';
+import { removeSystemContext } from '@/utils/message';
 
 const useStyles = createStyles(({ css, token }) => ({
   search: css`

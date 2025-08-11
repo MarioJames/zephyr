@@ -4,7 +4,18 @@ import { ErrorType } from '@/types/fetch';
 
 import { Translate } from './translate';
 
-import { MessageItem } from '@/services/messages';
+export type ChatMessageContent =
+  | string
+  | {
+      type: 'text' | 'image_url';
+      text?: string;
+      image_url?: { url: string; detail: string };
+    }[];
+
+export type ChatMessage = {
+  role: 'user' | 'system' | 'assistant' | 'tool';
+  content: ChatMessageContent;
+};
 
 /**
  * 聊天消息错误对象
@@ -52,5 +63,3 @@ export interface ChatMessageExtra {
   // TTS
   tts?: ChatTTS;
 }
-
-export type ChatMessage = MessageItem;

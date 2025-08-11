@@ -3,14 +3,14 @@ import messageService from '@/services/messages';
 import { ChatStore } from '../../store';
 import { useSessionStore } from '@/store/session';
 import messageTranslateService from '@/services/message_translates';
-import {
-  createMessageWithFiles,
-  FileForAI,
-} from '@/utils/fileContextFormatter';
+import { generateMessageWithFiles } from '@/utils/message';
+
 import {
   transformMessagesWithFileClassification,
   transformMessageWithFileClassification,
 } from './helpers';
+import { FileForAI } from '@/utils/file';
+import { ChatMessageContent } from '@/types/message';
 
 export interface MessageAction {
   // 消息CRUD操作
@@ -22,7 +22,7 @@ export interface MessageAction {
 
   // 发送消息
   createMessage: (
-    content: string,
+    content: ChatMessageContent,
     role: 'user' | 'assistant',
     options: { clearInput?: boolean; files?: string[] }
   ) => Promise<void>;
@@ -30,7 +30,7 @@ export interface MessageAction {
   acceptSuggestion: (content: string) => Promise<void>;
 
   // 消息操作
-  copyMessage: (id: string, content?: string) => Promise<void>;
+  copyMessage: (id: string) => Promise<void>;
   translateMessage: (
     id: string,
     params: { from: string; to: string }
@@ -59,12 +59,13 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     try {
       const messages = await messageService.queryByTopic(topicId);
       // 对消息进行文件分类处理并按照 createdAt 排序
-      const transformedMessages = transformMessagesWithFileClassification(messages)
-        .sort((a, b) => {
-          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return aTime - bTime;
-        });
+      const transformedMessages = transformMessagesWithFileClassification(
+        messages
+      ).sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return aTime - bTime;
+      });
 
       set({
         messages: transformedMessages,
@@ -93,7 +94,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
   // 内部核心发送逻辑
   createMessage: async (
-    content: string,
+    content: ChatMessageContent,
     role: 'user' | 'assistant',
     options: { clearInput?: boolean; files?: string[] } = {}
   ) => {
@@ -106,7 +107,8 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     try {
       const createdMessage = await messageService.createMessage({
         role,
-        content,
+        content:
+          typeof content === 'string' ? content : (content[0]?.text ?? ''),
         sessionId: activeSessionId,
         topicId: activeTopicId,
         files: options.files, // 传递文件信息
@@ -165,34 +167,22 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
           continue;
         }
 
-        const fileForAI: FileForAI = {
-          id: fileItem.id!,
-          name: fileItem.filename!,
-          type: fileItem.fileType!,
-          size: fileItem.size!,
-        };
+        const fileForAI: FileForAI = fileItem;
 
-        // 处理图片文件 - 直接使用已经转换好的base64
-        if (fileItem.fileType?.startsWith('image/')) {
-          fileForAI.base64 = fileItem.base64;
-        } else {
-          // 处理文档文件，获取解析后的内容
+        // 如果不是图片，添加解析后的内容
+        if (!fileItem.fileType?.startsWith('image/')) {
           const parsedContent = get().getParsedFileContent(fileItem.id!);
-          if (parsedContent) {
-            fileForAI.content = parsedContent.content;
-            fileForAI.metadata = parsedContent.metadata;
-          }
+          fileForAI.content = parsedContent?.content;
         }
 
         filesForAI.push(fileForAI);
       }
 
-      // 使用文件上下文创建消息
-      const messageWithFiles = createMessageWithFiles(inputMessage, filesForAI);
-      const finalContent =
-        typeof messageWithFiles.content === 'string'
-          ? messageWithFiles.content
-          : messageWithFiles.content[0]?.text || inputMessage;
+      // 结合文件生成带有文件内容上下文的消息
+      const messageWithFiles = generateMessageWithFiles(
+        inputMessage,
+        filesForAI
+      );
 
       // 收集文件ID用于数据库存储
       const fileIds = chatUploadFileList
@@ -200,7 +190,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         .map((file) => file.id!);
 
       // 发送消息，包含文件信息
-      await get().createMessage(finalContent, role, {
+      await get().createMessage(messageWithFiles, role, {
         clearInput: true,
         files: fileIds,
       });
@@ -220,11 +210,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     await get().createMessage(content, 'assistant', { clearInput: false });
   },
 
-  copyMessage: async (id: string, content?: string) => {
+  copyMessage: async (id: string) => {
     try {
       const state = get();
       const message = state.messages.find((msg) => msg.id === id);
-      const textToCopy = content || message?.content || '';
+
+      const textToCopy = message?.content || '';
 
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy);

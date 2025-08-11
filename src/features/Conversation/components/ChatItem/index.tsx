@@ -8,7 +8,7 @@ import ChatItem from '@/features/ChatItem';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 import { ChatMessage } from '@/types/message';
-import { removeSystemContext } from '@/utils/messageContentFilter';
+import { removeSystemContext } from '@/utils/message';
 
 import ErrorMessageExtra, { useErrorContent } from '../../Error';
 import { renderMessagesExtra } from '../../Extras';
