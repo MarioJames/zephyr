@@ -377,7 +377,6 @@ export default function EmployeePage() {
           ...values,
           ...(avatarFile?.url && { avatar: avatarFile?.url }),
         });
-        console.log('编辑',currentEmployee)
 
         // 更新 Casdoor 用户信息
         if (currentEmployee.username) {
@@ -399,7 +398,6 @@ export default function EmployeePage() {
         message.success('修改员工成功');
       } else {
         // 创建员工
-        console.log('新增',values)
         // 先在 Casdoor 中创建用户
         await casdoorAPI.createUser({
           name: values.username,
@@ -416,6 +414,7 @@ export default function EmployeePage() {
           ...values,
           id: employeeId,
           username: values.username,
+          fullName: values.fullName,
           avatar: avatarFile?.url,
         });
 
