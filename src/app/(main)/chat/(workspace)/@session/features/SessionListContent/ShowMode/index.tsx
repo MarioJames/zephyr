@@ -1,33 +1,56 @@
 'use client';
 
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import { GroupedVirtuoso, VirtuosoHandle } from 'react-virtuoso';
+import { Tabs } from 'antd';
+import { createStyles } from 'antd-style';
 
 import { useSessionStore , sessionSelectors } from '@/store/session';
 
 import SessionItem from '../SessionItem';
-import SessionGroupItem from './GroupItem';
+
+const useStyles = createStyles(({ css }) => ({
+  container: css`
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  `,
+  tabsContainer: css`
+    flex-shrink: 0;
+    padding: 0 24px;
+    margin: 8px 0;
+    
+    .ant-tabs-tab {
+      padding: 4px 12px !important;
+      font-size: 13px;
+    }
+    
+    .ant-tabs-content-holder {
+      display: none;
+    }
+  `,
+  listContainer: css`
+    flex: 1;
+    min-height: 0;
+  `,
+}));
 
 const ShowMode = memo(() => {
+  const { styles } = useStyles();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const [activeSessionId] = useSessionStore((s) => [s.activeSessionId]);
+  const [activeTab, setActiveTab] = useState<string>('recent');
 
-  // 分组逻辑：最近客户（前5个），全部客户（所有）
+  // 分别获取最近客户和全部客户
   const recentSessions = useSessionStore(sessionSelectors.recentSessions);
   const allSessions = useSessionStore(sessionSelectors.sessions);
-  const groups = [
-    { id: 'recent', title: '最近客户', children: recentSessions },
-    { id: 'all', title: '全部客户', children: allSessions },
-  ];
-  const groupCounts = [recentSessions.length, allSessions.length];
-  // flatSessions 顺序与 groupCounts 对应，全部客户分组始终展示所有客户
-  const flatSessions = [...recentSessions, ...allSessions];
+  
+  // 根据当前选中的tab确定要显示的数据
+  const currentSessions = activeTab === 'recent' ? recentSessions : allSessions;
 
   const itemContent = useCallback(
     (index: number) => {
-      // 判断属于哪个分组
-      const isRecent = index < recentSessions.length;
-      const session = flatSessions[index] || {};
+      const session = currentSessions[index] || {};
       const title =
         session?.title && session.title?.trim() !== ''
           ? session.title
@@ -37,33 +60,50 @@ const ShowMode = memo(() => {
           active={activeSessionId === session?.id}
           avatar={session?.avatar}
           id={session?.id}
-          isRecent={isRecent}
+          isRecent={activeTab === 'recent'}
           key={session?.id}
           title={title}
           user={session?.user}
         />
       );
     },
-    [activeSessionId, flatSessions, recentSessions?.length]
+    [activeSessionId, currentSessions, activeTab]
   );
 
-  const groupContent = useCallback(
-    (index: number) => {
-      const sessionGroup = groups[index];
-      // 只有"全部客户"分组才展示数量
-      const count =
-        sessionGroup.id === 'all' ? sessionGroup.children.length : undefined;
-      return <SessionGroupItem {...sessionGroup} count={count} />;
+  const tabItems = [
+    {
+      key: 'recent',
+      label: `最近客户`,
     },
-    [groups]
-  );
+    {
+      key: 'all',
+      label: `全部客户${allSessions.length > 0 ? ` (${allSessions.length})` : ''}`,
+    },
+  ];
+
   return (
-    <GroupedVirtuoso
-      groupContent={groupContent}
-      groupCounts={groupCounts}
-      itemContent={itemContent}
-      ref={virtuosoRef}
-    />
+    <div className={styles.container}>
+      <div className={styles.tabsContainer}>
+        <Tabs
+          activeKey={activeTab}
+          items={tabItems}
+          onChange={setActiveTab}
+          size="small"
+          tabBarStyle={{
+            margin: 0,
+            borderBottom: 'none',
+          }}
+        />
+      </div>
+      <div className={styles.listContainer}>
+        <GroupedVirtuoso
+          groupContent={() => null}
+          groupCounts={[currentSessions.length]}
+          itemContent={itemContent}
+          ref={virtuosoRef}
+        />
+      </div>
+    </div>
   );
 });
 
