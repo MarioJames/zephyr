@@ -27,6 +27,14 @@ export const idGenerator = (namespace: keyof typeof prefixes, size = 12) => {
 
   return `${prefix}_${hash()}`;
 };
+
+// 专门为员工生成类似Clerk风格的ID
+export const generateEmployeeId = () => {
+  // 生成一个27位的随机字符串，类似 Clerk 的格式 user_2yK4sKFfa6XmNYCpnNkUXURuuIr
+  const randomString = createNanoId(27)();
+  return `user_${randomString}`;
+};
+
 export const randomSlug = (count = 2) => (generate(count) as string[]).join('-');
 
 export const inboxSessionId = (userId: string) => `ssn_inbox_${userId}`;
