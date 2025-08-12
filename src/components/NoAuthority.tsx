@@ -6,6 +6,7 @@ import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { MAX_WIDTH } from '@/const/layoutTokens';
+import { logout } from '@/utils/client';
 
 const NoAuthority = memo(() => {
   return (
@@ -32,6 +33,7 @@ const NoAuthority = memo(() => {
         <Link href="/chat">
           <Button type={'primary'}>返回首页</Button>
         </Link>
+        <Button onClick={logout}>退出登录</Button>
       </Flexbox>
     </Flexbox>
   );

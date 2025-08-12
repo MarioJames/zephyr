@@ -23,9 +23,8 @@ import {
 } from '@ant-design/icons';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
-import { signOut } from 'next-auth/react';
-import { zephyrEnv } from '@/env/zephyr';
 import { changeUserPassword } from '@/services/casdoor';
+import { logout } from '@/utils/client';
 
 const { Text } = Typography;
 
@@ -88,11 +87,7 @@ const useStyles = createStyles(({ css, token }) => {
 });
 
 // 处理退出登录
-const handleLogout = () => {
-  signOut({ redirectTo: zephyrEnv.NEXT_PUBLIC_APP_URL });
-
-  message.success('退出登录成功');
-};
+const handleLogout = logout;
 
 const PanelContent = memo(() => {
   const { styles } = useStyles();
