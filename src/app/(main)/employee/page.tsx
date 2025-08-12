@@ -26,6 +26,7 @@ import SendLoginGuideModal from './components/SendLoginGuideModal';
 import NoAuthority from '@/components/NoAuthority';
 
 import { useRoleStore } from '@/store/role';
+import { generateEmployeeId } from '@/database/utils/idGenerator';
 
 const { Title } = Typography;
 
@@ -189,6 +190,7 @@ export default function EmployeePage() {
     employees,
     loading,
     fetchEmployees,
+    addEmployee,
     updateEmployee,
     deleteEmployee,
     uploadAvatar,
@@ -375,6 +377,7 @@ export default function EmployeePage() {
           ...values,
           ...(avatarFile?.url && { avatar: avatarFile?.url }),
         });
+        console.log('编辑',currentEmployee)
 
         // 更新 Casdoor 用户信息
         if (currentEmployee.username) {
@@ -396,6 +399,7 @@ export default function EmployeePage() {
         message.success('修改员工成功');
       } else {
         // 创建员工
+        console.log('新增',values)
         // 先在 Casdoor 中创建用户
         await casdoorAPI.createUser({
           name: values.username,
@@ -405,18 +409,14 @@ export default function EmployeePage() {
           avatar: avatarFile?.url || '',
         });
 
-        // 使用用户名作为 ID 创建本地员工记录
-        const employeeId = values.username;
+        // 生成类似 Clerk 风格的员工ID
+        const employeeId = generateEmployeeId();
 
-        await updateEmployee(employeeId, {
+        await addEmployee({
           ...values,
+          id: employeeId,
           username: values.username,
           avatar: avatarFile?.url,
-        });
-
-        // 创建员工时，添加默认员工角色
-        await updateEmployeeRole(employeeId, {
-          addRoles: [{ roleId: 7 }],
         });
 
         fetchEmployees();

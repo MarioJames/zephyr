@@ -86,6 +86,10 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const createdUser = await userService.createUser(data);
+      // 给新员工分配初始权限
+      await userService.updateUserRole(createdUser.id, {
+        addRoles: [{ roleId: 7 }],
+      });
 
       await get().fetchEmployees();
       return createdUser;
