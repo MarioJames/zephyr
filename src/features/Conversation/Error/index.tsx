@@ -3,10 +3,10 @@ import { Skeleton } from 'antd';
 import { Suspense, memo, useMemo } from 'react';
 
 import { ChatErrorType, ErrorType } from '@/types/fetch';
-import { ChatMessage } from '@/types/message';
 
 import ErrorJsonViewer from './ErrorJsonViewer';
 import { ErrorActionContainer } from './style';
+import { MessageItem } from '@/services';
 
 const getErrorAlertConfig = (errorType?: ErrorType): AlertProps | undefined => {
   if (
@@ -44,7 +44,7 @@ export const useErrorContent = (error: any) => {
   }, [error]);
 };
 
-export default memo<{ data: ChatMessage }>(({ data }) => (
+export default memo<{ data: MessageItem }>(({ data }) => (
   <Suspense
     fallback={
       <ErrorActionContainer>

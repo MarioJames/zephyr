@@ -2,10 +2,10 @@ import { ReactNode, memo } from 'react';
 
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';
-import { ChatMessage } from '@/types/message';
+import { MessageItem } from '@/services';
 
 export const DefaultMessage = memo<
-  ChatMessage & {
+  MessageItem & {
     addIdOnDOM?: boolean;
     editableContent: ReactNode;
     isToolCallGenerating?: boolean;
@@ -26,6 +26,6 @@ export const DefaultMessage = memo<
   }
 );
 
-export const DefaultBelowMessage = memo<ChatMessage>(() => {
+export const DefaultBelowMessage = memo<MessageItem>(() => {
   return null;
 });

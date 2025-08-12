@@ -7,13 +7,13 @@ import { Flexbox } from 'react-layout-kit';
 import ChatItem from '@/features/ChatItem';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { ChatMessage } from '@/types/message';
 import { removeSystemContext } from '@/utils/message';
 
 import ErrorMessageExtra, { useErrorContent } from '../../Error';
 import { renderMessagesExtra } from '../../Extras';
 import { markdownCustomRenders, renderMessages } from '../../Messages';
 import { markdownElements } from '../MarkdownElements';
+import { MessageItem } from '@/services';
 
 const rehypePlugins = markdownElements
   .map((element) => element.rehypePlugin)
@@ -62,7 +62,7 @@ const Item = memo<ChatListItemProps>(
     );
 
     const MessageExtra = useCallback(
-      ({ data }: { data: ChatMessage }) => {
+      ({ data }: { data: MessageItem }) => {
         if (!item?.role) return;
         let RenderFunction;
         if (renderMessagesExtra?.[item.role])
