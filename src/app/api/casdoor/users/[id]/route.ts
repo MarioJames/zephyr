@@ -46,21 +46,26 @@ export async function PUT(
       return NextResponse.json({ error: '用户不存在' }, { status: 404 });
     }
 
-    const existingUserData = existingUser.data.data;
+    // 处理不同的响应格式
+    const existingUserData = existingUser.data.data || existingUser.data;
+    
+    if (!existingUserData) {
+      return NextResponse.json({ error: '无法获取用户数据' }, { status: 404 });
+    }
 
     // 合并用户数据，保持关键字段不变
     const updatedUserData = {
       ...existingUserData,
-      name: body.displayName || existingUserData.name,
-      email: body.email || existingUserData.email,
-      phone: body.phone || existingUserData.phone,
-      avatar: body.avatar !== undefined ? body.avatar : existingUserData.avatar,
+      name: body?.displayName || existingUserData?.name,
+      email: body?.email || existingUserData?.email,
+      phone: body?.phone || existingUserData?.phone,
+      avatar: body?.avatar !== undefined ? body?.avatar : existingUserData?.avatar,
       firstName:
-        body.firstName !== undefined
-          ? body.firstName
-          : existingUserData.firstName,
+        body?.firstName !== undefined
+          ? body?.firstName
+          : existingUserData?.firstName || null,
       lastName:
-        body.lastName !== undefined ? body.lastName : existingUserData.lastName,
+        body?.lastName !== undefined ? body?.lastName : existingUserData?.lastName || null,
       updatedTime: new Date().toISOString(),
     };
 
