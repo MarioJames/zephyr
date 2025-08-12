@@ -164,3 +164,21 @@ export interface UpdateUserPasswordParams {
   userName: string;
   newPassword: string;
 }
+
+// 修改密码请求参数
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+  userInfo?: {
+    name?: string;
+    email?: string;
+    id?: string;
+  };
+}
+
+// 修改密码响应
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}

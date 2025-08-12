@@ -19,12 +19,13 @@ import {
   UserOutlined,
   KeyOutlined,
   LogoutOutlined,
-  MailOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { signOut } from 'next-auth/react';
 import { zephyrEnv } from '@/env/zephyr';
+import { changeUserPassword } from '@/services/casdoor';
 
 const { Text } = Typography;
 
@@ -95,7 +96,7 @@ const handleLogout = () => {
 
 const PanelContent = memo(() => {
   const { styles } = useStyles();
-  const [resetPasswordModalOpen, setResetPasswordModalOpen] = useState(false);
+  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -103,17 +104,43 @@ const PanelContent = memo(() => {
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
   // 处理修改密码
-  const handleResetPassword = async (values: { email: string }) => {
+  const handleChangePassword = async (values: {
+    oldPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     setLoading(true);
     try {
-      // TODO: 调用重置密码接口
-      // await resetPasswordAPI(values.email);
-      console.log('重置密码邮箱:', values.email);
-      message.success('重置密码邮件已发送，请查看邮箱');
-      setResetPasswordModalOpen(false);
+      // 验证两次新密码是否一致
+      if (values.newPassword !== values.confirmPassword) {
+        message.error('两次输入的新密码不一致');
+        return;
+      }
+
+      // 从store获取当前用户信息
+      const currentUserInfo = {
+        name: currentUser?.username || currentUser?.fullName,
+        email: currentUser?.email,
+        id: currentUser?.username || currentUser?.fullName,
+      };
+
+      // 调用密码修改接口，传递用户信息
+      const requestData = {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+        userInfo: currentUserInfo,
+      };
+      
+      console.log('发送的请求数据:', requestData);
+      
+      await changeUserPassword(requestData);
+
+      message.success('密码修改成功');
+      setChangePasswordModalOpen(false);
       form.resetFields();
-    } catch {
-      message.error('发送重置密码邮件失败');
+    } catch (error: any) {
+      console.error('密码修改失败:', error);
+      message.error(error.response?.data?.error || '密码修改失败');
     } finally {
       setLoading(false);
     }
@@ -121,12 +148,12 @@ const PanelContent = memo(() => {
 
   const menuItems = [
     {
-      key: 'resetPassword',
+      key: 'changePassword',
       icon: (
         <KeyOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
       ),
       label: '修改密码',
-      onClick: () => setResetPasswordModalOpen(true),
+      onClick: () => setChangePasswordModalOpen(true),
     },
     {
       key: 'logout',
@@ -163,9 +190,9 @@ const PanelContent = memo(() => {
 
       <Modal
         title='修改密码'
-        open={resetPasswordModalOpen}
+        open={changePasswordModalOpen}
         onCancel={() => {
-          setResetPasswordModalOpen(false);
+          setChangePasswordModalOpen(false);
           form.resetFields();
         }}
         footer={null}
@@ -174,18 +201,58 @@ const PanelContent = memo(() => {
         <Form
           form={form}
           layout='vertical'
-          onFinish={handleResetPassword}
-          initialValues={{ email: currentUser?.email }}
+          onFinish={handleChangePassword}
+          autoComplete='off'
         >
           <Form.Item
-            label='邮箱地址'
-            name='email'
+            label='当前密码'
+            name='oldPassword'
             rules={[
-              { required: true, message: '请输入邮箱地址' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
+              { required: true, message: '请输入当前密码' },
             ]}
           >
-            <Input prefix={<MailOutlined />} placeholder='请输入邮箱地址' />
+            <Input.Password 
+              prefix={<LockOutlined />} 
+              placeholder='请输入当前密码' 
+              autoComplete='current-password'
+            />
+          </Form.Item>
+
+          <Form.Item
+            label='新密码'
+            name='newPassword'
+            rules={[
+              { required: true, message: '请输入新密码' },
+              { min: 6, message: '密码长度至少为 6 位' },
+            ]}
+          >
+            <Input.Password 
+              prefix={<LockOutlined />} 
+              placeholder='请输入新密码' 
+              autoComplete='new-password'
+            />
+          </Form.Item>
+
+          <Form.Item
+            label='确认新密码'
+            name='confirmPassword'
+            rules={[
+              { required: true, message: '请再次输入新密码' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('两次输入的密码不一致'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password 
+              prefix={<LockOutlined />} 
+              placeholder='请再次输入新密码' 
+              autoComplete='new-password'
+            />
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
@@ -194,14 +261,14 @@ const PanelContent = memo(() => {
             >
               <Button
                 onClick={() => {
-                  setResetPasswordModalOpen(false);
+                  setChangePasswordModalOpen(false);
                   form.resetFields();
                 }}
               >
                 取消
               </Button>
               <Button type='primary' htmlType='submit' loading={loading}>
-                发送重置邮件
+                确认修改
               </Button>
             </div>
           </Form.Item>

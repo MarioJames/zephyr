@@ -1,5 +1,10 @@
 import { http } from '../request';
-import type { CreateCasdoorUserParams, UpdateCasdoorUserParams } from '@/types/casdoor';
+import type { 
+  CreateCasdoorUserParams, 
+  UpdateCasdoorUserParams, 
+  ChangePasswordRequest,
+  ChangePasswordResponse
+} from '@/types/casdoor';
 
 // Casdoor 用户服务接口响应
 export interface CasdoorApiResponse<T = any> {
@@ -41,9 +46,20 @@ export const deleteCasdoorUser = async (
   return response.data;
 };
 
+/**
+ * 修改用户密码
+ */
+export const changeUserPassword = async (
+  passwordData: ChangePasswordRequest
+): Promise<ChangePasswordResponse> => {
+  const response: any = await http.post('/api/casdoor/users/change-password', passwordData as any);
+  return response.data;
+};
+
 // 导出所有 Casdoor 相关的服务方法
 export const casdoorAPI = {
   createUser: createCasdoorUser,
   updateUser: updateCasdoorUser,
   deleteUser: deleteCasdoorUser,
+  changePassword: changeUserPassword,
 };
