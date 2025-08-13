@@ -18,13 +18,13 @@ import { PropsWithChildren, memo, useState } from 'react';
 import {
   UserOutlined,
   KeyOutlined,
-  LogoutOutlined,
+  // LogoutOutlined,
   LockOutlined,
 } from '@ant-design/icons';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { changeUserPassword } from '@/services/casdoor';
-import { logout } from '@/utils/client';
+// import { logout } from '@/utils/client';
 
 const { Text } = Typography;
 
@@ -86,9 +86,6 @@ const useStyles = createStyles(({ css, token }) => {
   };
 });
 
-// 处理退出登录
-const handleLogout = logout;
-
 const PanelContent = memo(() => {
   const { styles } = useStyles();
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
@@ -148,14 +145,14 @@ const PanelContent = memo(() => {
       label: '修改密码',
       onClick: () => setChangePasswordModalOpen(true),
     },
-    {
-      key: 'logout',
-      icon: (
-        <LogoutOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
-      ),
-      label: '退出登录',
-      onClick: handleLogout,
-    },
+    // {
+    //   key: 'logout',
+    //   icon: (
+    //     <LogoutOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
+    //   ),
+    //   label: '退出登录',
+    //   onClick: logout,
+    // },
   ];
 
   return (
