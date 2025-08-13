@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import { eq } from 'drizzle-orm/expressions';
 
-import { LobeChatDatabase } from '@/database/lobeDB/type';
-import { UserGuide, UserPreference } from '@/database/lobeDB/type/user';
 import { merge } from '@/utils/merge';
 import { today } from '@/utils/time';
 
+import { LobeChatDatabase } from '../type';
+import { UserGuide, UserPreference } from '../type/user';
 import {
   NewUser,
   UserItem,
@@ -16,7 +16,7 @@ import {
 
 type DecryptUserKeyVaults = (
   encryptKeyVaultsStr: string | null,
-  userId?: string,
+  userId?: string
 ) => Promise<any>;
 
 export class UserModel {
@@ -33,7 +33,9 @@ export class UserModel {
     duration: number;
     updatedAt: string;
   }> => {
-    const user = await this.db.query.users.findFirst({ where: eq(users.id, this.userId) });
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, this.userId),
+    });
     if (!user)
       return {
         createdAt: today().format('YYYY-MM-DD'),
@@ -114,7 +116,9 @@ export class UserModel {
   };
 
   getUserSettings = async () => {
-    return this.db.query.userSettings.findFirst({ where: eq(userSettings.id, this.userId) });
+    return this.db.query.userSettings.findFirst({
+      where: eq(userSettings.id, this.userId),
+    });
   };
 
   updateUser = async (value: Partial<UserItem>) => {
@@ -142,7 +146,9 @@ export class UserModel {
   };
 
   updatePreference = async (value: Partial<UserPreference>) => {
-    const user = await this.db.query.users.findFirst({ where: eq(users.id, this.userId) });
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, this.userId),
+    });
     if (!user) return;
 
     return this.db
@@ -152,13 +158,20 @@ export class UserModel {
   };
 
   updateGuide = async (value: Partial<UserGuide>) => {
-    const user = await this.db.query.users.findFirst({ where: eq(users.id, this.userId) });
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, this.userId),
+    });
     if (!user) return;
 
     const prevPreference = (user.preference || {}) as UserPreference;
     return this.db
       .update(users)
-      .set({ preference: { ...prevPreference, guide: merge(prevPreference.guide || {}, value) } })
+      .set({
+        preference: {
+          ...prevPreference,
+          guide: merge(prevPreference.guide || {}, value),
+        },
+      })
       .where(eq(users.id, this.userId));
   };
 
@@ -170,7 +183,9 @@ export class UserModel {
   static createUser = async (db: LobeChatDatabase, params: NewUser) => {
     // if user already exists, skip creation
     if (params.id) {
-      const user = await db.query.users.findFirst({ where: eq(users.id, params.id) });
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, params.id),
+      });
       if (!!user) return { duplicate: true };
     }
 
@@ -197,7 +212,7 @@ export class UserModel {
   static getUserApiKeys = async (
     db: LobeChatDatabase,
     id: string,
-    decryptor: DecryptUserKeyVaults,
+    decryptor: DecryptUserKeyVaults
   ) => {
     const result = await db
       .select({

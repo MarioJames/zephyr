@@ -5,11 +5,11 @@ import { z } from 'zod';
 function getMailEnv() {
   return createEnv({
     server: {
-      ALIYUN_MAIL_SMTP_HOST: z.string(),
-      ALIYUN_MAIL_SMTP_PORT: z.string(),
-      ALIYUN_MAIL_SMTP_USER: z.string(),
-      ALIYUN_MAIL_SMTP_PASS: z.string(),
-      ALIYUN_MAIL_SMTP_SECURE: z.boolean(),
+      ALIYUN_MAIL_SMTP_HOST: z.string().optional(),
+      ALIYUN_MAIL_SMTP_PORT: z.string().optional(),
+      ALIYUN_MAIL_SMTP_USER: z.string().optional(),
+      ALIYUN_MAIL_SMTP_PASS: z.string().optional(),
+      ALIYUN_MAIL_SMTP_SECURE: z.boolean().optional(),
     },
     runtimeEnv: {
       ALIYUN_MAIL_SMTP_HOST:

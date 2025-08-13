@@ -1,7 +1,6 @@
 import { count, sql } from 'drizzle-orm';
 import { and, eq, inArray, isNull } from 'drizzle-orm/expressions';
 
-import { LobeChatDatabase } from '@/database/lobeDB/type';
 import {
   genEndDateWhere,
   genRangeWhere,
@@ -12,6 +11,7 @@ import { idGenerator } from '@/database/utils/idGenerator';
 import { ChatTranslate, UpdateMessageParams } from '@/types/message';
 import { merge } from '@/utils/merge';
 
+import { LobeChatDatabase } from '../type';
 import {
   MessagePluginItem,
   messagePlugins,

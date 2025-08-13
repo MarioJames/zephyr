@@ -1,16 +1,16 @@
-import { count } from "drizzle-orm";
-import { and, desc, eq, not } from "drizzle-orm/expressions";
+import { count } from 'drizzle-orm';
+import { and, desc, eq, not } from 'drizzle-orm/expressions';
 
-import { INBOX_SESSION_ID } from "@/const/session";
-import { LobeChatDatabase } from "@/database/lobeDB/type";
+import { INBOX_SESSION_ID } from '@/const/session';
 import {
   genEndDateWhere,
   genRangeWhere,
   genStartDateWhere,
   genWhere,
-} from "@/database/utils/genWhere";
+} from '@/database/utils/genWhere';
 
-import { SessionItem, sessions } from "../schemas";
+import { LobeChatDatabase } from '../type';
+import { SessionItem, sessions } from '../schemas';
 
 export class SessionModel {
   private userId: string;

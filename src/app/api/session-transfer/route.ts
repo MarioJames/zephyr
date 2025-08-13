@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { eq, inArray } from 'drizzle-orm/expressions';
-import { getLobeDB } from '@/database/lobeDB';
-import { sessions, topics, messages, users } from '@/database/lobeDB/schemas';
-import { Transaction } from '@/database/lobeDB/type';
+import { getChatDB } from '@/database/chatDB';
+import { sessions, topics, messages, users } from '@/database/chatDB/schemas';
+import { Transaction } from '@/database/chatDB/type';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = await getLobeDB();
+    const db = await getChatDB();
 
     // 验证目标用户是否存在
     const targetUser = await db.query.users.findFirst({
@@ -80,7 +80,9 @@ export async function POST(request: NextRequest) {
           .select({ id: messages.id })
           .from(messages)
           .where(inArray(messages.topicId, topicIds));
-        messageIds = sessionMessages.map((message: { id: string }) => message.id);
+        messageIds = sessionMessages.map(
+          (message: { id: string }) => message.id
+        );
       }
 
       // 5. 更新所有相关messages的userId
@@ -108,16 +110,14 @@ export async function POST(request: NextRequest) {
       message: 'Session transfer completed successfully',
       data: result,
     });
-
   } catch (error) {
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to transfer session',
         details: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        stack: error instanceof Error ? error.stack : undefined,
       },
       { status: 500 }
     );
   }
 }
-
