@@ -25,30 +25,12 @@ export const setCookie = (
 };
 
 /**
- * 清除所有应用相关的cookie和本地存储
+ * 清除所有应用相关的本地存储
  * 用于退出登录时的数据清理
  */
 export const clearAllAppData = () => {
   if (typeof window === 'undefined') return;
 
-  // NextAuth相关的cookie名称
-  const authCookies = [
-    'authjs.session-token',
-    'authjs.csrf-token', 
-    'authjs.callback-url',
-    'authjs.pkce.code_verifier',
-    'next-auth.session-token',
-    'next-auth.csrf-token',
-    'next-auth.callback-url',
-    'next-auth.pkce.code_verifier',
-    '__Secure-authjs.session-token',
-    '__Secure-next-auth.session-token'
-  ];
-
-  // 清除认证相关cookie
-  authCookies.forEach(cookieName => {
-    setCookie(cookieName, undefined);
-  });
 
   // 清除应用特定的localStorage项
   const localStorageKeys = [
@@ -58,11 +40,21 @@ export const clearAllAppData = () => {
   ];
 
   localStorageKeys.forEach(key => {
-    localStorage.removeItem(key);
+    try {
+      localStorage.removeItem(key);
+      console.log(`[Logout] 已清除 localStorage 项: ${key}`);
+    } catch (error) {
+      console.error(`[Logout] 清除 localStorage 项 ${key} 失败:`, error);
+    }
   });
 
   // 清除sessionStorage
-  sessionStorage.clear();
+  try {
+    sessionStorage.clear();
+    console.log('[Logout] 已清除 sessionStorage');
+  } catch (error) {
+    console.error('[Logout] 清除 sessionStorage 失败:', error);
+  }
 };
 
 /**
@@ -75,19 +67,33 @@ export const logout = async () => {
     const [
       { useGlobalStore },
       { signOut },
-      { zephyrEnv }
+      { clearTokenCache }
     ] = await Promise.all([
       import('@/store/global'),
       import('next-auth/react'),
-      import('@/env/zephyr')
+      import('@/services/request')
     ]);
 
-    // 1. 清除全局用户状态
+    // 1. 清除request.ts中的token缓存
+    clearTokenCache();
+
+    // 2. 调用后端API清除所有cookie
+    try {
+      await fetch('/api/auth/logout', { 
+        method: 'DELETE',
+        credentials: 'include' // 确保包含cookie
+      });
+    } catch (error) {
+      console.error('[Logout] 调用后端登出API失败:', error);
+    }
+
+    // 3. 清除全局用户状态
     const { clearUserState } = useGlobalStore.getState();
     clearUserState();
     
-    // 2. 清除会话、聊天和角色状态
+    // 4. 清除会话、聊天和角色状态
     if (typeof window !== 'undefined') {
+      console.log('[Logout] 正在清除应用状态');
       // 动态导入store来避免循环依赖
       const [{ useSessionStore }, { useChatStore }, { useRoleStore }] = await Promise.all([
         import('@/store/session'),
@@ -98,28 +104,40 @@ export const logout = async () => {
       // 清除会话状态
       const { resetActiveState } = useSessionStore.getState();
       resetActiveState();
+      console.log('[Logout] 已清除会话状态');
       
       // 清除聊天状态  
       const { resetChatState } = useChatStore.getState();
       resetChatState();
+      console.log('[Logout] 已清除聊天状态');
       
       // 清除角色状态
       const { setCurrentRole } = useRoleStore.getState();
       setCurrentRole(null);
+      console.log('[Logout] 已清除角色状态');
     }
     
-    // 3. 清除所有应用数据（cookie、localStorage、sessionStorage）
+    // 5. 清除所有本地存储数据
     clearAllAppData();
     
-    // 4. 调用NextAuth的signOut方法
-    await signOut({ 
-      redirectTo: zephyrEnv.NEXT_PUBLIC_APP_URL,
-      redirect: true 
+    // 6. 立即重定向到登录页
+    console.log('[Logout] 正在重定向到登录页');
+    window.location.href = '/login';
+    
+    // 7. 调用NextAuth的signOut方法（后台执行，不等待）
+    console.log('[Logout] 正在调用NextAuth登出方法');
+    signOut({ 
+      redirect: false // 禁用自动重定向
+    }).catch(error => {
+      console.error('[Logout] NextAuth登出失败:', error);
     });
     
     message.success('退出登录成功');
+    console.log('[Logout] 退出登录流程完成');
   } catch (error) {
-    console.error('退出登录失败:', error);
+    console.error('[Logout] 退出登录失败:', error);
     message.error('退出登录失败，请重试');
+    // 即使失败也尝试重定向到登录页
+    window.location.href = '/login';
   }
 };
