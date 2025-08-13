@@ -1,6 +1,11 @@
 // 服务器端专用的邮件服务
 import nodemailer from 'nodemailer';
-import type { AliyunMailConfig, MailOptions, MailResponse } from '@/types/mail';
+import type {
+  AliyunMailConfig,
+  AliyunSMTPConfig,
+  MailOptions,
+  MailResponse,
+} from '@/types/mail';
 import { mailEnv } from '@/env/mail';
 
 export class AliyunMailServerService {
@@ -82,7 +87,7 @@ export class AliyunMailServerService {
   static createFromEnv(): AliyunMailServerService {
     const smtpConfig = {
       host: mailEnv.ALIYUN_MAIL_SMTP_HOST || 'smtpdm.aliyun.com',
-      port: parseInt(mailEnv.ALIYUN_MAIL_SMTP_PORT),
+      port: parseInt(mailEnv.ALIYUN_MAIL_SMTP_PORT || '25'),
       secure: mailEnv.ALIYUN_MAIL_SMTP_SECURE,
       auth: {
         user: mailEnv.ALIYUN_MAIL_SMTP_USER,
@@ -93,7 +98,7 @@ export class AliyunMailServerService {
     const config: AliyunMailConfig = {};
 
     if (smtpConfig.auth.user && smtpConfig.auth.pass) {
-      config.smtp = smtpConfig;
+      config.smtp = smtpConfig as AliyunSMTPConfig;
     }
 
     return new AliyunMailServerService(config);

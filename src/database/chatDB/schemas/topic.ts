@@ -1,10 +1,16 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix  */
-import { boolean, jsonb, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  jsonb,
+  pgTable,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 
 import { idGenerator } from '@/database/utils/idGenerator';
-import { ChatTopicMetadata } from '@/database/lobeDB/type/topic';
 
+import { ChatTopicMetadata } from '../type/topic';
 import { timestamps, timestamptz } from './_helpers';
 import { sessions } from './session';
 import { users } from './user';
@@ -17,7 +23,9 @@ export const topics = pgTable(
       .primaryKey(),
     title: text('title'),
     favorite: boolean('favorite').default(false),
-    sessionId: text('session_id').references(() => sessions.id, { onDelete: 'cascade' }),
+    sessionId: text('session_id').references(() => sessions.id, {
+      onDelete: 'cascade',
+    }),
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
@@ -26,7 +34,9 @@ export const topics = pgTable(
     metadata: jsonb('metadata').$type<ChatTopicMetadata | undefined>(),
     ...timestamps,
   },
-  (t) => [uniqueIndex('topics_client_id_user_id_unique').on(t.clientId, t.userId)],
+  (t) => [
+    uniqueIndex('topics_client_id_user_id_unique').on(t.clientId, t.userId),
+  ]
 );
 
 export type NewTopic = typeof topics.$inferInsert;
@@ -42,13 +52,17 @@ export const threads = pgTable(
 
     title: text('title'),
     type: text('type', { enum: ['continuation', 'standalone'] }).notNull(),
-    status: text('status', { enum: ['active', 'deprecated', 'archived'] }).default('active'),
+    status: text('status', {
+      enum: ['active', 'deprecated', 'archived'],
+    }).default('active'),
     topicId: text('topic_id')
       .references(() => topics.id, { onDelete: 'cascade' })
       .notNull(),
     sourceMessageId: text('source_message_id').notNull(),
     // @ts-ignore
-    parentThreadId: text('parent_thread_id').references(() => threads.id, { onDelete: 'set null' }),
+    parentThreadId: text('parent_thread_id').references(() => threads.id, {
+      onDelete: 'set null',
+    }),
     clientId: text('client_id'),
 
     userId: text('user_id')
@@ -58,7 +72,9 @@ export const threads = pgTable(
     lastActiveAt: timestamptz('last_active_at').defaultNow(),
     ...timestamps,
   },
-  (t) => [uniqueIndex('threads_client_id_user_id_unique').on(t.clientId, t.userId)],
+  (t) => [
+    uniqueIndex('threads_client_id_user_id_unique').on(t.clientId, t.userId),
+  ]
 );
 
 export type NewThread = typeof threads.$inferInsert;

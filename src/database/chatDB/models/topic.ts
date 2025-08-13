@@ -1,7 +1,14 @@
 import { count, sql } from 'drizzle-orm';
-import { and, desc, eq, gt, ilike, inArray, isNull } from 'drizzle-orm/expressions';
+import {
+  and,
+  desc,
+  eq,
+  gt,
+  ilike,
+  inArray,
+  isNull,
+} from 'drizzle-orm/expressions';
 
-import { LobeChatDatabase } from '@/database/lobeDB/type';
 import {
   genEndDateWhere,
   genRangeWhere,
@@ -10,8 +17,9 @@ import {
 } from '@/database/utils/genWhere';
 import { idGenerator } from '@/database/utils/idGenerator';
 import { MessageItem } from '@/types/message';
-import { TopicRankItem } from '@/database/lobeDB/type/topic';
 
+import { LobeChatDatabase } from '../type';
+import { TopicRankItem } from '../type/topic';
 import { TopicItem, messages, topics } from '../schemas';
 
 export interface CreateTopicParams {
@@ -37,7 +45,11 @@ export class TopicModel {
   }
   // **************** Query *************** //
 
-  query = async ({ current = 0, pageSize = 9999, sessionId }: QueryTopicParams = {}) => {
+  query = async ({
+    current = 0,
+    pageSize = 9999,
+    sessionId,
+  }: QueryTopicParams = {}) => {
     const offset = current * pageSize;
     return (
       this.db
@@ -51,7 +63,9 @@ export class TopicModel {
           updatedAt: topics.updatedAt,
         })
         .from(topics)
-        .where(and(eq(topics.userId, this.userId), this.matchSession(sessionId)))
+        .where(
+          and(eq(topics.userId, this.userId), this.matchSession(sessionId))
+        )
         // In boolean sorting, false is considered "smaller" than true.
         // So here we use desc to ensure that topics with favorite as true are in front.
         .orderBy(desc(topics.favorite), desc(topics.updatedAt))
@@ -74,7 +88,10 @@ export class TopicModel {
       .where(eq(topics.userId, this.userId));
   };
 
-  queryByKeyword = async (keyword: string, sessionId?: string | null): Promise<TopicItem[]> => {
+  queryByKeyword = async (
+    keyword: string,
+    sessionId?: string | null
+  ): Promise<TopicItem[]> => {
     if (!keyword) return [];
 
     const keywordLowerCase = keyword.toLowerCase();
@@ -85,7 +102,7 @@ export class TopicModel {
       where: and(
         eq(topics.userId, this.userId),
         this.matchSession(sessionId),
-        ilike(topics.title, `%${keywordLowerCase}%`),
+        ilike(topics.title, `%${keywordLowerCase}%`)
       ),
     });
 
@@ -99,8 +116,8 @@ export class TopicModel {
           eq(messages.userId, this.userId),
           ilike(messages.content, `%${keywordLowerCase}%`),
           eq(topics.userId, this.userId),
-          this.matchSession(sessionId),
-        ),
+          this.matchSession(sessionId)
+        )
       )
       .groupBy(messages.topicId);
     // 如果没有通过消息内容找到主题，直接返回标题匹配的主题
@@ -127,7 +144,8 @@ export class TopicModel {
 
     // 按更新时间排序
     return allTopics.sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   };
   count = async (params?: {
@@ -144,15 +162,21 @@ export class TopicModel {
         genWhere([
           eq(topics.userId, this.userId),
           params?.range
-            ? genRangeWhere(params.range, topics.createdAt, (date) => date.toDate())
+            ? genRangeWhere(params.range, topics.createdAt, (date) =>
+                date.toDate()
+              )
             : undefined,
           params?.endDate
-            ? genEndDateWhere(params.endDate, topics.createdAt, (date) => date.toDate())
+            ? genEndDateWhere(params.endDate, topics.createdAt, (date) =>
+                date.toDate()
+              )
             : undefined,
           params?.startDate
-            ? genStartDateWhere(params.startDate, topics.createdAt, (date) => date.toDate())
+            ? genStartDateWhere(params.startDate, topics.createdAt, (date) =>
+                date.toDate()
+              )
             : undefined,
-        ]),
+        ])
       );
 
     return result[0].count;
@@ -179,7 +203,7 @@ export class TopicModel {
 
   create = async (
     { messages: messageIds, ...params }: CreateTopicParams,
-    id: string = this.genId(),
+    id: string = this.genId()
   ): Promise<TopicItem> => {
     return this.db.transaction(async (tx) => {
       // 在 topics 表中插入新的 topic
@@ -197,14 +221,21 @@ export class TopicModel {
         await tx
           .update(messages)
           .set({ topicId: topic.id })
-          .where(and(eq(messages.userId, this.userId), inArray(messages.id, messageIds)));
+          .where(
+            and(
+              eq(messages.userId, this.userId),
+              inArray(messages.id, messageIds)
+            )
+          );
       }
 
       return topic;
     });
   };
 
-  batchCreate = async (topicParams: (CreateTopicParams & { id?: string })[]) => {
+  batchCreate = async (
+    topicParams: (CreateTopicParams & { id?: string })[]
+  ) => {
     // 开始一个事务
     return this.db.transaction(async (tx) => {
       // 在 topics 表中批量插入新的 topics
@@ -217,7 +248,7 @@ export class TopicModel {
             sessionId: params.sessionId,
             title: params.title,
             userId: this.userId,
-          })),
+          }))
         )
         .returning();
 
@@ -229,9 +260,14 @@ export class TopicModel {
             await tx
               .update(messages)
               .set({ topicId: topic.id })
-              .where(and(eq(messages.userId, this.userId), inArray(messages.id, messageIds)));
+              .where(
+                and(
+                  eq(messages.userId, this.userId),
+                  inArray(messages.id, messageIds)
+                )
+              );
           }
-        }),
+        })
       );
 
       return createdTopics;
@@ -264,7 +300,9 @@ export class TopicModel {
       const originalMessages = await tx
         .select()
         .from(messages)
-        .where(and(eq(messages.topicId, topicId), eq(messages.userId, this.userId)));
+        .where(
+          and(eq(messages.topicId, topicId), eq(messages.userId, this.userId))
+        );
 
       // copy messages
       const duplicatedMessages = await Promise.all(
@@ -280,7 +318,7 @@ export class TopicModel {
             .returning()) as MessageItem[];
 
           return result[0];
-        }),
+        })
       );
 
       return {
@@ -296,7 +334,9 @@ export class TopicModel {
    * Delete a session, also delete all messages and topics associated with it.
    */
   delete = async (id: string) => {
-    return this.db.delete(topics).where(and(eq(topics.id, id), eq(topics.userId, this.userId)));
+    return this.db
+      .delete(topics)
+      .where(and(eq(topics.id, id), eq(topics.userId, this.userId)));
   };
 
   /**

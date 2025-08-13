@@ -11,11 +11,8 @@ import {
 import { createSelectSchema } from 'drizzle-zod';
 
 import { idGenerator } from '@/database/utils/idGenerator';
-import {
-  ModelReasoning,
-  GroundingSearch,
-} from '@/database/lobeDB/type/message';
 
+import { ModelReasoning, GroundingSearch } from '../type/message';
 import { timestamps } from './_helpers';
 import { sessions } from './session';
 import { threads, topics } from './topic';

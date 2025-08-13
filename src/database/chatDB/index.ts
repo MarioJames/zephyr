@@ -13,13 +13,13 @@ import * as schema from './schemas';
  */
 let cachedDB: LobeChatDatabase | null = null;
 
-export const getLobeDB = async (): Promise<LobeChatDatabase> => {
+export const getChatDB = async (): Promise<LobeChatDatabase> => {
   // 如果已经有缓存的实例，直接返回
   if (cachedDB) return cachedDB;
 
-  const connectionString = serverDBEnv.LOBE_DATABASE_URL;
+  const connectionString = serverDBEnv.CHAT_DATABASE_URL;
 
-  if (serverDBEnv.LOBE_DATABASE_DRIVER === 'node') {
+  if (serverDBEnv.CHAT_DATABASE_DRIVER === 'node') {
     const client = new NodePool({ connectionString });
     cachedDB = nodeDrizzle(client, { schema });
   } else {
@@ -30,7 +30,7 @@ export const getLobeDB = async (): Promise<LobeChatDatabase> => {
   return cachedDB;
 };
 
-export const lobeDB = getLobeDB();
+export const chatDB = getChatDB();
 
 export * from './schemas';
 export * from './type';
