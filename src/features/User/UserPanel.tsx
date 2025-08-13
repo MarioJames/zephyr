@@ -126,8 +126,6 @@ const PanelContent = memo(() => {
         userInfo: currentUserInfo,
       };
       
-      console.log('发送的请求数据:', requestData);
-      
       await changeUserPassword(requestData);
 
       message.success('密码修改成功');

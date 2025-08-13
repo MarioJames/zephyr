@@ -58,7 +58,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let userName = userInfo?.email || userInfo?.name;
+    const userName = userInfo?.name;
+
 
     if (!userName) {
       return NextResponse.json(
@@ -68,91 +69,20 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // 验证旧密码
-      const casdoorUserName = userInfo?.email || userInfo?.name;
+      // 使用 Casdoor SDK 的 setPassword 方法
+      const setPasswordData = {
+        owner: casdoorEnv.CASDOOR_ORGANIZATION_NAME,
+        name: userName,
+        newPassword: newPassword,
+        oldPassword: oldPassword,
+      };
 
-      // 使用Casdoor REST API验证旧密码
-      const verifyResponse = await fetch(`${casdoorEnv.CASDOOR_ENDPOINT}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: "login",
-          organization: casdoorEnv.CASDOOR_ORGANIZATION_NAME,
-          username: casdoorUserName,
-          password: oldPassword,
-          application: casdoorEnv.CASDOOR_APPLICATION_NAME,
-        }),
-      });
+      const result = await sdk.setPassword(setPasswordData);
 
-      const verifyResult = await verifyResponse.json();
-
-      if (!verifyResponse.ok || verifyResult.status === 'error') {
-        let errorMessage = '旧密码验证失败';
-        if (verifyResult.msg) {
-          if (verifyResult.msg.includes('password or code is incorrect')) {
-            errorMessage = '旧密码不正确，请检查您输入的密码';
-          } else if (verifyResult.msg.includes("doesn't exist")) {
-            errorMessage = '用户不存在，请联系管理员';
-          } else {
-            errorMessage = verifyResult.msg;
-          }
-        }
-
+      // 检查结果
+      if (result.data && result.data.status === 'error') {
         return NextResponse.json(
-          { error: errorMessage },
-          { status: 400 }
-        );
-      }
-    } catch (error) {
-      console.error('旧密码验证失败:', error);
-      return NextResponse.json(
-        { error: '密码验证过程中发生错误' },
-        { status: 400 }
-      );
-    }
-
-    try {
-      // 获取用户详细信息
-      const userResponse = await sdk.getUser(userName) as any;
-      if (!userResponse || (userResponse.status && userResponse.status === 'error')) {
-        return NextResponse.json(
-          { error: '无法获取用户信息' },
-          { status: 400 }
-        );
-      }
-
-      // 处理不同的响应格式
-      const userData = userResponse.data?.data || userResponse.data || userResponse;
-
-      if (!userData) {
-        return NextResponse.json(
-          { error: '无法获取用户数据' },
-          { status: 404 }
-        );
-      }
-
-      // 直接使用 Casdoor 的 update-user API
-      const updateResponse = await fetch(`${casdoorEnv.CASDOOR_ENDPOINT}/api/update-user`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${Buffer.from(`${casdoorEnv.CASDOOR_CLIENT_ID}:${casdoorEnv.CASDOOR_CLIENT_SECRET}`).toString('base64')}`,
-        },
-        body: JSON.stringify({
-          ...userData,
-          owner: userData.owner || casdoorEnv.CASDOOR_ORGANIZATION_NAME,
-          name: userData.name || userName,
-          password: newPassword,
-        }),
-      });
-
-      const updateResult = await updateResponse.json();
-
-      if (!updateResponse.ok || (updateResult.status && updateResult.status === 'error')) {
-        return NextResponse.json(
-          { error: updateResult.msg || '密码修改失败' },
+          { error: result.data.msg || '密码修改失败' },
           { status: 400 }
         );
       }
@@ -162,11 +92,26 @@ export async function POST(request: NextRequest) {
         message: '密码修改成功',
       });
 
-    } catch (error) {
-      console.error('密码更新失败:', error);
+    } catch (error: any) {
+      console.error('密码修改失败:', error);
+      
+      // 处理常见的错误情况
+      let errorMessage = '密码修改失败';
+      if (error.response?.data?.msg) {
+        errorMessage = error.response.data.msg;
+      } else if (error.message) {
+        if (error.message.includes('User does not exist')) {
+          errorMessage = '用户不存在，请联系管理员';
+        } else if (error.message.includes('permission denied')) {
+          errorMessage = '权限不足，无法修改密码';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       return NextResponse.json(
-        { error: '密码更新失败' },
-        { status: 500 }
+        { error: errorMessage },
+        { status: 400 }
       );
     }
 
