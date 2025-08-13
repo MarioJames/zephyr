@@ -82,6 +82,7 @@ export const userSlice: StateCreator<GlobalStore, [], [], UserAction> = (
       // 自动加载虚拟密钥
       if (currentUser.id && currentUser.roles?.[0]?.id) {
         await get().loadVirtualKey(currentUser.id, currentUser.roles[0].id);
+        set({ userVirtualKeyInit: true });
       }
     } catch (error) {
       console.error('用户信息加载异常:', error);
@@ -115,6 +116,7 @@ export const userSlice: StateCreator<GlobalStore, [], [], UserAction> = (
     set({
       currentUser: null,
       userInit: false,
+      userVirtualKeyInit: false,
       virtualKey: null,
       userError: null,
     });

@@ -31,7 +31,6 @@ export const setCookie = (
 export const clearAllAppData = () => {
   if (typeof window === 'undefined') return;
 
-
   // 清除应用特定的localStorage项
   const localStorageKeys = [
     'zephyr-session',
@@ -42,7 +41,6 @@ export const clearAllAppData = () => {
   localStorageKeys.forEach(key => {
     try {
       localStorage.removeItem(key);
-      console.log(`[Logout] 已清除 localStorage 项: ${key}`);
     } catch (error) {
       console.error(`[Logout] 清除 localStorage 项 ${key} 失败:`, error);
     }
@@ -51,7 +49,6 @@ export const clearAllAppData = () => {
   // 清除sessionStorage
   try {
     sessionStorage.clear();
-    console.log('[Logout] 已清除 sessionStorage');
   } catch (error) {
     console.error('[Logout] 清除 sessionStorage 失败:', error);
   }
@@ -77,7 +74,17 @@ export const logout = async () => {
     // 1. 清除request.ts中的token缓存
     clearTokenCache();
 
-    // 2. 调用后端API清除所有cookie
+    // 2. 调用OIDC End Session端点
+    try {
+      await fetch('/oidc/session/end', {
+        method: 'GET',
+        credentials: 'include' // 确保包含cookie
+      });
+    } catch (error) {
+      console.error('[Logout] OIDC End Session失败:', error);
+    }
+
+    // 3. 调用后端API清除所有cookie
     try {
       await fetch('/api/auth/logout', { 
         method: 'DELETE',
@@ -87,13 +94,12 @@ export const logout = async () => {
       console.error('[Logout] 调用后端登出API失败:', error);
     }
 
-    // 3. 清除全局用户状态
+    // 4. 清除全局用户状态
     const { clearUserState } = useGlobalStore.getState();
     clearUserState();
     
-    // 4. 清除会话、聊天和角色状态
+    // 5. 清除会话、聊天和角色状态
     if (typeof window !== 'undefined') {
-      console.log('[Logout] 正在清除应用状态');
       // 动态导入store来避免循环依赖
       const [{ useSessionStore }, { useChatStore }, { useRoleStore }] = await Promise.all([
         import('@/store/session'),
@@ -104,28 +110,23 @@ export const logout = async () => {
       // 清除会话状态
       const { resetActiveState } = useSessionStore.getState();
       resetActiveState();
-      console.log('[Logout] 已清除会话状态');
       
       // 清除聊天状态  
       const { resetChatState } = useChatStore.getState();
       resetChatState();
-      console.log('[Logout] 已清除聊天状态');
       
       // 清除角色状态
       const { setCurrentRole } = useRoleStore.getState();
       setCurrentRole(null);
-      console.log('[Logout] 已清除角色状态');
     }
     
-    // 5. 清除所有本地存储数据
+    // 6. 清除所有本地存储数据
     clearAllAppData();
     
-    // 6. 立即重定向到登录页
-    console.log('[Logout] 正在重定向到登录页');
+    // 7. 立即重定向到登录页
     window.location.href = '/login';
     
-    // 7. 调用NextAuth的signOut方法（后台执行，不等待）
-    console.log('[Logout] 正在调用NextAuth登出方法');
+    // 8. 调用NextAuth的signOut方法（后台执行，不等待）
     signOut({ 
       redirect: false // 禁用自动重定向
     }).catch(error => {
@@ -133,7 +134,6 @@ export const logout = async () => {
     });
     
     message.success('退出登录成功');
-    console.log('[Logout] 退出登录流程完成');
   } catch (error) {
     console.error('[Logout] 退出登录失败:', error);
     message.error('退出登录失败，请重试');

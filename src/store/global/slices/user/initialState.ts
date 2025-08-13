@@ -10,6 +10,11 @@ export interface UserState {
   userInit: boolean;
 
   /**
+   * 用户凭证是否初始化完成
+   */
+  userVirtualKeyInit: boolean;
+
+  /**
    * 当前用户信息
    * 存储当前登录用户的详细信息
    */
@@ -31,6 +36,7 @@ export interface UserState {
 export const userInitialState: UserState = {
   currentUser: null,
   userInit: false,
+  userVirtualKeyInit: false,
   virtualKey: null,
   userError: null,
 };

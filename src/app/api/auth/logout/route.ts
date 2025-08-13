@@ -25,8 +25,15 @@ export async function DELETE() {
       // 应用相关cookie
       'zephyr-session',
       'theme-mode',
-      'user-preferences'
+      'user-preferences',
+      
+      // JWT相关
+      'next-auth.jwt',
+      '__Secure-next-auth.jwt',
+      'authjs.jwt',
+      '__Secure-authjs.jwt'
     ];
+
 
     // 创建一个响应对象来设置cookie
     const response = new NextResponse(

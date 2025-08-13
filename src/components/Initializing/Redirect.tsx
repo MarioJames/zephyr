@@ -15,7 +15,7 @@ interface RedirectProps {
 
 const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
   const router = useRouter();
-  const { userInit, loadCurrentUser } = useGlobalStore();
+  const { userInit, userVirtualKeyInit, loadCurrentUser } = useGlobalStore();
   const { agentsInit, fetchAgents } = useAgentStore();
   const { rolesInit, initRoles } = useRoleStore();
   const { modelsInit, initModels } = useModelStore();
@@ -42,6 +42,12 @@ const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
       return;
     }
 
+    // 初始化用户凭证
+    if (!userVirtualKeyInit) {
+      setLoadingStage(AppLoadingStage.InitializingUserVirtualKey);
+      return;
+    }
+
     if (!agentsInit) {
       setLoadingStage(AppLoadingStage.InitializingAgents);
       fetchAgents();
@@ -56,7 +62,7 @@ const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
 
     // finally go to chat
     navToChat();
-  }, [userInit, agentsInit, rolesInit, modelsInit]);
+  }, [userInit, userVirtualKeyInit, agentsInit, rolesInit, modelsInit]);
 
   return null;
 });
