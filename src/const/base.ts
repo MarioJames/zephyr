@@ -11,3 +11,5 @@ export const ARTIFACT_THINKING_TAG = 'lobeThinking';
 
 export const HELLO_IMG =
   'https://registry.npmmirror.com/@lobehub/fluent-emoji-anim-1/1.0.0/files/assets/1f44b.webp';
+
+export const PHONE_CHECK_URL = 'http://47.81.10.252/';

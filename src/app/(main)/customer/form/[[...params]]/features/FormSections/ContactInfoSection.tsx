@@ -3,10 +3,11 @@ import { Form, Row, Col } from 'antd';
 import { Input } from '@lobehub/ui';
 import { LinkOutlined } from '@ant-design/icons';
 import { useSharedStyles } from '../shared/styles';
+import { PHONE_CHECK_URL } from '@/const/base'
 
 // 打开韩国手机号去重查询网站
 const handlePhoneCheckClick = () => {
-  window.open('http://47.81.10.252/', '_blank', 'noopener,noreferrer');
+  window.open(PHONE_CHECK_URL, '_blank', 'noopener,noreferrer');
 };
 
 export default function ContactInfoSection() {
@@ -19,7 +20,7 @@ export default function ContactInfoSection() {
         <Col span={8}>
           <Form.Item
             label={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex', gap: '12px' }}>
                 <span>手机号</span>
                 <a
                   onClick={handlePhoneCheckClick}
