@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
+        protocol: 'http',
+        hostname: '8.219.137.29',
+        port: '9000',
+        pathname: '/**',
+      },
+      {
         protocol: 'https',
         hostname: '*.amazonaws.com',
         port: '',
