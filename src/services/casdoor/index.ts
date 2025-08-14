@@ -21,8 +21,20 @@ export interface CasdoorApiResponse<T = any> {
 export const createCasdoorUser = async (
   userData: CreateCasdoorUserParams
 ): Promise<CasdoorApiResponse> => {
-  const response = await http.post<CasdoorApiResponse>('/api/casdoor/users', userData);
-  return response.data;
+  try {
+    const response = await http.post<CasdoorApiResponse>('/api/casdoor/users', userData);
+    return response.data;
+  } catch (error: any) {
+    // 处理axios错误响应
+    if (error.response?.data) {
+      let message = error.response.data.message || '创建用户失败';
+      if(message === 'Email already exists'){
+        message = '该邮箱已被占用';
+      }
+      throw new Error(message);
+    }
+    throw error;
+  }
 };
 
 /**

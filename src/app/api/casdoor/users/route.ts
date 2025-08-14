@@ -51,12 +51,11 @@ export async function POST(request: NextRequest) {
 
 
     if ((user.data.status as unknown as string) === 'error') {
-
       return NextResponse.json({
         success: false,
         data: user.data.msg,
         message: user.data.msg || '创建用户失败',
-      });
+      }, { status: 400 }); // 添加400状态码
     }
 
     return NextResponse.json({
@@ -72,6 +71,6 @@ export async function POST(request: NextRequest) {
       data: null,
       message: error.message || '创建用户时发生内部错误',
       details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-    });
+    }, { status: 500 }); // 添加500状态码
   }
 }
