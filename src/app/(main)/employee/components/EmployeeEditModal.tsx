@@ -170,8 +170,33 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
         <Form colon={true} form={form} layout='vertical' requiredMark={true}>
           <Form.Item
             className={styles.formItem}
-            label='员工姓名'
+            label='员工账号'
             name='username'
+            rules={[
+              { required: true, message: '请输入员工账号' },
+              { 
+                pattern: /^[\dA-Za-z]+$/, 
+                message: '员工账号只能包含英文和数字' 
+              },
+              {
+                min: 3,
+                message: '员工账号至少需要3个字符'
+              },
+              {
+                max: 20,
+                message: '员工账号最多20个字符'
+              }
+            ]}
+          >
+            <Input
+              className={styles.customInput}
+              placeholder='请输入员工账号'
+            />
+          </Form.Item>
+          <Form.Item
+            className={styles.formItem}
+            label='员工姓名'
+            name='fullName'
             rules={[{ required: true, message: '请输入员工姓名' }]}
           >
             <Input

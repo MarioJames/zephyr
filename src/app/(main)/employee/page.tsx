@@ -301,9 +301,9 @@ export default function EmployeePage() {
       setCurrentEmployee(employee);
       form.setFieldsValue({
         username: employee.username,
+        fullName: employee.fullName,
         email: employee.email,
         phone: employee.phone,
-        fullName: employee.fullName,
         roleId: employee.roles?.[0]?.id,
       });
       setAvatarFile(
@@ -382,7 +382,7 @@ export default function EmployeePage() {
         if (currentEmployee.username) {
           try {
             await casdoorAPI.updateUser(currentEmployee.username, {
-              displayName: values.username,
+              displayName: values.fullName,
               email: values.email,
               phone: values.phone,
               avatar: avatarFile?.url || '',
@@ -399,13 +399,14 @@ export default function EmployeePage() {
       } else {
         // 创建员工
         // 先在 Casdoor 中创建用户
-        await casdoorAPI.createUser({
+        const res = await casdoorAPI.createUser({
           name: values.username,
-          displayName: values.username,
+          displayName: values.fullName,
           email: values.email,
           phone: values.phone,
           avatar: avatarFile?.url || '',
         });
+        console.log('res', res);
 
         // 生成类似 Clerk 风格的员工ID
         const employeeId = generateEmployeeId();
