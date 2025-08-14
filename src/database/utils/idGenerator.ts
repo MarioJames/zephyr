@@ -35,6 +35,13 @@ export const generateEmployeeId = () => {
   return `user_${randomString}`;
 };
 
+// 生成内置员工账号
+export const generateUserName = () => {
+  // 生成一个8位的随机字符串，类似 Clerk 的格式 2yK4sKFf
+  const randomString = createNanoId(8)();
+  return `${randomString}`;
+};
+
 export const randomSlug = (count = 2) => (generate(count) as string[]).join('-');
 
 export const inboxSessionId = (userId: string) => `ssn_inbox_${userId}`;

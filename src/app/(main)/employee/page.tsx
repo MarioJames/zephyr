@@ -26,7 +26,7 @@ import SendLoginGuideModal from './components/SendLoginGuideModal';
 import NoAuthority from '@/components/NoAuthority';
 
 import { useRoleStore } from '@/store/role';
-import { generateEmployeeId } from '@/database/utils/idGenerator';
+import { generateEmployeeId, generateUserName } from '@/database/utils/idGenerator';
 
 const { Title } = Typography;
 
@@ -398,9 +398,12 @@ export default function EmployeePage() {
         message.success('修改员工成功');
       } else {
         // 创建员工
+        // 生成随机用户名，一方面避免中文名casdoor注册失败，一方面避免用户手动输入
+        const username = generateUserName();
+        
         // 先在 Casdoor 中创建用户
         const res = await casdoorAPI.createUser({
-          name: values.username,
+          name: username,
           displayName: values.fullName,
           email: values.email,
           phone: values.phone,
@@ -414,7 +417,7 @@ export default function EmployeePage() {
         await addEmployee({
           ...values,
           id: employeeId,
-          username: values.username,
+          username: username,
           fullName: values.fullName,
           avatar: avatarFile?.url,
         });
@@ -544,8 +547,8 @@ export default function EmployeePage() {
   const columns: ColumnsType<UserItem> = [
     {
       title: '员工姓名',
-      dataIndex: 'username',
-      key: 'username',
+      dataIndex: 'fullName',
+      key: 'fullName',
       render: (text) => text || '-',
     },
     {
