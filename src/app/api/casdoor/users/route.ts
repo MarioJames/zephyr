@@ -42,33 +42,36 @@ export async function POST(request: NextRequest) {
       avatar: body.avatar || '',
       password: 'zephyr.default',
     })) as unknown as {
-      status: string;
-      msg: string;
-      data: User;
+      data: {
+        status: string;
+        msg: string;
+        data: User;
+      }
     };
 
-    if ((user.status as unknown as string) === 'error') {
+
+    if ((user.data.status as unknown as string) === 'error') {
+
       return NextResponse.json({
-        error: user.msg || '创建用户失败',
-        status: 400,
+        success: false,
+        data: user.data.msg,
+        message: user.data.msg || '创建用户失败',
       });
     }
 
     return NextResponse.json({
       success: true,
-      data: user.data,
+      data: user,
       message: '用户创建成功',
     });
   } catch (error: any) {
     console.error('Casdoor 用户创建失败:', error);
 
-    return NextResponse.json(
-      {
-        error: error.message || '创建用户时发生内部错误',
-        details:
-          process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: false,
+      data: null,
+      message: error.message || '创建用户时发生内部错误',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    });
   }
 }

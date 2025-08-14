@@ -402,14 +402,13 @@ export default function EmployeePage() {
         const username = generateUserName();
         
         // 先在 Casdoor 中创建用户
-        const res = await casdoorAPI.createUser({
+        await casdoorAPI.createUser({
           name: username,
           displayName: values.fullName,
           email: values.email,
           phone: values.phone,
           avatar: avatarFile?.url || '',
         });
-        console.log('res', res);
 
         // 生成类似 Clerk 风格的员工ID
         const employeeId = generateEmployeeId();
