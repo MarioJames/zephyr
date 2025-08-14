@@ -29,9 +29,9 @@ export interface UserInfoProps extends FlexboxProps {
 
 const UserInfo = memo<UserInfoProps>(({ avatarProps, onClick, ...rest }) => {
   const { styles, theme } = useStyles();
-  const [userInit, userName] = useGlobalStore((s) => [
+  const [userInit, currentUser] = useGlobalStore((s) => [
     globalSelectors.userInit(s),
-    globalSelectors.userName(s),
+    globalSelectors.currentUser(s),
   ]);
 
   return (
@@ -46,7 +46,7 @@ const UserInfo = memo<UserInfoProps>(({ avatarProps, onClick, ...rest }) => {
     >
       <Flexbox align={'center'} gap={12} horizontal onClick={onClick}>
         <UserAvatar background={theme.colorFill} size={48} {...avatarProps} />
-        <div className={styles.nickname}>{userName}</div>
+        <div className={styles.nickname}>{currentUser?.fullName || currentUser?.username || ''}</div>
       </Flexbox>
       {userInit && <PlanTag />}
     </Flexbox>

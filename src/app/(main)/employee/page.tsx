@@ -279,7 +279,7 @@ export default function EmployeePage() {
       await mailAPI.sendLoginGuideMail(
         currentEmployee.id,
         currentEmployee.email,
-        currentEmployee.username || currentEmployee.fullName || '员工'
+        currentEmployee.fullName || currentEmployee.username || '员工'
       );
 
       message.success('登录引导邮件发送成功');

@@ -47,16 +47,16 @@ export interface UserAvatarProps extends AvatarProps {
 const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ size = 40, background, clickable, className, style, ...rest }, ref) => {
     const { styles, cx } = useStyles();
-    const [avatar, username] = useGlobalStore((s) => [
+    const [avatar, currentUser] = useGlobalStore((s) => [
       globalSelectors.userAvatar(s),
-      globalSelectors.userName(s),
+      globalSelectors.currentUser(s),
     ]);
 
     const userInit = useGlobalStore(globalSelectors.userInit);
 
     return (
       <Avatar
-        alt={userInit && !!username ? username : '默认'}
+        alt={userInit && (currentUser?.fullName || currentUser?.username) ? currentUser?.fullName || currentUser?.username : '默认'}
         avatar={userInit && !!avatar ? avatar : DEFAULT_USER_AVATAR_URL}
         background={userInit && avatar ? background : 'transparent'}
         className={cx(clickable && styles.clickable, className)}

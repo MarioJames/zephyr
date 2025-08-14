@@ -249,7 +249,7 @@ const HistoryPanel = () => {
                     <div className={styles.historyTitle}>{item.title}</div>
                     <div className={styles.historyMeta}>
                       @
-                      {item.user?.username || item.user?.fullName || '未知员工'}{' '}
+                      {item.user?.fullName || item.user?.username || '未知员工'}{' '}
                       |{' '}
                       {item.updatedAt
                         ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')

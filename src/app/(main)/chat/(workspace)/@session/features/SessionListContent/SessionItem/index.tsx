@@ -44,7 +44,7 @@ export interface ConfigCellProps {
   id: string;
   title: string;
   isRecent?: boolean;
-  user?: { username?: string };
+  user?: { fullName?: string; username?: string };
   avatar?: string;
 }
 
@@ -88,7 +88,7 @@ const SessionItem = memo<ConfigCellProps>(
         >
           <SessionContent
             avatar={avatar}
-            employeeName={user?.username}
+            employeeName={user?.fullName || user?.username}
             id={id}
             isRecent={isRecent}
             showMore={isHover}

@@ -13,8 +13,7 @@ export const userSelectors = {
 
   // 用户信息提取
   userId: (s: UserState) => s.currentUser?.id || null,
-  userName: (s: UserState) =>
-    s.currentUser?.username || s.currentUser?.email || null,
+  userName: (s: UserState) => s.currentUser?.fullName || s.currentUser?.username || s.currentUser?.email || null,
   userEmail: (s: UserState) => s.currentUser?.email || null,
   userRoles: (s: UserState) => s.currentUser?.roles || [],
   currentRole: (s: UserState) => s.currentUser?.roles?.[0] || null,

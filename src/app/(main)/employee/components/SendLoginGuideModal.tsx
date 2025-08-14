@@ -61,7 +61,7 @@ const SendLoginGuideModal: React.FC<SendLoginGuideModalProps> = ({
         </p>
         <p>
           <strong>员工姓名：</strong>
-          {employee?.username || employee?.fullName || '未设置'}
+          {employee?.fullName || employee?.username || '未设置'}
         </p>
         <div className={styles.cardActions}>
           <Button className={styles.cancelButton} onClick={onCancel}>

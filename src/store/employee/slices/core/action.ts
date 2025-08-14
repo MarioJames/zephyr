@@ -160,7 +160,7 @@ export const coreSlice: StateCreator<
     return res.sessions.map((s: SessionItem) => ({
       id: s.id,
       customerName: s.title,
-      employeeName: s.user?.username || "",
+      employeeName: s.user?.fullName || s.user?.username || "",
       userId: s.userId || "",
     }));
   },

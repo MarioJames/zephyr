@@ -100,7 +100,7 @@ const useStyles = createStyles(({ css, token }) => ({
 const DefaultCreateCustomer = () => {
   const { styles } = useStyles();
   const agents = useAgentStore((s) => s.agents);
-  const username = useGlobalStore(globalSelectors.userName);
+  const currentUser = useGlobalStore(globalSelectors.currentUser);
   const router = useRouter();
 
   const onCreateCustomer = (agentId?: string) => {
@@ -121,7 +121,7 @@ const DefaultCreateCustomer = () => {
           src={HELLO_IMG}
           width={40}
         />
-        Hi！ {username}
+        Hi！ {currentUser?.fullName || currentUser?.username || ''}
       </div>
       <div className={styles.middle}>
         我是您的私人智能助理，点击下方客户类型开始创建您的客户吧~
