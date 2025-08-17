@@ -23,7 +23,7 @@ export class KeyVaultsGateKeeper {
     this.aesKey = aesKey;
   }
 
-  static initWithEnvKey = async (keyVaultsSecret: string) => {
+  static initWithEnvKey = async (keyVaultsSecret?: string) => {
     if (!keyVaultsSecret)
       throw new Error(
         `\`keyVaultsSecret\` is not set, please set it in your environment variables.`
