@@ -19,7 +19,7 @@ export const getServerDBConfig = () => {
       ADMIN_DATABASE_DRIVER: z.enum(['neon', 'node']),
       CHAT_DATABASE_URL: z.string().optional(),
       CHAT_DATABASE_DRIVER: z.enum(['neon', 'node']),
-      ADMIN_KEY_VAULTS_SECRET: z.string(),
+      ADMIN_KEY_VAULTS_SECRET: z.string().optional(),
     },
   });
 };
