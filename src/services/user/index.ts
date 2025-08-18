@@ -47,7 +47,7 @@ export interface UserUpdateRequest {
   email?: string;
   fullName?: string;
   avatar?: string;
-  roleId?: string;
+  roleIds?: number[];
   [key: string]: unknown;
 }
 
@@ -69,7 +69,7 @@ export interface UserUpdateRoleRequest {
     expiresAt?: string;
     roleId: number;
   }[];
-  removeRoleIds?: number[];
+  removeRoles?: number[];
   [key: string]: unknown;
 }
 

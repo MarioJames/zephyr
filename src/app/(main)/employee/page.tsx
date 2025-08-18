@@ -24,9 +24,11 @@ import EmployeeCustomerModal from './components/EmployeeCustomerModal';
 import EmployeeEditModal from './components/EmployeeEditModal';
 import SendLoginGuideModal from './components/SendLoginGuideModal';
 import NoAuthority from '@/components/NoAuthority';
-
 import { useRoleStore } from '@/store/role';
-import { generateEmployeeId, generateUserName } from '@/database/utils/idGenerator';
+import {
+  generateEmployeeId,
+  generateUserName,
+} from '@/database/utils/idGenerator';
 
 const { Title } = Typography;
 
@@ -242,7 +244,8 @@ export default function EmployeePage() {
     const employee = employees.find((emp) => emp.id === employeeId);
     if (!employee) return;
     try {
-      await updateEmployeeRole(employeeId, {
+      await updateEmployeeRole(employee, {
+        removeRoles: employee.roles?.map((r) => Number(r.id)) || [],
         addRoles: [{ roleId: Number(newRoleId) }],
       });
       message.success('修改成功');
@@ -326,8 +329,13 @@ export default function EmployeePage() {
       // 获取员工信息用于删除 Casdoor 用户
       const employee = employees.find((emp) => emp.id === employeeId);
 
+      if (!employee) {
+        message.error('员工信息不存在');
+        return;
+      }
+
       // 先删除本地员工记录
-      await deleteEmployee(employeeId);
+      await deleteEmployee(employee);
 
       // 然后删除 Casdoor 用户
       if (employee?.username) {
@@ -373,7 +381,7 @@ export default function EmployeePage() {
 
       if (isEditMode && currentEmployee) {
         // 编辑员工
-        await updateEmployee(currentEmployee.id, {
+        await updateEmployee(currentEmployee, {
           ...values,
           ...(avatarFile?.url && { avatar: avatarFile?.url }),
         });

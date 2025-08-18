@@ -4,6 +4,7 @@ export { casdoorAPI } from './casdoor';
 export { default as chatAPI } from './chat';
 export { default as customerAPI } from './customer';
 export { default as filesAPI } from './files';
+export { default as litellmAPI } from './litellm';
 export { default as mailAPI } from './mail';
 export { default as messageTranslatesAPI } from './message_translates';
 export { default as messagesAPI } from './messages';

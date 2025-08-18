@@ -1,14 +1,15 @@
-import { StateCreator } from "zustand/vanilla";
+import { StateCreator } from 'zustand/vanilla';
 import userService, {
   UserItem,
   UserCreateRequest,
   UserUpdateRequest,
   UserUpdateRoleRequest,
-} from "@/services/user";
-import filesService from "@/services/files";
-import sessionsService, { SessionItem } from "@/services/sessions";
-import { EmployeeState } from "../../initialState";
-import { useSessionStore } from "@/store/session";
+} from '@/services/user';
+import filesService from '@/services/files';
+import sessionsService, { SessionItem } from '@/services/sessions';
+import { EmployeeState } from '../../initialState';
+import { useSessionStore } from '@/store/session';
+import { litellmAPI } from '@/services';
 
 // 定义具有其他 slice 方法的扩展状态接口
 interface ExtendedEmployeeState {
@@ -25,8 +26,11 @@ export interface CoreAction {
   }) => Promise<void>;
   fetchEmployeesWithStats: () => Promise<void>;
   addEmployee: (data: UserCreateRequest) => Promise<UserItem>;
-  updateEmployee: (id: string, data: UserUpdateRequest) => Promise<void>;
-  deleteEmployee: (id: string) => Promise<void>;
+  updateEmployee: (
+    employee: UserItem,
+    data: UserUpdateRequest
+  ) => Promise<void>;
+  deleteEmployee: (employee: UserItem) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
   fetchSessionList: () => Promise<
     Array<{
@@ -41,7 +45,7 @@ export interface CoreAction {
     sessionIds: string[]
   ) => Promise<void>;
   updateEmployeeRole: (
-    id: string,
+    employee: UserItem,
     data: UserUpdateRoleRequest
   ) => Promise<void>;
 }
@@ -72,7 +76,7 @@ export const coreSlice: StateCreator<
         state.filterEmployees();
       }
     } catch (e: unknown) {
-      set({ error: (e as Error)?.message || "获取员工列表失败" });
+      set({ error: (e as Error)?.message || '获取员工列表失败' });
     } finally {
       set({ loading: false });
     }
@@ -92,47 +96,78 @@ export const coreSlice: StateCreator<
         await userService.updateUserRole(createdUser.id, {
           addRoles: [{ roleId: Number(data.roleId) }],
         });
+
+        await litellmAPI.addUserToTeam(createdUser.id, data.roleId);
       }
 
       await get().fetchEmployees();
       return createdUser;
     } catch (e: unknown) {
-      set({ error: (e as Error)?.message || "添加员工失败" });
+      set({ error: (e as Error)?.message || '添加员工失败' });
       throw e;
     } finally {
       set({ loading: false });
     }
   },
 
-  updateEmployee: async (id, data) => {
+  updateEmployee: async (employee, data) => {
     set({ loading: true, error: null });
     try {
-      await userService.updateUser(id, data);
+      await userService.updateUser(employee.id, {
+        ...data,
+        roleIds: [Number(data.roleId)],
+      });
+
+      // 如果员工角色发生变化，则也需要在 litellm 中删除旧角色，添加新角色
+      if (employee.roles![0]?.id !== data?.roleId) {
+        await litellmAPI.removeUserFromTeam(
+          employee.id,
+          employee.roles![0]!.id.toString()
+        );
+
+        await litellmAPI.addUserToTeam(employee.id, data.roleId!.toString());
+      }
     } catch (e: unknown) {
-      set({ error: (e as Error)?.message || "修改员工失败" });
+      set({ error: (e as Error)?.message || '修改员工失败' });
     } finally {
       set({ loading: false });
     }
   },
 
-  deleteEmployee: async (id) => {
+  deleteEmployee: async (employee) => {
     set({ loading: true, error: null });
     try {
-      await userService.deleteUser(id);
+      await userService.deleteUser(employee.id);
+
+      // 删除员工时，需要删除员工在 litellm 中的关联
+      for (const role of employee.roles || []) {
+        await litellmAPI.removeUserFromTeam(employee.id, role.id.toString());
+      }
+
       await get().fetchEmployees();
     } catch (e: unknown) {
-      set({ error: (e as Error)?.message || "删除员工失败" });
+      set({ error: (e as Error)?.message || '删除员工失败' });
     } finally {
       set({ loading: false });
     }
   },
 
-  updateEmployeeRole: async (id, data) => {
+  updateEmployeeRole: async (employee, data) => {
     set({ loading: true, error: null });
     try {
-      await userService.updateUserRole(id, data);
+      await userService.updateUserRole(employee.id, data);
+
+      // 删除员工在 litellm 中的关联
+      for (const role of data.removeRoles || []) {
+        await litellmAPI.removeUserFromTeam(employee.id, role.toString());
+      }
+
+      // 建立新的角色关联信息
+      for (const role of data.addRoles || []) {
+        await litellmAPI.addUserToTeam(employee.id, role.roleId.toString());
+      }
     } catch (e: unknown) {
-      set({ error: (e as Error)?.message || "修改员工角色失败" });
+      set({ error: (e as Error)?.message || '修改员工角色失败' });
     } finally {
       set({ loading: false });
     }
@@ -142,28 +177,28 @@ export const coreSlice: StateCreator<
     try {
       const res = await filesService.upload({
         file,
-        directory: "avatar",
+        directory: 'avatar',
       });
       return res.url;
     } catch (e: unknown) {
-      throw new Error((e as Error)?.message || "头像上传失败");
+      throw new Error((e as Error)?.message || '头像上传失败');
     }
   },
 
   fetchSessionList: async () => {
-    console.log("fetchSessionList employee slice core action");
+    console.log('fetchSessionList employee slice core action');
     const res = await sessionsService.getSessionList({
       page: 1,
       pageSize: 100,
-      targetUserId: "ALL",
+      targetUserId: 'ALL',
     });
 
     // 格式化为{id, customerName, employeeName, userId}
     return res.sessions.map((s: SessionItem) => ({
       id: s.id,
       customerName: s.title,
-      employeeName: s.user?.fullName || s.user?.username || "",
-      userId: s.userId || "",
+      employeeName: s.user?.fullName || s.user?.username || '',
+      userId: s.userId || '',
     }));
   },
 

@@ -131,16 +131,14 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 const transformCustomerToDisplayItem = (
   customer: CustomerItem
 ): CustomerDisplayItem => {
-  const { session, extend } = customer || {};
+  const { session } = customer || {};
 
   const { user, agentsToSessions } = session || {};
   return {
     key: session?.id,
     sessionId: session?.id,
     name: session?.title || '',
-    company: extend?.company || '',
     type: agentsToSessions?.[0]?.agent?.title || '未分类',
-    phone: extend?.phone || '',
     createTime: dayjs(session?.createdAt).format('YYYY-MM-DD HH:mm:ss') || '',
     lastContactTime:
       dayjs(session?.updatedAt).format('YYYY-MM-DD HH:mm:ss') || '',
@@ -293,10 +291,10 @@ export default function Customer() {
       render: (text: string, record: CustomerDisplayItem) => (
         <a
           onClick={() => handleViewCustomerDetail(record)}
-          style={{ 
+          style={{
             color: theme.isDarkMode ? '#69b1ff' : '#1677ff',
             cursor: 'pointer',
-            textDecoration: 'none'
+            textDecoration: 'none',
           }}
         >
           {text}
@@ -304,19 +302,9 @@ export default function Customer() {
       ),
     },
     {
-      title: '公司',
-      dataIndex: 'company',
-      key: 'company',
-    },
-    {
       title: '客户类型',
       dataIndex: 'type',
       key: 'type',
-    },
-    {
-      title: '联系电话',
-      dataIndex: 'phone',
-      key: 'phone',
     },
     {
       title: '创建时间',
@@ -335,10 +323,10 @@ export default function Customer() {
       render: (text: number, record: CustomerDisplayItem) => (
         <a
           onClick={() => handleViewConversations(record)}
-          style={{ 
+          style={{
             color: theme.isDarkMode ? '#69b1ff' : '#1677ff',
             cursor: 'pointer',
-            textDecoration: 'none'
+            textDecoration: 'none',
           }}
         >
           {text}条

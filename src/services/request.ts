@@ -129,20 +129,11 @@ instance.interceptors.request.use(async (config) => {
   return config;
 });
 
-// 添加重试标记以避免无限重试
-const MAX_RETRY_COUNT = 1;
-
 instance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
     const status = error.response?.status;
     const config = error.config;
-
-    // 避免无限重试
-    if (config._retryCount >= MAX_RETRY_COUNT) {
-      console.warn('已达到最大重试次数，停止重试');
-      throw error;
-    }
 
     // Token 过期或服务器错误时尝试刷新 token
     if ([401, 500].includes(status)) {
