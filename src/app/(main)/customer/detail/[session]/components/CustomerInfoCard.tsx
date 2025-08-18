@@ -90,11 +90,8 @@ export const CustomerInfoCard: React.FC<CustomerInfoCardProps> = ({
                 {extend?.age && (
                   <Tag className={styles.tags}>{extend.age + '岁'}</Tag>
                 )}
-                {extend?.industry && (
-                  <Tag className={styles.tags}>{extend.industry}</Tag>
-                )}
-                {extend?.position && (
-                  <Tag className={styles.tags}>{extend.position}</Tag>
+                {extend?.work && (
+                  <Tag className={styles.tags}>{extend.work}</Tag>
                 )}
               </div>
               <div className={styles.customerMetaContainer}>
