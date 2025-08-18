@@ -419,6 +419,7 @@ export default function EmployeePage() {
           username: username,
           fullName: values.fullName,
           avatar: avatarFile?.url,
+          roleId: values.roleId, // 添加roleId
         });
 
         fetchEmployees();
@@ -787,6 +788,7 @@ export default function EmployeePage() {
         onCancel={handleEmployeeModalCancel}
         onSubmit={handleEmployeeSubmit}
         open={employeeModalVisible}
+        roles={roles}
       />
 
       {/* 员工对接客户管理弹窗 */}

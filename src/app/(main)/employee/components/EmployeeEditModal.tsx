@@ -1,9 +1,10 @@
 import React from 'react';
-import { Form, Upload } from 'antd';
+import { Form, Upload, Select } from 'antd';
 import { Button, Input, Modal } from '@lobehub/ui';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Image from 'next/image';
+import { RoleItem } from '@/services/roles';
 
 const useStyles = createStyles(({ css, token }) => ({
   addEmployeeModal: css`
@@ -84,6 +85,28 @@ const useStyles = createStyles(({ css, token }) => ({
       box-shadow: none !important;
     }
   `,
+  customSelect: css`
+    .ant-select-selector {
+      border-radius: 6px !important;
+      background: ${token.colorFillTertiary} !important;
+      border: none !important;
+      box-shadow: none !important;
+      height: 32px !important;
+      .ant-select-selection-search-input {
+        height: 32px !important;
+      }
+      .ant-select-selection-item {
+        line-height: 32px !important;
+      }
+      .ant-select-selection-placeholder {
+        line-height: 32px !important;
+      }
+    }
+    &:hover .ant-select-selector {
+      background: ${token.colorFillTertiary} !important;
+      border: none !important;
+    }
+  `,
   cancelButton: css`
     border: 1px solid ${token.colorBorder};
   `,
@@ -96,6 +119,7 @@ export interface EmployeeEditModalProps {
   form: any;
   avatarFile: any;
   avatarUploading?: boolean;
+  roles: RoleItem[];
   onCancel: () => void;
   onSubmit: () => void;
   beforeUpload: (file: File) => Promise<boolean>;
@@ -109,6 +133,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   form,
   avatarFile,
   avatarUploading = false,
+  roles,
   onCancel,
   onSubmit,
   beforeUpload,
@@ -124,6 +149,15 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
       open={open}
       title={null}
       width={414}
+      styles={{
+        content: {
+          height: 610,
+        },
+        body: {
+          minHeight: 610,
+        },
+      }}
+      style={{ top: 40 }}
     >
       <div>
         <div className={styles.modalTitle}>
@@ -204,6 +238,21 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
             <Input
               className={styles.customInput}
               placeholder='请输入员工手机号'
+            />
+          </Form.Item>
+          <Form.Item
+            className={styles.formItem}
+            label='角色'
+            name='roleId'
+            rules={[{ required: true, message: '请选择员工角色' }]}
+          >
+            <Select
+              className={styles.customSelect}
+              placeholder='请选择员工角色'
+              options={roles.map(role => ({
+                label: role.displayName,
+                value: role.id
+              }))}
             />
           </Form.Item>
         </Form>

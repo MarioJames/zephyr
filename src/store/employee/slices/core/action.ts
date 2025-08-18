@@ -87,10 +87,12 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const createdUser = await userService.createUser(data);
-      // 给新员工分配初始权限
-      await userService.updateUserRole(createdUser.id, {
-        addRoles: [{ roleId: 7 }],
-      });
+      // 使用传入的roleId，并转换为number类型
+      if (data.roleId) {
+        await userService.updateUserRole(createdUser.id, {
+          addRoles: [{ roleId: Number(data.roleId) }],
+        });
+      }
 
       await get().fetchEmployees();
       return createdUser;
