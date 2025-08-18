@@ -13,7 +13,7 @@ export interface CustomerSessionListParams {
   keyword?: string;
   agentId?: string;
   userId?: string;
-  sortBy?: 'createdAt' | 'updatedAt' | 'phone' | 'company';
+  sortBy?: 'createdAt' | 'updatedAt' | 'work' | 'age';
   sortOrder?: 'asc' | 'desc';
 }
 
@@ -22,17 +22,10 @@ export interface CreateCustomerSessionParams {
   // 基本信息
   gender?: string;
   age?: number;
-  position?: string;
-  // 联系方式
-  phone?: string;
-  email?: string;
-  wechat?: string;
-  // 公司信息
-  company?: string;
-  industry?: string;
-  scale?: string;
-  // 地址信息
-  address?: string;
+  work?: string;
+  isSingle?: boolean;
+  familySituation?: string;
+  hobby?: string;
   // 聊天配置
   chatConfig?: AgentChatConfig;
 }
@@ -114,16 +107,6 @@ export class CustomerModel {
     });
   };
 
-  // 根据手机号查找客户
-  findByPhone = async (
-    phone: string
-  ): Promise<CustomerSessionItem | undefined> => {
-    if (!phone?.trim()) return undefined;
-    
-    return this.db.query.customerSessions.findFirst({
-      where: eq(customerSessions.phone, phone.trim()),
-    });
-  };
 
   count = async (): Promise<number> => {
     const result = await this.db
@@ -154,10 +137,9 @@ export class CustomerModel {
       const searchTerm = `%${keyword.trim()}%`;
       conditions.push(
         or(
-          like(customerSessions.company, searchTerm),
-          like(customerSessions.phone, searchTerm),
-          like(customerSessions.email, searchTerm),
-          like(customerSessions.wechat, searchTerm)
+          like(customerSessions.work, searchTerm),
+          like(customerSessions.familySituation, searchTerm),
+          like(customerSessions.hobby, searchTerm)
         )
       );
     }
@@ -175,12 +157,12 @@ export class CustomerModel {
         orderByClause = sortDirection(customerSessions.updatedAt);
         break;
       }
-      case 'phone': {
-        orderByClause = sortDirection(customerSessions.phone);
+      case 'work': {
+        orderByClause = sortDirection(customerSessions.work);
         break;
       }
-      case 'company': {
-        orderByClause = sortDirection(customerSessions.company);
+      case 'age': {
+        orderByClause = sortDirection(customerSessions.age);
         break;
       }
       default: {

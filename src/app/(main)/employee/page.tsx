@@ -400,7 +400,7 @@ export default function EmployeePage() {
         // 创建员工
         // 生成随机用户名，一方面避免中文名casdoor注册失败，一方面避免用户手动输入
         const username = generateUserName();
-        
+
         // 先在 Casdoor 中创建用户
         await casdoorAPI.createUser({
           name: username,

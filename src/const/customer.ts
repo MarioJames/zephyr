@@ -9,3 +9,9 @@ export const AGE_OPTIONS = Array.from({ length: 60 }, (_, i) => {
   const age = i + 18; // 从18岁开始
   return { value: age.toString(), label: `${age}岁` };
 });
+
+// 婚姻状况选项
+export const MARITAL_STATUS_OPTIONS = [
+  { value: 'true', label: '单身' },
+  { value: 'false', label: '非单身' },
+];

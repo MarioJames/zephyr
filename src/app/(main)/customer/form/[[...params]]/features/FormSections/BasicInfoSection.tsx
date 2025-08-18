@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Row, Col } from 'antd';
 import { Input, Select, InputNumber } from '@lobehub/ui';
-import { GENDER_OPTIONS } from '@/const/customer';
+import { GENDER_OPTIONS, MARITAL_STATUS_OPTIONS } from '@/const/customer';
 import { useSharedStyles } from '../shared/styles';
 
 export default function BasicInfoSection() {
@@ -37,8 +37,25 @@ export default function BasicInfoSection() {
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item label='职位' name='position'>
-            <Input className={styles.inputBg} placeholder='请输入职位' />
+          <Form.Item label='工作' name='work'>
+            <Input className={styles.inputBg} placeholder='请输入工作' />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={24}>
+        <Col span={6}>
+          <Form.Item label='婚姻状况' name='isSingle'>
+            <Select className={styles.selectBg} options={MARITAL_STATUS_OPTIONS} placeholder='请选择婚姻状况' />
+          </Form.Item>
+        </Col>
+        <Col span={9}>
+          <Form.Item label='家庭情况' name='familySituation'>
+            <Input className={styles.inputBg} placeholder='请输入家庭情况' />
+          </Form.Item>
+        </Col>
+        <Col span={9}>
+          <Form.Item label='兴趣爱好' name='hobby'>
+            <Input className={styles.inputBg} placeholder='请输入兴趣爱好' />
           </Form.Item>
         </Col>
       </Row>

@@ -6,6 +6,7 @@ import {
   text,
   integer,
   jsonb,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { timestamps } from '@/database/_helpers';
 
@@ -20,23 +21,26 @@ export const customerSessions = pgTable(
     sessionId: text('session_id').notNull().unique(), // 关联外部 session 表的 ID
 
     // Session 表中没有的客户扩展信息
-    // 基本信息
     gender: varchar('gender', { length: 10 }), // 性别
     age: integer('age'), // 年龄
-    position: varchar('position', { length: 100 }), // 职位
+    work: text('work'), // 工作
+    isSingle: boolean('is_single'), // 是否单身
+    familySituation: text('family_situation'), // 家庭情况
+    hobby: text('hobby'), // 兴趣爱好
 
-    // 联系方式
-    phone: varchar('phone', { length: 20 }), // 手机号
-    email: varchar('email', { length: 255 }), // 邮箱
-    wechat: varchar('wechat', { length: 50 }), // 微信号
+    // position: varchar('position', { length: 100 }), // 职位
+    // // 联系方式
+    // phone: varchar('phone', { length: 20 }), // 手机号
+    // email: varchar('email', { length: 255 }), // 邮箱
+    // wechat: varchar('wechat', { length: 50 }), // 微信号
 
-    // 公司信息
-    company: varchar('company', { length: 200 }), // 公司名称
-    industry: varchar('industry', { length: 100 }), // 行业
-    scale: varchar('scale', { length: 50 }), // 公司规模
+    // // 公司信息
+    // company: varchar('company', { length: 200 }), // 公司名称
+    // industry: varchar('industry', { length: 100 }), // 行业
+    // scale: varchar('scale', { length: 50 }), // 公司规模
 
-    // 详细地址
-    address: text('address'),
+    // // 详细地址
+    // address: text('address'),
 
     // 聊天配置
     chatConfig: jsonb('chat_config'), // 聊天相关配置，可存储 JSON 数据

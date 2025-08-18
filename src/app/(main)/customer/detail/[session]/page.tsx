@@ -10,9 +10,7 @@ import { useCustomerDetail } from './hooks/useCustomerDetail';
 import {
   CustomerDetailHeader,
   CustomerInfoCard,
-  CustomerContactInfo,
-  CustomerCompanyInfo,
-  CustomerAddressInfo,
+  CustomerBasicInfo,
   TopicRecordsTable,
 } from './components';
 import NoAuthority from '@/components/NoAuthority';
@@ -117,14 +115,8 @@ export default function CustomerDetail({
 
       {/* 详细信息区域 */}
       <div className={styles.infoContainer}>
-        {/* 联系方式 */}
-        <CustomerContactInfo customer={customerDetail.extend} />
-
-        {/* 公司信息 */}
-        <CustomerCompanyInfo customer={customerDetail.extend} />
-
-        {/* 地址信息 */}
-        <CustomerAddressInfo customer={customerDetail.extend} />
+        {/* 基本信息 */}
+        <CustomerBasicInfo customer={customerDetail.extend} />
       </div>
 
       {/* 话题记录 */}

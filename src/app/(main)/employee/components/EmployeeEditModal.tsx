@@ -110,6 +110,26 @@ const useStyles = createStyles(({ css, token }) => ({
   cancelButton: css`
     border: 1px solid ${token.colorBorder};
   `,
+  customSelect: css`
+    border-radius: 6px;
+    background: ${token.colorFillTertiary};
+    height: 32px;
+    .ant-select-selector {
+      background: ${token.colorFillTertiary} !important;
+      border: none !important;
+      box-shadow: none !important;
+      height: 32px !important;
+      display: flex;
+      align-items: center;
+    }
+    &:hover .ant-select-selector,
+    &:focus .ant-select-selector,
+    &.ant-select-focused .ant-select-selector {
+      background: ${token.colorFillTertiary} !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+  `,
 }));
 
 export interface EmployeeEditModalProps {
@@ -140,6 +160,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   onAvatarChange,
 }) => {
   const { styles } = useStyles();
+
   return (
     <Modal
       className={styles.addEmployeeModal}
@@ -193,7 +214,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
               disabled={avatarUploading}
               icon={<UploadOutlined />}
               loading={avatarUploading}
-              type="text"
+              type='text'
             >
               {avatarUploading ? '上传中...' : '上传头像'}
             </Button>
@@ -231,9 +252,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
             className={styles.formItem}
             label='手机号'
             name='phone'
-            rules={[
-              { required: true, message: '请输入员工手机号' },
-            ]}
+            rules={[{ required: true, message: '请输入员工手机号' }]}
           >
             <Input
               className={styles.customInput}
@@ -249,9 +268,9 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
             <Select
               className={styles.customSelect}
               placeholder='请选择员工角色'
-              options={roles.map(role => ({
+              options={roles.map((role) => ({
                 label: role.displayName,
-                value: role.id
+                value: role.id,
               }))}
             />
           </Form.Item>

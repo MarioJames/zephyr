@@ -8,9 +8,6 @@ import CustomerTypeSelector from './features/CustomerTypeSelector';
 import AvatarUploader from './features/AvatarUploader';
 import {
   BasicInfoSection,
-  ContactInfoSection,
-  CompanyInfoSection,
-  AddressInfoSection,
   NotesSection,
 } from './features/FormSections';
 import FormActions from './features/FormActions';
@@ -41,14 +38,10 @@ export type CustomerFormData = {
   // Extend 相关字段 (排除 id, sessionId, timestamps)
   gender: string | null;
   age: number | null;
-  position: string | null;
-  phone: string | null;
-  email: string | null;
-  wechat: string | null;
-  company: string | null;
-  industry: string | null;
-  scale: string | null;
-  address: string | null;
+  work: string | null;
+  isSingle: boolean | null;
+  familySituation: string | null;
+  hobby: string | null;
   chatConfig: any; // AgentConfig
 
   // 表单专用字段
@@ -112,15 +105,6 @@ export default function CustomerForm({
 
         {/* 基本信息 */}
         <BasicInfoSection />
-
-        {/* 联系方式 */}
-        <ContactInfoSection />
-
-        {/* 公司信息 */}
-        <CompanyInfoSection />
-
-        {/* 地址信息 */}
-        <AddressInfoSection />
 
         <Divider />
 

@@ -1,9 +1,5 @@
-export type { CustomerAddressInfoProps } from './CustomerAddressInfo';
-export { CustomerAddressInfo } from './CustomerAddressInfo';
-export type { CustomerCompanyInfoProps } from './CustomerCompanyInfo';
-export { CustomerCompanyInfo } from './CustomerCompanyInfo';
-export type { CustomerContactInfoProps } from './CustomerContactInfo';
-export { CustomerContactInfo } from './CustomerContactInfo';
+export type { CustomerBasicInfoProps } from './CustomerBasicInfo';
+export { CustomerBasicInfo } from './CustomerBasicInfo';
 export type { CustomerDetailHeaderProps } from './CustomerDetailHeader';
 export { CustomerDetailHeader } from './CustomerDetailHeader';
 export type { CustomerInfoCardProps } from './CustomerInfoCard';
