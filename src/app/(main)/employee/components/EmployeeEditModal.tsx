@@ -110,26 +110,6 @@ const useStyles = createStyles(({ css, token }) => ({
   cancelButton: css`
     border: 1px solid ${token.colorBorder};
   `,
-  customSelect: css`
-    border-radius: 6px;
-    background: ${token.colorFillTertiary};
-    height: 32px;
-    .ant-select-selector {
-      background: ${token.colorFillTertiary} !important;
-      border: none !important;
-      box-shadow: none !important;
-      height: 32px !important;
-      display: flex;
-      align-items: center;
-    }
-    &:hover .ant-select-selector,
-    &:focus .ant-select-selector,
-    &.ant-select-focused .ant-select-selector {
-      background: ${token.colorFillTertiary} !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-  `,
 }));
 
 export interface EmployeeEditModalProps {

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SDK } from 'casdoor-nodejs-sdk';
 import { casdoorEnv } from '@/env/casdoor';
-import { User } from 'casdoor-nodejs-sdk/lib/cjs/user';
 
 /**
  * POST /api/casdoor/users
@@ -32,22 +31,16 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const user = (await sdk.addUser({
+    const user = await sdk.addUser({
       name: body.name,
-      displayName: body.name,
+      displayName: body.displayName,
       email: body.email,
       phone: body.phone,
       owner: 'built-in',
       createdTime: new Date().toISOString(),
       avatar: body.avatar || '',
       password: 'zephyr.default',
-    })) as unknown as {
-      data: {
-        status: string;
-        msg: string;
-        data: User;
-      }
-    };
+    });
 
 
     if ((user.data.status as unknown as string) === 'error') {
@@ -60,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: user,
+      data: user.data,
       message: '用户创建成功',
     });
   } catch (error: any) {
