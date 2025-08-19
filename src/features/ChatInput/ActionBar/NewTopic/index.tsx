@@ -1,18 +1,16 @@
-"use client";
+'use client';
 
-import { App, Flex } from "antd";
-import { MessageCirclePlus } from "lucide-react";
-import { memo, useCallback, MouseEvent } from "react";
-import { debounce } from "lodash-es";
-import { useChatStore } from "@/store/chat";
-import { useSessionStore } from "@/store/session";
-import { sessionSelectors } from "@/store/session/selectors";
-import { useRouter } from "next/navigation";
-import topicService from "@/services/topics";
-import { topicsAPI } from "@/services";
-import { createStyles } from "antd-style";
+import { App, Flex } from 'antd';
+import { MessageCirclePlus } from 'lucide-react';
+import { memo, useCallback, MouseEvent } from 'react';
+import { debounce } from 'lodash-es';
+import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
+import { sessionSelectors } from '@/store/session/selectors';
+import { useRouter } from 'next/navigation';
+import { createStyles } from 'antd-style';
 
-import Action from "../components/Action";
+import Action from '../components/Action';
 
 const useStyles = createStyles(({ css, token }) => ({
   newTopic: css`
@@ -35,10 +33,9 @@ const NewTopic = memo(() => {
   const { message } = App.useApp();
   const router = useRouter();
 
-  const { createTopic, switchTopic, updateTopic } = useChatStore((s) => ({
+  const { createTopic, switchTopic } = useChatStore((s) => ({
     createTopic: s.createTopic,
     switchTopic: s.switchTopic,
-    updateTopic: s.updateTopic,
   }));
 
   const [activeSessionId, activeTopicId] = useSessionStore((s) => [
@@ -48,41 +45,41 @@ const NewTopic = memo(() => {
 
   const createNewTopic = async () => {
     if (!activeSessionId) {
-      message.warning("请先选择会话");
+      message.warning('请先选择会话');
       return;
     }
 
     try {
       // 如果有当前话题，异步调用总结话题接口为当前话题生成标题并更新
-      if (activeTopicId) {
-        (async () => {
-          try {
-            // 生成新标题
-            const newTitle = await topicService.summaryTopicTitle({ id: activeTopicId });
-            
-            // 更新话题标题
-            const updatedTopic = await topicsAPI.updateTopic(activeTopicId, {
-              title: newTitle,
-            });
-            
-            // 更新本地状态
-            updateTopic(activeTopicId, updatedTopic);
-          } catch (error) {
-            console.warn("话题总结失败:", error);
-          }
-        })();
-      }
+      // if (activeTopicId) {
+      //   (async () => {
+      //     try {
+      //       // 生成新标题
+      //       const newTitle = await topicService.summaryTopicTitle({ id: activeTopicId });
 
-      message.loading("正在创建新话题...", 0);
+      //       // 更新话题标题
+      //       const updatedTopic = await topicsAPI.updateTopic(activeTopicId, {
+      //         title: newTitle,
+      //       });
+
+      //       // 更新本地状态
+      //       updateTopic(activeTopicId, updatedTopic);
+      //     } catch (error) {
+      //       console.warn("话题总结失败:", error);
+      //     }
+      //   })();
+      // }
+
+      message.loading('正在创建新话题...', 0);
 
       // 创建新话题
       const newTopic = await createTopic({
-        title: "新的话题",
+        title: '新的话题',
         sessionId: activeSessionId,
       });
 
       message.destroy();
-      message.success("新话题创建成功");
+      message.success('新话题创建成功');
 
       // 切换到新话题
       switchTopic(newTopic.id);
@@ -91,8 +88,8 @@ const NewTopic = memo(() => {
       router.push(`/chat?session=${activeSessionId}&topic=${newTopic.id}`);
     } catch (error) {
       message.destroy();
-      console.error("创建新话题失败:", error);
-      message.error("创建新话题失败，请稍后重试");
+      console.error('创建新话题失败:', error);
+      message.error('创建新话题失败，请稍后重试');
     }
   };
 
@@ -107,7 +104,7 @@ const NewTopic = memo(() => {
 
   return (
     <Flex
-      align="center"
+      align='center'
       className={styles.newTopic}
       onClick={handleCreateNewTopic}
     >

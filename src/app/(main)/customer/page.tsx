@@ -493,13 +493,9 @@ export default function Customer() {
         )}
         <Table
           columns={columns}
+          rowKey='id'
           dataSource={displayCustomers}
           loading={loading}
-          locale={{
-            triggerDesc: '点击降序排列',
-            triggerAsc: '点击升序排列',
-            cancelSort: '取消排序',
-          }}
           onChange={handleTableChange}
           pagination={{
             current: page,

@@ -1,8 +1,8 @@
-import React from "react";
-import { Form, Typography } from "antd";
-import { CheckCircleFilled } from "@ant-design/icons";
-import { CustomerTypeSelectorProps } from "../shared/types";
-import { useCustomerTypeSelectorStyles } from "./styles";
+import React from 'react';
+import { Form, Input, Typography } from 'antd';
+import { CheckCircleFilled } from '@ant-design/icons';
+import { CustomerTypeSelectorProps } from '../shared/types';
+import { useCustomerTypeSelectorStyles } from './styles';
 
 const { Title } = Typography;
 
@@ -11,14 +11,16 @@ export default function CustomerTypeSelector({
 }: CustomerTypeSelectorProps) {
   const form = Form.useFormInstance();
 
-  const agentId = Form.useWatch("agentId", form);
+  const agentId = Form.useWatch('agentId', form);
 
   const { styles } = useCustomerTypeSelectorStyles();
 
   return (
     <>
       <Title level={5}>选择客户类型</Title>
-      <Form.Item hidden name="agentId" />
+      <Form.Item hidden name='agentId'>
+        <Input />
+      </Form.Item>
       <div className={styles.typeContainer}>
         {agents && agents.length > 0 ? (
           agents.map((agent) => (
@@ -32,7 +34,7 @@ export default function CustomerTypeSelector({
               onClick={() =>
                 form.setFields([
                   {
-                    name: "agentId",
+                    name: 'agentId',
                     value: agent.id,
                   },
                 ])

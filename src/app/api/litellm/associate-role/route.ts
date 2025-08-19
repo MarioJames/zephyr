@@ -51,13 +51,11 @@ export async function POST(request: NextRequest) {
     const quotaModel = new QuotaModel(adminDB);
     const quota = await quotaModel.findByRoleId(roleId);
 
-    const tokenBudget = quota?.tokenBudget || 0;
-
     // 2.2 创建虚拟 KEY
     const virtualKeyResult = await litellmService.createVirtualKey(
       userId,
       roleId,
-      tokenBudget
+      quota?.tokenBudget
     );
 
     // 2.3 将虚拟 KEY 信息保存到数据库

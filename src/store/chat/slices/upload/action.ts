@@ -115,28 +115,6 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
         sessionId: useSessionStore.getState().activeSessionId,
       });
 
-      // // 处理图片文件的 base64 编码
-      // const processedFiles = await Promise.all(
-      //   res.successful.map(async (uploadedFile) => {
-      //     const resultFile: ChatFileItem = {
-      //       ...uploadedFile,
-      //       status: 'success' as const,
-      //     };
-
-      //     // 如果是图片文件，生成 base64 编码
-      //     if (file.type.startsWith('image/')) {
-      //       try {
-      //         const { base64 } = await parseImageToBase64(file);
-      //         resultFile.base64 = base64;
-      //       } catch (error) {
-      //         console.error('图片 base64 编码失败:', error);
-      //       }
-      //     }
-
-      //     return resultFile;
-      //   })
-      // );
-
       set({
         chatUploadFileList: [
           // 删除正在上传的文件
@@ -154,12 +132,9 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
       console.error(error);
 
       set({
-        chatUploadFileList: get().chatUploadFileList.map((chatFile) => {
-          if (chatFile.originalFile === file) {
-            return { ...chatFile, status: 'error' as const };
-          }
-          return chatFile;
-        }),
+        chatUploadFileList: get().chatUploadFileList.filter(
+          (chatFile) => chatFile.originalFile !== file
+        ),
       });
 
       throw error;

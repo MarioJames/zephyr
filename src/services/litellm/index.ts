@@ -89,13 +89,13 @@ async function deleteTeamUser(userId: string, roleId: string) {
 async function createVirtualKey(
   userId: string,
   roleId: string,
-  tokenBudget?: number
+  tokenBudget?: number | null
 ) {
   const teamId = getLitellmTeamId(roleId);
 
   const apiKeyParams = {
     key_alias: generateApiKeyAlias(userId, teamId),
-    max_budget: tokenBudget ?? 0,
+    max_budget: tokenBudget ?? null,
     budget_duration: '1mo',
     models: ['all-team-models'],
     metadata: {

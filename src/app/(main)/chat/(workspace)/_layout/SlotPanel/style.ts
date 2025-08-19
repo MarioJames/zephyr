@@ -173,6 +173,8 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    column-gap: 4px;
+    margin-top: 8px;
   `,
   adoptBtn: css`
     color: ${token.colorText};
@@ -186,7 +188,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     border-radius: 6px;
     cursor: pointer;
   `,
-    copyBtn: css`
+  copyBtn: css`
     color: ${token.colorPrimary};
     cursor: pointer;
     margin-right: 12px;

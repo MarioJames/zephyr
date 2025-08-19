@@ -264,7 +264,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
                       <div style={{ fontWeight: 500 }}>{file.filename}</div>
                       <div style={{ fontSize: 12, color: '#8c8c8c' }}>
                         {formatFileSize(file.size)} •{' '}
-                        {new Date(file.createdAt).toLocaleDateString()}
+                        {new Date(file.uploadedAt).toLocaleDateString()}
                       </div>
                     </div>
                     <Tag color='blue'>{file.fileType}</Tag>
