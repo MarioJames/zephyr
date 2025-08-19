@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Row, Col, Modal, Typography, App } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
-import { Bot, RefreshCw } from 'lucide-react';
+import { Bot, RefreshCw, Copy } from 'lucide-react';
 import { chatSelectors, useChatStore } from '@/store/chat';
 import { AgentSuggestionItem } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
@@ -54,6 +54,18 @@ function AIHintItem({
   const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
   const { styles } = useAIHintStyles();
   const { acceptSuggestion } = useChatStore();
+  const { message } = App.useApp();
+
+  // 处理复制文本
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      message.success('复制成功');
+    } catch (err) {
+      message.error('复制失败');
+      console.error('复制失败:', err);
+    }
+  };
 
   // 获取知识点作为卡片展示
   const getKnowledgeCards = () => {
@@ -169,6 +181,13 @@ function AIHintItem({
                 </Paragraph>
                 {isLatest && (
                   <div className={styles.sectionFooter}>
+                    <Button
+                      className={styles.copyBtn}
+                      icon={<Copy size={16} />}
+                      onClick={() => handleCopy(response.content)}
+                      style={{ marginRight: 8 }}
+                      type="default"
+                    />
                     <Button
                       className={styles.adoptBtn}
                       loading={adoptingIndex === idx}
