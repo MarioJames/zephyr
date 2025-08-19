@@ -1,4 +1,5 @@
 import { litellmEnv } from '@/env/litellm';
+import { http } from '../request';
 
 function getLitellmTeamId(roleId: string) {
   return `role_${roleId}`;
@@ -37,12 +38,12 @@ async function createTeamUser(userId: string, roleId: string) {
 
   const data = await response.json();
 
-  if (data.error) {
+  if (data.error && data.error.type !== 'team_member_already_in_team') {
     if ('error' in data.error) throw data.error.error;
     throw data.error;
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -76,7 +77,7 @@ async function deleteTeamUser(userId: string, roleId: string) {
     throw data.error;
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -122,7 +123,7 @@ async function createVirtualKey(
     throw data.error;
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -152,9 +153,72 @@ async function blockVirtualKey(virtualKeyId: string) {
   }
 }
 
+/**
+ * 激活虚拟KEY
+ * @param virtualKeyId 虚拟KEY ID
+ * @returns 激活结果
+ */
+async function activateVirtualKey(virtualKeyId: string) {
+  const response = await fetch(`${litellmEnv.LITELLM_BASE_URL}/key/update`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${litellmEnv.LITELLM_MASTER_KEY}`,
+    },
+    body: JSON.stringify({
+      key: virtualKeyId,
+      blocked: false,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (data.error) {
+    if ('error' in data.error) throw data.error.error;
+    throw data.error;
+  }
+
+  return data;
+}
+
+/**
+ * 添加团队用户，聚合接口，调用 createTeamUser 和 createVirtualKey
+ * @param userId 用户ID
+ * @param roleId 角色ID
+ * @returns 添加结果
+ */
+async function addUserToTeam(userId: string, roleId: string) {
+  return (await http.post('/api/litellm/associate-role', {
+    userId,
+    roleId,
+  })) as {
+    success: boolean;
+    message: string;
+  };
+}
+
+/**
+ * 移除团队用户，聚合接口，调用 deleteTeamUser 和 blockVirtualKey
+ * @param userId 用户ID
+ * @param roleId 角色ID
+ * @returns 移除结果
+ */
+async function removeUserFromTeam(userId: string, roleId: string) {
+  return (await http.post('/api/litellm/disassociate-role', {
+    userId,
+    roleId,
+  })) as {
+    success: boolean;
+    message: string;
+  };
+}
+
 export default {
   createTeamUser,
   deleteTeamUser,
   createVirtualKey,
   blockVirtualKey,
+  activateVirtualKey,
+  addUserToTeam,
+  removeUserFromTeam,
 };

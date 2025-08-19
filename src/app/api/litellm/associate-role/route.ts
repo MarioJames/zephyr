@@ -3,6 +3,7 @@ import litellmService from '@/services/litellm';
 import { QuotaModel } from '@/database/adminDB/models/quota';
 import { VirtualKeyModel } from '@/database/adminDB/models/virtualKey';
 import { getAdminDB } from '@/database/adminDB';
+import { VirtualKeyResponse } from '@/services/user';
 
 interface AssociateRoleRequest {
   userId: string;
@@ -24,22 +25,42 @@ export async function POST(request: NextRequest) {
     // 1. 创建 LiteLLM 团队用户
     await litellmService.createTeamUser(userId, roleId);
 
-    // 2. 获取角色对应的 token 限额
     const adminDB = await getAdminDB();
+
+    // 1. 查看有没有之前创建的虚拟Key
+    const virtualKeyModel = new VirtualKeyModel(adminDB);
+    const virtualKeyInfo = (await virtualKeyModel.findByUserAndRole(
+      userId,
+      roleId
+    )) as VirtualKeyResponse;
+
+    if (virtualKeyInfo) {
+      // 如果存在，则激活虚拟Key
+      await litellmService.activateVirtualKey(
+        virtualKeyInfo.keyVaults.virtualKeyId
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: '角色关联成功',
+      });
+    }
+
+    // 2. 之前没有创建过虚拟Key，则进入创建流程
+    // 2.1 获取角色对应的 token 限额
     const quotaModel = new QuotaModel(adminDB);
     const quota = await quotaModel.findByRoleId(roleId);
 
     const tokenBudget = quota?.tokenBudget || 0;
 
-    // 3. 创建虚拟 KEY
+    // 2.2 创建虚拟 KEY
     const virtualKeyResult = await litellmService.createVirtualKey(
       userId,
       roleId,
       tokenBudget
     );
 
-    // 4. 将虚拟 KEY 信息保存到数据库
-    const virtualKeyModel = new VirtualKeyModel(adminDB);
+    // 2.3 将虚拟 KEY 信息保存到数据库
     await virtualKeyModel.create(userId, roleId, {
       virtualKeyId: virtualKeyResult.token_id,
       virtualKey: virtualKeyResult.key,
