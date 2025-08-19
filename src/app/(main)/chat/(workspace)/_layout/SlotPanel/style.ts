@@ -90,6 +90,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   cardGrid: css`
     width: 100%;
     margin-bottom: 8px;
+    margin-top: 12px;
   `,
   cardItem: css`
     padding: 6px 12px;
