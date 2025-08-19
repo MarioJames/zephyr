@@ -226,8 +226,8 @@ function AIHintItem({
 
 const AIHintPanel = () => {
   const { message } = App.useApp();
-
   const { styles } = useAIHintStyles();
+  const listRef = React.useRef<HTMLDivElement>(null);
 
   // 获取当前 topic 的建议数据和加载状态
   const [
@@ -238,11 +238,18 @@ const AIHintPanel = () => {
     generateAISuggestion,
   ] = useChatStore((s) => [
     chatSelectors.isGeneratingAI(s),
-    chatSelectors.suggestions(s),
+    chatSelectors.suggestionsSortedByTime(s),
     chatSelectors.suggestionsLoading(s),
     chatSelectors.messages(s),
     s.generateAISuggestion,
   ]);
+
+  // 监听生成状态变化，滚动到顶部
+  React.useEffect(() => {
+    if (isGeneratingAI && listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [isGeneratingAI]);
 
   // 找到最新建议（按时间戳最大的）
   const latestSuggestion =
@@ -334,11 +341,22 @@ const AIHintPanel = () => {
         )}
       </Flexbox>
       {/* List */}
-      <Flexbox className={styles.listWrap} flex={1}>
+      <Flexbox className={styles.listWrap} flex={1} ref={listRef}>
         {isFetchingAI ? (
           <SkeletonList />
         ) : (
           <>
+            {/* 生成中的状态始终显示在最上面 */}
+            {isGeneratingAI && (
+              <AIHintItem
+                isLatest={false}
+                item={{
+                  id: 'generating',
+                  placeholder: true,
+                  createdAt: new Date().toISOString(),
+                }}
+              />
+            )}
             {suggestions.length === 0 && !isGeneratingAI && (
               <Flexbox
                 align="center"
