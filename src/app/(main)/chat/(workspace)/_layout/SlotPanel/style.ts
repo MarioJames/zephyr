@@ -188,14 +188,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   `,
     copyBtn: css`
     color: ${token.colorPrimary};
-    height: 22px;
-    background-color: transparent;
-    border: none;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 22px;
-    padding: 0 8px;
-    border-radius: 6px;
     cursor: pointer;
+    margin-right: 12px;
   `,
 }));
