@@ -10,7 +10,11 @@ export interface ThreadChatItemProps {
 const MainChatItem = memo<ThreadChatItemProps>(({ id }) => {
   const actionBar = useMemo(() => <ActionsBar id={id} />, [id]);
 
-  return <ChatItem actionBar={actionBar} id={id} />;
+  return (
+    <div id={`chat-message-${id}`}>
+      <ChatItem actionBar={actionBar} id={id} />
+    </div>
+  );
 });
 
 MainChatItem.displayName = 'MainChatItem';

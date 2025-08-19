@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import React, { memo, useState, useEffect } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { createStyles, useTheme } from 'antd-style';
@@ -181,9 +180,10 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const [searchResults, setSearchResults] = useState<MessageItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const { switchTopic } = useChatStore();
+
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const theme = useTheme();
+
 
   const handleSearch = async () => {
     if (searchValue.trim() && activeSessionId) {
@@ -225,12 +225,21 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   };
 
   const handleMessageClick = (message: MessageItem) => {
-    if (message.topicId) {
-      switchTopic(message.topicId);
-      setSearchValue('');
-      setShowResults(false);
+    // 使用消息ID查找对应的DOM元素
+    const messageElement = document.getElementById(`chat-message-${message.id}`);
+
+    if (!messageElement) {
+      return;
     }
-    // TODO: 看看能不能跳转到指定消息
+
+    // 平滑滚动到消息元素
+    messageElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
+    // 关闭搜索结果弹窗
+    setShowResults(false);
   };
 
   const searchContent = (
