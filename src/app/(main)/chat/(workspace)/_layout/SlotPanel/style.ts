@@ -90,6 +90,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
   cardGrid: css`
     width: 100%;
     margin-bottom: 8px;
+    margin-top: 12px;
   `,
   cardItem: css`
     padding: 6px 12px;
@@ -173,6 +174,8 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    column-gap: 4px;
+    margin-top: 8px;
   `,
   adoptBtn: css`
     color: ${token.colorText};
@@ -186,7 +189,7 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     border-radius: 6px;
     cursor: pointer;
   `,
-    copyBtn: css`
+  copyBtn: css`
     color: ${token.colorPrimary};
     cursor: pointer;
     margin-right: 12px;

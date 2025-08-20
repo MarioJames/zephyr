@@ -62,17 +62,11 @@ export const CustomerBasicInfo: React.FC<CustomerBasicInfoProps> = ({
           <div className={styles.infoLabel}>工作：</div>
           <div className={styles.infoValue}>{customer?.work || '-'}</div>
         </div>
-        <div className={styles.infoItem}>
-          <div className={styles.infoLabel}>婚姻状况：</div>
-          <div className={styles.infoValue}>
-            {customer?.isSingle === true ? '单身' : customer?.isSingle === false ? '非单身' : '-'}
-          </div>
-        </div>
       </div>
 
       {/* 家庭和兴趣 */}
       <div className={styles.infoBox}>
-        <div className={styles.infoTitle}>家庭和兴趣</div>
+        <div className={styles.infoTitle}>其他</div>
         <div className={styles.infoItem}>
           <div className={styles.infoLabel}>家庭情况：</div>
           <div className={styles.infoValue}>{customer?.familySituation || '-'}</div>
@@ -80,6 +74,12 @@ export const CustomerBasicInfo: React.FC<CustomerBasicInfoProps> = ({
         <div className={styles.infoItem}>
           <div className={styles.infoLabel}>兴趣爱好：</div>
           <div className={styles.infoValue}>{customer?.hobby || '-'}</div>
+        </div>
+        <div className={styles.infoItem}>
+          <div className={styles.infoLabel}>婚姻状况：</div>
+          <div className={styles.infoValue}>
+            {customer?.isSingle === true ? '未婚' : customer?.isSingle === false ? '已婚' : '-'}
+          </div>
         </div>
       </div>
     </>

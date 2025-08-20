@@ -12,7 +12,7 @@ export function customerItemToFormData(
 
   // 构建地区数组
   const region: string[] = [];
-  
+
   return {
     // Session 字段
     slug: session.slug,
@@ -27,16 +27,16 @@ export function customerItemToFormData(
     pinned: session.pinned,
     messageCount: session.messageCount,
     agentsToSessions: session.agentsToSessions,
-    
+
     // Extend 字段
     gender: extend?.gender ?? null,
     age: extend?.age ?? null,
     work: extend?.work ?? null,
-    isSingle: extend?.isSingle ?? null,
+    isSingle: JSON.stringify(extend?.isSingle),
     familySituation: extend?.familySituation ?? null,
     hobby: extend?.hobby ?? null,
     chatConfig: extend?.chatConfig,
-    
+
     // 表单专用字段
     agentId: session?.agent?.id,
     sessionId: session.id,
@@ -67,7 +67,7 @@ export function formDataToCreateRequest(
       gender,
       age,
       work,
-      isSingle,
+      isSingle: isSingle ? JSON.parse(isSingle) : null,
       familySituation,
       hobby,
       chatConfig,

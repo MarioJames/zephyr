@@ -134,6 +134,7 @@ async function chat(data: ChatRequest) {
       },
     }
   );
+
   const choices = res?.data?.choices;
 
   return {

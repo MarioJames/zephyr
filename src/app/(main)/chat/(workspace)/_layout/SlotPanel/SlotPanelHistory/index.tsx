@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
-import { FileClock, X, MoreHorizontal, Edit3, Sparkles } from 'lucide-react';
+import { FileClock, X, MoreHorizontal, Edit3 } from 'lucide-react';
 import { Dropdown, Modal, Input, App, Spin } from 'antd';
 import { createStyles } from 'antd-style';
 import { useGlobalStore } from '@/store/global';
@@ -11,7 +11,6 @@ import { useSessionStore , sessionSelectors } from '@/store/session';
 import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
 import SkeletonList from './SkeletonList';
-import topicService from '@/services/topics';
 import { topicsAPI } from '@/services';
 
 const useStyles = createStyles(({ token, css }) => ({
@@ -94,34 +93,34 @@ const HistoryPanel = () => {
   };
 
   // 处理AI重命名
-  const handleAIRename = async (topicId: string) => {
-    try {
-      // 添加loading状态
-      setLoadingTopicIds((prev) => new Set(prev).add(topicId));
+  // const handleAIRename = async (topicId: string) => {
+  //   try {
+  //     // 添加loading状态
+  //     setLoadingTopicIds((prev) => new Set(prev).add(topicId));
 
-      // 生成新标题
-      const newTitle = await topicService.summaryTopicTitle({ id: topicId });
-      
-      // 更新话题标题
-      const updatedTopic = await topicsAPI.updateTopic(topicId, {
-        title: newTitle,
-      });
-      
-      updateTopic(topicId, updatedTopic);
+  //     // 生成新标题
+  //     const newTitle = await topicService.summaryTopicTitle({ id: topicId });
 
-      message.success('AI 重命名成功');
-    } catch (error) {
-      console.error('AI重命名失败:', error);
-      message.error('AI重命名失败');
-    } finally {
-      // 移除loading状态
-      setLoadingTopicIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(topicId);
-        return newSet;
-      });
-    }
-  };
+  //     // 更新话题标题
+  //     const updatedTopic = await topicsAPI.updateTopic(topicId, {
+  //       title: newTitle,
+  //     });
+
+  //     updateTopic(topicId, updatedTopic);
+
+  //     message.success('AI 重命名成功');
+  //   } catch (error) {
+  //     console.error('AI重命名失败:', error);
+  //     message.error('AI重命名失败');
+  //   } finally {
+  //     // 移除loading状态
+  //     setLoadingTopicIds((prev) => {
+  //       const newSet = new Set(prev);
+  //       newSet.delete(topicId);
+  //       return newSet;
+  //     });
+  //   }
+  // };
 
   // 确认重命名
   const handleConfirmRename = async () => {
@@ -173,19 +172,19 @@ const HistoryPanel = () => {
         handleRename(topic);
       },
     },
-    {
-      key: 'ai-rename',
-      label: (
-        <div className={customStyles.menuItem}>
-          <Sparkles size={16} />
-          使用 AI 重命名
-        </div>
-      ),
-      onClick: (e: any) => {
-        e?.domEvent?.stopPropagation();
-        handleAIRename(topic.id);
-      },
-    },
+    // {
+    //   key: 'ai-rename',
+    //   label: (
+    //     <div className={customStyles.menuItem}>
+    //       <Sparkles size={16} />
+    //       使用 AI 重命名
+    //     </div>
+    //   ),
+    //   onClick: (e: any) => {
+    //     e?.domEvent?.stopPropagation();
+    //     handleAIRename(topic.id);
+    //   },
+    // },
   ];
 
   return (

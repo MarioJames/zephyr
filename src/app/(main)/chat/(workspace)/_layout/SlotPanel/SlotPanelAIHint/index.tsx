@@ -1,27 +1,26 @@
-import React, { useState } from "react";
-import { Row, Col, Modal, Typography, App } from "antd";
-import { Button } from "@lobehub/ui";
-import { Flexbox } from "react-layout-kit";
-import { Bot, RefreshCw, Copy } from "lucide-react";
-import { chatSelectors, useChatStore } from "@/store/chat";
-import { AgentSuggestionItem } from "@/services/agent_suggestions";
-import { useAIHintStyles } from "../style";
-import BubblesLoading from "@/components/Loading/BubblesLoading";
-import SkeletonList from "./SkeletonList";
+import React, { useState } from 'react';
+import { Row, Col, Modal, Typography, App } from 'antd';
+import { Button } from '@lobehub/ui';
+import { Flexbox } from 'react-layout-kit';
+import { Bot, RefreshCw, Copy } from 'lucide-react';
+import { chatSelectors, useChatStore } from '@/store/chat';
+import { AgentSuggestionItem } from '@/services/agent_suggestions';
+import { useAIHintStyles } from '../style';
+import SkeletonList, { SingleSkeleton } from './SkeletonList';
 
-const unit = new Set(["。", "，", "！", "？", "：", "；"]);
+const unit = new Set(['。', '，', '！', '？', '：', '；']);
 
 const { Paragraph } = Typography;
 
 // 格式化日期
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
@@ -31,7 +30,7 @@ const formatDate = (dateString: string) => {
  * @returns {boolean} - 如果最后一个字符是unit中的符号则返回true，否则返回false
  */
 function endsWithUnitSymbol(str: string) {
-  if (typeof str !== "string" || str.length === 0) {
+  if (typeof str !== 'string' || str.length === 0) {
     return false;
   }
 
@@ -86,17 +85,17 @@ function AIHintItem({
     const cards = [];
 
     if (knowledges.finance)
-      cards.push({ title: "金融知识", desc: knowledges.finance });
+      cards.push({ title: '金融知识', desc: knowledges.finance });
     if (knowledges.psychology)
-      cards.push({ title: "心理知识", desc: knowledges.psychology });
+      cards.push({ title: '心理知识', desc: knowledges.psychology });
     if (knowledges.korea)
-      cards.push({ title: "韩国知识", desc: knowledges.korea });
+      cards.push({ title: '韩国知识', desc: knowledges.korea });
     if (knowledges.role)
-      cards.push({ title: "角色背景", desc: knowledges.role });
+      cards.push({ title: '角色背景', desc: knowledges.role });
 
     // 补充其他知识类型
     Object.entries(knowledges).forEach(([key, value]) => {
-      if (!["finance", "psychology", "korea", "role"].includes(key) && value) {
+      if (!['finance', 'psychology', 'korea', 'role'].includes(key) && value) {
         cards.push({ title: key, desc: value });
       }
     });
@@ -112,11 +111,16 @@ function AIHintItem({
       setAdoptingIndex(index);
       await acceptSuggestion(content);
     } catch (error) {
-      console.error("采用建议失败:", error);
+      console.error('采用建议失败:', error);
     } finally {
       setAdoptingIndex(null);
     }
   };
+
+  // 生成中时，不显示
+  if (item.placeholder) {
+    return null;
+  }
 
   return (
     <Flexbox>
@@ -124,98 +128,79 @@ function AIHintItem({
       <div className={styles.dividerDate}>
         <div className={styles.dividerLine} />
         <span className={styles.dividerText}>
-          {item.placeholder ? "AI生成中..." : formatDate(item.createdAt || "")}
+          {formatDate(item.createdAt || '')}
         </span>
         <div className={styles.dividerLine} />
       </div>
-      {item.placeholder ? (
-        <Flexbox
-          align="center"
-          horizontal
-          justify="center"
-          style={{ marginTop: 10, marginBottom: 16 }}
-        >
-          <BubblesLoading />
-        </Flexbox>
-      ) : (
-        <>
-          {/* 上方提示语 */}
-          <div className={styles.hint}>
-            {item.suggestion?.summary}
-            {endsWithUnitSymbol(item.suggestion?.summary || "") ? (
-              <span>建议这样回复：</span>
-            ) : (
-              <span>，建议这样回复：</span>
+      <div className={styles.hint}>
+        {item.suggestion?.summary}
+        {endsWithUnitSymbol(item.suggestion?.summary || '') ? (
+          <span>建议这样回复：</span>
+        ) : (
+          <span>，建议这样回复：</span>
+        )}
+      </div>
+
+      {/* 知识点卡片 */}
+      {knowledgeCards.length > 0 && (
+        <Row className={styles.cardGrid} gutter={[8, 8]}>
+          {knowledgeCards.slice(0, 4).map((card, idx) => (
+            <Col key={idx} span={12}>
+              <div
+                className={styles.cardItem}
+                onClick={() => {
+                  setSelectedCard(card);
+                  setModalVisible(true);
+                }}
+                style={{ height: '100%', width: '100%', cursor: 'pointer' }}
+              >
+                <div className={styles.cardTitle}>{card.title}</div>
+                <div className={styles.cardDesc} style={{ WebkitLineClamp: 3 }}>
+                  {card.desc}
+                </div>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      )}
+
+      <div className={styles.suggestTitle}>建议这样回复：</div>
+
+      {/* 推荐话术列表 */}
+      {item.suggestion?.responses?.map((response, idx) => (
+        <div className={styles.sectionCard} key={idx}>
+          <div className={styles.sectionTitle}>{response.type}</div>
+          <div className={styles.sectionContent}>
+            <Paragraph
+              ellipsis={{
+                rows: 3,
+                expandable: true,
+                symbol: '展开',
+                onExpand: () => {},
+              }}
+            >
+              {response.content}
+            </Paragraph>
+            {isLatest && (
+              <div className={styles.sectionFooter}>
+                <Copy
+                  size={16}
+                  className={styles.copyBtn}
+                  onClick={() => handleCopy(response.content)}
+                />
+                <Button
+                  className={styles.adoptBtn}
+                  loading={adoptingIndex === idx}
+                  onClick={() => handleAcceptSuggestion(response.content, idx)}
+                  type='primary'
+                >
+                  采用
+                </Button>
+              </div>
             )}
           </div>
-
-          {/* 知识点卡片 */}
-          {knowledgeCards.length > 0 && (
-            <Row className={styles.cardGrid} gutter={[8, 8]}>
-              {knowledgeCards.slice(0, 4).map((card, idx) => (
-                <Col key={idx} span={12}>
-                  <div
-                    className={styles.cardItem}
-                    onClick={() => {
-                      setSelectedCard(card);
-                      setModalVisible(true);
-                    }}
-                    style={{ height: "100%", width: "100%", cursor: "pointer" }}
-                  >
-                    <div className={styles.cardTitle}>{card.title}</div>
-                    <div
-                      className={styles.cardDesc}
-                      style={{ WebkitLineClamp: 3 }}
-                    >
-                      {card.desc}
-                    </div>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          <div className={styles.suggestTitle}>建议这样回复：</div>
-
-          {/* 推荐话术列表 */}
-          {item.suggestion?.responses?.map((response, idx) => (
-            <div className={styles.sectionCard} key={idx}>
-              <div className={styles.sectionTitle}>{response.type}</div>
-              <div className={styles.sectionContent}>
-                <Paragraph
-                  ellipsis={{
-                    rows: 3,
-                    expandable: true,
-                    symbol: "展开",
-                    onExpand: () => {},
-                  }}
-                >
-                  {response.content}
-                </Paragraph>
-                {isLatest && (
-                  <div className={styles.sectionFooter}>
-                    <Copy
-                      size={16}
-                      className={styles.copyBtn}
-                      onClick={() => handleCopy(response.content)}
-                    />
-                    <Button
-                      className={styles.adoptBtn}
-                      loading={adoptingIndex === idx}
-                      onClick={() =>
-                        handleAcceptSuggestion(response.content, idx)
-                      }
-                      type="primary"
-                    >
-                      采用
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </>
-      )}
+        </div>
+      ))}
 
       {/* 知识卡片详情弹窗 */}
       <Modal
@@ -228,7 +213,7 @@ function AIHintItem({
         width={440}
       >
         <div
-          style={{ padding: "16px 0", lineHeight: "24px", fontSize: "14px" }}
+          style={{ padding: '16px 0', lineHeight: '24px', fontSize: '14px' }}
         >
           {selectedCard?.desc}
         </div>
@@ -278,7 +263,7 @@ const AIHintPanel = () => {
   // 获取最新用户消息ID
   const getLatestUserMessageId = () => {
     const userMessages = messages
-      .filter((msg) => msg.role === "user")
+      .filter((msg) => msg.role === 'user')
       .sort(
         (a, b) =>
           new Date(b.createdAt || 0).getTime() -
@@ -292,20 +277,20 @@ const AIHintPanel = () => {
   const handleRegenerate = async () => {
     const latestUserMessageId = getLatestUserMessageId();
     if (!latestUserMessageId) {
-      console.warn("没有找到用户消息，无法重新生成建议");
+      console.warn('没有找到用户消息，无法重新生成建议');
       return;
     }
 
     try {
       const { success } = await generateAISuggestion(latestUserMessageId);
       if (!success) {
-        message.error("重新生成建议失败");
+        message.error('重新生成建议失败');
         return;
       }
 
-      message.success("重新生成建议成功");
+      message.success('重新生成建议成功');
     } catch (error) {
-      console.error("重新生成建议失败:", error);
+      console.error('重新生成建议失败:', error);
     }
   };
 
@@ -326,10 +311,10 @@ const AIHintPanel = () => {
   };
 
   return (
-    <Flexbox className={styles.panelBg} height="100%">
+    <Flexbox className={styles.panelBg} height='100%'>
       {/* Header */}
-      <Flexbox align="center" className={styles.header} horizontal>
-        <Flexbox align="center" gap={8} horizontal>
+      <Flexbox align='center' className={styles.header} horizontal>
+        <Flexbox align='center' gap={8} horizontal>
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>
         </Flexbox>
@@ -339,15 +324,15 @@ const AIHintPanel = () => {
             disabled={isGeneratingAI}
             icon={<RefreshCw size={16} />}
             onClick={handleRegenerate}
-            size="small"
+            size='small'
             style={{
-              marginLeft: "auto",
-              color: "#666",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
+              marginLeft: 'auto',
+              color: '#666',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
             }}
-            type="text"
+            type='text'
           >
             重新生成
           </Button>
@@ -359,31 +344,21 @@ const AIHintPanel = () => {
           <SkeletonList />
         ) : (
           <>
-            {/* 生成中的状态始终显示在最上面 */}
-            {isGeneratingAI && (
-              <AIHintItem
-                isLatest={false}
-                item={{
-                  id: 'generating',
-                  placeholder: true,
-                  createdAt: new Date().toISOString(),
-                }}
-              />
-            )}
+            {isGeneratingAI && <SingleSkeleton />}
             {suggestions.length === 0 && !isGeneratingAI && (
               <Flexbox
-                align="center"
-                justify="center"
-                style={{ height: "100%", color: "#999", fontSize: 14 }}
+                align='center'
+                justify='center'
+                style={{ height: '100%', color: '#999', fontSize: 14 }}
               >
-                <Flexbox align="center" gap={16}>
+                <Flexbox align='center' gap={16}>
                   <div>暂无AI建议</div>
                   {shouldShowRegenerateButton() && (
                     <Button
                       icon={<RefreshCw size={16} />}
                       loading={isGeneratingAI}
                       onClick={handleRegenerate}
-                      type="primary"
+                      type='primary'
                     >
                       生成建议
                     </Button>

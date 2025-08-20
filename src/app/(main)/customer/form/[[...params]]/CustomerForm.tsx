@@ -1,15 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Form, Divider, FormInstance } from 'antd';
+import { Form, Divider, FormInstance, Input } from 'antd';
 
 // Features
 import CustomerTypeSelector from './features/CustomerTypeSelector';
 import AvatarUploader from './features/AvatarUploader';
-import {
-  BasicInfoSection,
-  NotesSection,
-} from './features/FormSections';
+import { BasicInfoSection, NotesSection } from './features/FormSections';
 import FormActions from './features/FormActions';
 import { useSharedStyles } from './features/shared/styles';
 
@@ -39,7 +36,7 @@ export type CustomerFormData = {
   gender: string | null;
   age: number | null;
   work: string | null;
-  isSingle: boolean | null;
+  isSingle: string | null;
   familySituation: string | null;
   hobby: string | null;
   chatConfig: any; // AgentConfig
@@ -93,7 +90,9 @@ export default function CustomerForm({
         onFinish={handleSubmit}
         requiredMark={true}
       >
-        <Form.Item hidden name='sessionId' />
+        <Form.Item hidden name='sessionId'>
+          <Input />
+        </Form.Item>
         {/* 客户类型选择 */}
         <CustomerTypeSelector agents={agents} />
 
