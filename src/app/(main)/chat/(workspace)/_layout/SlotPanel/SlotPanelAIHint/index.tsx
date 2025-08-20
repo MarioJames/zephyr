@@ -59,13 +59,26 @@ function AIHintItem({
   // 处理复制文本
   const handleCopy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      message.success("复制成功");
-    } catch (err) {
-      message.error("复制失败");
-      console.error("复制失败:", err);
+      // 优先使用 Clipboard API
+        await navigator.clipboard.writeText(text);
+        message.success("复制成功");
+    } catch {
+      // 兜底使用 DOM API
+      try {
+        const input = document.createElement('input');
+        input.value = text;
+        document.body.append(input);
+        input.select();
+        document.execCommand('copy');
+        input.remove();
+        message.success("复制成功");
+      } catch (fallbackErr) {
+        message.error("复制失败");
+        console.error("复制失败:", fallbackErr);
+      }
     }
   };
+
 
   // 获取知识点作为卡片展示
   const getKnowledgeCards = () => {
