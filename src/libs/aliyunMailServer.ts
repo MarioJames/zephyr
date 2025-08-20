@@ -27,6 +27,10 @@ export class AliyunMailServerService {
           user: this.config.smtp.auth.user,
           pass: this.config.smtp.auth.pass,
         },
+        // 添加超时配置
+        connectionTimeout: 10_000, // 10秒连接超时
+        greetingTimeout: 5000,   // 5秒握手超时
+        socketTimeout: 15_000,    // 15秒套接字超时
       });
     }
   }
@@ -97,8 +101,11 @@ export class AliyunMailServerService {
 
     const config: AliyunMailConfig = {};
 
+    // 检查必需的 SMTP 配置
     if (smtpConfig.auth.user && smtpConfig.auth.pass) {
       config.smtp = smtpConfig as AliyunSMTPConfig;
+    } else {
+      console.warn('邮件服务配置不完整：缺少 ALIYUN_MAIL_SMTP_USER 或 ALIYUN_MAIL_SMTP_PASS');
     }
 
     return new AliyunMailServerService(config);

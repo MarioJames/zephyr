@@ -18,7 +18,7 @@ export default auth((req) => {
     const callbackUrl = encodeURIComponent(req.url);
     const loginUrl = new URL('/login', req.url);
     loginUrl.searchParams.set('callbackUrl', callbackUrl);
-    
+
     // 未认证用户重定向到登录页面
     return NextResponse.redirect(loginUrl);
   }
