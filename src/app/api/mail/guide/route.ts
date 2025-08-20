@@ -9,32 +9,6 @@ interface SendLoginGuideRequest {
   employeeName?: string;
 }
 
-export async function GET() {
-  try {
-    const mailService = AliyunMailServerService.createFromEnv();
-    const isConfigValid = await mailService.verifyConnection();
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        isConfigured: isConfigValid,
-        message: isConfigValid
-          ? '邮件服务配置正常'
-          : '邮件服务配置缺失或连接失败',
-      },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: '检查邮件服务配置时发生错误',
-        message: error instanceof Error ? error.message : '未知错误',
-      },
-      { status: 500 }
-    );
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,18 +26,6 @@ export async function POST(request: NextRequest) {
     }
 
     const mailService = AliyunMailServerService.createFromEnv();
-
-    // 预检查邮件服务配置
-    const isConfigValid = await mailService.verifyConnection();
-    if (!isConfigValid) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '邮件服务配置错误或连接失败，请检查环境变量配置',
-        },
-        { status: 503 }
-      );
-    }
 
     // 发送登录引导邮件模板
     const mailOptions: MailOptions = {
