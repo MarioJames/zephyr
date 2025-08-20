@@ -153,7 +153,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ sendMessageLoading: true });
 
     try {
-      // 如果没有上传的文件，正常发送
+      // 如果没有文件也没有文字，不发送
+      if (!chatUploadFileList.length && !inputMessage.trim()) {
+        return;
+      }
+
+      // 如果没有上传的文件，正常发送文字
       if (!chatUploadFileList.length) {
         await get().createMessage(inputMessage, role, { clearInput: true });
         return;
@@ -180,7 +185,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 结合文件生成带有文件内容上下文的消息
       const messageWithFiles = generateMessageWithFiles(
-        inputMessage,
+        inputMessage || ' ',  // 如果没有输入文字，使用空格作为默认内容
         filesForAI
       );
 
@@ -200,7 +205,9 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     } catch (error) {
       console.error('发送带文件上下文的消息失败:', error);
       // 降级处理：正常发送消息
-      await get().createMessage(inputMessage, role, { clearInput: true });
+      if (inputMessage.trim()) {
+        await get().createMessage(inputMessage, role, { clearInput: true });
+      }
     } finally {
       set({ sendMessageLoading: false });
     }
