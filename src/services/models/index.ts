@@ -99,43 +99,6 @@ export interface GetModelConfigRequest {
 }
 
 /**
- * 获取模型列表
- * @description 获取模型列表
- * @param params GetModelsRequest
- * @returns GetEnabledModelsResponse
- */
-async function getEnabledModels(params: GetModelsRequest) {
-  return http.get<GetEnabledModelsResponse>(`/api/v1/models`, params);
-}
-
-/**
- * 获取模型详情
- * @description 获取模型详情
- * @param modelId string
- * @returns EnabledModelItem
- */
-async function getModelConfig(data: GetModelConfigRequest) {
-  const { provider, model } = data;
-  return http.get<ModelItem>(`/api/v1/models/config`, {
-    provider,
-    model,
-  });
-}
-
-/**
- * 通过会话ID获取模型配置
- * @description 通过会话ID获取模型配置
- * @param sessionId string
- * @returns ModelItem
- */
-async function getModelConfigBySession(data: GetModelConfigRequest) {
-  const { sessionId } = data;
-  return http.get<ModelItem>(`/api/v1/models/configBySession`, {
-    sessionId,
-  });
-}
-
-/**
  * 获取聚合模型列表
  * @description 获取所有启用的聚合模型列表
  * @returns GetAggregatedModelsResponse
@@ -149,9 +112,6 @@ async function getAggregatedModelConfig(modelId: string) {
 }
 
 export default {
-  getEnabledModels,
-  getModelConfig,
-  getModelConfigBySession,
   getAggregatedModels,
   getAggregatedModelConfig,
 };

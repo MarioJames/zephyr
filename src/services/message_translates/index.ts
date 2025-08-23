@@ -35,16 +35,6 @@ export interface MessageTranslateInfoRequest {
 }
 
 /**
- * 获取消息翻译
- * @description 获取指定消息的翻译信息
- * @param params MessageTranslateQueryRequest
- * @returns MessageTranslateItem
- */
-function getMessageTranslate(params: MessageTranslateQueryRequest) {
-  return http.get<MessageTranslateItem>('/api/v1/message-translates', params);
-}
-
-/**
  * 更新消息翻译信息
  * @description 更新指定消息的翻译信息
  * @param messageId string
@@ -95,7 +85,6 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
 }
 
 export default {
-  getMessageTranslate,
   updateMessageTranslate,
   translateMessage,
 };

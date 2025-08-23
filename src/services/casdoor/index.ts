@@ -1,9 +1,9 @@
 import { http } from '../request';
-import type { 
-  CreateCasdoorUserParams, 
-  UpdateCasdoorUserParams, 
+import type {
+  CreateCasdoorUserParams,
+  UpdateCasdoorUserParams,
   ChangePasswordRequest,
-  ChangePasswordResponse
+  ChangePasswordResponse,
 } from '@/types/casdoor';
 
 // Casdoor 用户服务接口响应
@@ -22,13 +22,16 @@ export const createCasdoorUser = async (
   userData: CreateCasdoorUserParams
 ): Promise<CasdoorApiResponse> => {
   try {
-    const response = await http.post<CasdoorApiResponse>('/api/casdoor/users', userData);
+    const response = await http.post<CasdoorApiResponse>(
+      '/api/casdoor/users',
+      userData
+    );
     return response.data;
   } catch (error: any) {
     // 处理axios错误响应
     if (error.response?.data) {
       let message = error.response.data.message || '创建用户失败';
-      if(message === 'Email already exists'){
+      if (message === 'Email already exists') {
         message = '该邮箱已被占用';
       }
       throw new Error(message);
@@ -44,7 +47,10 @@ export const updateCasdoorUser = async (
   userId: string,
   userData: Partial<UpdateCasdoorUserParams>
 ): Promise<CasdoorApiResponse> => {
-  const response = await http.put<CasdoorApiResponse>(`/api/casdoor/users/${userId}`, userData);
+  const response = await http.put<CasdoorApiResponse>(
+    `/api/casdoor/users/${userId}`,
+    userData
+  );
   return response.data;
 };
 
@@ -54,7 +60,9 @@ export const updateCasdoorUser = async (
 export const deleteCasdoorUser = async (
   userId: string
 ): Promise<CasdoorApiResponse> => {
-  const response = await http.delete<CasdoorApiResponse>(`/api/casdoor/users/${userId}`);
+  const response = await http.delete<CasdoorApiResponse>(
+    `/api/casdoor/users/${userId}`
+  );
   return response.data;
 };
 
@@ -64,14 +72,17 @@ export const deleteCasdoorUser = async (
 export const changeUserPassword = async (
   passwordData: ChangePasswordRequest
 ): Promise<ChangePasswordResponse> => {
-  const response: any = await http.post('/api/casdoor/users/change-password', passwordData as any);
+  const response: any = await http.post(
+    '/api/casdoor/users/change-password',
+    passwordData as any
+  );
   return response.data;
 };
 
 // 导出所有 Casdoor 相关的服务方法
 export const casdoorAPI = {
+  changeUserPassword,
   createUser: createCasdoorUser,
   updateUser: updateCasdoorUser,
   deleteUser: deleteCasdoorUser,
-  changePassword: changeUserPassword,
 };

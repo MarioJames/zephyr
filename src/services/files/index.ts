@@ -157,15 +157,11 @@ function upload(data: FileUploadRequest) {
     formData.append('skipCheckFileType', String(data.skipCheckFileType));
   if (data.directory) formData.append('directory', data.directory);
 
-  return http.post<FilePublicUploadResponse>(
-    '/api/v1/files/upload',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
+  return http.post<FilePublicUploadResponse>('/api/v1/files/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
 
 /**
@@ -245,20 +241,6 @@ function deleteFile(id: string) {
 }
 
 /**
- * 解析文档内容 - 使用现有文件ID
- * @description 解析已上传文件的内容，支持 PDF、Word、Excel、文本等格式
- * @param fileId string 文件ID
- * @param params { skipCheckFileType?: boolean } 可选参数
- * @returns FileParseResponse
- */
-function parseDocumentById(
-  fileId: string,
-  params?: { skipCheckFileType?: boolean }
-) {
-  return http.post<FileParseResponse>(`/api/v1/files/${fileId}/parse`, params);
-}
-
-/**
  * 上传并解析文档 - 一体化接口
  * @description 一次性完成文件上传和解析，返回文件对象和解析结果
  * @param data UploadAndParseRequest
@@ -290,7 +272,6 @@ export default {
   getFileDetail,
   deleteFile,
   getFileAccessUrl,
-  parseDocumentById,
   uploadAndParseDocument,
   batchGetFileAndParseContent,
 };

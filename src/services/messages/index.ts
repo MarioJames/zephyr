@@ -98,29 +98,6 @@ function queryByTopic(topicId: string) {
 }
 
 /**
- * 根据话题统计消息数量
- * @description 统计指定话题列表的消息数量
- * @param data MessageCountByTopicsRequest
- * @returns MessageCountResponse
- */
-function countByTopics(data: MessageCountByTopicsRequest) {
-  return http.post<MessageCountResponse>(
-    '/api/v1/messages/count/by-topics',
-    data
-  );
-}
-
-/**
- * 根据用户统计消息数量
- * @description 统计指定用户的消息数量
- * @param data MessageCountByUserRequest
- * @returns number
- */
-function countByUser(data: MessageCountByUserRequest) {
-  return http.post<number>('/api/v1/messages/count/by-user', data);
-}
-
-/**
  * 新增一条消息
  * @description 创建新的消息
  * @param data MessagesCreateRequest
@@ -131,16 +108,6 @@ function createMessage(data: MessagesCreateRequest) {
 }
 
 /**
- * 创建消息并生成AI回复
- * @description 创建消息并自动生成AI回复
- * @param data MessagesCreateRequest
- * @returns MessageItem
- */
-function createMessageWithReply(data: MessagesCreateRequest) {
-  return http.post<MessageItem>('/api/v1/messages/reply', data);
-}
-
-/**
  * 获取消息
  * @description 获取指定消息的信息
  * @param id string
@@ -148,27 +115,6 @@ function createMessageWithReply(data: MessagesCreateRequest) {
  */
 function queryMessage(messageId: string) {
   return http.get<MessageItem>(`/api/v1/messages/${messageId}`);
-}
-
-/**
- * 更新消息
- * @description 更新指定消息的信息
- * @param id string
- * @param data Partial<MessagesCreateRequest>
- * @returns MessageItem
- */
-function updateMessage(id: string, data: Partial<MessagesCreateRequest>) {
-  return http.put<MessageItem>(`/api/v1/messages/${id}`, data);
-}
-
-/**
- * 删除消息
- * @description 删除指定的消息
- * @param id string
- * @returns void
- */
-function deleteMessage(id: string) {
-  return http.delete<void>(`/api/v1/messages/${id}`);
 }
 
 /**
@@ -183,12 +129,7 @@ function searchMessages(data: MessagesSearchRequest) {
 
 export default {
   queryByTopic,
-  countByTopics,
-  countByUser,
   createMessage,
-  createMessageWithReply,
-  updateMessage,
-  deleteMessage,
   searchMessages,
   queryMessage,
 };

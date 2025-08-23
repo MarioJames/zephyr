@@ -87,7 +87,7 @@ export interface SessionStatGroupedByAgentItem {
   count: number;
 }
 
-export interface transferSession{
+export interface TransferSession {
   session: SessionItem;
   updatedTopicsCount: number;
   updatedMessagesCount: number;
@@ -115,18 +115,6 @@ function getSessionList(
  */
 function searchSessionList(params: SessionSearchRequest) {
   return http.get<SessionItem[]>('/api/v1/sessions/search', params);
-}
-
-/**
- * 批量获取指定会话列表
- * @description 批量获取指定会话列表
- * @param params BatchSessionListRequest
- * @returns SessionItem[]
- */
-function getSessionListByIds(
-  params: BatchSessionListRequest
-): Promise<SessionItem[]> {
-  return http.get<SessionItem[]>(`/api/v1/sessions/batch`, params);
 }
 
 /**
@@ -200,8 +188,8 @@ function deleteSession(id: string) {
  * @param newUserId string 目标用户ID
  * @returns 转移结果
  */
-function transferSessionRequest(sessionId: string, newUserId: string) {
-  return http.post<transferSession>('/api/session-transfer', {
+function transferSession(sessionId: string, newUserId: string) {
+  return http.post<TransferSession>('/api/session-transfer', {
     sessionId,
     newUserId,
   });
@@ -215,7 +203,7 @@ function transferSessionRequest(sessionId: string, newUserId: string) {
  * @returns 转移结果
  */
 function batchTransferSessions(sessionIds: string[], newUserId: string) {
-  return http.post<transferSession[]>('/api/session-transfer/batch', {
+  return http.post<TransferSession[]>('/api/session-transfer/batch', {
     sessionIds,
     newUserId,
   });
@@ -224,13 +212,12 @@ function batchTransferSessions(sessionIds: string[], newUserId: string) {
 export default {
   getSessionList,
   searchSessionList,
-  getSessionListByIds,
   getSessionDetail,
   createSession,
   updateSession,
   getSessionsGroupedByAgent,
   batchUpdateSessions,
   deleteSession,
-  transferSession: transferSessionRequest,
+  transferSession,
   batchTransferSessions,
 };

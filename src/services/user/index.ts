@@ -121,16 +121,6 @@ function createUser(data: UserCreateRequest) {
 }
 
 /**
- * 获取用户详情
- * @description 根据ID获取用户详细信息
- * @param id string
- * @returns UserItem
- */
-function getUserDetail(id: string) {
-  return http.get<UserItem>(`/api/v1/users/${id}`);
-}
-
-/**
  * 更新用户
  * @description 更新用户信息
  * @param id string
@@ -174,7 +164,6 @@ export default {
   getCurrentUser,
   getAllUsers,
   createUser,
-  getUserDetail,
   updateUser,
   deleteUser,
   searchUsers,

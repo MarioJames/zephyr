@@ -24,21 +24,6 @@ function sendLoginGuideEmail(data: SendLoginGuideRequest) {
   return http.post<NotificationResponse>('/api/mail/send-login-guide', data);
 }
 
-/**
- * 发送密码重置邮件
- * @description 向指定员工发送密码重置邮件
- * @param employeeId string
- * @param email string (可选)
- * @returns NotificationResponse
- */
-function sendPasswordResetEmail(employeeId: string, email?: string) {
-  return http.post<NotificationResponse>('/api/mail/send-password-reset', {
-    employeeId,
-    email,
-  });
-}
-
 export default {
   sendLoginGuideEmail,
-  sendPasswordResetEmail,
 };

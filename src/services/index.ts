@@ -51,7 +51,6 @@ export type {
 export type {
   MessageCountByTopicsRequest,
   MessageCountByUserRequest,
-  MessageCountResponse,
   MessageItem,
   MessagesCreateRequest,
   MessagesQueryByTopicRequest,

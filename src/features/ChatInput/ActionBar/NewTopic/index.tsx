@@ -50,26 +50,6 @@ const NewTopic = memo(() => {
     }
 
     try {
-      // 如果有当前话题，异步调用总结话题接口为当前话题生成标题并更新
-      // if (activeTopicId) {
-      //   (async () => {
-      //     try {
-      //       // 生成新标题
-      //       const newTitle = await topicService.summaryTopicTitle({ id: activeTopicId });
-
-      //       // 更新话题标题
-      //       const updatedTopic = await topicsAPI.updateTopic(activeTopicId, {
-      //         title: newTitle,
-      //       });
-
-      //       // 更新本地状态
-      //       updateTopic(activeTopicId, updatedTopic);
-      //     } catch (error) {
-      //       console.warn("话题总结失败:", error);
-      //     }
-      //   })();
-      // }
-
       message.loading('正在创建新话题...', 0);
 
       // 创建新话题

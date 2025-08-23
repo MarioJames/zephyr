@@ -106,7 +106,7 @@ export interface AgentDetailResponse {
 async function getAgentList() {
   const response = await http.get<AgentItem[]>('/api/v1/agents');
   // 过滤掉title为空的agent，排除脏数据
-  return response.filter(agent => agent.title && agent.title.trim() !== '');
+  return response.filter((agent) => agent.title && agent.title.trim() !== '');
 }
 
 /**
@@ -140,31 +140,10 @@ function deleteAgent(id: string) {
   return http.delete<void>(`/api/v1/agents/${id}`);
 }
 
-/**
- * 获取智能体详情
- * @description 根据ID获取智能体详细信息，包含关联的文件、知识库和会话信息
- * @param id string
- * @returns AgentDetailResponse
- */
-function getAgentDetail(id: string) {
-  return http.get<AgentDetailResponse>(`/api/v1/agents/${id}`);
-}
-
-/**
- * 根据会话ID获取智能体
- * @description 根据会话ID获取智能体
- * @param sessionId string
- * @returns AgentItem
- */
-function getAgentBySessionId(sessionId: string) {
-  return http.get<AgentItem>(`/api/v1/agents/session/${sessionId}`);
-}
 
 export default {
   getAgentList,
   createAgent,
   updateAgent,
   deleteAgent,
-  getAgentDetail,
-  getAgentBySessionId,
 };
