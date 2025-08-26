@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Row, Col, Modal, Typography, App } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
-import { Bot, RefreshCw, Copy } from 'lucide-react';
+import { Bot, RefreshCw, Copy, ChevronDown } from 'lucide-react';
 import { chatSelectors, useChatStore } from '@/store/chat';
 import { AgentSuggestionItem } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
@@ -51,6 +51,7 @@ function AIHintItem({
     desc: string;
   } | null>(null);
   const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
+  const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(new Set());
   const { styles } = useAIHintStyles();
   const { acceptSuggestion } = useChatStore();
   const { message } = App.useApp();
@@ -167,40 +168,71 @@ function AIHintItem({
       <div className={styles.suggestTitle}>建议这样回复：</div>
 
       {/* 推荐话术列表 */}
-      {item.suggestion?.responses?.map((response, idx) => (
-        <div className={styles.sectionCard} key={idx}>
-          <div className={styles.sectionTitle}>{response.type}</div>
-          <div className={styles.sectionContent}>
-            <Paragraph
-              ellipsis={{
-                rows: 3,
-                expandable: true,
-                symbol: '展开',
-                onExpand: () => {},
-              }}
-            >
-              {response.content}
-            </Paragraph>
-            {isLatest && (
-              <div className={styles.sectionFooter}>
-                <Copy
-                  size={16}
-                  className={styles.copyBtn}
-                  onClick={() => handleCopy(response.content)}
-                />
-                <Button
-                  className={styles.adoptBtn}
-                  loading={adoptingIndex === idx}
-                  onClick={() => handleAcceptSuggestion(response.content, idx)}
-                  type='primary'
+      {item.suggestion?.responses?.map((response, idx) => {
+        const isExpanded = expandedIndexes.has(idx);
+        const toggleExpand = () => {
+          setExpandedIndexes((prev) => {
+            const next = new Set(prev);
+            if (next.has(idx)) next.delete(idx);
+            else next.add(idx);
+            return next;
+          });
+        };
+
+        return (
+          <div className={styles.sectionCard} key={idx}>
+            <div className={styles.sectionTitle}>{response.type}</div>
+            <div className={styles.sectionContent}>
+              {isExpanded ? (
+                <Paragraph>{response.content}</Paragraph>
+              ) : (
+                <Paragraph ellipsis={{ rows: 3 }}>{response.content}</Paragraph>
+              )}
+              <Flexbox align='center' horizontal justify='space-between' style={{ marginTop: 8 }}>
+                <div
+                  onClick={toggleExpand}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    color: '#666',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
                 >
-                  采用
-                </Button>
-              </div>
-            )}
+                  <ChevronDown
+                    size={14}
+                    style={{
+                      transform: isExpanded ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />
+                  <span>{isExpanded ? '收起' : '展开'}</span>
+                </div>
+                <div className={styles.sectionFooter}>
+                  {isLatest && (
+                    <>
+                      <Copy
+                        size={16}
+                        className={styles.copyBtn}
+                        onClick={() => handleCopy(response.content)}
+                      />
+                      <Button
+                        className={styles.adoptBtn}
+                        loading={adoptingIndex === idx}
+                        onClick={() => handleAcceptSuggestion(response.content, idx)}
+                        type='primary'
+                      >
+                        采用
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </Flexbox>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* 知识卡片详情弹窗 */}
       <Modal

@@ -175,7 +175,6 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     align-items: center;
     justify-content: flex-end;
     column-gap: 4px;
-    margin-top: 8px;
   `,
   adoptBtn: css`
     color: ${token.colorText};
