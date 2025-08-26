@@ -137,9 +137,9 @@ export const sessionCoreAction: StateCreator<
   searchSessions: async (params: SessionSearchRequest) => {
     set({ isSearching: true, searchError: undefined, inSearchMode: true });
     try {
-      const searchResults = await sessionService.searchSessionList(params);
+      const { sessions = [] } = await sessionService.getSessionList(params);
       set({
-        searchResults,
+        searchResults: sessions,
         searchKeyword: params.keyword,
         isSearching: false,
       });
