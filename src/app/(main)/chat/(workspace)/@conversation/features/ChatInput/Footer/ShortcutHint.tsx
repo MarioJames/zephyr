@@ -29,7 +29,7 @@ const ShortcutHint = memo(() => {
         style={{ color: 'inherit' }}
         variant={'borderless'}
       />
-      <span>{'发送'}</span>
+      <span>{'发送客户信息'}</span>
       <span>/</span>
       <Hotkey
         keys={wrapperShortcut}

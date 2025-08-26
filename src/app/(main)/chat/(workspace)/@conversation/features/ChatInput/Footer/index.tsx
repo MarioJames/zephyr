@@ -2,10 +2,9 @@ import { Button } from '@lobehub/ui';
 import { Space } from 'antd';
 import { createStyles } from 'antd-style';
 import { rgba } from 'polished';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
-import SendMore from './SendMore';
 import ShortcutHint from './ShortcutHint';
 import { chatSelectors, useChatStore } from '@/store/chat';
 
@@ -51,6 +50,9 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
 
   const loading = sendMessageLoading || isUploading;
 
+  const [assistantLoading, setAssistantLoading] = useState(false);
+  const [userLoading, setUserLoading] = useState(false);
+
   return (
     <Flexbox
         align={'center'}
@@ -64,16 +66,36 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
         <Space.Compact>
           <Button
             disabled={loading}
-            loading={loading}
-            onClick={() => {
-              sendMessage('user');
+            loading={assistantLoading}
+            onClick={async () => {
+              setAssistantLoading(true);
+              try {
+                await sendMessage('assistant');
+              } finally {
+                setAssistantLoading(false);
+              }
+              onExpandChange(false);
+            }}
+            type={'default'}
+          >
+            {'发送员工消息'}
+          </Button>
+          <Button
+            disabled={loading}
+            loading={userLoading}
+            onClick={async () => {
+              setUserLoading(true);
+              try {
+                await sendMessage('user');
+              } finally {
+                setUserLoading(false);
+              }
               onExpandChange(false);
             }}
             type={'primary'}
           >
-            {'发送'}
+            {'发送客户消息'}
           </Button>
-          <SendMore disabled={loading} />
         </Space.Compact>
       </Flexbox>
   );
