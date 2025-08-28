@@ -193,4 +193,9 @@ export const useAIHintStyles = createStyles(({ css, token }) => ({
     cursor: pointer;
     margin-right: 12px;
   `,
+  editBtn: css`
+    color: ${token.colorPrimary};
+    cursor: pointer;
+    margin-right: 12px;
+  `,
 }));

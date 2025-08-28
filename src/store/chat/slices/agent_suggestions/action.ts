@@ -17,7 +17,7 @@ export interface AgentSuggestionsAction {
   fetchSuggestions: (topicId?: string) => Promise<void>;
   addSuggestion: (suggestion: AgentSuggestionItem) => void;
   updateSuggestion: (
-    suggestionId: string,
+    suggestionId: number,
     suggestion: AgentSuggestionItem
   ) => void;
 
@@ -74,7 +74,7 @@ export const agentSuggestionsSlice: StateCreator<
     }));
   },
 
-  updateSuggestion: (suggestionId: string, suggestion: AgentSuggestionItem) => {
+  updateSuggestion: (suggestionId: number, suggestion: AgentSuggestionItem) => {
     set((state) => ({
       suggestions: state.suggestions.map((s) =>
         s.id === suggestionId ? suggestion : s
@@ -204,7 +204,7 @@ export const agentSuggestionsSlice: StateCreator<
 
           // 添加到本地状态
           get().updateSuggestion(
-            PLACEHOLDER_SUGGESTION.id as string,
+            PLACEHOLDER_SUGGESTION.id as number,
             createdSuggestion
           );
         } catch (saveError) {

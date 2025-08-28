@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Row, Col, Modal, Typography, App } from 'antd';
+import { Row, Col, Modal, Typography, App, Input } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
-import { Bot, RefreshCw, Copy, ChevronDown } from 'lucide-react';
+import { Bot, RefreshCw, Copy, ChevronDown, Edit2 } from 'lucide-react';
 import { chatSelectors, useChatStore } from '@/store/chat';
-import { AgentSuggestionItem } from '@/services/agent_suggestions';
+import { AgentSuggestionItem, updateSuggestion as updateSuggestions } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
 import SkeletonList, { SingleSkeleton } from './SkeletonList';
 
@@ -46,6 +46,9 @@ function AIHintItem({
   isLatest: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingContent, setEditingContent] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedCard, setSelectedCard] = useState<{
     title: string;
     desc: string;
@@ -53,15 +56,15 @@ function AIHintItem({
   const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
   const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(new Set());
   const { styles } = useAIHintStyles();
-  const { acceptSuggestion } = useChatStore();
+  const { acceptSuggestion, updateSuggestion } = useChatStore();
   const { message } = App.useApp();
 
   // 处理复制文本
   const handleCopy = async (text: string) => {
     try {
       // 优先使用 Clipboard API
-        await navigator.clipboard.writeText(text);
-        message.success("复制成功");
+      await navigator.clipboard.writeText(text);
+      message.success("复制成功");
     } catch {
       // 兜底使用 DOM API
       try {
@@ -79,6 +82,57 @@ function AIHintItem({
     }
   };
 
+  // 处理采用建议
+  const handleAcceptSuggestion = async (content: string, index: number) => {
+    try {
+      setAdoptingIndex(index);
+      await acceptSuggestion(content);
+    } catch (error) {
+      console.error('采用建议失败:', error);
+    } finally {
+      setAdoptingIndex(null);
+    }
+  };
+
+  // 处理编辑建议
+  const handleEdit = (content: string, index: number) => {
+    setEditingContent(content);
+    setEditingIndex(index);
+    setEditModalVisible(true);
+  };
+
+  // 处理保存编辑
+  const handleSaveEdit = async (sendAfterSave: boolean = false) => {
+    if (!item.id || editingIndex === null) return;
+
+    try {
+      // 构建新的建议内容
+      const newSuggestion = { ...item.suggestion };
+      if (newSuggestion.responses && newSuggestion.responses[editingIndex]) {
+        newSuggestion.responses[editingIndex].content = editingContent;
+      }
+
+      // 调用更新接口
+      await updateSuggestions(item.id as number, newSuggestion);
+      
+      // 更新store中的状态
+      updateSuggestion(item.id as number, {
+        ...item,
+        suggestion: newSuggestion,
+      });
+
+      message.success('保存成功');
+      setEditModalVisible(false);
+
+      // 如果需要发送
+      if (sendAfterSave) {
+        await handleAcceptSuggestion(editingContent, editingIndex);
+      }
+    } catch (error) {
+      console.error('保存编辑失败:', error);
+      message.error('保存失败');
+    }
+  };
 
   // 获取知识点作为卡片展示
   const getKnowledgeCards = () => {
@@ -105,18 +159,6 @@ function AIHintItem({
   };
 
   const knowledgeCards = getKnowledgeCards();
-
-  // 处理采用建议
-  const handleAcceptSuggestion = async (content: string, index: number) => {
-    try {
-      setAdoptingIndex(index);
-      await acceptSuggestion(content);
-    } catch (error) {
-      console.error('采用建议失败:', error);
-    } finally {
-      setAdoptingIndex(null);
-    }
-  };
 
   // 生成中时，不显示
   if (item.placeholder) {
@@ -212,6 +254,11 @@ function AIHintItem({
                 <div className={styles.sectionFooter}>
                   {isLatest && (
                     <>
+                      <Edit2
+                        size={16}
+                        className={styles.editBtn}
+                        onClick={() => handleEdit(response.content, idx)}
+                      />
                       <Copy
                         size={16}
                         className={styles.copyBtn}
@@ -249,6 +296,40 @@ function AIHintItem({
         >
           {selectedCard?.desc}
         </div>
+      </Modal>
+
+      {/* 编辑弹窗 */}
+      <Modal
+        title="编辑建议"
+        open={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setEditModalVisible(false)}>
+            取消
+          </Button>,
+          <Button
+            key="save"
+            type="default"
+            onClick={() => handleSaveEdit(false)}
+          >
+            保存
+          </Button>,
+          <Button
+            key="saveAndSend"
+            type="primary"
+            onClick={() => handleSaveEdit(true)}
+          >
+            保存并发送
+          </Button>,
+        ]}
+        width={600}
+      >
+        <Input.TextArea
+          value={editingContent}
+          onChange={(e) => setEditingContent(e.target.value)}
+          rows={10}
+          style={{ marginTop: 16, resize: 'none' }}
+        />
       </Modal>
     </Flexbox>
   );
