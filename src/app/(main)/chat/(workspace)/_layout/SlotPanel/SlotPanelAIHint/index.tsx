@@ -305,6 +305,7 @@ function AIHintItem({
       {/* 编辑弹窗 */}
       <Modal
         title="编辑建议"
+        closable={false}
         open={editModalVisible}
         onCancel={() => setEditModalVisible(false)}
         footer={[
