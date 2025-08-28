@@ -77,7 +77,28 @@ async function getSuggestionsByTopic(
   return await http.get(`/api/agent-suggestions?topic=${topicId}`);
 }
 
+/**
+ * 更新智能体建议
+ * @description 更新指定ID的建议内容
+ * @param id 建议ID
+ * @param suggestion 更新的建议内容
+ * @returns AgentSuggestionItem
+ */
+async function updateSuggestion(
+  id: number,
+  suggestion: AgentSuggestionContent
+): Promise<AgentSuggestionItem> {
+  return await http.put(`/api/agent-suggestions/${id}`, { suggestion });
+}
+
 export default {
   createSuggestion,
   getSuggestionsByTopic,
+  updateSuggestion,
+};
+
+export {
+  createSuggestion,
+  getSuggestionsByTopic,
+  updateSuggestion,
 };
