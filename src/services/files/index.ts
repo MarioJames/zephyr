@@ -10,7 +10,7 @@ export interface FileMetadata {
 
 export interface FileItem {
   id: string;
-  filename: string;
+  name: string;
   fileType: string;
   size: number;
   hash: string;

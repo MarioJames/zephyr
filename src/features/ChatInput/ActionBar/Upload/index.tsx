@@ -9,6 +9,7 @@ import { isDocumentFile, isSupportedFileType } from '@/utils/file';
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
 import FileSelectModal from './FileSelectModal';
+import { structuredDataAPI } from '@/services';
 
 const useStyles = createStyles(({ css }) => ({
   hotArea: css`
@@ -56,6 +57,9 @@ const FileUpload = memo(() => {
 
           if (response.parseResult.parseStatus === 'completed') {
             message.success(`文档 "${file.name}" 上传并解析成功`);
+
+            // 上传成功后，开始解析文件的结构化数据
+            await structuredDataAPI.upsertStructuredData(response.fileItem.id);
           } else {
             message.warning(`文档 "${file.name}" 上传成功，但解析失败`);
           }

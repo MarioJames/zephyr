@@ -5,12 +5,13 @@ import ImageFileListViewer from '@/features/Conversation/Messages/User/ImageFile
 import { MessageItem } from '@/services';
 
 import { DefaultMessage } from '../Default';
+import FileListViewer from '../User/FileListViewer';
 
 export const AssistantMessage = memo<
   MessageItem & {
     editableContent: ReactNode;
   }
->(({ id, content, imageList, ...props }) => {
+>(({ id, content, imageList, fileList, ...props }) => {
   const showImageItems = !!imageList && imageList.length > 0;
 
   return (
@@ -24,6 +25,11 @@ export const AssistantMessage = memo<
         />
       )}
       {showImageItems && <ImageFileListViewer items={imageList} />}
+      {fileList && fileList?.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <FileListViewer items={fileList} />
+        </div>
+      )}
     </Flexbox>
   );
 });

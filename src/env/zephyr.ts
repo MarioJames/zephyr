@@ -9,6 +9,7 @@ function getZephyrEnv() {
       NEXT_PUBLIC_OPENAPI_ENDPOINT: z.string().optional(),
       NEXT_PUBLIC_LITELLM_URL: z.string().optional(),
       NEXT_PUBLIC_TRANSLATION_PROMPT: z.string().optional(),
+      NEXT_PUBLIC_NLP_ENDPOINT: z.string().optional(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -16,7 +17,9 @@ function getZephyrEnv() {
         process.env.NEXT_PUBLIC_APP_NAME || '保险客户管理系统',
       NEXT_PUBLIC_OPENAPI_ENDPOINT: process.env.NEXT_PUBLIC_OPENAPI_ENDPOINT,
       NEXT_PUBLIC_LITELLM_URL: process.env.NEXT_PUBLIC_LITELLM_URL,
-      NEXT_PUBLIC_TRANSLATION_PROMPT: process.env.NEXT_PUBLIC_TRANSLATION_PROMPT,
+      NEXT_PUBLIC_TRANSLATION_PROMPT:
+        process.env.NEXT_PUBLIC_TRANSLATION_PROMPT,
+      NEXT_PUBLIC_NLP_ENDPOINT: process.env.NEXT_PUBLIC_NLP_ENDPOINT,
     },
   });
 }

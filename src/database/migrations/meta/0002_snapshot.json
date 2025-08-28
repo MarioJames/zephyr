@@ -1,6 +1,6 @@
 {
-  "id": "46de224b-f5f1-41ac-8f6b-a00bc824c48e",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "eb4f2583-14a6-48fe-8f6b-26be75cc9b59",
+  "prevId": "d5ca6173-7d5c-421b-ad77-f8be9e1e1cb3",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -143,50 +143,26 @@
           "primaryKey": false,
           "notNull": false
         },
-        "position": {
-          "name": "position",
-          "type": "varchar(100)",
+        "work": {
+          "name": "work",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "phone": {
-          "name": "phone",
-          "type": "varchar(20)",
+        "is_single": {
+          "name": "is_single",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
+        "family_situation": {
+          "name": "family_situation",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "wechat": {
-          "name": "wechat",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "company": {
-          "name": "company",
-          "type": "varchar(200)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "industry": {
-          "name": "industry",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "scale": {
-          "name": "scale",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
+        "hobby": {
+          "name": "hobby",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -254,6 +230,64 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.structured_data": {
+      "name": "structured_data",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "structured_data_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "file_id": {
+          "name": "file_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_file_id": {
+          "name": "idx_file_id",
+          "columns": [
+            {
+              "expression": "file_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
