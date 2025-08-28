@@ -54,6 +54,7 @@ function AIHintItem({
     desc: string;
   } | null>(null);
   const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(new Set());
   const { styles } = useAIHintStyles();
   const { acceptSuggestion, updateSuggestion } = useChatStore();
@@ -105,6 +106,7 @@ function AIHintItem({
   const handleSaveEdit = async (sendAfterSave: boolean = false) => {
     if (!item.id || editingIndex === null) return;
 
+    setIsSaving(true);
     try {
       // 构建新的建议内容
       const newSuggestion = { ...item.suggestion };
@@ -131,6 +133,8 @@ function AIHintItem({
     } catch (error) {
       console.error('保存编辑失败:', error);
       message.error('保存失败');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -310,6 +314,7 @@ function AIHintItem({
           <Button
             key="save"
             type="default"
+            loading={isSaving}
             onClick={() => handleSaveEdit(false)}
           >
             保存
@@ -317,6 +322,7 @@ function AIHintItem({
           <Button
             key="saveAndSend"
             type="primary"
+            loading={isSaving}
             onClick={() => handleSaveEdit(true)}
           >
             保存并发送
