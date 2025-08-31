@@ -38,7 +38,9 @@ export class StructuredDataModel {
   /**
    * 根据 fileId 获取结构化数据
    */
-  findByFileId = async (fileId: string): Promise<StructuredDataItem | undefined> => {
+  findByFileId = async (
+    fileId: string
+  ): Promise<StructuredDataItem | undefined> => {
     return this.db.query.structuredData.findFirst({
       where: eq(structuredData.fileId, fileId),
       orderBy: [desc(structuredData.id)],
@@ -48,7 +50,9 @@ export class StructuredDataModel {
   /**
    * 创建结构化数据记录
    */
-  create = async (params: CreateStructuredDataParams): Promise<StructuredDataItem> => {
+  create = async (
+    params: CreateStructuredDataParams
+  ): Promise<StructuredDataItem> => {
     // 重置序列
     await this.resetSequence();
 
@@ -66,7 +70,10 @@ export class StructuredDataModel {
   /**
    * 根据 fileId 更新结构化数据
    */
-  updateByFileId = async (fileId: string, params: UpdateStructuredDataParams): Promise<StructuredDataItem | null> => {
+  updateByFileId = async (
+    fileId: string,
+    params: UpdateStructuredDataParams
+  ): Promise<StructuredDataItem | null | undefined> => {
     // 先检查是否存在记录
     const existing = await this.findByFileId(fileId);
     if (!existing) {
@@ -102,13 +109,17 @@ export class StructuredDataModel {
   /**
    * 创建或更新结构化数据（基于 fileId）
    */
-  upsertByFileId = async (params: CreateStructuredDataParams): Promise<StructuredDataItem> => {
+  upsertByFileId = async (
+    params: CreateStructuredDataParams
+  ): Promise<StructuredDataItem> => {
     // 先尝试查找现有记录
     const existing = await this.findByFileId(params.fileId);
-    
+
     if (existing) {
       // 如果存在，更新数据
-      const updated = await this.updateByFileId(params.fileId, { data: params.data });
+      const updated = await this.updateByFileId(params.fileId, {
+        data: params.data,
+      });
       return updated!;
     } else {
       // 如果不存在，创建新记录
