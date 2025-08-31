@@ -7,10 +7,11 @@ import { AgentSuggestionsModel } from '@/database';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id: idParam } = await params;
+    const id = parseInt(idParam);
     const { suggestion } = await request.json();
 
     if (isNaN(id)) {
