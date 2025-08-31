@@ -59,9 +59,8 @@ export const fileCoreSlice: StateCreator<
         fileType: params?.fileType,
         // 其他参数映射
       });
-      console.log('response',response);
-      
-      set({ 
+
+      set({
         fileList: response.files,
         pagination: {
           ...get().pagination,
@@ -69,7 +68,7 @@ export const fileCoreSlice: StateCreator<
         },
         loading: false,
       });
-      
+
       return {
         data: response.files,
         isLoading: false,
@@ -86,32 +85,35 @@ export const fileCoreSlice: StateCreator<
 
   pushDockFileList: async (files) => {
     const dockFileList = get().dockFileList;
-    
+
     // 将文件添加到 dock 列表
-    const newDockFiles = files.map((file) => ({
-      id: Math.random().toString(36).slice(2),
-      filename: file.name,
-      fileType: file.type || 'unknown',
-      size: file.size,
-      hash: '',
-      url: '',
-      uploadedAt: new Date().toISOString(),
-      metadata: {
-        filename: file.name,
-        dirname: '',
-        path: '',
-        date: new Date().toISOString(),
-      },
-      status: 'pending' as const,
-      progress: 0,
-    } as DockFileItem));
+    const newDockFiles = files.map(
+      (file) =>
+        ({
+          id: Math.random().toString(36).slice(2),
+          name: file.name,
+          fileType: file.type || 'unknown',
+          size: file.size,
+          hash: '',
+          url: '',
+          uploadedAt: new Date().toISOString(),
+          metadata: {
+            filename: file.name,
+            dirname: '',
+            path: '',
+            date: new Date().toISOString(),
+          },
+          status: 'pending' as const,
+          progress: 0,
+        }) as DockFileItem
+    );
 
     set({ dockFileList: [...dockFileList, ...newDockFiles] });
 
     // 上传文件
     for (const [index, file] of files.entries()) {
       const dockFile = newDockFiles[index];
-      
+
       try {
         // 更新状态为上传中
         set({
@@ -192,12 +194,13 @@ export const fileCoreSlice: StateCreator<
   },
 
   setFiles: (files) => set({ fileList: files }),
-  setTotal: (total) => set({ 
-    pagination: {
-      ...get().pagination,
-      total,
-    },
-  }),
+  setTotal: (total) =>
+    set({
+      pagination: {
+        ...get().pagination,
+        total,
+      },
+    }),
   setLoading: (loading) => set({ loading }),
   setDockFiles: (files) => set({ dockFileList: files }),
 

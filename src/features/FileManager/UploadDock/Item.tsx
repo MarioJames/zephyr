@@ -37,21 +37,25 @@ type UploadItemProps = UploadFileItem;
 
 const UploadItem = memo<UploadItemProps>((props: UploadItemProps) => {
   const { styles } = useStyles();
-  
-  const { fileType, filename, size, status, uploadState } = props;
+
+  const { fileType, name, size, status, uploadState } = props;
 
   const desc: ReactNode = useMemo(() => {
     switch (status) {
       case 'uploading': {
         const textArray = [
           uploadState?.speed ? formatSpeed(uploadState.speed) : '',
-          uploadState?.restTime ? `剩余 ${formatTime(uploadState?.restTime)}` : '',
+          uploadState?.restTime
+            ? `剩余 ${formatTime(uploadState?.restTime)}`
+            : '',
         ].filter(Boolean);
 
         return (
           <Typography.Text style={{ fontSize: 12 }} type={'secondary'}>
-            {uploadState?.progress ? formatSize(size * (uploadState.progress / 100)) : '-'}/
-            {formatSize(size)}
+            {uploadState?.progress
+              ? formatSize(size * (uploadState.progress / 100))
+              : '-'}
+            /{formatSize(size)}
             {textArray.length === 0 ? '' : ' · ' + textArray.join(' · ')}
           </Typography.Text>
         );
@@ -97,14 +101,14 @@ const UploadItem = memo<UploadItemProps>((props: UploadItemProps) => {
       align={'center'}
       gap={4}
       horizontal
-      key={filename}
+      key={name}
       paddingBlock={8}
       paddingInline={12}
       style={{ position: 'relative' }}
     >
-      <FileIcon fileName={filename} fileType={fileType} />
+      <FileIcon fileName={name} fileType={fileType} />
       <Flexbox style={{ overflow: 'hidden' }}>
-        <div className={styles.title}>{filename}</div>
+        <div className={styles.title}>{name}</div>
         {desc}
       </Flexbox>
 

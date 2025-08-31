@@ -108,7 +108,7 @@ export const agentSuggestionsSlice: StateCreator<
 
       const systemRole = activeAgent?.systemRole;
 
-      const historyCount = activeAgent?.chatConfig?.historyCount || 8;
+      // const historyCount = activeAgent?.chatConfig?.historyCount || 8;
 
       // 获取当前消息
       const currentMessage = state.messages.find(msg => msg.id === parentMessageId);
@@ -130,7 +130,7 @@ export const agentSuggestionsSlice: StateCreator<
         .filter(
           (msg) => msg.content && ['user', 'assistant'].includes(msg.role)
         )
-        .slice(-historyCount)
+        // .slice(-historyCount)
         .map(transformMessageToOpenAIFormat); // 转换为OpenAI格式
 
       // 调用 AI 生成服务

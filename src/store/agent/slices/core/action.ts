@@ -194,7 +194,6 @@ export const agentCoreSlice: StateCreator<
    * @param toAgentId 目标 agentId
    */
   transferSessionsToAgent: async (fromAgentId: string, toAgentId: string) => {
-    console.log('transferSessionsToAgent agent slice action');
     set({ isDeleting: true });
 
     try {

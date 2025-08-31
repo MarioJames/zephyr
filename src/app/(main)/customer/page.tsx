@@ -240,10 +240,8 @@ export default function Customer() {
 
   // 跳转到添加客户页面
   const handleAddCustomer = useCallback(() => {
-    console.log('点击添加客户按钮，准备跳转到 /customer/form');
     try {
       router.push('/customer/form');
-      console.log('router.push 调用成功');
     } catch (error) {
       console.error('router.push 调用失败:', error);
     }

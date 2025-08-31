@@ -261,7 +261,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
                     />
                     {getFileIcon(file.fileType)}
                     <div className={styles.fileInfo}>
-                      <div style={{ fontWeight: 500 }}>{file.filename}</div>
+                      <div style={{ fontWeight: 500 }}>{file.name}</div>
                       <div style={{ fontSize: 12, color: '#8c8c8c' }}>
                         {formatFileSize(file.size)} •{' '}
                         {new Date(file.uploadedAt).toLocaleDateString()}

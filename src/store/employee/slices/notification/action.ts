@@ -1,5 +1,7 @@
 import { StateCreator } from 'zustand/vanilla';
-import notificationService, { SendLoginGuideRequest } from '@/services/notification';
+import notificationService, {
+  SendLoginGuideRequest,
+} from '@/services/notification';
 import { EmployeeState } from '../../initialState';
 
 // ========== 通知功能Action接口 ==========
@@ -17,7 +19,7 @@ export const notificationSlice: StateCreator<
 > = (set, get) => ({
   sendLoginGuideEmail: async (employeeId) => {
     const { employees } = get();
-    const employee = employees.find(emp => emp.id === employeeId);
+    const employee = employees.find((emp) => emp.id === employeeId);
 
     if (!employee || !employee.email) {
       set({ notificationError: '员工信息不完整，无法发送邮件' });
@@ -33,7 +35,6 @@ export const notificationSlice: StateCreator<
       };
 
       await notificationService.sendLoginGuideEmail(emailData);
-      console.log(`登录引导邮件已发送到 ${employee.email}`);
     } catch (e: any) {
       set({ notificationError: e?.message || '发送登录引导邮件失败' });
     } finally {

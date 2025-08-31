@@ -77,8 +77,6 @@ export async function POST(request: NextRequest) {
     const documentModel = new DocumentModel(chatDb);
     const document = await documentModel.findByFileId(fileId);
 
-    console.log('document', document);
-
     if (!document || !document.content) {
       return NextResponse.json(
         {
@@ -95,8 +93,6 @@ export async function POST(request: NextRequest) {
     const nlpResult = await structuredDataAPI.extractFileStructuredData(
       document.content
     );
-
-    console.log('nlpResult', nlpResult);
 
     // 3. 存储到 zephyrDB
     const db = await getZephyrDB();

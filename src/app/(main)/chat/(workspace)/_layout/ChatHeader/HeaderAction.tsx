@@ -180,10 +180,8 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
   const [searchResults, setSearchResults] = useState<MessageItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-
   const activeSessionId = useSessionStore(sessionSelectors.activeSessionId);
   const theme = useTheme();
-
 
   const handleSearch = async () => {
     if (searchValue.trim() && activeSessionId) {
@@ -194,7 +192,6 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
           keyword: searchValue,
           sessionId: activeSessionId,
         });
-        console.log('搜索结果', results);
         setSearchResults(results);
       } catch (error) {
         console.error('搜索失败:', error);
@@ -226,7 +223,9 @@ const HeaderAction = memo<{ className?: string }>(({ className }) => {
 
   const handleMessageClick = (message: MessageItem) => {
     // 使用消息ID查找对应的DOM元素
-    const messageElement = document.getElementById(`chat-message-${message.id}`);
+    const messageElement = document.getElementById(
+      `chat-message-${message.id}`
+    );
 
     if (!messageElement) {
       return;

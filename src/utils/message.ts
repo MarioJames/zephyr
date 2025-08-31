@@ -14,7 +14,7 @@ export function formatDocumentForAI(files: FileForAI[]): string {
         ? JSON.stringify(file.metadata, null, 2)
         : '';
 
-      return `<file id="${file.id}" name="${file.filename}" type="${
+      return `<file id="${file.id}" name="${file.name}" type="${
         file.fileType
       }" size="${file.size}">
 ${metadata ? `<metadata>\n${metadata}\n</metadata>\n` : ''}

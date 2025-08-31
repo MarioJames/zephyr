@@ -20,7 +20,9 @@ export const sessionActiveAction: StateCreator<
   SessionActiveAction
 > = (set, get) => ({
   initFromUrlParams: async () => {
-    const { session, topic, userId, openHistory } = qs.parse(window.location.search);
+    const { session, topic, userId, openHistory } = qs.parse(
+      window.location.search
+    );
 
     // 如果URL参数中存在userId，则获取该员工的会话列表
     if (userId) {
@@ -34,8 +36,6 @@ export const sessionActiveAction: StateCreator<
     }
 
     if (openHistory === '1') {
-      console.log('检测到openHistory=true，打开历史面板');
-
       const { updateSystemStatus } = useGlobalStore.getState();
 
       updateSystemStatus({
@@ -62,6 +62,6 @@ export const sessionActiveAction: StateCreator<
   },
 
   setTargetUser(user: UserItem | undefined) {
-    set({ targetUser: user })
+    set({ targetUser: user });
   },
 });

@@ -102,7 +102,7 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
           ...get().chatUploadFileList,
           {
             originalFile: file,
-            filename: file.name,
+            name: file.name,
             fileType: file.type,
             size: file.size,
             status: 'uploading' as const,
@@ -160,7 +160,7 @@ export const uploadSlice: StateCreator<ChatStore, [], [], UploadAction> = (
           ...get().chatUploadFileList,
           {
             originalFile: data.file,
-            filename: data.file.name,
+            name: data.file.name,
             fileType: data.file.type,
             size: data.file.size,
             status: 'uploading' as const,

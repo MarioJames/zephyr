@@ -186,7 +186,6 @@ export const coreSlice: StateCreator<
   },
 
   fetchSessionList: async () => {
-    console.log('fetchSessionList employee slice core action');
     const res = await sessionsService.getSessionList({
       page: 1,
       pageSize: 100,

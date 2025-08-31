@@ -21,17 +21,24 @@ export interface StructuredDataCreateRequest {
 /**
  * 调用 NLP 服务把文件内容处理成结构化的数据
  */
-async function extractFileStructuredData(text: string) {
+async function extractFileStructuredData(
+  text: string
+): Promise<StructuredData[]> {
   try {
     const response = await fetch(
-      `${zephyrEnv.NEXT_PUBLIC_NLP_ENDPOINT}/extract`,
+      `${zephyrEnv.NEXT_PUBLIC_NLP_ENDPOINT}/api/extract`,
       {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ text }),
       }
     );
 
-    return response.json();
+    const structuredData = await response.json();
+
+    return structuredData;
   } catch (error) {
     console.error('extractFileStructuredData error:', error);
     throw error;
@@ -52,16 +59,7 @@ async function getStructuredDataByFileId(
       fileId,
     });
   } catch (error) {
-    console.error('getStructuredDataByFileId error:', error);
-    // 如果是 404 错误，返回 null，其他错误抛出
-    if (
-      error &&
-      typeof error === 'object' &&
-      'status' in error &&
-      error.status === 404
-    ) {
-      return null;
-    }
+    console.log('getStructuredDataByFileId error:', error);
     throw error;
   }
 }

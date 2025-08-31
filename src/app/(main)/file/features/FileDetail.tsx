@@ -1,35 +1,34 @@
-"use client";
+'use client';
 
-import { Descriptions } from "antd";
-import { useTheme } from "antd-style";
-import dayjs from "dayjs";
-import { memo } from "react";
-import { Flexbox } from "react-layout-kit";
+import { Descriptions } from 'antd';
+import { useTheme } from 'antd-style';
+import dayjs from 'dayjs';
+import { memo } from 'react';
+import { Flexbox } from 'react-layout-kit';
 
-import { FileItem } from "@/services/files";
-import { formatSize } from "@/utils/format";
+import { FileItem } from '@/services/files';
+import { formatSize } from '@/utils/format';
 
 export const DETAIL_PANEL_WIDTH = 300;
 
 const FileDetail = memo<FileItem>((props) => {
-  const { filename, size, updatedAt } = props || {};
-  console.log("FileDetail", props);
+  const { name, size, updatedAt } = props || {};
   const theme = useTheme();
 
   if (!props) return null;
 
   const items = [
-    { children: filename, key: "filename", label: "文件名" },
-    { children: formatSize(size), key: "size", label: "文件大小" },
+    { children: name, key: 'name', label: '文件名' },
+    { children: formatSize(size), key: 'size', label: '文件大小' },
     {
-      children: filename.split(".").pop()?.toUpperCase(),
-      key: "type",
-      label: "格式",
+      children: name.split('.').pop()?.toUpperCase(),
+      key: 'type',
+      label: '格式',
     },
     {
-      children: dayjs(updatedAt).format("YYYY-MM-DD HH:mm"),
-      key: "updatedAt",
-      label: "更新时间",
+      children: dayjs(updatedAt).format('YYYY-MM-DD HH:mm'),
+      key: 'updatedAt',
+      label: '更新时间',
     },
   ];
 
@@ -43,11 +42,11 @@ const FileDetail = memo<FileItem>((props) => {
         colon={false}
         column={1}
         items={items}
-        size={"small"}
+        size={'small'}
         styles={{
           label: { width: 120 },
         }}
-        title={"基本信息"}
+        title={'基本信息'}
       />
     </Flexbox>
   );

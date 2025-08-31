@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { createStyles } from 'antd-style';
 import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { Trash } from 'lucide-react';
-import { Button , Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import Image from 'next/image';
 import FileIcon from '@/components/FileIcon';
 
@@ -136,9 +136,7 @@ const UploadedFileList = memo<UploadedFileListProps>(
         return <Image alt='file' height={54} src={url} width={54} />;
       }
 
-      return (
-        <FileIcon fileName={file?.filename || ''} fileType={file?.fileType} />
-      );
+      return <FileIcon fileName={file?.name || ''} fileType={file?.fileType} />;
     };
 
     return (
@@ -153,11 +151,11 @@ const UploadedFileList = memo<UploadedFileListProps>(
         {files.length > 0 && (
           <div className={styles.fileList}>
             {files.map((file) => (
-              <div className={styles.fileItem} key={file.id || file.filename}>
+              <div className={styles.fileItem} key={file.id || file.name}>
                 {getFileIcon(file)}
 
                 <div className={styles.fileInfo}>
-                  <div className={styles.fileName}>{file.filename}</div>
+                  <div className={styles.fileName}>{file.name}</div>
                   <div className={styles.fileSize}>
                     {formatFileSize(file.size || 0)}
                   </div>
