@@ -11,6 +11,7 @@ export { default as messagesAPI } from './messages';
 export { default as modelsAPI } from './models';
 export { default as rolesAPI } from './roles';
 export { default as sessionsAPI } from './sessions';
+export { default as structuredDataAPI } from './structured-data';
 export { default as topicsAPI } from './topics';
 export { default as userAPI } from './user';
 
@@ -63,6 +64,11 @@ export type {
   SessionSearchRequest,
   SessionUpdateRequest,
 } from './sessions';
+export type {
+  StructuredData,
+  StructuredDataCreateRequest,
+  StructuredDataItem,
+} from './structured-data';
 export type {
   TopicCreateRequest,
   TopicItem,

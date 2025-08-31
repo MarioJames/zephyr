@@ -25,17 +25,35 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   `,
 }));
 
-const FileItem = memo<FileItemType>(({ id, fileType, size, filename }) => {
-  const { styles } = useStyles();
+interface FileItemProps extends FileItemType {
+  onClick?: (fileId: string) => void;
+}
 
-  return (
-    <Flexbox className={styles.container} gap={12} horizontal key={id}>
-      <FileIcon fileName={filename} fileType={fileType} />
-      <Flexbox style={{ overflow: 'hidden' }}>
-        <Typography.Text ellipsis>{filename}</Typography.Text>
-        <Typography.Text type={'secondary'}>{formatSize(size)}</Typography.Text>
+const FileItem = memo<FileItemProps>(
+  ({ id, fileType, size, name, onClick }) => {
+    const { styles } = useStyles();
+
+    const handleClick = () => {
+      onClick?.(id);
+    };
+
+    return (
+      <Flexbox
+        className={styles.container}
+        gap={12}
+        horizontal
+        key={id}
+        onClick={handleClick}
+      >
+        <FileIcon fileName={name} fileType={fileType} />
+        <Flexbox style={{ overflow: 'hidden' }}>
+          <Typography.Text ellipsis>{name}</Typography.Text>
+          <Typography.Text type={'secondary'}>
+            {formatSize(size)}
+          </Typography.Text>
+        </Flexbox>
       </Flexbox>
-    </Flexbox>
-  );
-});
+    );
+  }
+);
 export default FileItem;

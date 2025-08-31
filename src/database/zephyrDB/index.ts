@@ -34,5 +34,6 @@ export const zephyrDB = getZephyrDB();
 
 export * from './models/agent_suggestions';
 export * from './models/customer';
+export * from './models/structured';
 export * from './schemas';
 export * from './type';

@@ -15,6 +15,13 @@
       "when": 1755528036202,
       "tag": "0001_modify_customer_table",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756385954890,
+      "tag": "0002_init_file_structured",
+      "breakpoints": true
     }
   ]
 }
