@@ -14,7 +14,7 @@ import { Tooltip } from '@lobehub/ui';
 import { useModelStore , modelCoreSelectors } from '@/store/model';
 import { sessionSelectors } from '@/store/session/selectors';
 import { useSessionStore } from '@/store/session';
-import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
+import { USER_SUGGESTION_PROMPT } from '@/const/prompt';
 
 interface TokenTagProps {
   total: string;
@@ -53,7 +53,7 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
   const chatsToken = useTokenCount(chatsString) + inputTokenCount;
 
   // SystemRole token
-  const systemRoleToken = useTokenCount(AI_SUGGESTION_PROMPT(systemRole || ''));
+  const systemRoleToken = useTokenCount(USER_SUGGESTION_PROMPT(systemRole || ''));
   const historySummaryToken = useTokenCount(historySummary);
 
   // Total token

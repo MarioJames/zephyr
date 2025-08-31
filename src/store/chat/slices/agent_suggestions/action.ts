@@ -5,7 +5,7 @@ import agentSuggestionsService, {
   AgentSuggestionItem,
 } from '@/services/agent_suggestions';
 import { ChatStore } from '../../store';
-import { AI_SUGGESTION_PROMPT } from '@/const/prompt';
+import { USER_SUGGESTION_PROMPT, ASSISTANT_SUGGESTION_PROMPT } from '@/const/prompt';
 import chatService from '@/services/chat';
 import { useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
@@ -110,8 +110,16 @@ export const agentSuggestionsSlice: StateCreator<
 
       const historyCount = activeAgent?.chatConfig?.historyCount || 8;
 
-      // 使用AI_SUGGESTION_PROMPT生成提示词
-      const prompt = AI_SUGGESTION_PROMPT(systemRole || '');
+      // 获取当前消息
+      const currentMessage = state.messages.find(msg => msg.id === parentMessageId);
+      if (!currentMessage) {
+        throw new Error('未找到当前消息');
+      }
+
+      // 根据消息类型选择不同的提示词
+      const prompt = currentMessage?.role === 'user' 
+        ? USER_SUGGESTION_PROMPT(systemRole || '')
+        : ASSISTANT_SUGGESTION_PROMPT(systemRole || '');
 
       // 根据historyCount，获取最新的historyCount条消息
       const historyMessages = state.messages
@@ -127,18 +135,18 @@ export const agentSuggestionsSlice: StateCreator<
 
       // 调用 AI 生成服务
       const aiResponse = await chatService.generateReply({
-        // 拿最后一条消息作为用户消息
-        userMessage: historyMessages.at(-1)?.content || '',
+        // 使用当前消息作为输入
+        userMessage: currentMessage.content || '',
         model: activeAgent?.model,
         provider: activeAgent?.provider,
         sessionId: activeSessionId!,
-        // 拼接系统提示词和用户消息作为上下文
+        // 拼接系统提示词和历史消息作为上下文
         conversationHistory: [
           {
             role: 'system',
             content: prompt,
           },
-          // 去掉最后一条消息，因为最后一条消息是当前轮次对话的用户消息
+          // 去掉最后一条消息，因为最后一条消息是当前消息
           ...historyMessages.slice(0, -1).map((msg) => ({
             role: msg.role,
             content: msg.content!,
