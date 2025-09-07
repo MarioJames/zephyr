@@ -139,12 +139,16 @@ ${agentSystemPrompt}
 // 为了保持向后兼容性，将USER_SUGGESTION_PROMPT作为默认的AI建议提示词
 export const AI_SUGGESTION_PROMPT = USER_SUGGESTION_PROMPT;
 
-export const TRANSLATION_PROMPT = (toLanguage: string, fromLanguage?: string) => {
+export const TRANSLATION_PROMPT = (
+  toLanguage: string,
+  fromLanguage?: string
+) => {
   // 如果配置了环境变量，优先使用环境变量中的 prompt
   if (zephyrEnv.NEXT_PUBLIC_TRANSLATION_PROMPT) {
-    return zephyrEnv.NEXT_PUBLIC_TRANSLATION_PROMPT
-      .replace('${toLanguage}', toLanguage)
-      .replace('${fromLanguage}', fromLanguage || '');
+    return zephyrEnv.NEXT_PUBLIC_TRANSLATION_PROMPT.replace(
+      '${toLanguage}',
+      toLanguage
+    ).replace('${fromLanguage}', fromLanguage || '');
   }
 
   // 否则使用默认的内置 prompt

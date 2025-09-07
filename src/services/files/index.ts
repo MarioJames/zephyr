@@ -19,7 +19,6 @@ export interface FileItem {
   metadata: FileMetadata;
   createdAt: string;
   updatedAt: string;
-  base64?: string;
 }
 
 export interface FilePublicUploadResponse extends FileItem {

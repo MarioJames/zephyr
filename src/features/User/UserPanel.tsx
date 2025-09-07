@@ -18,13 +18,13 @@ import { PropsWithChildren, memo, useState } from 'react';
 import {
   UserOutlined,
   KeyOutlined,
-  // LogoutOutlined,
+  LogoutOutlined,
   LockOutlined,
 } from '@ant-design/icons';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { changeUserPassword } from '@/services/casdoor';
-// import { logout } from '@/utils/client';
+import { logout } from '@/utils/logout';
 
 const { Text } = Typography;
 
@@ -122,7 +122,7 @@ const PanelContent = memo(() => {
         newPassword: values.newPassword,
         userInfo: currentUserInfo,
       };
-      
+
       await changeUserPassword(requestData);
 
       message.success('密码修改成功');
@@ -145,14 +145,14 @@ const PanelContent = memo(() => {
       label: '修改密码',
       onClick: () => setChangePasswordModalOpen(true),
     },
-    // {
-    //   key: 'logout',
-    //   icon: (
-    //     <LogoutOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
-    //   ),
-    //   label: '退出登录',
-    //   onClick: logout,
-    // },
+    {
+      key: 'logout',
+      icon: (
+        <LogoutOutlined className={styles.menuIcon} style={{ fontSize: 16 }} />
+      ),
+      label: '退出登录',
+      onClick: logout,
+    },
   ];
 
   return (
@@ -197,13 +197,11 @@ const PanelContent = memo(() => {
           <Form.Item
             label='当前密码'
             name='oldPassword'
-            rules={[
-              { required: true, message: '请输入当前密码' },
-            ]}
+            rules={[{ required: true, message: '请输入当前密码' }]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder='请输入当前密码' 
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder='请输入当前密码'
               autoComplete='current-password'
             />
           </Form.Item>
@@ -216,9 +214,9 @@ const PanelContent = memo(() => {
               { min: 6, message: '密码长度至少为 6 位' },
             ]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder='请输入新密码' 
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder='请输入新密码'
               autoComplete='new-password'
             />
           </Form.Item>
@@ -238,9 +236,9 @@ const PanelContent = memo(() => {
               }),
             ]}
           >
-            <Input.Password 
-              prefix={<LockOutlined />} 
-              placeholder='请再次输入新密码' 
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder='请再次输入新密码'
               autoComplete='new-password'
             />
           </Form.Item>

@@ -24,8 +24,8 @@ export interface MessageAction {
   createMessage: (
     content: ChatMessageContent,
     role: 'user' | 'assistant',
-    options: { 
-      clearInput?: boolean; 
+    options: {
+      clearInput?: boolean;
       files?: string[];
       isStaffMessage?: boolean; // 添加标记，用于区分是否是通过"发送员工消息"按钮发送的
     }
@@ -100,8 +100,8 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   createMessage: async (
     content: ChatMessageContent,
     role: 'user' | 'assistant',
-    options: { 
-      clearInput?: boolean; 
+    options: {
+      clearInput?: boolean;
       files?: string[];
       isStaffMessage?: boolean; // 添加标记，用于区分是否是通过"发送员工消息"按钮发送的
     } = {}
@@ -168,7 +168,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 如果没有上传的文件，正常发送文字
       if (!chatUploadFileList.length) {
-        await get().createMessage(inputMessage, role, { 
+        await get().createMessage(inputMessage, role, {
           clearInput: true,
           isStaffMessage: role === 'assistant', // 如果是助手消息，标记为员工消息
         });
@@ -218,7 +218,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       console.error('发送带文件上下文的消息失败:', error);
       // 降级处理：正常发送消息
       if (inputMessage.trim()) {
-        await get().createMessage(inputMessage, role, { 
+        await get().createMessage(inputMessage, role, {
           clearInput: true,
           isStaffMessage: role === 'assistant', // 如果是助手消息，标记为员工消息
         });
@@ -229,7 +229,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
   },
 
   acceptSuggestion: async (content: string) => {
-    await get().createMessage(content, 'assistant', { 
+    await get().createMessage(content, 'assistant', {
       clearInput: false,
       isStaffMessage: false, // 采用建议时不需要生成AI建议
     });

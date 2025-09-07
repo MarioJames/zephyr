@@ -66,13 +66,16 @@ ${formatDocumentForAI(documents)}
 export function transformMessageToOpenAIFormat(
   message: MessageItem
 ): ChatMessage {
+  const existFiles = (message.files || []).length > 0;
+
   const images =
     message.files?.filter(
       (file) => file.fileType?.startsWith('image/') && file.url
     ) || [];
 
   return {
-    role: message.role,
+    // 如果消息包含文件，强制指定为user角色，否则大模型不会识别图片或者文件内容
+    role: existFiles ? 'user' : message.role,
     content: [
       {
         type: 'text',

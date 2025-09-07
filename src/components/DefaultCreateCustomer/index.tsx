@@ -115,7 +115,7 @@ const DefaultCreateCustomer = () => {
     <div className={styles.container}>
       <div className={styles.top}>
         <Image
-          alt=''
+          alt='agent'
           className={styles.helloImg}
           height={40}
           src={HELLO_IMG}
@@ -150,7 +150,11 @@ const DefaultCreateCustomer = () => {
         </div>
       ) : (
         <div className={styles.cardFooter}>
-          <Button onClick={() => onCreateCustomer()} size='large' type='primary'>
+          <Button
+            onClick={() => onCreateCustomer()}
+            size='large'
+            type='primary'
+          >
             创建客户
           </Button>
         </div>

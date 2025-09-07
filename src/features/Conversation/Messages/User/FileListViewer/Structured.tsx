@@ -11,9 +11,11 @@ import {
 import { createStyles } from 'antd-style';
 import { useQuery } from '@tanstack/react-query';
 import { structuredDataAPI } from '@/services';
+import { FileItem as FileItemType } from '@/services/files';
+import { downloadFile } from '@/utils/file';
 
 export interface StructuredProps {
-  fileId?: string;
+  file?: FileItemType;
   open: boolean;
   onClose: () => void;
 }
@@ -39,24 +41,25 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-const Structured = ({ fileId, open, onClose }: StructuredProps) => {
+const Structured = ({ file, open, onClose }: StructuredProps) => {
   const { styles } = useStyles();
   const { isLoading, data: structuredData } = useQuery({
-    queryKey: ['structuredData', fileId],
+    queryKey: ['structuredData', file?.id],
     queryFn: async () => {
-      if (!fileId) return null;
+      if (!file?.id) return null;
 
-      const structuredData =
-        await structuredDataAPI.getStructuredDataByFileId(fileId);
+      const structuredData = await structuredDataAPI.getStructuredDataByFileId(
+        file.id
+      );
 
       return structuredData;
     },
   });
 
   const handleRegenerate = async () => {
-    if (!fileId) return;
+    if (!file?.id) return;
 
-    await structuredDataAPI.upsertStructuredData(fileId);
+    await structuredDataAPI.upsertStructuredData(file.id);
   };
 
   return (
@@ -74,7 +77,13 @@ const Structured = ({ fileId, open, onClose }: StructuredProps) => {
           >
             <Button danger>重新生成</Button>
           </Popconfirm>
-          <Button type='primary' onClick={onClose}>
+          <Button
+            type='primary'
+            onClick={() => downloadFile(file!.url, file!.name)}
+          >
+            下载文件
+          </Button>
+          <Button type='default' onClick={onClose}>
             关闭
           </Button>
         </Flex>

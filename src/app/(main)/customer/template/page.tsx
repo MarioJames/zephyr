@@ -282,7 +282,7 @@ export default function CustomerTemplatePage() {
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
                       <Image
-                        alt={agent.title || ''}
+                        alt={agent.title || '客户模板'}
                         className={styles.cardImage}
                         height={132}
                         src={agent.avatar || '/test.png'}

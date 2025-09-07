@@ -62,10 +62,9 @@ export interface TranslateRequest {
 }
 
 export interface GenerateReplyRequest {
-  userMessage: ChatMessage['content']; // 必填，用户消息
   sessionId: string | null; // 会话ID
   agentId?: string; // 智能体ID
-  conversationHistory: ChatMessage[]; // 对话历史
+  messages: ChatMessage[]; // 对话历史
   model?: string;
   provider?: string;
   chatConfig?: AgentConfig;
@@ -172,15 +171,9 @@ function translate(data: TranslateRequest) {
  * @returns ChatResponse
  */
 function generateReply(data: GenerateReplyRequest) {
-  // 构建完整的对话历史
-  const messages: ChatMessage[] = [
-    ...data.conversationHistory,
-    { role: 'user', content: data.userMessage },
-  ];
-
   // 使用通用聊天接口生成回复
   return chat({
-    messages,
+    messages: data.messages,
     model: data.model,
     provider: data.provider,
     ...data.chatConfig,

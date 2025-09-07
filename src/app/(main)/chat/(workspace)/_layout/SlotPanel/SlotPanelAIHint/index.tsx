@@ -3,6 +3,7 @@ import { Row, Col, Modal, Typography, App, Input } from 'antd';
 import { Button } from '@lobehub/ui';
 import { Flexbox } from 'react-layout-kit';
 import { Bot, RefreshCw, Copy, ChevronDown, Edit2 } from 'lucide-react';
+import { Virtuoso } from 'react-virtuoso';
 import { chatSelectors, useChatStore } from '@/store/chat';
 import { AgentSuggestionItem, updateSuggestion as updateSuggestions } from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
@@ -116,7 +117,7 @@ function AIHintItem({
 
       // 调用更新接口
       await updateSuggestions(item.id as number, newSuggestion);
-      
+
       // 更新store中的状态
       updateSuggestion(item.id as number, {
         ...item,
@@ -486,13 +487,21 @@ const AIHintPanel = () => {
                 </Flexbox>
               </Flexbox>
             )}
-            {suggestions.map((item) => (
-              <AIHintItem
-                isLatest={latestSuggestion?.id === item.id}
-                item={item}
-                key={item.id}
+            {suggestions.length > 0 && (
+              <Virtuoso
+                data={suggestions}
+                defaultItemHeight={940}
+                itemContent={(_index, item) => (
+                  <div style={{ paddingBottom: '24px' }}>
+                    <AIHintItem
+                      isLatest={latestSuggestion?.id === item.id}
+                      item={item}
+                    />
+                  </div>
+                )}
+                style={{ height: '100%', width: '100%' }}
               />
-            ))}
+            )}
           </>
         )}
       </Flexbox>

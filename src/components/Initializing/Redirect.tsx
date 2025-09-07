@@ -36,15 +36,15 @@ const Redirect = memo<RedirectProps>(({ setLoadingStage }) => {
       return;
     }
 
-    if (!rolesInit) {
-      setLoadingStage(AppLoadingStage.InitializingRoles);
-      initRoles();
-      return;
-    }
-
     // 初始化用户凭证
     if (!userVirtualKeyInit) {
       setLoadingStage(AppLoadingStage.InitializingUserVirtualKey);
+      return;
+    }
+
+    if (!rolesInit) {
+      setLoadingStage(AppLoadingStage.InitializingRoles);
+      initRoles();
       return;
     }
 

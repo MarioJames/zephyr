@@ -6,11 +6,15 @@ import { memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 
 import { MAX_WIDTH } from '@/const/layoutTokens';
-// import { logout } from '@/utils/client';
+import { logout } from '@/utils/logout';
 
 const NoAuthority = memo(() => {
   return (
-    <Flexbox align={'center'} justify={'center'} style={{ minHeight: '100%', width: '100%' }}>
+    <Flexbox
+      align={'center'}
+      justify={'center'}
+      style={{ minHeight: '100%', width: '100%' }}
+    >
       <h1
         style={{
           filter: 'blur(8px)',
@@ -30,10 +34,10 @@ const NoAuthority = memo(() => {
       </h2>
       <p style={{ marginBottom: '2em' }}>{'请联系管理员'}</p>
       <Flexbox gap={12} horizontal style={{ marginBottom: '1em' }}>
-        <Link href="/chat">
+        <Link href='/chat'>
           <Button type={'primary'}>返回首页</Button>
         </Link>
-        {/* <Button onClick={logout}>退出登录</Button> */}
+        <Button onClick={logout}>退出登录</Button>
       </Flexbox>
     </Flexbox>
   );

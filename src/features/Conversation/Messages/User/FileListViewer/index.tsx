@@ -12,7 +12,7 @@ interface FileListViewerProps {
 
 const FileListViewer = memo<FileListViewerProps>(({ items }) => {
   const [openStructured, setOpenStructured] = useState(false);
-  const [fileId, setFileId] = useState<string | undefined>(undefined);
+  const [file, setFile] = useState<FileItemType | undefined>(undefined);
 
   return (
     <>
@@ -22,14 +22,14 @@ const FileListViewer = memo<FileListViewerProps>(({ items }) => {
             key={item.id}
             {...item}
             onClick={() => {
-              setFileId(item.id);
+              setFile(item);
               setOpenStructured(true);
             }}
           />
         ))}
       </Flexbox>
       <Structured
-        fileId={fileId}
+        file={file}
         open={openStructured}
         onClose={() => setOpenStructured(false)}
       />

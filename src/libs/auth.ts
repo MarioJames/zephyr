@@ -6,6 +6,7 @@ import { providerConfig, oidcEnv } from '@/env/oidc';
 interface ExtendedJWT extends JWT {
   accessToken?: string;
   refreshToken?: string;
+  idToken?: string;
   accessTokenExpires?: number;
   error?: string;
 }
@@ -34,6 +35,7 @@ async function refreshAccessToken(token: ExtendedJWT): Promise<ExtendedJWT> {
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
+      idToken: refreshedTokens.id_token,
       accessTokenExpires:
         Date.now() + (refreshedTokens.expires_in ?? 90_000) * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
@@ -67,6 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          idToken: account.id_token,
           accessTokenExpires: account.expires_at
             ? account.expires_at * 1000
             : Date.now() + (account.expires_in ?? 90_000) * 1000,
@@ -94,6 +97,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // 传递 access token 给 session
       (session as any).accessToken = (token as any).accessToken;
+      (session as any).refreshToken = (token as any).refreshToken;
+      (session as any).idToken = (token as any).idToken;
       (session as any).error = (token as any).error;
 
       return session;

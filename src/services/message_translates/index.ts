@@ -2,6 +2,7 @@ import { http } from '../request';
 import chatService from '../chat';
 import messageService from '../messages';
 import { AgentConfig } from '@/types';
+import { removeSystemContext } from '@/utils/message';
 
 // 翻译相关类型定义
 export interface MessageTranslateItem {
@@ -67,7 +68,8 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
 
   // 2. 使用通用聊天接口进行翻译
   const translationResult = await chatService.translate({
-    text: originalMessage.content,
+    // 翻译时，去掉系统上下文，只保留用户消息
+    text: removeSystemContext(originalMessage.content),
     fromLanguage: data.from,
     toLanguage: data.to,
     model: data.model,
@@ -76,6 +78,7 @@ async function translateMessage(data: MessageTranslateTriggerRequest) {
   });
 
   const translatedContent = translationResult?.content || '';
+
   // 3. 保存翻译结果
   return updateMessageTranslate(originalMessage?.id, {
     from: data.from,
