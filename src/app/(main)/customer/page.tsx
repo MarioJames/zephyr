@@ -417,7 +417,7 @@ export default function Customer() {
             onChange={(value: string | undefined) => {
               if (value) {
                 // 直接跳转到客户详情页
-                router.push(`/customer/detail?id=${value}`);
+                router.push(`/customer/detail/${value}`);
               }
             }}
             onClear={() => searchSessions('')}

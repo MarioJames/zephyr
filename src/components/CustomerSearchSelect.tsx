@@ -95,7 +95,7 @@ export const CustomerSearchSelect: React.FC<CustomerSearchSelectProps> = ({
       onSelect(value);
     } else {
       // 默认跳转到客户详情页
-      router.push(`/customer/detail?id=${value}`);
+      router.push(`/customer/detail/${value}`);
     }
     setSearchQuery(''); // 清空搜索
   };
