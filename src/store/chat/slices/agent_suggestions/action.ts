@@ -158,12 +158,21 @@ export const agentSuggestionsSlice: StateCreator<
       });
 
       if (aiResponse.reply) {
+        let suggestionString = aiResponse.reply.trim();
+
+        if (
+          suggestionString.startsWith('```json') &&
+          suggestionString.endsWith('```')
+        ) {
+          suggestionString = suggestionString.slice(7, -3);
+        }
+
         let suggestion: AgentSuggestionContent;
         try {
-          suggestion = JSON.parse(aiResponse.reply) as AgentSuggestionContent;
+          suggestion = JSON.parse(suggestionString) as AgentSuggestionContent;
         } catch (parseError) {
           console.error('JSON解析失败:', parseError);
-          console.error('原始JSON:', aiResponse.reply);
+          console.error('原始JSON:', suggestionString);
           set({
             isGeneratingAI: false,
           });
