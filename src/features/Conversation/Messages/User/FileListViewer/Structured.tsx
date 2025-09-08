@@ -9,11 +9,9 @@ import {
   Typography,
 } from 'antd';
 import { createStyles } from 'antd-style';
-import { useQuery } from '@tanstack/react-query';
-import { structuredDataAPI } from '@/services';
 import { FileItem as FileItemType } from '@/services/files';
 import { downloadFile } from '@/utils/file';
-import { useFileStructed } from '@/hooks/useFileStructed';
+import { useFileStructure, useStructedData } from '@/hooks/useStructed';
 
 export interface StructuredProps {
   file?: FileItemType;
@@ -45,27 +43,21 @@ const useStyles = createStyles(({ token }) => ({
 const Structured = ({ file, open, onClose }: StructuredProps) => {
   const { styles } = useStyles();
 
-  const { structureFile } = useFileStructed();
+  const { isLoading: isStructureLoading, run: structureFile } =
+    useFileStructure();
 
-  const { isLoading, data: structuredData } = useQuery({
-    queryKey: ['structuredData', file?.id],
-    queryFn: async () => {
-      if (!file?.id) return null;
-
-      const structuredData = await structuredDataAPI.getStructuredDataByFileId(
-        file.id
-      );
-
-      return structuredData;
-    },
-  });
-
-  console.log('structuredData', structuredData);
+  const {
+    refetch,
+    isLoading,
+    data: structuredData,
+  } = useStructedData(file?.id);
 
   const handleRegenerate = async () => {
     if (!file?.id) return;
 
     await structureFile(file.id);
+
+    refetch();
   };
 
   return (
@@ -81,13 +73,15 @@ const Structured = ({ file, open, onClose }: StructuredProps) => {
             title='确定重新生成内容摘要吗？'
             onConfirm={handleRegenerate}
           >
-            <Button danger>重新生成</Button>
+            <Button danger loading={isStructureLoading}>
+              重新生成
+            </Button>
           </Popconfirm>
           <Button
             type='primary'
             onClick={() => downloadFile(file!.url, file!.name)}
           >
-            下载文件
+            下载原始文件
           </Button>
           <Button type='default' onClick={onClose}>
             关闭
@@ -114,15 +108,21 @@ const Structured = ({ file, open, onClose }: StructuredProps) => {
             </Typography.Paragraph>
           )}
           {!!structuredData?.data?.entities?.length ? (
-            <Descriptions column={2}>
+            <Descriptions
+              column={1}
+              style={{ maxHeight: 300, overflowY: 'auto' }}
+            >
               {structuredData.data.entities.map((item, idx) => {
                 const content = item.value;
                 const label = item.label || `实体${idx + 1}`;
                 return (
                   <Descriptions.Item key={`${label}-${idx}`} label={label}>
-                    <Typography.Text ellipsis={{ tooltip: content }}>
+                    <Typography.Paragraph
+                      copyable
+                      style={{ wordBreak: 'break-all', marginBottom: 0 }}
+                    >
                       {content}
-                    </Typography.Text>
+                    </Typography.Paragraph>
                   </Descriptions.Item>
                 );
               })}

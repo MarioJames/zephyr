@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getZephyrDB, StructuredDataModel } from '@/database/zephyrDB';
-import { chatAPI } from '@/services';
-import type { StructuredDataCreateRequest } from '@/services';
-import { DocumentModel } from '@/database/chatDB/models/document';
-import { getChatDB } from '@/database';
-import { omit } from 'lodash-es';
+import type { FileSummaryData } from '@/services/structured-data';
 
 /**
  * GET /api/structured-data?fileId=xxx - 根据文件ID获取结构化数据
@@ -52,12 +48,15 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/structured-data - 内容摘要与实体抽取
- * 入参与 SummarizeContentRequest 一致，直接调用 summarizeFileContent 返回结果
+ * POST /api/structured-data - 保存内容摘要
+ * 入参：{ fileId: string, data: FileSummaryData }
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as StructuredDataCreateRequest;
+    const body = (await request.json()) as {
+      fileId?: string;
+      data?: FileSummaryData;
+    };
 
     if (!body?.fileId || typeof body.fileId !== 'string') {
       return NextResponse.json(
@@ -71,41 +70,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = await getChatDB();
-
-    const documentModel = new DocumentModel(db);
-
-    const document = await documentModel.findByFileId(body.fileId);
-
-    if (!document) {
+    if (!body?.data || typeof body.data !== 'object') {
       return NextResponse.json(
         {
           success: false,
-          error: '文件不存在',
+          error: '参数错误',
+          message: 'data 是必需的对象',
+          timestamp: Date.now(),
         },
         { status: 400 }
       );
     }
 
-    if (!document.content) {
-      return NextResponse.json({
-        success: false,
-        error: '文件内容不存在',
-      });
-    }
+    const db = await getZephyrDB();
+    const structuredModel = new StructuredDataModel(db);
 
-    console.log('document', document);
-    console.log('body', body);
-
-    const aiResult = await chatAPI.summarizeFileContent({
-      content: document?.content,
-      ...omit(body, ['fileId']),
+    const record = await structuredModel.upsertByFileId({
+      fileId: body.fileId,
+      data: body.data,
     });
 
     return NextResponse.json({
       success: true,
-      data: aiResult,
-      message: '内容摘要生成成功',
+      data: record,
+      message: '结构化数据保存成功',
       timestamp: Date.now(),
     });
   } catch (error) {
@@ -113,7 +101,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: '创建结构化数据失败',
+        error: '保存结构化数据失败',
         message: error instanceof Error ? error.message : '未知错误',
         timestamp: Date.now(),
       },

@@ -124,16 +124,12 @@ const getFallbackModel = () => {
  */
 
 async function chat(data: ChatRequest) {
-  console.log('chat data', data);
-
   const authorization = await getAuthHeader();
   const fallbackModels = getFallbackModel();
   const fallbacks = fallbackModels.map((model) => ({
     model,
     messages: data.messages,
   }));
-
-  console.log(`${zephyrEnv.NEXT_PUBLIC_LITELLM_URL}/chat/completions`, 'api')
 
   const res = await axios
     .post<LiteLLMChatResponse>(
@@ -154,7 +150,10 @@ async function chat(data: ChatRequest) {
     )
     .catch((error) => {
       console.error('chat error', error);
-      throw error;
+      throw new Error(
+        error?.response?.data?.error?.message ||
+          'Failed to generate AI suggestion'
+      );
     });
 
   const choices = res?.data?.choices;
@@ -200,16 +199,11 @@ function generateReply(data: GenerateReplyRequest) {
     model: data.model,
     provider: data.provider,
     ...data.chatConfig,
-  })
-    .then((response) => {
-      return {
-        reply: response.content,
-      };
-    })
-    .catch((error) => {
-      console.error('chat error', error);
-      throw error;
-    });
+  }).then((response) => {
+    return {
+      reply: response.content,
+    };
+  });
 }
 
 /**

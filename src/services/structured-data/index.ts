@@ -1,4 +1,3 @@
-import { SummarizeContentRequest } from '../chat';
 import { http } from '../request';
 
 // 新结构：摘要与实体
@@ -20,9 +19,9 @@ export interface StructuredDataItem {
 }
 
 // 结构化数据创建请求类型
-export interface StructuredDataCreateRequest
-  extends Omit<SummarizeContentRequest, 'content'> {
+export interface StructuredDataCreateRequest {
   fileId: string;
+  data: FileSummaryData;
 }
 
 /**

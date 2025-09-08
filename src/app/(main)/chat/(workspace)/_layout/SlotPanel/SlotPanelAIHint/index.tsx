@@ -5,7 +5,10 @@ import { Flexbox } from 'react-layout-kit';
 import { Bot, RefreshCw, Copy, ChevronDown, Edit2 } from 'lucide-react';
 import { Virtuoso } from 'react-virtuoso';
 import { chatSelectors, useChatStore } from '@/store/chat';
-import { AgentSuggestionItem, updateSuggestion as updateSuggestions } from '@/services/agent_suggestions';
+import {
+  AgentSuggestionItem,
+  updateSuggestion as updateSuggestions,
+} from '@/services/agent_suggestions';
 import { useAIHintStyles } from '../style';
 import SkeletonList, { SingleSkeleton } from './SkeletonList';
 
@@ -56,7 +59,9 @@ function AIHintItem({
   } | null>(null);
   const [adoptingIndex, setAdoptingIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(new Set());
+  const [expandedIndexes, setExpandedIndexes] = useState<Set<number>>(
+    new Set()
+  );
   const { styles } = useAIHintStyles();
   const { acceptSuggestion, updateSuggestion } = useChatStore();
   const { message } = App.useApp();
@@ -66,7 +71,7 @@ function AIHintItem({
     try {
       // 优先使用 Clipboard API
       await navigator.clipboard.writeText(text);
-      message.success("复制成功");
+      message.success('复制成功');
     } catch {
       // 兜底使用 DOM API
       try {
@@ -76,10 +81,10 @@ function AIHintItem({
         input.select();
         document.execCommand('copy');
         input.remove();
-        message.success("复制成功");
+        message.success('复制成功');
       } catch (fallbackErr) {
-        message.error("复制失败");
-        console.error("复制失败:", fallbackErr);
+        message.error('复制失败');
+        console.error('复制失败:', fallbackErr);
       }
     }
   };
@@ -235,7 +240,12 @@ function AIHintItem({
               ) : (
                 <Paragraph ellipsis={{ rows: 3 }}>{response.content}</Paragraph>
               )}
-              <Flexbox align='center' horizontal justify='space-between' style={{ marginTop: 8 }}>
+              <Flexbox
+                align='center'
+                horizontal
+                justify='space-between'
+                style={{ marginTop: 8 }}
+              >
                 <div
                   onClick={toggleExpand}
                   style={{
@@ -272,7 +282,9 @@ function AIHintItem({
                       <Button
                         className={styles.adoptBtn}
                         loading={adoptingIndex === idx}
-                        onClick={() => handleAcceptSuggestion(response.content, idx)}
+                        onClick={() =>
+                          handleAcceptSuggestion(response.content, idx)
+                        }
                         type='primary'
                       >
                         采用
@@ -305,25 +317,25 @@ function AIHintItem({
 
       {/* 编辑弹窗 */}
       <Modal
-        title="编辑建议"
+        title='编辑建议'
         closable={false}
         open={editModalVisible}
         onCancel={() => setEditModalVisible(false)}
         footer={[
-          <Button key="cancel" onClick={() => setEditModalVisible(false)}>
+          <Button key='cancel' onClick={() => setEditModalVisible(false)}>
             取消
           </Button>,
           <Button
-            key="save"
-            type="default"
+            key='save'
+            type='default'
             loading={isSaving}
             onClick={() => handleSaveEdit(false)}
           >
             保存
           </Button>,
           <Button
-            key="saveAndSend"
-            type="primary"
+            key='saveAndSend'
+            type='primary'
             loading={isSaving}
             onClick={() => handleSaveEdit(true)}
           >
@@ -403,9 +415,11 @@ const AIHintPanel = () => {
     }
 
     try {
-      const { success } = await generateAISuggestion(latestUserMessageId);
+      const { success, message: aiSuggestionMessage } =
+        await generateAISuggestion(latestUserMessageId);
+
       if (!success) {
-        message.error('重新生成建议失败');
+        message.error(aiSuggestionMessage || '重新生成建议失败');
         return;
       }
 
@@ -434,7 +448,12 @@ const AIHintPanel = () => {
   return (
     <Flexbox className={styles.panelBg} height='100%'>
       {/* Header */}
-      <Flexbox horizontal align='center' justify='space-between' className={styles.header}>
+      <Flexbox
+        horizontal
+        align='center'
+        justify='space-between'
+        className={styles.header}
+      >
         <Flexbox align='center' gap={8} horizontal>
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>

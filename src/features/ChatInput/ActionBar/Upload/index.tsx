@@ -9,7 +9,7 @@ import { isDocumentFile, isSupportedFileType } from '@/utils/file';
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
 import FileSelectModal from './FileSelectModal';
-import { useFileStructed } from '@/hooks/useFileStructed';
+import { useFileStructure } from '@/hooks/useStructed';
 
 const useStyles = createStyles(({ css }) => ({
   hotArea: css`
@@ -28,7 +28,7 @@ const FileUpload = memo(() => {
   const [fileSelectModalOpen, setFileSelectModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { structureFile } = useFileStructed();
+  const { run: structureFile } = useFileStructure();
 
   const {
     uploadChatFiles,

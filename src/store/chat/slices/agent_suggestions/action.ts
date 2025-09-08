@@ -27,7 +27,7 @@ export interface AgentSuggestionsAction {
   // AI 生成相关
   generateAISuggestion: (
     parentMessageId: string
-  ) => Promise<{ success: boolean }>;
+  ) => Promise<{ success: boolean; message?: string }>;
 
   // 状态管理
   setGeneratingAI: (loading: boolean) => void;
@@ -87,7 +87,7 @@ export const agentSuggestionsSlice: StateCreator<
 
   generateAISuggestion: async (
     parentMessageId: string
-  ): Promise<{ success: boolean }> => {
+  ): Promise<{ success: boolean; message?: string }> => {
     const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
     // 是否打开联网搜索
@@ -158,32 +158,12 @@ export const agentSuggestionsSlice: StateCreator<
       });
 
       if (aiResponse.reply) {
-        let pureReply = '';
-
-        // 用正则表达式提取JSON内容
-        const match = aiResponse.reply.match(/```json\s*\n([\S\s]*?)\n```/);
-        if (match) {
-          pureReply = match[1].trim().replaceAll(/\[\d+(?:,\d+)*]/g, '');
-        }
-
-        if (!pureReply) {
-          console.warn('无法从AI响应中提取JSON内容:', aiResponse.reply);
-
-          set({
-            isGeneratingAI: false,
-            suggestions: state.suggestions.filter(
-              (s) => s.id !== PLACEHOLDER_SUGGESTION.id
-            ),
-          });
-          return { success: false };
-        }
-
         let suggestion: AgentSuggestionContent;
         try {
-          suggestion = JSON.parse(pureReply) as AgentSuggestionContent;
+          suggestion = JSON.parse(aiResponse.reply) as AgentSuggestionContent;
         } catch (parseError) {
           console.error('JSON解析失败:', parseError);
-          console.error('原始JSON:', pureReply);
+          console.error('原始JSON:', aiResponse.reply);
           set({
             isGeneratingAI: false,
           });
@@ -229,17 +209,23 @@ export const agentSuggestionsSlice: StateCreator<
       return { success: false };
     } catch (error) {
       console.error('Failed to generate AI suggestion:', error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to generate AI suggestion';
+
       set({
         isGeneratingAI: false,
         suggestions: state.suggestions.filter(
           (s) => s.id !== PLACEHOLDER_SUGGESTION.id
         ),
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Failed to generate AI suggestion',
+        error: errorMessage,
       });
-      return { success: false };
+      return {
+        success: false,
+        message: errorMessage,
+      };
     }
   },
 
