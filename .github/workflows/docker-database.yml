@@ -83,14 +83,12 @@ jobs:
             echo "openapi_endpoint=http://8.219.137.29:3000" >> $GITHUB_OUTPUT
             echo "oidc_issuer=http://8.219.137.29:3000/oidc" >> $GITHUB_OUTPUT
             echo "litellm_url=http://8.219.137.29:4000" >> $GITHUB_OUTPUT
-            echo "nlp_endpoint=http://8.219.137.29:8001" >> $GITHUB_OUTPUT
             echo "use_cn_mirror=1" >> $GITHUB_OUTPUT
           else
             echo "app_url=http://lobe.shabby.in:5000" >> $GITHUB_OUTPUT
             echo "openapi_endpoint=http://lobe.shabby.in:5001" >> $GITHUB_OUTPUT
             echo "oidc_issuer=http://lobe.shabby.in:5001/oidc" >> $GITHUB_OUTPUT
             echo "litellm_url=http://lobe.shabby.in:4000" >> $GITHUB_OUTPUT
-            echo "nlp_endpoint=http://lobe.shabby.in:8001" >> $GITHUB_OUTPUT
             echo "use_cn_mirror=0" >> $GITHUB_OUTPUT
           fi
 
@@ -110,7 +108,6 @@ jobs:
             NEXT_PUBLIC_OIDC_CLIENT_ID=zephyr
             NEXT_PUBLIC_OIDC_ISSUER=${{ steps.env.outputs.oidc_issuer }}
             NEXT_PUBLIC_LITELLM_URL=${{ steps.env.outputs.litellm_url }}
-            NEXT_PUBLIC_NLP_ENDPOINT=${{ steps.env.outputs.nlp_endpoint }}
             USE_CN_MIRROR=${{ steps.env.outputs.use_cn_mirror }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
 
@@ -147,14 +144,12 @@ jobs:
             echo "openapi_endpoint=http://8.219.137.29:3000" >> $GITHUB_OUTPUT
             echo "oidc_issuer=http://8.219.137.29:3000/oidc" >> $GITHUB_OUTPUT
             echo "litellm_url=http://8.219.137.29:4000" >> $GITHUB_OUTPUT
-            echo "nlp_endpoint=http://8.219.137.29:8001" >> $GITHUB_OUTPUT
             echo "use_cn_mirror=1" >> $GITHUB_OUTPUT
           else
             echo "app_url=http://lobe.shabby.in:5000" >> $GITHUB_OUTPUT
             echo "openapi_endpoint=http://lobe.shabby.in:5001" >> $GITHUB_OUTPUT
             echo "oidc_issuer=http://lobe.shabby.in:5001/oidc" >> $GITHUB_OUTPUT
             echo "litellm_url=http://lobe.shabby.in:4000" >> $GITHUB_OUTPUT
-            echo "nlp_endpoint=http://lobe.shabby.in:8001" >> $GITHUB_OUTPUT
             echo "use_cn_mirror=0" >> $GITHUB_OUTPUT
           fi
 
