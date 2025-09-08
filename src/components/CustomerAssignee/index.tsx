@@ -155,6 +155,12 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
     [debouncedSearchEmployees]
   );
 
+  const handlePressEnter = useCallback(() => {
+    const keyword = searchText.trim();
+    // 回车立即搜索；为空则回到全部
+    searchEmployees(keyword || '', 10, true);
+  }, [searchText, searchEmployees]);
+
   // 渲染弹窗内容
   const popoverContent = (
     <div className={styles.popoverContent}>
@@ -167,6 +173,7 @@ export const CustomerAssignee: React.FC<CustomerAssigneeProps> = ({
           placeholder='搜索员工姓名、邮箱'
           prefix={<SearchOutlined />}
           value={searchText}
+          onPressEnter={handlePressEnter}
         />
       </div>
 
