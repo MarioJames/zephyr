@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
-import Image from 'next/image';
 import { HELLO_IMG } from '@/const/base';
+import { Image } from '@lobehub/ui';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`

@@ -27,6 +27,8 @@ export type {
   ChatRequest,
   ChatResponse,
   GenerateReplyRequest,
+  SummarizeContentRequest,
+  SummarizeContentResponse,
   TranslateRequest,
 } from './chat';
 export type {
@@ -65,7 +67,7 @@ export type {
   SessionUpdateRequest,
 } from './sessions';
 export type {
-  StructuredData,
+  FileSummaryData as StructuredData,
   StructuredDataCreateRequest,
   StructuredDataItem,
 } from './structured-data';

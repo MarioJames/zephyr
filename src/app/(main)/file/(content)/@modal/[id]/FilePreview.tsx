@@ -1,11 +1,11 @@
 'use client';
 
-import { Image } from 'antd';
 import { memo } from 'react';
 import { useTheme } from 'antd-style';
 import { Center } from 'react-layout-kit';
 
 import { fileCoreSelectors, useFileStore } from '@/store/file';
+import { Image } from '@lobehub/ui';
 
 const FilePreview = memo<{ id: string }>(({ id }) => {
   const file = useFileStore(fileCoreSelectors.getFileById(id));

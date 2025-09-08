@@ -9,7 +9,7 @@ import { isDocumentFile, isSupportedFileType } from '@/utils/file';
 import Action from '../components/Action';
 import { modelCoreSelectors, useModelStore } from '@/store/model';
 import FileSelectModal from './FileSelectModal';
-import { structuredDataAPI } from '@/services';
+import { useFileStructed } from '@/hooks/useFileStructed';
 
 const useStyles = createStyles(({ css }) => ({
   hotArea: css`
@@ -27,6 +27,8 @@ const FileUpload = memo(() => {
   const { styles } = useStyles();
   const [fileSelectModalOpen, setFileSelectModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { structureFile } = useFileStructed();
 
   const {
     uploadChatFiles,
@@ -59,7 +61,7 @@ const FileUpload = memo(() => {
             message.success(`文档 "${file.name}" 上传并解析成功`);
 
             // 上传成功后，开始解析文件的结构化数据
-            await structuredDataAPI.upsertStructuredData(response.fileItem.id);
+            await structureFile(response.fileItem.id);
           } else {
             message.warning(`文档 "${file.name}" 上传成功，但解析失败`);
           }

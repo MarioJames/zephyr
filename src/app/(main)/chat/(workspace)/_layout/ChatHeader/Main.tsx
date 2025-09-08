@@ -7,7 +7,7 @@ import { Suspense, memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { ChevronDown, PencilLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { Image } from '@lobehub/ui';
 
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';

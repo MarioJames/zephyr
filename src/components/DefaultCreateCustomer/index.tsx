@@ -1,12 +1,11 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
 import { useAgentStore } from '@/store/agent/store';
-import { Button } from '@lobehub/ui';
+import { Button, Image } from '@lobehub/ui';
 import { HELLO_IMG } from '@/const/base';
 import { useRouter } from 'next/navigation';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
-import Image from 'next/image';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`

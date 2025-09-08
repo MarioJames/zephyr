@@ -1,13 +1,20 @@
-import React, { useEffect } from "react";
-import { Upload, Form, Spin, App } from "antd";
-import { Button, TextArea, Input, Select, Modal , SliderWithInput } from "@lobehub/ui";
-import { UploadOutlined } from "@ant-design/icons";
-import Image from "next/image";
-import { createStyles } from "antd-style";
-import { useAgentStore } from "@/store/agent";
-import { AGAENT_DEFAULT_CONFIG } from "@/const/agent";
-import { isValidImageUrl } from "@/utils/avatar";
-import isEmpty from "lodash-es/isEmpty";
+import React, { useEffect } from 'react';
+import { Upload, Form, Spin, App } from 'antd';
+import {
+  Button,
+  TextArea,
+  Input,
+  Select,
+  Modal,
+  SliderWithInput,
+  Image,
+} from '@lobehub/ui';
+import { UploadOutlined } from '@ant-design/icons';
+import { createStyles } from 'antd-style';
+import { useAgentStore } from '@/store/agent';
+import { AGAENT_DEFAULT_CONFIG } from '@/const/agent';
+import { isValidImageUrl } from '@/utils/avatar';
+import isEmpty from 'lodash-es/isEmpty';
 
 const useStyles = createStyles(({ css, token }) => ({
   layout: css`
@@ -243,9 +250,9 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       // 只在打开时设置初始值
       form.setFieldsValue({
         ...AGAENT_DEFAULT_CONFIG,
-        ...initialValues,
-        provider: "openai",
         model: !isEmpty(modelOptions) ? modelOptions[0]?.value : undefined,
+        provider: 'openai',
+        ...initialValues,
         params: {
           ...AGAENT_DEFAULT_CONFIG.params,
           ...initialValues?.params,
@@ -259,19 +266,19 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
     try {
       const url = await uploadAvatar(file);
 
-      if (typeof url === "string" && isValidImageUrl(url)) {
+      if (typeof url === 'string' && isValidImageUrl(url)) {
         // 使用 setFields 代替 setFieldValue 来避免循环引用
         form.setFields([
           {
-            name: "avatar",
+            name: 'avatar',
             value: url,
           },
         ]);
-        message.success("上传成功");
+        message.success('上传成功');
       }
     } catch (error) {
-      console.error("Upload failed:", error);
-      message.error("上传失败");
+      console.error('Upload failed:', error);
+      message.error('上传失败');
     } finally {
       setUploading(false);
     }
@@ -279,16 +286,16 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
   const handleOk = async () => {
     const values = form.getFieldsValue();
-      if (!values.avatar) {
-        values.avatar = "";
-      }
-      values.title = values.title.trim();
+    if (!values.avatar) {
+      values.avatar = '';
+    }
+    values.title = values.title.trim();
     try {
       await Promise.resolve(onOk(values));
       form.resetFields();
     } catch (error) {
-      console.error("Save failed:", error);
-      message.error("保存失败");
+      console.error('Save failed:', error);
+      message.error('保存失败');
     }
   };
 
@@ -301,96 +308,98 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
       styles={{
         body: {
           height: 600,
-          display: "flex",
-          flexDirection: "column",
+          display: 'flex',
+          flexDirection: 'column',
         },
         header: {
-          justifyContent: "flex-start",
+          justifyContent: 'flex-start',
         },
       }}
-      title="客户类型"
+      title='客户类型'
       width={840}
     >
       <Spin spinning={loading || uploading}>
-        <Form disabled={loading || uploading} form={form} layout="vertical">
+        <Form disabled={loading || uploading} form={form} layout='vertical'>
           <div className={styles.layout}>
             {/* 左侧大文本编辑区 */}
             <div className={styles.left}>
-              <Form.Item name="systemRole">
+              <Form.Item name='systemRole'>
                 <TextArea
                   className={styles.textarea}
-                  placeholder="请输入系统提示词"
+                  placeholder='请输入系统提示词'
                 />
               </Form.Item>
             </div>
             {/* 右侧表单区 */}
             <div className={styles.right}>
               <div className={styles.contentArea}>
-                <Form.Item 
-                  label="命名" 
-                  name="title" 
+                <Form.Item
+                  label='命名'
+                  name='title'
                   required
                   rules={[
-                    { required: true, message: "请输入客户类型名称" },
-                    { 
+                    { required: true, message: '请输入客户类型名称' },
+                    {
                       validator: (_, value) => {
                         if (value && value.trim() === '') {
-                          return Promise.reject(new Error('客户类型名称不能为空'));
+                          return Promise.reject(
+                            new Error('客户类型名称不能为空')
+                          );
                         }
                         return Promise.resolve();
-                      }
-                    }
+                      },
+                    },
                   ]}
                 >
-                  <Input className={styles.input} placeholder="请输入名称" />
+                  <Input className={styles.input} placeholder='请输入名称' />
                 </Form.Item>
-                <Form.Item label="简介" name="description">
-                  <Input className={styles.input} placeholder="请输入简介" />
+                <Form.Item label='简介' name='description'>
+                  <Input className={styles.input} placeholder='请输入简介' />
                 </Form.Item>
-                <Form.Item hidden label="模型提供商" name="provider">
+                <Form.Item hidden label='模型提供商' name='provider'>
                   <Input />
                 </Form.Item>
-                <Form.Item label="模型" name="model" required>
+                <Form.Item label='模型' name='model' required>
                   <Select
                     className={styles.select}
                     options={modelOptions}
-                    placeholder="请选择模型"
+                    placeholder='请选择模型'
                   />
                 </Form.Item>
                 <Form.Item
-                  label="温度"
-                  name={["params", "temperature"]}
-                  tooltip="温度越高，模型越随机，温度越低，模型越确定"
+                  label='温度'
+                  name={['params', 'temperature']}
+                  tooltip='温度越高，模型越随机，温度越低，模型越确定'
                 >
                   <SliderWithInput max={2} min={0} step={0.1} />
                 </Form.Item>
                 <Form.Item
-                  label="思维开放度"
-                  name={["params", "topP"]}
-                  tooltip="思维开放度越高，模型越随机，思维开放度越低，模型越确定"
+                  label='思维开放度'
+                  name={['params', 'topP']}
+                  tooltip='思维开放度越高，模型越随机，思维开放度越低，模型越确定'
                 >
                   <SliderWithInput max={1} min={0} step={0.1} />
                 </Form.Item>
                 <Form.Item
-                  label="表达发散度"
-                  name={["params", "presencePenalty"]}
-                  tooltip="表达发散度越高，模型越随机，表达发散度越低，模型越确定"
+                  label='表达发散度'
+                  name={['params', 'presencePenalty']}
+                  tooltip='表达发散度越高，模型越随机，表达发散度越低，模型越确定'
                 >
                   <SliderWithInput max={2} min={-2} step={0.1} />
                 </Form.Item>
                 <Form.Item
-                  label="词汇丰富度"
-                  name={["params", "frequencyPenalty"]}
-                  tooltip="词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定"
+                  label='词汇丰富度'
+                  name={['params', 'frequencyPenalty']}
+                  tooltip='词汇丰富度越高，模型越随机，词汇丰富度越低，模型越确定'
                 >
                   <SliderWithInput max={2} min={-2} step={0.1} />
                 </Form.Item>
-                <Form.Item hidden name="avatar">
+                <Form.Item hidden name='avatar'>
                   <Input />
                 </Form.Item>
-                <Form.Item label="示例图" shouldUpdate>
+                <Form.Item label='示例图' shouldUpdate>
                   {({ getFieldValue }) => {
-                    const avatar = getFieldValue("avatar");
+                    const avatar = getFieldValue('avatar');
 
                     if (!avatar || !isValidImageUrl(avatar)) {
                       return (
@@ -399,11 +408,11 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                             width: 112,
                             height: 62,
                             background: theme.colorFillTertiary,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "28px",
-                            borderRadius: "8px",
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '28px',
+                            borderRadius: '8px',
                           }}
                         >
                           {avatar}
@@ -413,7 +422,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
 
                     return (
                       <Image
-                        alt="示例图"
+                        alt='示例图'
                         height={62}
                         src={avatar}
                         width={112}
@@ -423,7 +432,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                 </Form.Item>
                 <div>
                   <Upload
-                    accept="image/*"
+                    accept='image/*'
                     customRequest={handleUpload}
                     disabled={uploading}
                     showUploadList={false}
@@ -432,7 +441,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                       className={styles.uploadBtn}
                       icon={<UploadOutlined />}
                       loading={uploading}
-                      type="link"
+                      type='link'
                     >
                       上传图片
                     </Button>
@@ -447,7 +456,7 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                   className={styles.saveBtn}
                   loading={loading || uploading}
                   onClick={handleOk}
-                  type="primary"
+                  type='primary'
                 >
                   保存
                 </Button>

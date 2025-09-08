@@ -5,8 +5,8 @@ import { createStyles } from 'antd-style';
 import { ChatFileItem } from '@/store/chat/slices/upload/action';
 import { Trash } from 'lucide-react';
 import { Button, Spin } from 'antd';
-import Image from 'next/image';
 import FileIcon from '@/components/FileIcon';
+import { Image } from '@lobehub/ui';
 
 const formatFileSize = (bytes: number) => {
   if (bytes === 0) return '0 B';

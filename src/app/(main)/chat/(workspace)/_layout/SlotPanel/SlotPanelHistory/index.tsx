@@ -208,7 +208,7 @@ const HistoryPanel = () => {
         />
       </Flexbox>
       {/* List */}
-      <Flexbox className={styles.listWrap} flex={1}>
+      <Flexbox className={styles.listWrap} flex={1} gap={8}>
         {isLoading ? (
           <SkeletonList />
         ) : topics.length === 0 ? (

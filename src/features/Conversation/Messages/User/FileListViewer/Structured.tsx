@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { structuredDataAPI } from '@/services';
 import { FileItem as FileItemType } from '@/services/files';
 import { downloadFile } from '@/utils/file';
+import { useFileStructed } from '@/hooks/useFileStructed';
 
 export interface StructuredProps {
   file?: FileItemType;
@@ -43,6 +44,9 @@ const useStyles = createStyles(({ token }) => ({
 
 const Structured = ({ file, open, onClose }: StructuredProps) => {
   const { styles } = useStyles();
+
+  const { structureFile } = useFileStructed();
+
   const { isLoading, data: structuredData } = useQuery({
     queryKey: ['structuredData', file?.id],
     queryFn: async () => {
@@ -56,10 +60,12 @@ const Structured = ({ file, open, onClose }: StructuredProps) => {
     },
   });
 
+  console.log('structuredData', structuredData);
+
   const handleRegenerate = async () => {
     if (!file?.id) return;
 
-    await structuredDataAPI.upsertStructuredData(file.id);
+    await structureFile(file.id);
   };
 
   return (
@@ -89,10 +95,9 @@ const Structured = ({ file, open, onClose }: StructuredProps) => {
         </Flex>
       }
     >
-      <Descriptions column={2}>
-        {/* 骨架屏占位符 */}
-        {isLoading &&
-          Array.from({ length: 6 }).map((_, index) => (
+      {isLoading ? (
+        <Descriptions column={2}>
+          {Array.from({ length: 6 }).map((_, index) => (
             <Descriptions.Item
               key={index}
               label={<div className={styles.sketchLabel} />}
@@ -100,25 +105,41 @@ const Structured = ({ file, open, onClose }: StructuredProps) => {
               <div className={styles.sketchValue} />
             </Descriptions.Item>
           ))}
-        {structuredData?.data?.length ? (
-          structuredData?.data.map((item) => {
-            const content = Array.isArray(item.value)
-              ? item.value.join(',')
-              : item.value;
-
-            return (
-              <Descriptions.Item key={item.label} label={item.label}>
-                <Typography.Text ellipsis={{ tooltip: content }}>
-                  {content}
-                </Typography.Text>
+        </Descriptions>
+      ) : (
+        <>
+          {!!structuredData?.data?.summary && (
+            <Typography.Paragraph title='摘要'>
+              {structuredData?.data?.summary}
+            </Typography.Paragraph>
+          )}
+          {!!structuredData?.data?.entities?.length ? (
+            <Descriptions column={2}>
+              {structuredData.data.entities.map((item, idx) => {
+                const content = item.value;
+                const label = item.label || `实体${idx + 1}`;
+                return (
+                  <Descriptions.Item key={`${label}-${idx}`} label={label}>
+                    <Typography.Text ellipsis={{ tooltip: content }}>
+                      {content}
+                    </Typography.Text>
+                  </Descriptions.Item>
+                );
+              })}
+            </Descriptions>
+          ) : null}
+          {!structuredData?.data?.summary &&
+            !structuredData?.data?.entities?.length && (
+              <Descriptions.Item span={2}>
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description='暂无内容'
+                />
               </Descriptions.Item>
-            );
-          })
-        ) : (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无内容' />
-        )}
-      </Descriptions>
-      <p className={styles.alert}>* 内容由程序自动生成，仅供参考</p>
+            )}
+        </>
+      )}
+      <p className={styles.alert}>* 内容由 AI 生成，仅供参考</p>
     </Modal>
   );
 };

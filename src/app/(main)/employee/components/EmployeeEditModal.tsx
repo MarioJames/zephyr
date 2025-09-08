@@ -1,9 +1,8 @@
 import React from 'react';
 import { Form, Upload, Select, App } from 'antd';
-import { Button, Input, Modal } from '@lobehub/ui';
+import { Button, Image, Input, Modal } from '@lobehub/ui';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
-import Image from 'next/image';
 import { RoleItem } from '@/services/roles';
 
 const useStyles = createStyles(({ css, token }) => ({

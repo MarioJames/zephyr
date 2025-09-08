@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getZephyrDB, StructuredDataModel } from '@/database/zephyrDB';
-import { getChatDB } from '@/database/chatDB';
-import structuredDataAPI from '@/services/structured-data';
+import { chatAPI } from '@/services';
+import type { StructuredDataCreateRequest } from '@/services';
 import { DocumentModel } from '@/database/chatDB/models/document';
+import { getChatDB } from '@/database';
+import { omit } from 'lodash-es';
 
 /**
  * GET /api/structured-data?fileId=xxx - 根据文件ID获取结构化数据
@@ -50,63 +52,60 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/structured-data - 根据文件ID创建结构化数据
- * 只需要传入 fileId，会自动从数据库获取文档内容并调用 NLP 服务解析
+ * POST /api/structured-data - 内容摘要与实体抽取
+ * 入参与 SummarizeContentRequest 一致，直接调用 summarizeFileContent 返回结果
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as StructuredDataCreateRequest;
 
-    // 验证必需字段
-    if (!body.fileId) {
+    if (!body?.fileId || typeof body.fileId !== 'string') {
       return NextResponse.json(
         {
           success: false,
           error: '参数错误',
-          message: 'fileId 是必需的',
+          message: 'fileId 是必需的字符串',
           timestamp: Date.now(),
         },
         { status: 400 }
       );
     }
 
-    const { fileId } = body;
+    const db = await getChatDB();
 
-    // 1. 从 chatDB 获取文档内容
-    const chatDb = await getChatDB();
-    const documentModel = new DocumentModel(chatDb);
-    const document = await documentModel.findByFileId(fileId);
+    const documentModel = new DocumentModel(db);
 
-    if (!document || !document.content) {
+    const document = await documentModel.findByFileId(body.fileId);
+
+    if (!document) {
       return NextResponse.json(
         {
           success: false,
-          error: '文档不存在',
-          message: `文件 ${fileId} 对应的文档内容不存在或为空`,
-          timestamp: Date.now(),
+          error: '文件不存在',
         },
-        { status: 404 }
+        { status: 400 }
       );
     }
 
-    // 2. 调用 NLP 服务解析结构化数据
-    const nlpResult = await structuredDataAPI.extractFileStructuredData(
-      document.content
-    );
+    if (!document.content) {
+      return NextResponse.json({
+        success: false,
+        error: '文件内容不存在',
+      });
+    }
 
-    // 3. 存储到 zephyrDB
-    const db = await getZephyrDB();
-    const structuredModel = new StructuredDataModel(db);
+    console.log('document', document);
+    console.log('body', body);
 
-    const structuredData = await structuredModel.create({
-      fileId: fileId,
-      data: nlpResult,
+    const aiResult = await chatAPI.summarizeFileContent({
+      content: document?.content,
+      ...omit(body, ['fileId']),
     });
 
     return NextResponse.json({
       success: true,
-      data: structuredData,
-      message: '结构化数据创建成功',
+      data: aiResult,
+      message: '内容摘要生成成功',
       timestamp: Date.now(),
     });
   } catch (error) {
@@ -115,103 +114,6 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: '创建结构化数据失败',
-        message: error instanceof Error ? error.message : '未知错误',
-        timestamp: Date.now(),
-      },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * PUT /api/structured-data?fileId=xxx - 根据文件ID更新结构化数据
- * 重新从数据库获取文档内容并调用 NLP 服务解析，更新现有的结构化数据
- */
-export async function PUT(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const fileId = searchParams.get('fileId');
-
-    if (!fileId) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '参数错误',
-          message: 'fileId 是必需的',
-          timestamp: Date.now(),
-        },
-        { status: 400 }
-      );
-    }
-
-    // 1. 检查结构化数据是否存在
-    const db = await getZephyrDB();
-    const structuredModel = new StructuredDataModel(db);
-    const existsStructured = await structuredModel.existsByFileId(fileId);
-
-    if (!existsStructured) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '记录不存在',
-          message: `文件 ${fileId} 没有对应的结构化数据，请先创建`,
-          timestamp: Date.now(),
-        },
-        { status: 404 }
-      );
-    }
-
-    // 2. 从 chatDB 获取文档内容
-    const chatDb = await getChatDB();
-    const documentModel = new DocumentModel(chatDb);
-    const document = await documentModel.findByFileId(fileId);
-
-    if (!document || !document.content) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '文档不存在',
-          message: `文件 ${fileId} 对应的文档内容不存在或为空`,
-          timestamp: Date.now(),
-        },
-        { status: 404 }
-      );
-    }
-
-    // 3. 调用 NLP 服务重新解析结构化数据
-    const nlpResult = await structuredDataAPI.extractFileStructuredData(
-      document.content
-    );
-
-    // 4. 更新结构化数据
-    const updatedRecord = await structuredModel.updateByFileId(fileId, {
-      data: nlpResult,
-    });
-
-    if (!updatedRecord) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: '更新失败',
-          message: `更新文件 ${fileId} 的结构化数据失败`,
-          timestamp: Date.now(),
-        },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: updatedRecord,
-      message: '结构化数据更新成功',
-      timestamp: Date.now(),
-    });
-  } catch (error) {
-    console.error('PUT /api/structured-data error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: '更新结构化数据失败',
         message: error instanceof Error ? error.message : '未知错误',
         timestamp: Date.now(),
       },

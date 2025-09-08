@@ -1,11 +1,10 @@
-import { ActionIcon, Dropdown, Icon, type MenuProps } from '@lobehub/ui';
+import { ActionIcon, Dropdown, Icon, Image, type MenuProps } from '@lobehub/ui';
 import { Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { MoreVertical, PencilLine } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 import BubblesLoading from '@/components/Loading/BubblesLoading';
 import { LOADING_FLAT } from '@/const/base';

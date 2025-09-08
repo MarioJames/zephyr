@@ -10,7 +10,7 @@ import {
   ASSISTANT_SUGGESTION_PROMPT,
 } from '@/const/prompt';
 import chatService from '@/services/chat';
-import { useSessionStore } from '@/store/session';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
 import { transformMessageToOpenAIFormat } from '@/utils/message';
 import { useCustomerStore } from '@/store/customer';
@@ -88,8 +88,7 @@ export const agentSuggestionsSlice: StateCreator<
   generateAISuggestion: async (
     parentMessageId: string
   ): Promise<{ success: boolean }> => {
-    const { activeSessionId, activeTopicId, sessions } =
-      useSessionStore.getState();
+    const { activeSessionId, activeTopicId } = useSessionStore.getState();
 
     // 是否打开联网搜索
     const { currentCustomerExtend } = useCustomerStore.getState();
@@ -105,9 +104,9 @@ export const agentSuggestionsSlice: StateCreator<
       // 先添加一个占位符
       get().addSuggestion(PLACEHOLDER_SUGGESTION);
 
-      const activeSession = sessions.find((s) => s.id === activeSessionId);
-
-      const activeAgent = activeSession?.agentsToSessions[0]?.agent;
+      const activeAgent = sessionSelectors.activeSessionAgent(
+        useSessionStore.getState()
+      );
 
       const systemRole = activeAgent?.systemRole;
 

@@ -434,7 +434,7 @@ const AIHintPanel = () => {
   return (
     <Flexbox className={styles.panelBg} height='100%'>
       {/* Header */}
-      <Flexbox align='center' className={styles.header} horizontal>
+      <Flexbox horizontal align='center' justify='space-between' className={styles.header}>
         <Flexbox align='center' gap={8} horizontal>
           <Bot size={20} />
           <span className={styles.headerTitle}>AI提示</span>
@@ -446,14 +446,7 @@ const AIHintPanel = () => {
             icon={<RefreshCw size={16} />}
             onClick={handleRegenerate}
             size='small'
-            style={{
-              marginLeft: 'auto',
-              color: '#666',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-            type='text'
+            type='primary'
           >
             重新生成
           </Button>

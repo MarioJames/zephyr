@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Tooltip, Typography, App, Spin, Empty } from 'antd';
-import { Button } from '@lobehub/ui';
+import { Button, Image } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
-import Image from 'next/image';
 
 import { useAgentStore } from '@/store/agent/store';
 import { useGlobalStore } from '@/store/global';
