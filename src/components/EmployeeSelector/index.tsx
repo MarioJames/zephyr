@@ -186,10 +186,12 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
     try {
       if (keyword) {
         const searchResults = await userService.searchUsers(keyword, 20);
-        setEmployees(searchResults);
+        const filtered = (searchResults || []).filter((u) => u.id !== 'unassigned');
+        setEmployees(filtered);
       } else {
         const allUsers = await userService.getAllUsers({ pageSize: 20 });
-        setEmployees(allUsers);
+        const filtered = (allUsers || []).filter((u) => u.id !== 'unassigned');
+        setEmployees(filtered);
       }
     } catch (error) {
       console.error("获取员工列表失败:", error);
