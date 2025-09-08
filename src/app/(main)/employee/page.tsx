@@ -183,7 +183,7 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 export default function EmployeePage() {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const { styles, theme } = useStyles();
   const isAdmin = useGlobalStore(globalSelectors.isCurrentUserAdmin);
 
@@ -243,6 +243,17 @@ export default function EmployeePage() {
   const handleRoleChange = async (employeeId: string, newRoleId: string) => {
     const employee = employees.find((emp) => emp.id === employeeId);
     if (!employee) return;
+
+    const targetRole = roles.find((r) => r.id === newRoleId);
+    if (targetRole && targetRole.isActive === false) {
+      modal.confirm({
+        title: '提示',
+        content: '选中的角色未激活，对应账号无法进入系统',
+        okText: '我知道了',
+        okCancel: false,
+      });
+    }
+
     try {
       await updateEmployeeRole(employee, {
         removeRoles: employee.roles?.map((r) => Number(r.id)) || [],

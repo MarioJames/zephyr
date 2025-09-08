@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Upload, Select } from 'antd';
+import { Form, Upload, Select, App } from 'antd';
 import { Button, Input, Modal } from '@lobehub/ui';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
@@ -140,6 +140,19 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
   onAvatarChange,
 }) => {
   const { styles } = useStyles();
+  const { modal } = App.useApp();
+
+  const handleRoleChange = (roleId: string) => {
+    const selected = roles.find((r) => r.id === roleId);
+    if (selected && selected.isActive === false) {
+      modal.confirm({
+        title: '提示',
+        content: '选中的角色未激活，对应账号无法进入系统',
+        okText: '我知道了',
+        okCancel: false,
+      });
+    }
+  };
 
   return (
     <Modal
@@ -252,6 +265,7 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
                 label: role.displayName,
                 value: role.id,
               }))}
+              onChange={handleRoleChange}
             />
           </Form.Item>
         </Form>
