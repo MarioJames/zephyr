@@ -17,7 +17,7 @@ export const searchSlice: StateCreator<
   SearchAction
 > = (set, get) => ({
   searchEmployees: async (keyword: string, pageSize: number, reset: boolean = true) => {
-    // 创建请求键用于去重
+    
     const searchKey = `${keyword || ''}:${pageSize}`;
     const state = get();
     
@@ -52,6 +52,8 @@ export const searchSlice: StateCreator<
       const currentPage = reset ? 1 : state.currentPage;
       const pageToRequest = reset ? 1 : currentPage + 1; // 加载更多时请求下一页
       const employees = await userAPI.searchUsers(keyword || '', pageSize, pageToRequest);
+      // 过滤掉占位用户
+      const filtered = (employees || []).filter((u) => u.id !== 'unassigned');
 
       // 移除请求标记
       const finalPendingKeys = new Set(get().pendingSearchKeys);
@@ -61,22 +63,22 @@ export const searchSlice: StateCreator<
         // 重置搜索，直接替换结果
         set({ 
           searchQuery: keyword,
-          searchedEmployees: employees,
+          searchedEmployees: filtered,
           loading: false,
           pendingSearchKeys: finalPendingKeys,
           currentPage: 1,
-          hasMore: employees.length === pageSize
+          hasMore: filtered.length === pageSize
         });
       } else {
         // 加载更多，追加结果
         const existingEmployees = get().searchedEmployees;
-        const newEmployees = [...existingEmployees, ...employees];
+        const newEmployees = [...existingEmployees, ...filtered];
         set({ 
           searchedEmployees: newEmployees,
           loadingMore: false,
           pendingSearchKeys: finalPendingKeys,
           currentPage: pageToRequest, // 使用实际请求的页码
-          hasMore: employees.length === pageSize
+          hasMore: filtered.length === pageSize
         });
       }
     } catch {

@@ -62,7 +62,9 @@ export const coreSlice: StateCreator<
     set({ loading: true, error: null });
     try {
       const res = await userService.getAllUsers({ page, pageSize });
-      set({ employees: res });
+      // 过滤掉占位用户
+      const filtered = (res || []).filter((u) => u.id !== 'unassigned');
+      set({ employees: filtered });
 
       // 获取其他slice的方法并调用
       const state = get() as EmployeeState & CoreAction & ExtendedEmployeeState;
