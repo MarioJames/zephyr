@@ -168,6 +168,7 @@ export const coreSlice: StateCreator<
       }
     } catch (e: unknown) {
       set({ error: (e as Error)?.message || '修改员工角色失败' });
+      throw e; // 关键：将错误继续向上抛出
     } finally {
       set({ loading: false });
     }
