@@ -95,6 +95,12 @@ export interface TransferSession {
   messageIds: string[];
 }
 
+export interface BatchTransferPayload {
+  addSessionIds?: string[];
+  removeSessionIds?: string[];
+  newUserId?: string;
+}
+
 /**
  * 获取会话列表
  * @description 获取会话列表，支持分页和筛选
@@ -209,6 +215,15 @@ function batchTransferSessions(sessionIds: string[], newUserId: string) {
   });
 }
 
+function batchTransferSessionsV2(payload: BatchTransferPayload) {
+  const data: Record<string, unknown> = {
+    ...(payload.addSessionIds ? { addSessionIds: payload.addSessionIds } : {}),
+    ...(payload.removeSessionIds ? { removeSessionIds: payload.removeSessionIds } : {}),
+    ...(payload.newUserId !== undefined ? { newUserId: payload.newUserId } : {}),
+  };
+  return http.post('/api/session-transfer/batch', data);
+}
+
 export default {
   getSessionList,
   searchSessionList,
@@ -220,4 +235,5 @@ export default {
   deleteSession,
   transferSession,
   batchTransferSessions,
+  batchTransferSessionsV2,
 };

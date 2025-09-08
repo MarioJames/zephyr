@@ -203,14 +203,29 @@ export const coreSlice: StateCreator<
   },
 
   updateEmployeeSessions: async (userId, sessionIds) => {
-    // 使用新的batchTransferSessions API来完整转移sessions及其相关数据
-    const result = await sessionsService.batchTransferSessions(
-      sessionIds,
-      userId
-    );
-    // 标记session数据需要刷新
+    // 拉取最新整体列表，计算该员工当前绑定与目标绑定的差集
+    const { sessions } = await sessionsService.getSessionList({
+      page: 1,
+      pageSize: 100,
+      targetUserId: 'ALL',
+    });
+
+    const currentRight = sessions.filter((s) => s.userId === userId).map((s) => s.id);
+    const nextRight = sessionIds;
+
+    // 需要新增绑定（右移）
+    const addSessionIds = nextRight.filter((id) => !currentRight.includes(id));
+    // 需要解除绑定（左移）
+    const removeSessionIds = currentRight.filter((id) => !nextRight.includes(id));
+
+    await sessionsService.batchTransferSessionsV2({
+      addSessionIds,
+      removeSessionIds,
+      newUserId: addSessionIds.length > 0 ? userId : undefined,
+    });
+
+    // 标记session数据需要刷新并回填员工列表
     useSessionStore.getState().setNeedsRefresh(true);
-    console.log(`批量转移完成: ${result.length} 个会话`);
     await get().fetchEmployees();
   },
 });
