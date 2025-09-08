@@ -516,6 +516,11 @@ export default function EmployeePage() {
       );
       message.success('保存成功');
       handleCustomerModalClose();
+      // 保存成功后刷新员工列表
+      await fetchEmployees({
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+      });
     } catch (e: any) {
       message.error(e.message || '保存失败');
     } finally {
@@ -556,7 +561,7 @@ export default function EmployeePage() {
   const leftList = sessionList.filter((c) => {
     if (customerTab === 'all') return !employeeCustomers.includes(c.id);
     if (customerTab === 'unassigned') {
-      return !c.userId;
+      return c.userId === 'unassigned';
     }
 
     return false;
@@ -594,7 +599,7 @@ export default function EmployeePage() {
       key: 'customerCount',
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
-        const count = customerList?.length > 0 ? customerList?.length - 1 : 0;
+        const count = customerList.filter((s: any) => s?.slug !== 'inbox').length;
 
         return (
           <span
