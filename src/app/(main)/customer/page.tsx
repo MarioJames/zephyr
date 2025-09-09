@@ -52,7 +52,7 @@ interface CustomerDisplayItem {
 // 创建样式
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
   pageContainer: css`
-    padding: 24px;
+    padding: 16px 24px;
     background-color: ${token.colorBgContainer};
     min-height: 100vh;
     width: 100%;
@@ -65,7 +65,7 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   `,
   statsContainer: css`
     height: 86px;

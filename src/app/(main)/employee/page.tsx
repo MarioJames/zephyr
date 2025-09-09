@@ -43,7 +43,8 @@ const useStyles = createStyles(({ css, token }) => ({
     overflow: scroll;
   `,
   header: css`
-    height: 56px;
+    min-height: 56px;
+    padding: 10px 0;
     width: 100%;
     display: flex;
     align-items: center;
@@ -51,7 +52,7 @@ const useStyles = createStyles(({ css, token }) => ({
     margin-bottom: 16px;
   `,
   title: css`
-    margin: 0;
+    margin: 0 !important;
   `,
   headerRight: css`
     display: flex;
