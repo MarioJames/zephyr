@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Upload, App, Form } from 'antd';
-import { Button, Image, Input } from '@lobehub/ui';
+import { Avatar, Button, Input } from '@lobehub/ui';
 import { UploadOutlined } from '@ant-design/icons';
 import { AvatarUploaderProps } from '../shared/types';
 import { useAvatarUploaderStyles } from './styles';
@@ -78,17 +78,7 @@ export default function AvatarUploader({
         <div className={styles.avatarCircle}>
           {avatarUrl ? (
             isValidImageUrl(avatarUrl) ? (
-              <Image
-                alt='avatar'
-                height={80}
-                src={avatarUrl}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-                width={80}
-              />
+              <Avatar alt='avatar' avatar={avatarUrl} size={80} />
             ) : (
               <div
                 style={{

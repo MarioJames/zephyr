@@ -1,4 +1,4 @@
-import { ActionIcon, Dropdown, Icon, Image, type MenuProps } from '@lobehub/ui';
+import { ActionIcon, Dropdown, Icon, Avatar, type MenuProps } from '@lobehub/ui';
 import { Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import { MoreVertical, PencilLine } from 'lucide-react';
@@ -97,13 +97,7 @@ const SessionContent = memo<SessionContentProps>(
           }}
         >
           {avatar ? (
-            <Image
-              alt='avatar'
-              className={styles.avatarImage}
-              height={32}
-              src={avatar || ''}
-              width={32}
-            />
+            <Avatar alt='avatar' avatar={avatar || ''} size={32} />
           ) : (
             title?.[0] || ''
           )}

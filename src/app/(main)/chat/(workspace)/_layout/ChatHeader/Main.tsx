@@ -7,7 +7,7 @@ import { Suspense, memo } from 'react';
 import { Flexbox } from 'react-layout-kit';
 import { ChevronDown, PencilLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Image } from '@lobehub/ui';
+import { Avatar } from '@lobehub/ui';
 
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
@@ -46,6 +46,7 @@ const useStyles = createStyles(({ css, token }) => ({
     background: ${token.colorFillTertiary};
     user-select: none;
     cursor: pointer;
+    overflow: hidden;
     img {
       width: 100%;
       height: 100%;
@@ -106,12 +107,7 @@ const MainContent = memo<{ className?: string }>(({ className }) => {
       {!isPinned && !showSessionPanel && <TogglePanelButton />}
       <div className={styles.avatar}>
         {activeSession?.avatar ? (
-          <Image
-            alt='头像'
-            height={28}
-            src={activeSession?.avatar}
-            width={28}
-          />
+          <Avatar alt='头像' avatar={activeSession?.avatar} size={28} />
         ) : (
           <div className={styles.avatarCircle}>
             {activeSession?.title?.slice(0, 1)}
