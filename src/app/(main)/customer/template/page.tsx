@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Tooltip, Typography, App, Spin, Empty } from 'antd';
-import { Button, Image } from '@lobehub/ui';
+import { Button } from '@lobehub/ui';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { createStyles } from 'antd-style';
 import Link from 'next/link';
@@ -280,7 +280,7 @@ export default function CustomerTemplatePage() {
                 <div className={styles.cardContainer} key={agent.id}>
                   <div className={styles.card}>
                     <div className={styles.cardContent}>
-                      <Image
+                      <img
                         alt={agent.title || '客户模板'}
                         className={styles.cardImage}
                         height={132}

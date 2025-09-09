@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
 import { HELLO_IMG } from '@/const/base';
-import { Image } from '@lobehub/ui';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
@@ -39,8 +38,8 @@ const DefaultHelloShow = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <Image
-          alt=''
+        <img
+          alt='hello'
           className={styles.helloImg}
           height={100}
           src={HELLO_IMG}
