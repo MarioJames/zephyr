@@ -232,7 +232,11 @@ async function summarizeFileContent(
     ...rest?.chatConfig,
   });
 
-  const text = response?.content || '';
+  let text = response?.content || '';
+
+  if (text.startsWith('```json') && text.endsWith('```')) {
+    text = text.slice(7, -3);
+  }
 
   const parsed = JSON.parse(text);
 
