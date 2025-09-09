@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles } from 'antd-style';
 import { useAgentStore } from '@/store/agent/store';
-import { Button, Image } from '@lobehub/ui';
+import { Button } from '@lobehub/ui';
 import { HELLO_IMG } from '@/const/base';
 import { useRouter } from 'next/navigation';
 import { useGlobalStore } from '@/store/global';
@@ -113,7 +113,7 @@ const DefaultCreateCustomer = () => {
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <Image
+        <img
           alt='agent'
           className={styles.helloImg}
           height={40}
@@ -129,7 +129,7 @@ const DefaultCreateCustomer = () => {
         <div className={styles.cardList}>
           {agents.map((agent) => (
             <div className={styles.card} key={agent.id}>
-              <Image
+              <img
                 alt={agent.title || ''}
                 className={styles.avatar}
                 height={96}

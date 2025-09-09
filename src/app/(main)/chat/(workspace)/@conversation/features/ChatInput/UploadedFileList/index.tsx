@@ -34,7 +34,6 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   fileItem: css`
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 8px;
     padding: 8px;
@@ -58,7 +57,6 @@ const useStyles = createStyles(({ css, token }) => ({
     gap: 2px;
     min-width: 0;
     overflow: hidden;
-    width: 100%;
   `,
   fileName: css`
     font-size: 13px;
@@ -136,7 +134,9 @@ const UploadedFileList = memo<UploadedFileListProps>(
       const { fileType, url } = file || {};
 
       if (fileType?.startsWith('image/') && url) {
-        return <Image alt='file' height={54} src={url} width={54} />;
+        return (
+          <Image alt='file' style={{ width: 54, height: 'auto' }} src={url} />
+        );
       }
 
       return <FileIcon fileName={file?.name || ''} fileType={file?.fileType} />;

@@ -600,7 +600,9 @@ export default function EmployeePage() {
       key: 'customerCount',
       render: (_: any, record: UserItem) => {
         const customerList = record.sessions || [];
-        const count = customerList.filter((s: any) => s?.slug !== 'inbox').length;
+        const count = customerList.filter(
+          (s: any) => s?.slug !== 'inbox'
+        ).length;
 
         return (
           <span

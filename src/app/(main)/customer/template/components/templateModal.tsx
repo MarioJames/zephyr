@@ -423,9 +423,8 @@ const TemplateModal: React.FC<TemplateModalProps> = ({
                     return (
                       <Image
                         alt='示例图'
-                        height={62}
                         src={avatar}
-                        width={112}
+                        style={{ height: 62, width: 112 }}
                       />
                     );
                   }}

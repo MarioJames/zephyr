@@ -1,4 +1,4 @@
-import { Modal } from '@lobehub/ui';
+import { Modal, Image } from '@lobehub/ui';
 import { Button, Checkbox, Empty, Input, Pagination, Spin, Tag } from 'antd';
 import { createStyles, cx } from 'antd-style';
 import { FileIcon, SearchIcon } from 'lucide-react';
@@ -157,9 +157,16 @@ const FileSelectModal = memo<FileSelectModalProps>(
       onClose();
     }, [onClose]);
 
-    const getFileIcon = (fileType: string) => {
+    const getFileIcon = (file: FileItem) => {
+      const { fileType } = file;
       if (fileType.startsWith('image/')) {
-        return <FileIcon size={20} style={{ color: '#52c41a' }} />;
+        return (
+          <Image
+            alt={file.name}
+            style={{ width: 20, height: 'auto' }}
+            src={file.url}
+          />
+        );
       }
       if (fileType.includes('pdf')) {
         return <FileIcon size={20} style={{ color: '#ff4d4f' }} />;
@@ -259,7 +266,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
                       checked={selectedFileIds.includes(file.id)}
                       onChange={() => handleFileSelect(file.id)}
                     />
-                    {getFileIcon(file.fileType)}
+                    {getFileIcon(file)}
                     <div className={styles.fileInfo}>
                       <div style={{ fontWeight: 500 }}>{file.name}</div>
                       <div style={{ fontSize: 12, color: '#8c8c8c' }}>

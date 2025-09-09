@@ -3,8 +3,6 @@ import { createStyles } from 'antd-style';
 import { Trash } from 'lucide-react';
 import { CSSProperties, memo } from 'react';
 
-import { usePlatform } from '@/hooks/usePlatform';
-
 const MIN_IMAGE_SIZE = 64;
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -49,7 +47,6 @@ const FileItem = memo<FileItemProps>(
   ({ editable, alt, onRemove, url, loading, alwaysShowClose }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
-    const { isSafari } = usePlatform();
 
     return (
       <Image
@@ -69,11 +66,9 @@ const FileItem = memo<FileItemProps>(
         }
         alt={alt || ''}
         alwaysShowActions={alwaysShowClose}
-        height={isSafari ? 'auto' : '100%'}
         isLoading={loading}
-        size={IMAGE_SIZE as any}
+        style={{ width: IMAGE_SIZE, height: 'auto' }}
         src={url}
-        style={{ height: isSafari ? 'auto' : '100%' }}
         wrapperClassName={cx(styles.image, editable && styles.editableImage)}
       />
     );

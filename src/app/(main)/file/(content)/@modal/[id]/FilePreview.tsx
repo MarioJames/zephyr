@@ -5,7 +5,6 @@ import { useTheme } from 'antd-style';
 import { Center } from 'react-layout-kit';
 
 import { fileCoreSelectors, useFileStore } from '@/store/file';
-import { Image } from '@lobehub/ui';
 
 const FilePreview = memo<{ id: string }>(({ id }) => {
   const file = useFileStore(fileCoreSelectors.getFileById(id));
@@ -27,7 +26,7 @@ const FilePreview = memo<{ id: string }>(({ id }) => {
 
   return (
     <Center height={'100%'}>
-      <Image alt={file?.name || '图片'} src={file?.url} />
+      <img alt={file?.name || '图片'} src={file?.url} />
     </Center>
   );
 });

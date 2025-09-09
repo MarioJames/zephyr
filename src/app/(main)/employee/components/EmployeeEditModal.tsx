@@ -183,13 +183,12 @@ const EmployeeEditModal: React.FC<EmployeeEditModalProps> = ({
             {avatarFile ? (
               <Image
                 alt='头像'
-                height={48}
+                style={{ height: 48, width: 48 }}
                 src={
                   avatarFile.url ||
                   (avatarFile.originFileObj &&
                     URL.createObjectURL(avatarFile.originFileObj))
                 }
-                width={48}
               />
             ) : (
               <PlusOutlined style={{ fontSize: 24, color: '#ccc' }} />
