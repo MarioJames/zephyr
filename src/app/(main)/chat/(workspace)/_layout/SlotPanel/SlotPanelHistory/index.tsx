@@ -6,7 +6,7 @@ import { createStyles } from 'antd-style';
 import { useGlobalStore } from '@/store/global';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { useSessionStore , sessionSelectors } from '@/store/session';
+import { useSessionStore, sessionSelectors } from '@/store/session';
 
 import { useHistoryStyles } from '../style';
 import dayjs from 'dayjs';
@@ -92,36 +92,6 @@ const HistoryPanel = () => {
     setIsRenameModalOpen(true);
   };
 
-  // 处理AI重命名
-  // const handleAIRename = async (topicId: string) => {
-  //   try {
-  //     // 添加loading状态
-  //     setLoadingTopicIds((prev) => new Set(prev).add(topicId));
-
-  //     // 生成新标题
-  //     const newTitle = await topicService.summaryTopicTitle({ id: topicId });
-
-  //     // 更新话题标题
-  //     const updatedTopic = await topicsAPI.updateTopic(topicId, {
-  //       title: newTitle,
-  //     });
-
-  //     updateTopic(topicId, updatedTopic);
-
-  //     message.success('AI 重命名成功');
-  //   } catch (error) {
-  //     console.error('AI重命名失败:', error);
-  //     message.error('AI重命名失败');
-  //   } finally {
-  //     // 移除loading状态
-  //     setLoadingTopicIds((prev) => {
-  //       const newSet = new Set(prev);
-  //       newSet.delete(topicId);
-  //       return newSet;
-  //     });
-  //   }
-  // };
-
   // 确认重命名
   const handleConfirmRename = async () => {
     if (!editingTopic || !newTitle.trim()) {
@@ -172,19 +142,6 @@ const HistoryPanel = () => {
         handleRename(topic);
       },
     },
-    // {
-    //   key: 'ai-rename',
-    //   label: (
-    //     <div className={customStyles.menuItem}>
-    //       <Sparkles size={16} />
-    //       使用 AI 重命名
-    //     </div>
-    //   ),
-    //   onClick: (e: any) => {
-    //     e?.domEvent?.stopPropagation();
-    //     handleAIRename(topic.id);
-    //   },
-    // },
   ];
 
   return (
@@ -221,64 +178,72 @@ const HistoryPanel = () => {
             暂无历史会话
           </Flexbox>
         ) : (
-          topics.map((item) => {
-            return (
-              <Spin
-                key={item.id}
-                size='small'
-                spinning={loadingTopicIds.has(item.id)}
-              >
-                <Flexbox
-                  align='center'
-                  className={`
+          topics
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt!).getTime() -
+                new Date(a.createdAt!).getTime()
+            )
+            .map((item) => {
+              return (
+                <Spin
+                  key={item.id}
+                  size='small'
+                  spinning={loadingTopicIds.has(item.id)}
+                >
+                  <Flexbox
+                    align='center'
+                    className={`
                     ${styles.historyItem}
                     ${item.id === activeTopicId ? styles.activeHistoryItem : ''}
                     ${customStyles.historyItemWrapper}
                     `}
-                  distribution='space-between'
-                  horizontal
-                  onClick={() => {
-                    if (item.id === activeTopicId) return;
+                    distribution='space-between'
+                    horizontal
+                    onClick={() => {
+                      if (item.id === activeTopicId) return;
 
-                    switchTopic(item.id);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Flexbox flex={1}>
-                    <div className={styles.historyTitle}>{item.title}</div>
-                    <div className={styles.historyMeta}>
-                      @
-                      {item.user?.fullName || item.user?.username || '未知员工'}{' '}
-                      |{' '}
-                      {item.updatedAt
-                        ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
-                        : ''}
-                    </div>
-                  </Flexbox>
-                  <Flexbox align='center' gap={8} horizontal>
-                    <div className={styles.historyCount}>
-                      {item.messageCount}
-                    </div>
-                    <Dropdown
-                      menu={{
-                        items: getDropdownItems({
-                          id: item.id,
-                          title: item.title || '',
-                        }),
-                      }}
-                    >
-                      <div
-                        className={`${customStyles.dropdownTrigger} ${customStyles.dropdownTriggerHidden} dropdown-trigger`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MoreHorizontal size={16} />
+                      switchTopic(item.id);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <Flexbox flex={1}>
+                      <div className={styles.historyTitle}>{item.title}</div>
+                      <div className={styles.historyMeta}>
+                        @
+                        {item.user?.fullName ||
+                          item.user?.username ||
+                          '未知员工'}{' '}
+                        |{' '}
+                        {item.updatedAt
+                          ? dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+                          : ''}
                       </div>
-                    </Dropdown>
+                    </Flexbox>
+                    <Flexbox align='center' gap={8} horizontal>
+                      <div className={styles.historyCount}>
+                        {item.messageCount}
+                      </div>
+                      <Dropdown
+                        menu={{
+                          items: getDropdownItems({
+                            id: item.id,
+                            title: item.title || '',
+                          }),
+                        }}
+                      >
+                        <div
+                          className={`${customStyles.dropdownTrigger} ${customStyles.dropdownTriggerHidden} dropdown-trigger`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreHorizontal size={16} />
+                        </div>
+                      </Dropdown>
+                    </Flexbox>
                   </Flexbox>
-                </Flexbox>
-              </Spin>
-            );
-          })
+                </Spin>
+              );
+            })
         )}
       </Flexbox>
 

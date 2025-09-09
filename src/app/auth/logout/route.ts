@@ -9,7 +9,6 @@ import { oidcEnv } from '@/env/oidc';
 
 export async function GET() {
   const session = await auth();
-  console.log(session, 'session');
   if (!session) {
     return new NextResponse('Session not found', { status: 401 });
   }
