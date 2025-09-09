@@ -32,7 +32,10 @@ export function customerItemToFormData(
     gender: extend?.gender ?? null,
     age: extend?.age ?? null,
     work: extend?.work ?? null,
-    isSingle: JSON.stringify(extend?.isSingle),
+    isSingle:
+      typeof extend?.isSingle === 'boolean'
+        ? JSON.stringify(extend.isSingle)
+        : null,
     familySituation: extend?.familySituation ?? null,
     hobby: extend?.hobby ?? null,
     chatConfig: extend?.chatConfig,
