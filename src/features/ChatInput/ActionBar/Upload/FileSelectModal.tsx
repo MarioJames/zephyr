@@ -163,7 +163,7 @@ const FileSelectModal = memo<FileSelectModalProps>(
         return (
           <Image
             alt={file.name}
-            style={{ width: '20px', height: 'auto' }}
+            style={{ width: 20, height: 'auto' }}
             src={file.url}
           />
         );
