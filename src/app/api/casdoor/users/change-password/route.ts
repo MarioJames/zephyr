@@ -80,9 +80,9 @@ export async function POST(request: NextRequest) {
       const result = await sdk.setPassword(setPasswordData);
 
       // 检查结果
-      if (result.data && result.data.status === 'error') {
+      if (result?.data && result?.data?.status === 'error') {
         return NextResponse.json(
-          { error: result.data.msg || '密码修改失败' },
+          { error: result?.data?.msg || '密码修改失败' },
           { status: 400 }
         );
       }
@@ -98,11 +98,11 @@ export async function POST(request: NextRequest) {
       // 处理常见的错误情况
       let errorMessage = '密码修改失败';
       if (error.response?.data?.msg) {
-        errorMessage = error.response.data.msg;
+        errorMessage = error?.response?.data?.msg;
       } else if (error.message) {
-        if (error.message.includes('User does not exist')) {
+        if (error?.message?.includes('User does not exist')) {
           errorMessage = '用户不存在，请联系管理员';
-        } else if (error.message.includes('permission denied')) {
+        } else if (error?.message?.includes('permission denied')) {
           errorMessage = '权限不足，无法修改密码';
         } else {
           errorMessage = error.message;
