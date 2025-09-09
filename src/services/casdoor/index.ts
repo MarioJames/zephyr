@@ -72,11 +72,7 @@ export const deleteCasdoorUser = async (
 export const changeUserPassword = async (
   passwordData: ChangePasswordRequest
 ): Promise<ChangePasswordResponse> => {
-  const response: any = await http.post(
-    '/api/casdoor/users/change-password',
-    passwordData as any
-  );
-  return response.data;
+  return http.post('/api/casdoor/users/change-password', passwordData as any);
 };
 
 // 导出所有 Casdoor 相关的服务方法

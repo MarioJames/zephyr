@@ -113,7 +113,7 @@ const PanelContent = memo(() => {
       const currentUserInfo = {
         name: currentUser?.username || currentUser?.fullName,
         email: currentUser?.email,
-        id: currentUser?.username || currentUser?.fullName,
+        id: currentUser?.id,
       };
 
       // 调用密码修改接口，传递用户信息
