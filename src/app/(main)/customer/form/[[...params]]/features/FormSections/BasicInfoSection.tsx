@@ -44,7 +44,7 @@ export default function BasicInfoSection() {
       </Row>
       <Row gutter={24}>
         <Col span={6}>
-          <Form.Item label='婚姻状况' name='isSingle'>
+          <Form.Item label='婚姻状况' name='maritalStatus'>
             <Select className={styles.selectBg} options={MARITAL_STATUS_OPTIONS} placeholder='请选择婚姻状况' />
           </Form.Item>
         </Col>

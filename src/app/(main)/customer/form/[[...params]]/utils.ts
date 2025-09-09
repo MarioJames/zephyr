@@ -32,10 +32,7 @@ export function customerItemToFormData(
     gender: extend?.gender ?? null,
     age: extend?.age ?? null,
     work: extend?.work ?? null,
-    isSingle:
-      typeof extend?.isSingle === 'boolean'
-        ? JSON.stringify(extend.isSingle)
-        : null,
+    maritalStatus: extend?.maritalStatus ?? null,
     familySituation: extend?.familySituation ?? null,
     hobby: extend?.hobby ?? null,
     chatConfig: extend?.chatConfig,
@@ -58,7 +55,7 @@ export function formDataToCreateRequest(
     age,
     gender,
     work,
-    isSingle,
+    maritalStatus,
     familySituation,
     hobby,
     chatConfig,
@@ -70,7 +67,7 @@ export function formDataToCreateRequest(
       gender,
       age,
       work,
-      isSingle: isSingle ? JSON.parse(isSingle) : null,
+      maritalStatus: maritalStatus ?? null,
       familySituation,
       hobby,
       chatConfig,

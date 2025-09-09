@@ -6,7 +6,6 @@ import {
   text,
   integer,
   jsonb,
-  boolean,
 } from 'drizzle-orm/pg-core';
 import { timestamps } from '@/database/_helpers';
 
@@ -24,23 +23,9 @@ export const customerSessions = pgTable(
     gender: varchar('gender', { length: 10 }), // 性别
     age: integer('age'), // 年龄
     work: text('work'), // 工作
-    isSingle: boolean('is_single'), // 是否单身
+    maritalStatus: varchar('marital_status', { length: 20 }), // 婚姻状况：Married / Unmarried
     familySituation: text('family_situation'), // 家庭情况
     hobby: text('hobby'), // 兴趣爱好
-
-    // position: varchar('position', { length: 100 }), // 职位
-    // // 联系方式
-    // phone: varchar('phone', { length: 20 }), // 手机号
-    // email: varchar('email', { length: 255 }), // 邮箱
-    // wechat: varchar('wechat', { length: 50 }), // 微信号
-
-    // // 公司信息
-    // company: varchar('company', { length: 200 }), // 公司名称
-    // industry: varchar('industry', { length: 100 }), // 行业
-    // scale: varchar('scale', { length: 50 }), // 公司规模
-
-    // // 详细地址
-    // address: text('address'),
 
     // 聊天配置
     chatConfig: jsonb('chat_config'), // 聊天相关配置，可存储 JSON 数据

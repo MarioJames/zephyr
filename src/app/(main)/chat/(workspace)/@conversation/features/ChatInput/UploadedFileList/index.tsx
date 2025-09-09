@@ -34,6 +34,7 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
   fileItem: css`
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 8px;
     padding: 8px;
@@ -56,6 +57,8 @@ const useStyles = createStyles(({ css, token }) => ({
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    overflow: hidden;
+    width: 100%;
   `,
   fileName: css`
     font-size: 13px;

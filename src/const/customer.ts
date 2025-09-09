@@ -12,6 +12,6 @@ export const AGE_OPTIONS = Array.from({ length: 60 }, (_, i) => {
 
 // 婚姻状况选项
 export const MARITAL_STATUS_OPTIONS = [
-  { value: 'true', label: '未婚' },
-  { value: 'false', label: '已婚' },
+  { value: 'Unmarried', label: '未婚' },
+  { value: 'Married', label: '已婚' },
 ];

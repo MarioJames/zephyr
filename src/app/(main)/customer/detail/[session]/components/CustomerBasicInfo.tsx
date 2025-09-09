@@ -78,7 +78,7 @@ export const CustomerBasicInfo: React.FC<CustomerBasicInfoProps> = ({
         <div className={styles.infoItem}>
           <div className={styles.infoLabel}>婚姻状况：</div>
           <div className={styles.infoValue}>
-            {customer?.isSingle === true ? '未婚' : customer?.isSingle === false ? '已婚' : '-'}
+            {customer?.maritalStatus === 'Unmarried' ? '未婚' : customer?.maritalStatus === 'Married' ? '已婚' : '-'}
           </div>
         </div>
       </div>

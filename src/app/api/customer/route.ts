@@ -10,14 +10,7 @@ export interface CustomerExtendCreateRequest {
   sessionId: string;
   gender?: string;
   age?: number;
-  position?: string;
-  phone?: string;
-  email?: string;
-  wechat?: string;
-  company?: string;
-  industry?: string;
-  scale?: string;
-  address?: string;
+  maritalStatus?: 'Married' | 'Unmarried';
   chatConfig?: AgentChatConfig; // 聊天配置
 }
 

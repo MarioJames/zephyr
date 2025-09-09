@@ -36,7 +36,7 @@ export type CustomerFormData = {
   gender: string | null;
   age: number | null;
   work: string | null;
-  isSingle: string | null;
+  maritalStatus: 'Married' | 'Unmarried' | null;
   familySituation: string | null;
   hobby: string | null;
   chatConfig: any; // AgentConfig

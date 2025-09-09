@@ -23,7 +23,7 @@ export interface CreateCustomerSessionParams {
   gender?: string;
   age?: number;
   work?: string;
-  isSingle?: boolean;
+  maritalStatus?: 'Married' | 'Unmarried';
   familySituation?: string;
   hobby?: string;
   // 聊天配置
