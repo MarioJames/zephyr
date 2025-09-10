@@ -126,7 +126,27 @@ export function useCustomerForm({
 
           message.success('客户更新成功！');
 
-          router.push(`/customer`);
+          if (typeof window !== 'undefined' && window.history.length > 1) {
+            router.back();
+          } else {
+            if (isAdmin) {
+              router.push('/customer');
+            } else {
+              modal.confirm({
+                title: '提示',
+                content: '客户更新成功，是否返回对话？',
+                onOk: async () => {
+                  try {
+                    const topics = await topicsAPI.getTopicList(customerId);
+                    const activeTopicId = topics?.[0]?.id;
+                    router.push(`/chat?session=${customerId}${activeTopicId ? `&topic=${activeTopicId}` : ''}`);
+                  } catch {
+                    router.push(`/chat?session=${customerId}`);
+                  }
+                },
+              });
+            }
+          }
         } else {
           // 新增模式
           const createData = formDataToCreateRequest(data);
