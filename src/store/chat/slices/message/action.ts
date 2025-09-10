@@ -142,18 +142,12 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
         return;
       }
 
-      // 只为用户消息和通过"发送员工消息"按钮发送的消息生成建议
-      let promiseQueue: Promise<any>[] = [
-        // 触发翻译
-        get().autoTranslateMessage(role, createdMessage.id),
-      ];
+      get().autoTranslateMessage(role, createdMessage.id);
 
-      // 触发生成建议
+      //  只为用户消息和通过"发送员工消息"按钮发送的消息生成建议
       if (role === 'user' || options.isStaffMessage) {
-        promiseQueue.push(get().generateAISuggestion(createdMessage.id));
+        get().generateAISuggestion(createdMessage.id);
       }
-
-      await Promise.all(promiseQueue);
     } catch (e: unknown) {
       console.error('发送消息失败:', e);
 
