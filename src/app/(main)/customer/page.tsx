@@ -271,7 +271,8 @@ export default function Customer() {
 
         const activeTopicId = topics?.[0]?.id;
 
-        router.push(`/chat?session=${record.sessionId}&topic=${activeTopicId}`);
+        const url = `/chat?session=${record.sessionId}&topic=${activeTopicId}${record.assigneeId ? `&userId=${record.assigneeId}` : ''}`;
+        router.push(url);
       } catch (error) {
         console.error('切换会话失败:', error);
         message.error('切换到对话失败');

@@ -26,13 +26,13 @@ export const sessionActiveAction: StateCreator<
 
     // 如果URL参数中存在userId，则获取该员工的会话列表
     if (userId) {
-      get().fetchSessions({ targetUserId: userId as string });
       set({ targetUserId: userId as string });
+      await get().fetchSessions({ targetUserId: userId as string, autoSelectFirst: false });
     }
 
     // 如果URL参数中存在session和topic，则切换会话和话题
     if (session) {
-      get().switchSession(session as string, topic as string | undefined);
+      await get().switchSession(session as string, topic as string | undefined);
     }
 
     if (openHistory === '1') {

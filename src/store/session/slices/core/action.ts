@@ -115,12 +115,23 @@ export const sessionCoreAction: StateCreator<
       activeTopicId,
     });
 
-    // 重置聊天状态
+    // 重置聊天状态（消息/话题/上传等）
     useChatStore.setState({
       messages: [],
       messagesInit: false,
       topics: [],
       topicsInit: false,
+      chatUploadFileList: [],
+      parsedFileContentMap: new Map(),
+      inputMessage: '',
+      editingMessageId: undefined,
+      generatingMessageId: undefined,
+      artifactMessageId: undefined,
+      translatingMessageIds: [],
+      suggestions: [],
+      suggestionsInit: false,
+      isGeneratingAI: false,
+      error: undefined,
     });
 
     // 拉取建议

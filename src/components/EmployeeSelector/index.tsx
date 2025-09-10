@@ -159,7 +159,7 @@ interface EmployeeSelectorProps {
   onChange?: (userId: string, user: UserItem) => void;
   onClear?: () => void; // 取消选择的回调
   value?: string; // 当前选中的用户ID
-  selectedUser?: UserItem; // 当前选中的用户信息
+  selectedLabel?: string; // 当前选中用户的显示名称（用于避免闪烁）
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -169,7 +169,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
   onChange,
   onClear,
   value,
-  selectedUser,
+  selectedLabel,
   placeholder = "选择员工",
   disabled = false,
   className,
@@ -206,6 +206,30 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
     fetchEmployees();
   }, []);
 
+  // 在外部 value 变化时，确保下拉选项中存在该用户，避免短暂显示 userId
+  useEffect(() => {
+    const ensureSelectedUserOption = async () => {
+      if (!value) return;
+      // 如果当前员工列表中已包含该用户，则无需处理
+      const exists = employees.some((u) => u.id === value);
+      if (exists) return;
+      try {
+        const user = await userService.getUserById(value);
+        if (user) {
+          setEmployees((prev) => {
+            // 避免重复插入
+            if (prev.some((u) => u.id === user.id)) return prev;
+            return [user, ...prev];
+          });
+        }
+      } catch {
+        // 忽略错误，fallback 仍会显示占位符
+      }
+    };
+
+    ensureSelectedUserOption();
+  }, [value, employees]);
+
   // 搜索防抖
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -231,6 +255,12 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       );
     }
     
+    // 若当前选中的用户不在列表中，但提供了 selectedLabel，则临时插入一个选项，避免显示 userId
+    if (value && !filtered.some((u) => u.id === value) && selectedLabel) {
+      const syntheticUser: UserItem = { id: value, fullName: selectedLabel } as UserItem;
+      filtered = [syntheticUser, ...filtered];
+    }
+    
     // 如果有选中的用户且在过滤结果中，将其置顶
     if (value) {
       const selectedUser = filtered.find(user => user.id === value);
@@ -241,7 +271,15 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
     }
     
     return filtered;
-  }, [employees, searchKeyword, value]);
+  }, [employees, searchKeyword, value, selectedLabel]);
+
+  // 当尚未拿到 label（既不在 employees 列表也没有 selectedLabel）时，不设置 value，避免短暂显示 userId
+  const displayValue = useMemo(() => {
+    if (!value) return undefined;
+    const exists = filteredEmployees.some((u) => u.id === value);
+    if (exists || selectedLabel) return value;
+    return undefined;
+  }, [value, filteredEmployees, selectedLabel]);
 
   const handleSelect = (userId: string) => {
     // 如果点击的是已选中的用户，则取消选择
@@ -303,7 +341,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         },
       }}
       suffixIcon={<ChevronDown size={16} />}
-      value={selectedUser ? (selectedUser.fullName || selectedUser.username || "未知用户") : undefined}
+      value={displayValue}
     >
       {loading ? (
         Array.from({ length: 3 }).map((_, index) => (

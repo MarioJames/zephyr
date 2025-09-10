@@ -15,7 +15,6 @@ import EmployeeSelector from '@/components/EmployeeSelector';
 import { SkeletonList } from '../SkeletonList';
 import ShowMode from './ShowMode';
 import SearchResult from './SearchResult';
-import { UserItem } from '@/services';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
 import { userSelectors } from '@/store/global/slices/user/selectors';
@@ -54,7 +53,6 @@ const SessionListContent = memo(() => {
     inSearchMode,
     isInitialized,
     targetUserId,
-    targetUser,
     needsRefresh,
 
     // actions
@@ -63,7 +61,6 @@ const SessionListContent = memo(() => {
     initFromUrlParams,
     resetActiveState,
     setTargetUserId,
-    setTargetUser,
     setNeedsRefresh,
   ] = useSessionStore((s) => [
     sessionSelectors.sessions(s),
@@ -71,7 +68,6 @@ const SessionListContent = memo(() => {
     sessionSelectors.inSearchMode(s),
     sessionSelectors.isInitialized(s),
     sessionSelectors.targetUserId(s),
-    sessionSelectors.targetUser(s),
     sessionSelectors.needsRefresh(s),
 
     s.fetchSessions,
@@ -79,19 +75,18 @@ const SessionListContent = memo(() => {
     s.initFromUrlParams,
     s.resetActiveState,
     s.setTargetUserId,
-    s.setTargetUser,
     s.setNeedsRefresh,
   ]);
 
   const [resetChatState] = useChatStore((s) => [s.resetChatState]);
 
   useEffect(() => {
-    if (!isInitialized) {
-      (async () => {
+    (async () => {
+      if (!isInitialized) {
         await fetchSessions();
-        initFromUrlParams();
-      })();
-    }
+      }
+      initFromUrlParams();
+    })();
   }, [isInitialized, fetchSessions, initFromUrlParams]);
 
   // 检测是否需要刷新session数据（从客户管理页面返回时）
@@ -133,10 +128,9 @@ const SessionListContent = memo(() => {
     router.push('/customer/form');
   };
 
-  const handleEmployeeSelect = async (userId: string, user: UserItem) => {
+  const handleEmployeeSelect = async (userId: string) => {
     // 设置当前选中的员工ID
     setTargetUserId(userId);
-    setTargetUser(user);
 
     // 清空激活的session和topic
     resetActiveState();
@@ -151,7 +145,6 @@ const SessionListContent = memo(() => {
   const handleEmployeeClear = async () => {
     // 清空选中的员工
     setTargetUserId(undefined);
-    setTargetUser(undefined);
 
     // 清空激活的session和topic
     resetActiveState();
@@ -180,8 +173,13 @@ const SessionListContent = memo(() => {
               onChange={handleEmployeeSelect}
               onClear={handleEmployeeClear}
               placeholder={currentUser?.fullName || currentUser?.username || '切换员工'}
-              selectedUser={targetUser}
               value={targetUserId}
+              selectedLabel={
+                (() => {
+                  const session = sessions.find((s) => s.userId === targetUserId);
+                  return session?.user?.fullName || session?.user?.username;
+                })()
+              }
             />
           </div>
         )}

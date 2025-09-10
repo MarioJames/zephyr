@@ -160,6 +160,13 @@ function getVirtualKey(userId: string, roleId: string) {
   );
 }
 
+/**
+ * 根据用户ID获取用户详情
+ */
+function getUserById(id: string) {
+  return http.get<UserItem>(`/api/v1/users/${id}`);
+}
+
 export default {
   getCurrentUser,
   getAllUsers,
@@ -169,4 +176,5 @@ export default {
   searchUsers,
   updateUserRole,
   getVirtualKey,
+  getUserById,
 };
