@@ -6,7 +6,7 @@ import { SkeletonList, VirtualizedList } from '@/features/Conversation';
 import { useFetchMessages } from '@/hooks/useFetchMessages';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
-import { useSessionStore , sessionSelectors } from '@/store/session';
+import { useSessionStore, sessionSelectors } from '@/store/session';
 import DefaultHelloShow from '@/components/DefaultHelloShow';
 
 import MainChatItem from './ChatItem';

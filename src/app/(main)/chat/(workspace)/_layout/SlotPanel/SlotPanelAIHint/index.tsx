@@ -415,11 +415,9 @@ const AIHintPanel = () => {
     }
 
     try {
-      const { success, message: aiSuggestionMessage } =
-        await generateAISuggestion(latestUserMessageId);
+      const { success } = await generateAISuggestion(latestUserMessageId);
 
       if (!success) {
-        message.error(aiSuggestionMessage || '重新生成建议失败');
         return;
       }
 

@@ -15,6 +15,7 @@ import UploadedFileList from './UploadedFileList';
 
 const leftActions = [
   'search',
+  'history',
   'fileUpload',
   'stt',
   'mainToken',

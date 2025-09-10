@@ -138,16 +138,25 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       set(updateData);
 
-      // 只为用户消息和通过"发送员工消息"按钮发送的消息生成建议
-      if (createdMessage.id && (role === 'user' || options.isStaffMessage)) {
-        get().generateAISuggestion(createdMessage.id);
+      if (!createdMessage.id) {
+        return;
       }
 
-      // 自动触发翻译
-      if (createdMessage.id) {
-        get().autoTranslateMessage(role, createdMessage.id);
+      // 只为用户消息和通过"发送员工消息"按钮发送的消息生成建议
+      let promiseQueue: Promise<any>[] = [
+        // 触发翻译
+        get().autoTranslateMessage(role, createdMessage.id),
+      ];
+
+      // 触发生成建议
+      if (role === 'user' || options.isStaffMessage) {
+        promiseQueue.push(get().generateAISuggestion(createdMessage.id));
       }
+
+      await Promise.all(promiseQueue);
     } catch (e: unknown) {
+      console.error('发送消息失败:', e);
+
       set({
         fetchMessageLoading: false,
         error: (e as Error)?.message || '消息发送失败',
@@ -161,7 +170,6 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
     set({ sendMessageLoading: true });
 
     try {
-
       // 如果没有上传的文件，正常发送
       if (!chatUploadFileList.length) {
         await get().createMessage(inputMessage, role, {
@@ -192,7 +200,7 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
 
       // 结合文件生成带有文件内容上下文的消息
       const messageWithFiles = generateMessageWithFiles(
-        inputMessage,
+        inputMessage || ' ', // 如果没有输入文字，使用空格作为默认内容
         filesForAI
       );
 
@@ -211,11 +219,14 @@ export const messageSlice: StateCreator<ChatStore, [], [], MessageAction> = (
       // 清理上传的文件列表
       get().clearChatUploadFileList();
     } catch (error) {
-      console.error('发送带文件上下文的消息失败:', error);
+      console.error('发送消息失败:', error);
+      // 降级处理：正常发送消息
+      if (inputMessage.trim()) {
         await get().createMessage(inputMessage, role, {
           clearInput: true,
           isStaffMessage: role === 'assistant', // 如果是助手消息，标记为员工消息
         });
+      }
     } finally {
       set({ sendMessageLoading: false });
     }

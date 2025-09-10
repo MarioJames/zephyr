@@ -44,6 +44,10 @@ export const coreSelectors = {
   currentCustomerChatConfigSearchMode: (state: CustomerState) =>
     state.currentCustomerExtend?.chatConfig?.searchMode,
 
+  // 获取用户自定义的对话配置中的历史消息数量
+  currentCustomerChatConfigHistoryCount: (state: CustomerState) =>
+    state.currentCustomerExtend?.chatConfig?.historyCount ?? 10,
+
   // 是否开启模型内置搜索引擎
   isModelBuiltinSearch: (state: CustomerState) =>
     state.currentCustomerExtend?.chatConfig?.useModelBuiltinSearch,

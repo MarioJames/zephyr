@@ -16,7 +16,7 @@ import {
 import { topicsAPI } from '@/services';
 import { useGlobalStore } from '@/store/global';
 import { globalSelectors } from '@/store/global/selectors';
-import { useChatStore } from '@/store/chat';
+import { useSessionStore } from '@/store/session';
 
 interface UseCustomerFormParams {
   form: FormInstance<CustomerFormData>;
@@ -163,7 +163,10 @@ export function useCustomerForm({
             title: '提示',
             content: '客户添加成功，是否立即开始对话？',
             onOk: () => {
-              useChatStore.getState().resetChatState();
+              useSessionStore
+                .getState()
+                .switchSession(newCustomer!.session.id, topic.id);
+
               router.push(
                 `/chat?session=${newCustomer!.session.id}&topic=${topic.id}`
               );

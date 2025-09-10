@@ -13,7 +13,9 @@ import chatService from '@/services/chat';
 import { sessionSelectors, useSessionStore } from '@/store/session';
 import { PLACEHOLDER_SUGGESTION } from '@/const/suggestions';
 import { transformMessageToOpenAIFormat } from '@/utils/message';
-import { useCustomerStore } from '@/store/customer';
+import { customerSelectors, useCustomerStore } from '@/store/customer';
+import { events } from '@/utils/events';
+import { BusEvents } from '@/const/events';
 
 export interface AgentSuggestionsAction {
   // 基础操作
@@ -110,7 +112,10 @@ export const agentSuggestionsSlice: StateCreator<
 
       const systemRole = activeAgent?.systemRole;
 
-      // const historyCount = activeAgent?.chatConfig?.historyCount || 8;
+      const historyCount =
+        customerSelectors.currentCustomerChatConfigHistoryCount(
+          useCustomerStore.getState()
+        );
 
       // 获取当前消息
       const currentMessage = state.messages.find(
@@ -135,7 +140,7 @@ export const agentSuggestionsSlice: StateCreator<
         .filter(
           (msg) => msg.content && ['user', 'assistant'].includes(msg.role)
         )
-        // .slice(-5)
+        .slice(-historyCount)
         .map(transformMessageToOpenAIFormat); // 转换为OpenAI格式
 
       // 调用 AI 生成服务
@@ -153,7 +158,12 @@ export const agentSuggestionsSlice: StateCreator<
         ],
         chatConfig: {
           ...activeAgent?.params,
-          web_search_options: enableSearch ? {} : undefined,
+          web_search_options: enableSearch
+            ? {
+                search_context_size: 'medium',
+              }
+            : undefined,
+          reasoning_effort: 'disable',
         },
       });
 
@@ -231,6 +241,12 @@ export const agentSuggestionsSlice: StateCreator<
         ),
         error: errorMessage,
       });
+
+      events.emit(BusEvents.MESSAGE, {
+        type: 'error',
+        message: errorMessage,
+      });
+
       return {
         success: false,
         message: errorMessage,

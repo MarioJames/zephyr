@@ -7,6 +7,7 @@ import customerAPI, {
 import { CustomerState } from '../../initialState';
 import { useSessionStore } from '@/store/session';
 import { CustomerExtend } from '@/types/customer';
+import { omit } from 'lodash-es';
 
 // ========== 核心功能Action接口 ==========
 export interface CoreAction {
@@ -160,9 +161,25 @@ export const coreSlice: StateCreator<
   updateCustomerExtend: async (data) => {
     set({ loading: true, error: null });
     try {
+      const { currentCustomerExtend } = get();
+
+      // 去掉创建时间和更新时间
+      const { chatConfig, ...rest } = omit(currentCustomerExtend, [
+        'createdAt',
+        'updatedAt',
+        'accessedAt',
+      ]);
+
       const updatedCustomer = await customerAPI.updateCustomerExtend(
         useSessionStore.getState().activeSessionId || '',
-        data
+        {
+          ...rest,
+          ...data,
+          chatConfig: {
+            ...chatConfig,
+            ...data?.chatConfig,
+          },
+        }
       );
 
       // 更新当前客户

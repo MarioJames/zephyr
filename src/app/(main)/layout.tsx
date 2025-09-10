@@ -7,8 +7,12 @@ import Initializing from '@/components/Initializing';
 import { useInitializing } from '@/components/Initializing/useInitializing';
 import { useGlobalStore } from '@/store/global/store';
 import { useRouter } from 'next/navigation';
+import { App } from 'antd';
+import { events } from '@/utils/events';
+import { BusEvents } from '@/const/events';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { message } = App.useApp();
   const { initializing } = useInitializing();
   const router = useRouter();
   const { currentUser, userInit, checkUserRoleEnabled } = useGlobalStore(
@@ -18,6 +22,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       checkUserRoleEnabled: s.checkUserRoleEnabled,
     })
   );
+
+  // 监听消息事件
+  useEffect(() => {
+    events.on(
+      BusEvents.MESSAGE,
+      (payload: {
+        type: 'error' | 'success' | 'warning' | 'info';
+        message: string;
+      }) => {
+        message[payload.type](payload.message);
+      }
+    );
+  }, [message]);
 
   // 角色状态检查
   useEffect(() => {

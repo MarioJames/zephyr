@@ -137,6 +137,7 @@ async function chat(data: ChatRequest) {
       {
         ...data,
         ...(isEmpty(fallbackModels) ? {} : { fallbacks }),
+        drop_params: true,
       },
       {
         timeout: 300_000,

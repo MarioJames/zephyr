@@ -53,51 +53,53 @@ const Footer = memo<FooterProps>(({ onExpandChange }) => {
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(false);
 
+  /**
+   * 发送消息
+   * @param role 消息角色
+   */
+  const handleSendMessage = async (role: 'assistant' | 'user') => {
+    const setLoading =
+      role === 'assistant' ? setAssistantLoading : setUserLoading;
+    setLoading(true);
+
+    try {
+      await sendMessage(role);
+    } finally {
+      setLoading(false);
+    }
+
+    onExpandChange(false);
+  };
+
   return (
     <Flexbox
-        align={'center'}
-        className={styles.overrideAntdIcon}
-        flex={'none'}
-        gap={8}
-        horizontal
-        style={{ paddingRight: 16 }}
-      >
-        <ShortcutHint />
-        <Space.Compact>
-          <Button
-            disabled={loading}
-            loading={assistantLoading}
-            onClick={async () => {
-              setAssistantLoading(true);
-              try {
-                await sendMessage('assistant');
-              } finally {
-                setAssistantLoading(false);
-              }
-              onExpandChange(false);
-            }}
-            type={'default'}
-          >
-            {'发送员工消息'}
-          </Button>
-          <Button
-            disabled={loading}
-            loading={userLoading}
-            onClick={async () => {
-              setUserLoading(true);
-              try {
-                await sendMessage('user');
-              } finally {
-                setUserLoading(false);
-              }
-              onExpandChange(false);
-            }}
-            type={'primary'}
-          >
-            {'发送客户消息'}
-          </Button>
-        </Space.Compact>
-      </Flexbox>
+      align={'center'}
+      className={styles.overrideAntdIcon}
+      flex={'none'}
+      gap={8}
+      horizontal
+      style={{ paddingRight: 16 }}
+    >
+      <ShortcutHint />
+      <Space.Compact>
+        <Button
+          disabled={loading}
+          loading={assistantLoading}
+          onClick={() => handleSendMessage('assistant')}
+          type={'default'}
+        >
+          发送员工消息
+        </Button>
+        <Button
+          disabled={loading}
+          loading={userLoading}
+          onClick={() => handleSendMessage('user')}
+          type={'primary'}
+        >
+          发送客户消息
+        </Button>
+      </Space.Compact>
+    </Flexbox>
   );
 });
 
