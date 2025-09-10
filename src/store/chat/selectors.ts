@@ -9,8 +9,6 @@ const error = (s: ChatState) => s.error;
 
 const isCurrentChatLoaded = (s: ChatState): boolean => s.messagesInit;
 
-// 话题相关选择器
-
 // 聊天相关选择器
 export const chatSelectors = {
   error,

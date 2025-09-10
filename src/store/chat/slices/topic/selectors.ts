@@ -1,3 +1,4 @@
+import { useSessionStore } from '@/store/session';
 import { ChatState } from '../..';
 import { TopicItem } from '@/services/topics';
 
@@ -8,9 +9,11 @@ const searchTopics = (s: ChatState) => s.searchTopics;
 const isSearchingTopic = (s: ChatState) => s.isSearchingTopic;
 const topicRenamingId = (s: ChatState) => s.topicRenamingId;
 
-const activeTopicId = (s: ChatState) => s.activeTopicId;
-const currentActiveTopic = (s: ChatState): TopicItem | undefined =>
-  s.topics.find((topic) => topic.id === s.activeTopicId);
+const currentActiveTopic = (s: ChatState): TopicItem | undefined => {
+  const activeTopicId = useSessionStore.getState().activeTopicId;
+
+  return s.topics.find((topic) => topic.id === activeTopicId);
+};
 
 export const topicSelectors = {
   topics,
@@ -19,6 +22,5 @@ export const topicSelectors = {
   searchTopics,
   isSearchingTopic,
   topicRenamingId,
-  activeTopicId,
   currentActiveTopic,
 };

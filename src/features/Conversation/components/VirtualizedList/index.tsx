@@ -19,6 +19,7 @@ import { chatSelectors } from '@/store/chat/selectors';
 
 import AutoScroll from '../AutoScroll';
 import { VirtuosoContext } from './VirtuosoContext';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 
 interface VirtualizedListProps {
   dataSource: string[];
@@ -31,10 +32,9 @@ const VirtualizedList = memo<VirtualizedListProps>(
     const [atBottom, setAtBottom] = useState(true);
     const [isScrolling, setIsScrolling] = useState(false);
 
-    const [activeTopicId, isCurrentChatLoaded] = useChatStore((s) => [
-      chatSelectors.activeTopicId(s),
-      chatSelectors.isCurrentChatLoaded(s),
-    ]);
+    const activeTopicId = useSessionStore(sessionSelectors.activeTopicId);
+
+    const isCurrentChatLoaded = useChatStore(chatSelectors.isCurrentChatLoaded);
 
     useEffect(() => {
       if (virtuosoRef.current) {

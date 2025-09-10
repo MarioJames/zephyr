@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useChatStore } from '@/store/chat';
-import { chatSelectors } from '@/store/chat/selectors';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 
 export const useFetchMessages = () => {
-  const activeTopicId = useChatStore(chatSelectors.activeTopicId);
+  const activeTopicId = useSessionStore(sessionSelectors.activeTopicId);
   const fetchMessages = useChatStore((s) => s.fetchMessages);
 
   useEffect(() => {

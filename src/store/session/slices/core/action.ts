@@ -4,7 +4,6 @@ import sessionService, {
   SessionSearchRequest,
 } from '@/services/sessions';
 import { SessionStore } from '@/store/session';
-import { topicsAPI } from '@/services';
 import { useChatStore } from '@/store/chat';
 import { useCustomerStore } from '@/store/customer';
 import { useModelStore } from '@/store/model';
@@ -50,9 +49,8 @@ export const sessionCoreAction: StateCreator<
     set({ isLoading: true, error: undefined });
     try {
       const { autoSelectFirst = true, ...sessionParams } = params || {};
-      const { sessions = [] } = await sessionService.getSessionList(
-        sessionParams
-      );
+      const { sessions = [] } =
+        await sessionService.getSessionList(sessionParams);
 
       set({
         sessions,
@@ -105,7 +103,7 @@ export const sessionCoreAction: StateCreator<
 
     // 如果没有传入话题ID，则获取会话下的所有话题
     if (!activeTopicId) {
-      const topics = await topicsAPI.getTopicList(sessionId);
+      const topics = await useChatStore.getState().fetchTopics(sessionId);
 
       activeTopicId = topics?.[0]?.id;
     }
@@ -119,8 +117,6 @@ export const sessionCoreAction: StateCreator<
     useChatStore.setState({
       messages: [],
       messagesInit: false,
-      topics: [],
-      topicsInit: false,
       chatUploadFileList: [],
       parsedFileContentMap: new Map(),
       inputMessage: '',

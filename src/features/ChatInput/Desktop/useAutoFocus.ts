@@ -1,11 +1,10 @@
 import { TextAreaRef } from 'antd/es/input/TextArea';
 import { RefObject, useEffect } from 'react';
 
-import { useChatStore } from '@/store/chat';
-import { chatSelectors } from '@/store/chat/selectors';
+import { sessionSelectors, useSessionStore } from '@/store/session';
 
 export const useAutoFocus = (inputRef: RefObject<TextAreaRef>) => {
-  const chatKey = useChatStore(chatSelectors.activeTopicId);
+  const chatKey = useSessionStore(sessionSelectors.activeTopicId);
 
   useEffect(() => {
     inputRef.current?.focus();

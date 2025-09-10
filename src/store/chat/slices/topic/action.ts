@@ -78,17 +78,18 @@ export const topicSlice: StateCreator<ChatStore, [], [], TopicAction> = (
   },
 
   switchTopic: async (topicId: string) => {
-    
+    // 设置当前话题
+    useSessionStore.getState().setActiveTopic(topicId);
+    set({ messagesInit: false });
+
     // 切换话题时重新获取消息
+    const { fetchMessages, fetchSuggestions } = get();
+
     if (topicId) {
-      await get().fetchMessages(topicId);
-      await get().fetchSuggestions(topicId);
+      await Promise.all([fetchMessages(topicId), fetchSuggestions(topicId)]);
     } else {
       set({ messages: [], messagesInit: true });
     }
-    // 设置当前话题
-    useSessionStore.getState().setActiveTopic(topicId);
-    set({ activeTopicId: topicId });
 
     // 同步URL参数
     const activeSessionId = useSessionStore.getState().activeSessionId;
