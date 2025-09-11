@@ -133,12 +133,25 @@ export const sessionCoreAction: StateCreator<
     // 拉取建议
     useChatStore.getState().fetchSuggestions();
 
-    // 同步URL参数
-    syncUrlParams({
-      session: sessionId,
-      topic: activeTopicId,
-      userId: get().targetUserId,
-    });
+    // 进入会话时无论 activeTopicId 是否变化，都主动拉取消息，避免 messagesInit 一直为 false
+    if (activeTopicId) {
+      await useChatStore.getState().fetchMessages(activeTopicId);
+    } else {
+      // 没有话题时，标记为已初始化，避免骨架屏卡住
+      useChatStore.setState({ messagesInit: true });
+    }
+
+    // 同步URL参数（仅在聊天页内）
+    if (
+      typeof window !== 'undefined' &&
+      window.location.pathname.startsWith('/chat')
+    ) {
+      syncUrlParams({
+        session: sessionId,
+        topic: activeTopicId,
+        userId: get().targetUserId,
+      });
+    }
   },
 
   searchSessions: async (params: SessionSearchRequest) => {
@@ -181,6 +194,6 @@ export const sessionCoreAction: StateCreator<
   },
 
   clearError: () => {
-    set({ error: undefined, searchError: undefined });
+    set({ error: undefined });
   },
 });

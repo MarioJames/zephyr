@@ -83,7 +83,7 @@ const SessionListContent = memo(() => {
   useEffect(() => {
     (async () => {
       if (!isInitialized) {
-        await fetchSessions();
+        await fetchSessions({ autoSelectFirst: false });
       }
       initFromUrlParams();
     })();
