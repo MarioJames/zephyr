@@ -7,7 +7,6 @@ import { debounce } from 'lodash-es';
 import { useChatStore } from '@/store/chat';
 import { useSessionStore } from '@/store/session';
 import { sessionSelectors } from '@/store/session/selectors';
-import { useRouter } from 'next/navigation';
 import { createStyles } from 'antd-style';
 
 import Action from '../components/Action';
@@ -31,7 +30,6 @@ const useStyles = createStyles(({ css, token }) => ({
 const NewTopic = memo(() => {
   const { styles } = useStyles();
   const { message } = App.useApp();
-  const router = useRouter();
 
   const { createTopic, switchTopic } = useChatStore((s) => ({
     createTopic: s.createTopic,
@@ -61,11 +59,8 @@ const NewTopic = memo(() => {
       message.destroy();
       message.success('新话题创建成功');
 
-      // 切换到新话题
+      // 切换到新话题（不改变 URL，避免触发路由重渲染）
       switchTopic(newTopic.id);
-
-      // 跳转到新话题页面
-      router.push(`/chat?session=${activeSessionId}&topic=${newTopic.id}`);
     } catch (error) {
       message.destroy();
       console.error('创建新话题失败:', error);
@@ -79,7 +74,7 @@ const NewTopic = memo(() => {
       const debouncedCreate = debounce(createNewTopic, 300);
       debouncedCreate();
     },
-    [activeSessionId, activeTopicId, createTopic, switchTopic, router, message]
+    [activeSessionId, activeTopicId, createTopic, switchTopic, message]
   );
 
   return (
